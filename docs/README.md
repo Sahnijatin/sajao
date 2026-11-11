@@ -1,6 +1,6 @@
 # Sajao documentation
 
-Read in order the first time. Each file is one section of the solution blueprint, last updated 11 November 2026.
+Read in order the first time. Files 01 to 17 are the solution blueprint, last updated 11 November 2026. File 18 is the working build plan.
 
 | # | Document |
 | --- | --- |
@@ -22,3 +22,4 @@ Read in order the first time. Each file is one section of the solution blueprint
 | 15 | [Tech stack and cost per design](15-tech-stack-and-cost.md) |
 | 16 | [Roadmap, risks and decisions needed](16-roadmap-risks-decisions.md) |
 | 17 | [Sources](17-sources.md) |
+| 18 | [Build plan: timeline, sprints, affiliate setup and training data](18-build-plan.md) |
