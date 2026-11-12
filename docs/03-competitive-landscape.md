@@ -13,4 +13,4 @@ Nobody combines her own measured room, curated real products across brands, an a
 | Livspace, HomeLane (India) | Full-service interiors with execution | High ticket, sales-led, not self-serve. |
 | Vastu compass apps | Quick direction readings | Trust the phone compass indoors, which can be far off. No design. |
 
-The gap to own: "your actual room, curated products that fit, across brands, at your budget, with Vastu, in two minutes, and a reveal you want to post". Image generators cannot follow because they have no geometry. Retailers cannot follow because they will not show competitors' products.
+The gap to own: "your actual room, curated products that fit, across brands, at your budget, with Vastu, and a reveal you want to post". Image generators cannot follow because they have no geometry. Retailers cannot follow because they will not show competitors' products.
