@@ -1,60 +1,56 @@
-# Room capture and geometry
+# Room capture
 
-Capture works on any phone with a camera, including old budget Androids. Phone hardware can make the scan faster, but accuracy never depends on it: the tape measure sets the scale.
+Capture works on any phone with a camera. Phone hardware can make the scan faster or sharper, but accuracy never depends on it.
 
-**The universal path (every phone)**
+## What she does
 
-1. She records a slow video sweep, or takes 8 to 12 guided photos if the phone is very weak.
-2. The phone picks the 30 to 60 sharpest frames and uploads only those (about 5 to 10 MB, resumable on poor networks).
-3. A cloud reconstruction model rebuilds the room's shape: walls, floor, ceiling, doors, windows, existing furniture. Newer feed-forward models such as [MapAnything](https://arxiv.org/abs/2509.13414) do this from plain images in one pass. All heavy work is in the cloud, so the phone's age does not matter.
-4. The app shows the floor plan and asks for a tape measurement to lock the scale.
+1. Stands near the middle of the room and turns slowly through a full circle, like a panorama.
+2. Does a short second sweep from the doorway.
+3. Measures one highlighted wall with a tape.
 
-**The tape check**
+No corner-by-corner or wall-by-wall measuring.
 
-- The app picks the wall it saw best, highlights it on the plan, and asks her to measure it. One number scales the whole room.
-- It then asks for a second measurement on a different wall as a check. If the two agree within 2%, the room is marked verified and the remaining error is shown.
-- If they disagree, it asks for a third or a rescan of the weak area. It never averages away a conflict silently.
-- Door height and door width are offered as easy alternatives when a wall is blocked by furniture.
+## What the screen shows while she scans
 
-**Boosters, used only when the phone has them**
-
-| Capability | Share of phones | What it adds |
+| Element | How it works | Phones |
 | --- | --- | --- |
-| Camera only | All | The universal path above |
-| Gyroscope and accelerometer | Nearly all | Level guide, speed warning, coverage map during capture |
-| ARCore or ARKit motion tracking | Most mid-range and newer phones | A scale estimate before the tape check, and live "you missed this corner" feedback |
-| ARCore Depth API | About 800 of 1,116 listed Android device entries ([device reference](https://www.simplywise.com/blog/which-android-phones-scan-rooms/)) | Cleaner furniture boxes |
-| LiDAR | iPhone and iPad Pro only | Instant on-device room model; tape check becomes optional |
+| Level line, green or red | Tilt sensor; green when the phone is upright at chest height | All |
+| Speed gauge | Gyroscope; "slow down" when turning too fast | All |
+| Traced room edges | On-device edge detection on camera frames highlights wall corners and the ceiling line; they glow once captured | All |
+| Coverage ring | Fills as directions are covered | All |
+| Corner ticks | Each corner captured lands with a light haptic tap | All |
+| Scanning grid | Live mesh grid painted on detected floor and wall planes | ARCore and ARKit phones |
+| Scanning grid, fallback | Grid sweeps in along the traced edges, matching real coverage | Older phones |
+| Warnings | Low light, blur, mirrors and glass, too close | All |
 
-The app detects capability at runtime and picks the best available path. Every path outputs the same room model, so nothing downstream changes. Manual entry (type the wall lengths, mark doors and windows) stays available as a last resort and for users who prefer it.
+All overlays are translucent glass over the camera. Short text with icons, optional voice prompts in Hindi and English.
 
-**The capture coach (the overlay on the camera)**
+**Photo mode** for the weakest phones: 8 to 12 guided shots with ghost outlines, "shot 3 of 10, turn right until the outlines match".
 
-Most scan errors come from how the video is shot, so the camera screen teaches while she shoots.
+**After capture:** an on-device quality score. A weak area gets a specific retake prompt, such as "retake the corner near the window".
 
-- **Before the first scan:** three looping animations, about 10 seconds in total. Stand in a corner. Hold the phone upright at chest height. Turn slowly, then repeat from the opposite corner. Lights on, curtains open.
-- **Live overlay, translucent over the camera:** a level line that turns green when the phone is upright; a speed gauge that says "slow down"; a ring that fills as directions are covered; four corner dots that tick off with a haptic tap; warnings for low light, blur, too close, and mirrors or glass.
-- **Photo mode for the weakest phones:** numbered ghost outlines, "shot 3 of 10, turn right until the outlines match", like a panorama.
-- **After capture:** an on-device quality score. If an area is weak it says exactly what to redo, such as "retake the corner near the window", instead of failing later.
-- **Language:** short text plus icons and optional voice prompts, in Hindi and English first.
+## What happens on the server
 
-**The room model and its quality gates**
+1. The phone uploads the 30 to 60 sharpest frames with motion data and compass headings (about 5 to 10 MB, resumable).
+2. **Reconstruction** rebuilds metric 3D from the frames. Candidates: MapAnything (Apache 2.0 release) and VGGT (commercial checkpoint). Both are benchmarked on the golden set; the better one ships. Depth Anything 3 Base, Small or Metric (Apache 2.0) can assist with depth.
+3. **Boosters when present:** ARCore or ARKit tracking poses are sent as extra input. On LiDAR iPhones, Apple RoomPlan builds the room on the device.
+4. **Layout extraction** fits walls, floor, ceiling, doors and windows into a clean plan.
+5. **Segmentation** with SAM 3 (text-prompted, commercial license) finds existing furniture and produces exact wall, floor and window masks on her photos for paint, flooring and render steps.
+6. **Scale lock:** the tape value on the highlighted wall scales the room. If the reconstruction's own scale disagrees by more than the tolerance, one more measurement is requested. Conflicts are never averaged away.
 
-The output is one JSON scene graph: walls, floor polygon, ceiling height, doors with swing direction, windows with sill height, fixed elements (AC, switchboards, sockets, beams), existing furniture as labelled boxes, wall and floor colours, window direction, and a confidence value plus a source tag (measured, user-confirmed, estimated) on every element.
+## The room model
 
-- Walls must close into a polygon within tolerance.
-- Sanity ranges: ceiling 2.4 to 3.3 m, door width 0.7 to 1.1 m.
-- Whenever a phone has AR tracking or LiDAR, compare its scale with the camera-only result. Each such scan is free ground truth that improves the universal path.
-- Confirm the commercial license of any reconstruction model before use, since many research weights are non-commercial.
+One JSON scene graph, versioned in `packages/schemas`: walls, floor polygon, ceiling height, doors with swing, windows with sill height, fixed elements (AC, switchboards, sockets, beams), existing furniture as labelled boxes with keep, replace or remove, wall and floor materials, camera poses for every kept frame, compass heading and building orientation, and a confidence value plus source tag on every element.
 
-**Running well on old phones**
+Quality gates: walls close into a polygon within tolerance; ceiling 2.4 to 3.3 m; door width 0.7 to 1.1 m; scale agreement within tolerance.
 
-| Constraint | Design answer |
+## Running well on old phones
+
+| Constraint | Answer |
 | --- | --- |
-| 2 to 4 GB RAM, slow chip | No on-device ML is required. Frame selection uses simple sharpness checks. |
-| Weak GPU | Three viewer tiers chosen automatically: full 3D, lite 3D (low-poly, no shadows), and a 2D top-down plan with product cards that always works |
-| Slow or metered data | Small uploads, compressed 3D assets loaded on demand, designs cached for offline viewing |
-| Small storage | Keep the install small; download room and product assets only when needed |
-| Old OS versions | Support as far back as the app framework allows; confirm the exact minimum Android and iOS versions when the framework is chosen |
+| 2 to 4 GB RAM, slow chip | No on-device AI. Edge detection and sharpness checks are lightweight frame processors. |
+| Weak GPU | Three viewer tiers chosen automatically: full 3D, lite 3D, 2D plan with product cards |
+| Slow data | Small uploads, compressed assets on demand, designs cached offline |
+| Old OS versions | Support as far back as the framework allows; confirm minimums at setup |
 
-One India-specific shortcut: flats in the same tower share layouts. Scan each flat type once, store it, and every neighbour skips the scan with exact dimensions.
+Later: a flat-type library. Flats in the same tower share layouts, so one verified scan can serve every neighbour.

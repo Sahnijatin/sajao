@@ -1,25 +1,24 @@
-# Sajao documentation
+# Documentation index
 
-Read in order the first time. Files 01 to 17 are the solution blueprint, last updated 11 November 2026. File 18 is the working build plan.
-
-| # | Document |
-| --- | --- |
-| 00 | [The idea](00-idea.md) |
-| 01 | [Bottom line](01-bottom-line.md) |
-| 02 | [Assumptions and the honest limit on accuracy](02-assumptions-and-accuracy.md) |
-| 03 | [Competitive landscape](03-competitive-landscape.md) |
-| 04 | [Product flow and the intake brief](04-product-flow-and-brief.md) |
-| 05 | [System architecture](05-system-architecture.md) |
-| 06 | [Room capture and geometry](06-room-capture.md) |
-| 07 | [Product catalog and 3D assets](07-catalog-and-3d-assets.md) |
-| 08 | [Design engine: how the 3 variations are made](08-design-engine.md) |
-| 09 | [Live 3D editor and AR view](09-editor-and-ar.md) |
-| 10 | [Design language, motion and wow moments](10-design-language-and-motion.md) |
-| 11 | [LLM cost strategy and the chatbot](11-llm-cost-and-chatbot.md) |
-| 12 | [Accuracy and the self-improving loop](12-accuracy-and-learning-loop.md) |
-| 13 | [Commerce: affiliate links and other revenue](13-commerce.md) |
-| 14 | [Extra features worth adding](14-extra-features.md) |
-| 15 | [Tech stack and cost per design](15-tech-stack-and-cost.md) |
-| 16 | [Roadmap, risks and decisions needed](16-roadmap-risks-decisions.md) |
-| 17 | [Sources](17-sources.md) |
-| 18 | [Build plan: timeline, sprints, affiliate setup and training data](18-build-plan.md) |
+| # | Document | What it covers |
+| --- | --- | --- |
+| 00 | [The idea](00-idea.md) | The user, the problem, what the product must get right |
+| 01 | [Principles and scope](01-bottom-line.md) | The decisions everything else follows |
+| 02 | [Assumptions and accuracy](02-assumptions-and-accuracy.md) | What accurate means and how it is enforced |
+| 03 | [Competitive landscape](03-competitive-landscape.md) | Who else exists and the gap to own |
+| 04 | [Product flow and brief](04-product-flow-and-brief.md) | Screens from scan to share |
+| 05 | [System architecture](05-system-architecture.md) | How the pieces connect |
+| 06 | [Room capture](06-room-capture.md) | Scan, scanning effects, reconstruction, room model |
+| 07 | [Catalog and 3D assets](07-catalog-and-3d-assets.md) | Curated products, affiliate routes, 3D models, paint and flooring |
+| 08 | [Design engine](08-design-engine.md) | AI designer, solver, verifier, repair loop |
+| 09 | [Reveal, editor and share reel](09-editor-and-ar.md) | Photo render, 3D editor, day and night, share reel |
+| 10 | [Design language, motion and haptics](10-design-language-and-motion.md) | Look, feel, wow moments |
+| 11 | [AI models and evaluation](11-ai-models-and-evaluation.md) | Every model, what we train, how we test |
+| 12 | [Vastu](12-vastu.md) | Direction, rules, whole-home analysis |
+| 13 | [Commerce and monetization](13-commerce.md) | Affiliate plumbing, launch offer, later revenue |
+| 14 | [Style profiles](14-style-profiles.md) | The six launch styles and what references teach |
+| 15 | [Tech stack and cost](15-tech-stack-and-cost.md) | Stack choices and cost per room |
+| 16 | [Roadmap, risks and decisions](16-roadmap-risks-decisions.md) | Phases, gates, risks, decision log |
+| 17 | [Engineering process](17-engineering-process.md) | How the build is run |
+| 18 | [Launch checklist](18-launch-checklist.md) | Accounts, affiliates, legal, stores |
+| 19 | [Sources](19-sources.md) | References behind the research |
