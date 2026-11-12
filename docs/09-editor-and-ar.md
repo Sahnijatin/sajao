@@ -1,40 +1,42 @@
 # Reveal, editor and share reel
 
-## The reveal: her room, redesigned
+## Staged reveal
 
-Real-time phone 3D alone looks like a game next to the rooms people save. So the hero result is her own photo, redesigned:
+GPU workers that scale to zero take time to load large models, and design passes take time too. So results arrive in stages instead of promising a fixed time:
 
-1. The scan knows exactly where her camera was for every kept frame.
-2. The 3D design is rendered from that same camera, giving each item's exact position, outline and depth.
-3. Existing furniture marked "remove" is masked out with SAM 3 and cleaned.
-4. An image editing model paints the final photoreal image, guided by the depth and outlines and given the real product photos as references. Candidates: Qwen-Image-Edit-2509 (Apache 2.0, self-hosted, multi-image references, depth and edge guidance) or a hosted Gemini image model.
-5. **Fidelity check:** each item is cut out of the render and compared with its product photo by embedding similarity. Drifted items are re-rendered or the 3D view is shown instead.
+1. **Plan and 3D designs** from the CPU engine as soon as they pass the verifier.
+2. **Photo render** of the design she opens, when the GPU worker finishes.
 
-Label: "Illustrative render. Layout and sizes are exact." Renders are made for the design she opens, not all three up front.
+Times are measured in phase 0 and beta; no time claim appears in the app or marketing until measured.
+
+## Photo render: her room, redesigned
+
+1. The design is rendered in 3D from the camera position of one of her scan frames, using each product's 3D model at its exact place and size.
+2. Items marked "remove" are masked with SAM 3 and cleaned.
+3. An image model **harmonizes** the composite (lighting, shadows, materials) at low strength, guided by depth and outlines, with product photos as references. Candidates: Qwen-Image-Edit-2509 (Apache 2.0, self-hosted) or a hosted Gemini image model.
+4. **Checks per item:**
+   - Outline check: the item's outline in the render must overlap its projected 3D outline (target 85% or more). This catches moved or resized items.
+   - Likeness check: embedding similarity to the product photo.
+5. A failed item triggers a retry at lower strength; a second failure shows the 3D render instead.
+
+Label: **"Illustrative render. Exact layout and sizes in the 3D view."** Fine details such as leg shapes may differ in the render; the 3D view and the product page are the reference.
 
 ## The 3D editor
 
-- Native rendering with react-native-filament (physically based, far lighter than a web view on budget phones).
-- Dollhouse and walk-through cameras. Items snap to walls and floor with a magnetic haptic, glow red on collision, show live distances in cm.
-- Swap carousel: the next 10 alternatives that fit the same spot, pre-fetched.
-- Lock and regenerate: the engine redesigns around locked items.
-- Live budget total with a rolling counter.
-- Paint and flooring previews on her photo using the wall and floor masks.
-- **Day and night:** daylight dims, lamps glow warm, shadows soften. Lighting is the strongest mood change in every reference, so this is a core feature.
-- Viewer tiers: full 3D, lite 3D (fewer lights, no soft shadows), 2D plan with product cards.
+- react-native-filament: native physically based rendering, light on budget phones.
+- Dollhouse and walk-through cameras. Snap to walls with a magnetic haptic, red glow on collision, live distances in cm.
+- Swap carousel of alternatives that fit the same spot, pre-fetched.
+- Lock and regenerate.
+- Live budget with a rolling counter.
+- Paint and flooring previews on her photo using surface masks.
+- Day and night lighting.
+- v1: one 3D tier plus a 2D plan fallback chosen by device tier. More tiers in the Next tier.
 
-## Share reel
+## Share reel (v1, simple)
 
-The empty-to-finished reveal is what people post. Sajao makes it for her:
+- 3 to 4 of her scan angles; each cuts from her real "before" frame to the redesigned room rendered from the same camera.
+- Lamps on, 6 to 10 seconds, 9:16, music, Sajao end card.
 
-- 3 to 4 of her own scan angles; for each, her real "before" frame cuts to the redesigned room from the identical camera angle.
-- Lamps on in the "after", 6 to 10 seconds, 9:16, music, ready for Instagram and WhatsApp.
-- A subtle Sajao end card. Every shared reel is an ad.
+## Next and later
 
-## Web viewer
-
-Any design opens from a link in a browser as a lighter web build with the photo renders and a simple 3D view. It powers family votes and sharing.
-
-## Later
-
-AR view at true scale on supported phones; photoreal walk-throughs (Gaussian splats) for high-end phones once performance on mid-range devices is proven.
+Web viewer for shared links (Next). AR view and photoreal walk-throughs (Later).

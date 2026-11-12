@@ -1,45 +1,38 @@
 # Commerce and monetization
 
-## Affiliate plumbing
+## Attribution
 
-1. She taps an item. The app calls our redirect service, which logs user, design, product and position with a unique click ID.
-2. The redirect forwards to the retailer through a tracking link carrying that ID.
-3. **The link always opens in a browser tab we control.** Many programs do not track purchases made inside the retailer's own app (for example, Cuelinks' Pepperfry campaign has app tracking disabled), so the retailer app must not take over.
-4. The retailer reports the order to the network or brand; it is confirmed after the return window, often 30 to 60 days.
-5. A daily job reconciles reports with click IDs to give revenue per design, which is also a signal for v2 learning.
+Furniture is often bought days later, frequently inside the retailer's own app, where many programs do not track. Attribution will leak; the design reduces the leak:
 
-Rules:
+1. **Brand coupon codes first.** For direct brand deals, each design shows a Sajao code. A code works on any device, in any app, days later. This is the preferred route.
+2. **Tracked links second.** Every buy tap goes through our redirect service (click ID with user, design, product, position) and opens in a browser tab we control so the retailer app does not take over.
+3. **Re-engagement.** Saved designs, price-drop and restock alerts bring her back through a fresh tracked link.
+4. **Daily reconciliation** of network and brand reports against click IDs and code redemptions gives revenue per design.
 
-- Each product carries more than one possible route where available; campaigns pause without notice.
-- Each campaign's allowed traffic sources are checked before listing; app traffic must be allowed.
-- No single retailer above 40% of revenue.
-- Affiliate links are disclosed in the app.
+Rules: more than one route per product where available; app traffic must be allowed by each campaign; no single retailer above 40% of revenue; affiliate links disclosed in the app.
 
-## What published rates suggest (confirm on official rate cards)
+## Published terms seen (confirm on official rate cards)
 
 | Program | Terms seen | Notes |
 | --- | --- | --- |
-| Pepperfry via Cuelinks | Up to 315 rupees per sale, 30-day cookie | App tracking disabled; web and mobile web only |
-| Amazon India | Low single-digit percent for furniture and home; 24-hour window | Needs 3 sales in 180 days to stay open |
+| Pepperfry via Cuelinks | Up to 315 rupees per sale, 30-day cookie | App tracking disabled |
+| Amazon India | Low single-digit percent for home; 24-hour window | 3 sales needed in 180 days |
 | Flipkart | 5 to 8% on home furnishings, per-order caps | 7-day window |
-| D2C brands direct | Negotiable; longer attribution | Coupon code or server postback |
-
-Marketplace commission alone is thin. Direct deals with curated brands pay better and bring cleaner data and 3D assets.
+| D2C brands direct | Negotiable; coupon codes | Best attribution |
 
 ## Launch
 
-Everything is free at launch, marketed as a launch offer. **No paywall, lock, upgrade prompt or paid badge appears anywhere in the app.** Entitlements are built into the backend and switched off; they can be turned on remotely, without an app update, after about a month.
+Free, through invites and a waitlist. Invites control load and cost and build anticipation. **No paywall, lock, upgrade prompt or paid badge appears anywhere in the app.** If traffic exceeds budget, funding is added; the app never stops suddenly (see the fallback chain in [tech stack and cost](15-tech-stack-and-cost.md)).
 
-## Later revenue (internal planning, not shown in the app at launch)
+## Later revenue (internal planning, not in the app at launch)
 
 | Line | Draft terms |
 | --- | --- |
-| Room Pass | About 199 rupees one-time per room: more variations, regenerate, rearrange mode, strict Vastu, HD renders |
-| Pro | About 199 rupees a month or 999 rupees a year: unlimited rooms, for frequent users and professionals |
-| Free tier after activation | Three designs, swap and basic drag stay free, since that is what builds trust to buy |
+| Room Pass | About 199 rupees one-time per room |
+| Pro | About 199 rupees a month or 999 rupees a year |
+| Free tier after activation | Three designs, swap and basic drag |
 | Live Vastu expert | Paid sessions |
-| Service leads | Painters, carpenters for custom pieces, interior firms |
-| Sponsored placement | Clearly labelled; never allowed to break fit, budget or style filters |
-| B2B | Brand demand insights, builder partnerships, white-label engine |
+| Service leads | Painters, carpenters, interior firms |
+| Sponsored placement | Labelled; never breaks fit, budget or style filters |
 
-Redecorating is occasional, so a per-room pass sits alongside the subscription to avoid one-month subscribe-and-cancel. Apple collects 18% GST on digital sales in India, which affects net pricing. Digital features use Apple and Google in-app billing.
+The paywall is switched on only after the phase 2 gate in the roadmap. Digital features use Apple and Google in-app billing; Apple collects 18% GST on digital sales in India.
