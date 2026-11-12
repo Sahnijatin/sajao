@@ -46,4 +46,4 @@ No fixed time is promised. Results are staged (3D first, photo render after). GP
 | Storage and delivery | Under 1 rupee | Under 1 rupee |
 | **Total** | **About 8 to 15 rupees** | **About 12 to 30 rupees** |
 
-Launch cloud budget: 5,000 to 20,000 rupees a month, with invites, per-user daily caps, spend alerts, and the fallback chain. If demand exceeds it, funding is added rather than turning users away.
+Launch cloud budget: 5,000 to 20,000 rupees a month. Public launch means demand is not gated, so spend is controlled by spend alerts, soft per-user daily limits that move heavy users down the fallback chain rather than blocking them, and the fallback chain itself. If demand exceeds budget, funding is added rather than turning users away.

@@ -22,7 +22,9 @@ Rules: more than one route per product where available; app traffic must be allo
 
 ## Launch
 
-Free, through invites and a waitlist. Invites control load and cost and build anticipation. **No paywall, lock, upgrade prompt or paid badge appears anywhere in the app.** If traffic exceeds budget, funding is added; the app never stops suddenly (see the fallback chain in [tech stack and cost](15-tech-stack-and-cost.md)).
+Public release on the App Store and Google Play, free for everyone, followed by marketing. There is no invite or waitlist system in the app. Closed testing groups before release (including the Google Play closed test) are run outside the app through the stores' own testing tools.
+
+**No paywall, lock, upgrade prompt or paid badge appears anywhere in the app.** If traffic exceeds budget, funding is added; the app never stops suddenly (see the fallback chain in [tech stack and cost](15-tech-stack-and-cost.md)).
 
 ## Later revenue (internal planning, not in the app at launch)
 

@@ -23,7 +23,7 @@ They describe intended design, not working software. Anything marked **(unvalida
 
 | Tier | Scope |
 | --- | --- |
-| **Must (v1 launch)** | Scan plus tape measurement on any phone; living room and bedroom; curated catalog of a few hundred items; AI designer plus solver plus verifier with the relaxation order; 3D editor plus 2D plan fallback; photo render when a design is opened; buy list with affiliate links; room-level Vastu; simple share reel; event logging; model gateway with fallbacks; invite-based launch |
+| **Must (v1 launch)** | Scan plus tape measurement on any phone; living room and bedroom; curated catalog of a few hundred items; AI designer plus solver plus verifier with the relaxation order; 3D editor plus 2D plan fallback; photo render when a design is opened; buy list with affiliate links; room-level Vastu; simple share reel; event logging; model gateway with fallbacks |
 | **Next** | Whole-home Vastu from a floor plan photo; chat; web viewer; photo mode for the weakest phones; the three self-trained taste models; multiple 3D viewer tiers; entitlements (switched off) |
 | **Later** | AR view; reconstruction-only measuring (if phase 0 proves it); photoreal walk-throughs; service leads; flat-type library; v2 learning |
 
@@ -31,4 +31,4 @@ They describe intended design, not working software. Anything marked **(unvalida
 
 - India, consumer app, Android and iOS, any phone with a camera.
 - Categories: lighting, paint and wall finishes, flooring and rugs, curtains, seating, beds, tables, storage, wall art, decor, plants.
-- Free at launch, through invites. No paywall appears anywhere in the app.
+- Public launch on the App Store and Google Play, free for everyone. No invite system and no paywall anywhere in the app.

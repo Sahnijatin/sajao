@@ -20,7 +20,7 @@ Each gate has a number. The next phase does not start until the gate passes or a
 
 ### Phase 1: v1 launch (the Must tier)
 
-Gate: 30 or more beta users complete a design, including on the budget Android; crash-free sessions 99% or more; cost per room within the default-path estimate; first tracked purchases.
+Gate before public release: 30 or more closed-test users complete a design, including on the budget Android; crash-free sessions 99% or more; cost per room within the default-path estimate; first tracked purchases.
 
 ### Phase 2: after launch
 
@@ -40,7 +40,7 @@ Gate: a new model must beat the current one on every evaluation slice with confi
 | Attribution leaks to retailer apps and later purchases | Coupon codes first, controlled browser tab, re-engagement links |
 | Catalog is the bottleneck | Started as its own workstream now; few hundred items for v1 |
 | Permissions for brand images and creator content | Logged before use; brands via programs or deals that cover image use |
-| Cost spike at launch | Invites, caps, fallback chain, funding |
+| Cost spike after public launch and marketing | Spend alerts, soft per-user limits, fallback chain, funding |
 | Cold starts | Staged reveal, warm peak hours, memory snapshots |
 | Vastu direction errors | Three-source direction, approximate flag, expert-reviewed rules |
 | Model licenses | Recorded and reviewed before use |
@@ -63,7 +63,7 @@ Gate: a new model must beat the current one on every evaluation slice with confi
 | Own trained models | Next tier | Need vote and curation data that does not exist yet |
 | Design system | LiveMap tokens, motion and haptics | Proven premium look; consistent across products |
 | 3D renderer | react-native-filament | Native performance on budget phones |
-| Launch | Free, invite-based, no paywall in the app | Control load and cost, build anticipation |
+| Launch | Public on both stores, free, no invites, then marketing | Founder decision: maximum reach from day one; testing groups run separately through store tools |
 | Fallbacks | Gateway chain down to degraded mode | The app must never stop suddenly |
 | Cloud budget | 5,000 to 20,000 rupees a month, funding added if needed | Founder decision |
 

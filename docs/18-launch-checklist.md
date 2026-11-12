@@ -10,8 +10,8 @@
 - [x] Apple Developer Program
 - [x] Google Play Console
 - [ ] Confirm whether the Play account is personal or organisation (personal needs the 12-tester, 14-day closed test)
-- [ ] Line up 12 or more closed testers with Android phones
-- [ ] Domain, landing page and waitlist
+- [ ] Closed testing group of 12 or more Android testers (Play Console) and iOS testers (TestFlight), run outside the app
+- [ ] Domain and landing page
 - [ ] Name, domain, store and trademark checks
 
 ## Catalog and affiliates
@@ -45,6 +45,7 @@
 
 - [ ] Phase 0 and phase 1 gates met
 - [ ] Vastu rule set reviewed by the expert consultant
-- [ ] Invites, caps, spend alerts and fallback chain live
-- [ ] No paywall visible anywhere
+- [ ] Spend alerts, soft per-user limits and fallback chain live
+- [ ] No paywall and no invite system anywhere in the app
 - [ ] Store listings with a before and after preview video
+- [ ] Marketing plan ready for launch day
