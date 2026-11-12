@@ -1,54 +1,46 @@
 # AI models and evaluation
 
-The rule: AI decides taste and appearance; code decides geometry and fit. Every model output passes a measurable check before she sees it.
+AI decides taste and appearance; code decides geometry and fit. Every model output passes a measurable check before she sees it.
 
-## Models in v1
+## Models
 
-| Job | Model | License | Runs | Ours or pretrained |
-| --- | --- | --- | --- | --- |
-| Metric reconstruction | MapAnything or VGGT (benchmark both) | Apache 2.0 release; commercial checkpoint | GPU worker | Pretrained |
-| Depth assist | Depth Anything 3 Base, Small or Metric | Apache 2.0 | GPU worker | Pretrained |
-| Segmentation of walls, floor, items | SAM 3 | SAM license (commercial use allowed) | GPU worker | Pretrained |
-| Image to 3D for products | TRELLIS.2, SAM 3D Objects | MIT; SAM license | GPU worker, offline | Pretrained |
-| Style and product embeddings | Open image and text embedding model | Permissive, to confirm | GPU or CPU | Pretrained |
-| Brief parsing, product extraction, floor plan reading, AI designer, chat | Language and vision models behind one internal gateway | API terms | Cloud API | Pretrained |
-| Photo render | Qwen-Image-Edit-2509 or hosted Gemini image model | Apache 2.0; API terms | GPU worker or API | Pretrained |
-| AI judge | Vision model with a fixed rubric | API terms | Cloud API | Pretrained, calibrated by us |
-| Taste ranker | Small network on frozen image embeddings | Ours | CPU | **Trained by us** |
-| Compatibility ("goes together") | Small pairwise model on product embeddings | Ours | CPU | **Trained by us** |
-| Catalog checker | Small classifier | Ours | CPU | **Trained by us** |
-| Layout rules, archetypes, Vastu rules | Hand-authored | Ours | CPU | **Authored by us** |
+| Job | Model | License | Tier |
+| --- | --- | --- | --- |
+| Camera positions and rough shape | MapAnything or VGGT (benchmark both) | Apache 2.0 release; commercial checkpoint | Must |
+| Depth assist | Depth Anything 3 Base, Small or Metric | Apache 2.0 | Must, if it helps in phase 0 |
+| Surface and item segmentation | SAM 3 | SAM license (commercial use allowed) | Must |
+| Image to 3D for products | TRELLIS.2, SAM 3D Objects | MIT; SAM license | Must (offline) |
+| Style and product embeddings | Open embedding model | Permissive, to confirm | Must |
+| Brief parsing, product extraction, AI designer | Language models behind the model gateway | Provider terms | Must |
+| Photo render harmonization | Qwen-Image-Edit-2509 or hosted Gemini image model | Apache 2.0; provider terms | Must |
+| Floor plan reading, chat, AI judge | Vision and language models | Provider terms | Next |
+| Taste ranker, compatibility model, catalog checker | Small models trained by us | Ours | Next |
+| Layout rules, archetypes, Vastu rules | Hand-authored | Ours | Must |
 
-Every license is re-checked before a model enters the pipeline.
+Every license is recorded and re-checked before a model enters the pipeline. All model calls go through the gateway described in [tech stack and cost](15-tech-stack-and-cost.md), which handles fallbacks.
 
-## What we train before launch, and from what
+## Training data for our own models (Next tier)
 
-- **Taste ranker.** Learns "which room looks better" from blind pairwise votes: the reference library, an expert reviewer, and 50 to 100 people voting on pairs. A few thousand votes is enough. Trains in minutes on a CPU.
-- **Compatibility model.** Learns which lamp suits which sofa and rug from curated looks: brand lookbooks, designer sets, and the "after" frames of reference reels.
-- **Catalog checker.** Learns from products approved or rejected during curation.
+- **Taste ranker:** blind pairwise votes on our own renders, the reference library, and expert review.
+- **Compatibility model:** curated looks from brand lookbooks (with brand permission), designer sets, and reference reels (with creator permission).
+- **Catalog checker:** products approved or rejected during curation.
 
-These models only judge taste. They can make a design less attractive, never one that does not fit.
+Permissions for every external source are logged before use.
 
-## Evaluation suite (runs on every change)
+## Evaluation tiers
 
-| Set | Measures | Scored by |
-| --- | --- | --- |
-| Golden rooms: tape-measured, scanned on every phone tier | Wall, door and window error after the tape check; orientation error | Automatic |
-| Layout set: 100+ real rooms | Hard-rule pass rate, archetype coverage, quality | Automatic, plus a designer rubric on a sample |
-| Taste test | Preference for our design versus a reference | Blind pairwise human votes |
-| Render fidelity | Product likeness in photo renders | Embedding similarity, plus human spot checks |
-| Catalog audit | Dimension accuracy | Random 5% checked against brand pages |
-| Vastu cases | Rules fire correctly | Expert-approved test rooms |
-| AI judge calibration | Agreement between the judge and human votes | Measured; the judge is trusted only as far as it agrees |
+| Tier | Runs | Contents | Blocks merge? |
+| --- | --- | --- | --- |
+| Fast | Every commit, in CI | Schema round trips, solver and verifier property tests, relaxation order tests, fixed-room design tests, Vastu rule cases | Yes |
+| Nightly | Scheduled | Reconstruction benchmark on the golden set, render outline and likeness checks, cost per room | No; regressions are reviewed |
+| Release | Before each store release | Blind human votes, catalog audit, device matrix run | Yes, for the release |
 
-A change that makes any slice worse does not ship. Slices: room type, room size, lighting, phone tier, city.
+Nightly and release measurements are compared with confidence intervals, not single numbers, so noise does not block work.
 
-## What we are deliberately not doing
+## Not doing
 
-- Generating the whole room with an image model: that is how competitors invent furniture and change rooms.
-- Training our own reconstruction or image model: pretrained open models are already better than what we could train.
-- Fine-tuning a large language model before there is real usage data.
+Generating whole rooms with an image model; training our own reconstruction or image model; fine-tuning a large language model before real usage data exists.
 
 ## v2: learning from users
 
-Swaps, drags, saves, purchases and which design won tune the taste ranker and soft scores, through a gated pipeline: train a candidate, score it on the evaluation suite and replayed history, run it in shadow, then on a small share of traffic, promote or roll back. Scans from LiDAR iPhones paired with camera-only results tune the universal capture path. Hard rules and the verifier never change from learning.
+Swaps, drags, saves, purchases and winning designs tune the taste ranker and soft scores through a gated pipeline (candidate, evaluation, shadow, small traffic share, promote or roll back). Hard rules and the verifier never change from learning.

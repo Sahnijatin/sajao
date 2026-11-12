@@ -1,20 +1,29 @@
 # Engineering process
 
-How the build is run so quality holds as it grows.
+The process is set up before any product code is written.
 
-1. **Contracts first.** JSON schemas for the room, product, brief and design live in `packages/schemas` and are versioned. App, API and engine validate against them. A schema change is its own reviewed change.
-2. **Golden set from the first week.** 10 to 20 real rooms, tape-measured, each scanned on the device matrix. It grows toward 50 before launch, weighted to typical Indian flats.
-3. **Evaluation runs on every change.** The suite in [AI models and evaluation](11-ai-models-and-evaluation.md) runs in CI. Any slice getting worse blocks the change.
-4. **Decision log.** Every "chose X over Y" goes into the table in [roadmap, risks and decisions](16-roadmap-risks-decisions.md) with one line of reason.
-5. **Small branches.** One feature per branch, merged when tests pass. No long-lived branches.
-6. **Tests where it matters.** The solver and verifier get property tests (random rooms and items: the verifier must catch every planted violation). Schemas get round-trip tests. Capture gets the benchmark.
-7. **Device matrix.** iPhone 17 Pro (LiDAR and RoomPlan), iPhone 16, iPhone 13, a mid-range ARCore Android, and an old budget Android not on ARCore's supported list (3 to 4 GB RAM). Every capture or rendering change is tried on the budget Android.
-8. **Observability from the first build.** Crash reporting, product analytics, cost per room per step, and model call logs through the gateway.
-9. **Cost guardrails.** Per-user daily caps, spend alerts, automatic soft limit.
-10. **Feature switches.** Entitlements, new models and risky features ship behind remote switches.
-11. **Privacy by default.** Raw video deleted after reconstruction; faces and personal photos blurred in anything stored; consent before any data is used for training.
-12. **Rules file.** [ENGINEERING.md](../ENGINEERING.md) holds the hard rules every change follows.
+## Before the first line of product code
+
+- [ ] Branch protection on `main`: changes arrive through pull requests; fast-tier CI must pass.
+- [ ] CI running the fast tier (schemas, solver and verifier property tests, relaxation order, fixed-room design tests, Vastu cases).
+- [ ] Schemas for room, product, brief and design in `packages/schemas`.
+- [ ] Device matrix in hand: iPhone 17 Pro (LiDAR), iPhone 16, iPhone 13, a mid-range ARCore Android, an old budget Android not on ARCore's supported list (3 to 4 GB RAM).
+
+## Working rules
+
+1. **Build to the cut line.** Only the current tier in [principles and scope](01-bottom-line.md). Deep before wide.
+2. **Contracts first.** Schema changes are their own reviewed change.
+3. **Golden set grows weekly** toward 50 rooms, weighted to typical Indian flats.
+4. **Evaluation in three tiers** as defined in [AI models and evaluation](11-ai-models-and-evaluation.md). Only the fast tier blocks merges; nightly regressions are reviewed with confidence intervals.
+5. **Decision log with reasons.** Every "chose X over Y" gets one line of reason in the roadmap doc.
+6. **Small pull requests.** One feature per branch.
+7. **Unvalidated claims stay marked** until phase 0 data replaces them with measured numbers.
+8. **Observability from the first build:** crashes, analytics, cost and latency per step, gateway logs.
+9. **Cost guardrails:** per-user caps, spend alerts, fallback chain tested monthly.
+10. **Feature switches** for entitlements, new models and risky features.
+11. **Privacy by default:** raw video deleted after processing, blurring, consent before training use.
+12. **Permissions log:** every brand and creator source and the permission covering it.
 
 ## Release flow
 
-Internal builds go to the device matrix, then a closed beta, then the stores. On Google Play, a personal developer account created after November 2023 must run a closed test with at least 12 opted-in testers for 14 continuous days before production access; plan the beta to cover it.
+Internal builds on the device matrix, then closed beta, then stores. On Google Play, a personal developer account created after November 2023 needs a closed test with at least 12 opted-in testers for 14 continuous days before production access.

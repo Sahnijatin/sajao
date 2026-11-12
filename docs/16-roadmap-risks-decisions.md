@@ -1,48 +1,70 @@
 # Roadmap, risks and decisions
 
-## Phases
+## Phases and gates
 
-Each phase has a gate. The next does not start until it passes.
+Each gate has a number. The next phase does not start until the gate passes or a decision log entry explains why not.
 
-| Phase | Build | Gate |
-| --- | --- | --- |
-| 0. Proof spikes | Golden set of measured rooms scanned on every phone tier; reconstruction benchmark of the candidate models; catalog v0 with curated products, 3D and links; design engine on real rooms | Wall error within target after the tape check. 3D looks right for 80% of items. Designs preferred to references in blind votes at an agreed rate. |
-| 1. v1 launch | Everything in [principles and scope](01-bottom-line.md): capture with guides, both room types, curated catalog, design engine, reveal, editor, Vastu, buy list, share reel, event logging, entitlements switched off | Real users finish designs on budget phones. Cost per room measured. First tracked purchases. |
-| 2. After launch | Enable Room Pass and Pro; live Vastu expert; AR view; service leads; more style profiles; flat-type library | Revenue per room exceeds cost per room by a clear multiple |
-| 3. v2 learning | Gated retraining of the taste ranker and soft scores from usage; capture tuning from LiDAR pairs; photoreal walk-throughs on high-end phones | New models beat current ones on every evaluation slice |
+### Phase 0: proof spikes
+
+| Spike | Gate |
+| --- | --- |
+| Golden set | At least 20 rooms measured to truth, scanned on every device matrix phone |
+| Tape-entry room model | Median dimension error 1% or less, 90th percentile 2% or less |
+| Door and window positions from scan | Median error 10 cm or less after confirm |
+| Reconstruction-only dimensions (experiment) | Reported per phone tier; tape becomes optional on a tier only at median 1% or less and 90th percentile 2% or less |
+| Catalog v0 | 100 curated items with 3D; 80% or more pass visual review; every item has a permitted affiliate route |
+| Design engine | On 50 golden rooms, at least 90% produce a verified design without relaxation step 5; every room produces an honest result |
+| Taste | Our designs preferred over references in at least 50% of at least 200 blind votes |
+| Photo render | At least 95% of items pass the outline check (85% overlap) |
+| Cost and latency | Cost per room and stage latencies measured on the default path |
+
+### Phase 1: v1 launch (the Must tier)
+
+Gate before public release: 30 or more closed-test users complete a design, including on the budget Android; crash-free sessions 99% or more; cost per room within the default-path estimate; first tracked purchases.
+
+### Phase 2: after launch
+
+Next-tier features; paywall switched on only when revenue per room is at least 3 times cost per room over 30 days, or by an explicit decision log entry.
+
+### Phase 3: v2 learning
+
+Gate: a new model must beat the current one on every evaluation slice with confidence intervals not overlapping a regression.
 
 ## Risks
 
-| Risk | Why it matters | Mitigation |
-| --- | --- | --- |
-| Camera-only accuracy on budget Androids | Most of India | Tape check on every scan, two candidate models, ARCore poses when present, manual fallback |
-| Renders drift from real products | Breaks trust | Geometry-conditioned renders, per-item fidelity check, 3D fallback |
-| Affiliate tracking lost in retailer apps | Zero commission | Forced browser tab, app traffic rules checked, multiple routes |
-| Curated brands lack affiliate programs | Thin catalog | Brand-run programs, direct deals, coupon tracking |
-| Catalog data quality | Wrong sizes break the promise | Verified flag, range checks, human approval, audits |
-| 3D asset quality | Ugly models kill desire | Fidelity gate, human check on hero items, cutouts for small decor |
-| Vastu direction errors | Wrong advice | Three-source direction, approximate flag, expert-reviewed rules |
-| GPU and model cost during free launch | Budget overrun | Render on open only, self-hosting, per-user caps, spend alerts |
-| Model licenses | Some weights forbid commercial use | License review before any model enters the pipeline |
-| Privacy | Videos of homes are sensitive | Consent, delete raw video after reconstruction, blur faces and personal photos, India data protection law |
+| Risk | Mitigation |
+| --- | --- |
+| Reconstruction weak on white walls and glossy tile | Tape sets dimensions; scan only proposes; walking loop for parallax |
+| Small rooms cannot fit the brief | Relaxation order and honest result |
+| Renders drift from products | 3D-first composite, low-strength harmonization, outline and likeness checks, 3D fallback, illustrative label |
+| Attribution leaks to retailer apps and later purchases | Coupon codes first, controlled browser tab, re-engagement links |
+| Catalog is the bottleneck | Started as its own workstream now; few hundred items for v1 |
+| Permissions for brand images and creator content | Logged before use; brands via programs or deals that cover image use |
+| Cost spike after public launch and marketing | Spend alerts, soft per-user limits, fallback chain, funding |
+| Cold starts | Staged reveal, warm peak hours, memory snapshots |
+| Vastu direction errors | Three-source direction, approximate flag, expert-reviewed rules |
+| Model licenses | Recorded and reviewed before use |
+| Privacy | Consent, raw video deleted after processing, blurring |
 
 ## Decision log
 
-| Decision | Choice |
-| --- | --- |
-| Market and devices | India, any phone, no dependence on hardware |
-| Room types at launch | Living room and bedroom |
-| Capture | One sweep plus a doorway sweep, one tape measurement, server reconstruction |
-| Geometry authority | Measured geometry and code; never a model |
-| Design approach | AI designer plus archetypes plus solver plus verifier plus critique loop |
-| Result presentation | Her photo, redesigned, with fidelity checks; 3D for editing |
-| Catalog | Curated brands with app-safe affiliate routes; marketplaces fill gaps |
-| Vastu | Room-level and whole-home; three-source direction; expert-reviewed rules |
-| Training in v1 | Small taste, compatibility and catalog models only; retraining from usage in v2 |
-| Design system | LiveMap tokens, motion and haptics on both platforms |
-| 3D renderer | react-native-filament |
-| Launch pricing | Free; no paywall shown; entitlements off and remotely switchable |
-| Later pricing | Room Pass plus Pro subscription |
-| Cloud budget | 5,000 to 20,000 rupees a month with caps |
+| Decision | Choice | Reason |
+| --- | --- | --- |
+| Market and devices | India, any phone | Most target users are on Android, many on older phones |
+| Room types | Living room and bedroom | Highest spend and strongest Vastu demand; chosen by the founder |
+| Dimensions | Tape entry on a scan-drafted plan | Camera reconstruction cannot back fit claims on typical Indian surfaces; tape is about 1 cm accurate on every phone |
+| Role of the scan | Shape proposal, openings, items, masks, camera positions | Keeps the visual magic without trusting it for numbers |
+| Design approach | AI designer, archetypes, solver, verifier, relaxation order | Research shows models need grounded checks; archetypes cover repeated Indian layouts |
+| Infeasible rooms | Honest result instead of a forced design | A design that fails the verifier is never shown |
+| Result presentation | 3D first, illustrative photo render after | Exactness lives in 3D; renders are for desire |
+| Catalog | Curated brands with permitted, app-safe routes | Taste is the product; permissions are required for images |
+| Attribution | Coupon codes first, tracked links second | Codes survive app switching and delayed purchases |
+| Vastu | Room-level in v1, whole-home next | Room-level needs only the scanned room; whole-home needs plan reading |
+| Own trained models | Next tier | Need vote and curation data that does not exist yet |
+| Design system | LiveMap tokens, motion and haptics | Proven premium look; consistent across products |
+| 3D renderer | react-native-filament | Native performance on budget phones |
+| Launch | Public on both stores, free, no invites, then marketing | Founder decision: maximum reach from day one; testing groups run separately through store tools |
+| Fallbacks | Gateway chain down to degraded mode | The app must never stop suddenly |
+| Cloud budget | 5,000 to 20,000 rupees a month, funding added if needed | Founder decision |
 
 Open: final product name after domain, store and trademark checks.

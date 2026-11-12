@@ -1,38 +1,51 @@
 # Launch checklist
 
+## Repository and process
+
+- [ ] Branch protection on `main` and fast-tier CI
+- [ ] Permissions log started (brands, creators)
+
 ## Accounts
 
 - [x] Apple Developer Program
 - [x] Google Play Console
-- [ ] Confirm whether the Play account is personal or organisation (personal accounts need the 12-tester, 14-day closed test)
-- [ ] Line up 12+ closed testers with Android phones
-- [ ] Domain and landing page (needed for affiliate applications)
+- [ ] Confirm whether the Play account is personal or organisation (personal needs the 12-tester, 14-day closed test)
+- [ ] Closed testing group of 12 or more Android testers (Play Console) and iOS testers (TestFlight), run outside the app
+- [ ] Domain and landing page
 - [ ] Name, domain, store and trademark checks
 
-## Affiliate enrollment
+## Catalog and affiliates
 
-| Where | Gives | Notes |
-| --- | --- | --- |
-| [Cuelinks](https://www.cuelinks.com/campaigns/pepperfry-affiliate-program) | Many Indian merchants in one account | Check each campaign's app traffic rules and status |
-| [vCommission](https://www.vcommission.com/blog/publishers/top-indian-e-commerce-affiliate-programs-with-high-payouts-in-2026/) | Home and decor brands, account manager | Route to custom terms |
-| [EarnKaro](https://earnkaro.com/blog/ikea-affiliate-program) | IKEA India and others | Tracking may not work inside retailer apps |
-| Flipkart Affiliate | Home furnishings | Per-order caps |
-| Amazon Associates India | Largest catalog | Apply close to launch: 3 sales needed within 180 days |
-| Brand programs and direct deals | Curated brands | Shopify affiliate apps, coupon codes, postbacks |
+| Where | Notes |
+| --- | --- |
+| [Cuelinks](https://www.cuelinks.com/campaigns/pepperfry-affiliate-program) | Check each campaign's app traffic rules and status |
+| [vCommission](https://www.vcommission.com/blog/publishers/top-indian-e-commerce-affiliate-programs-with-high-payouts-in-2026/) | Route to custom terms |
+| [EarnKaro](https://earnkaro.com/blog/ikea-affiliate-program) | Tracking may not work inside retailer apps |
+| Flipkart Affiliate | Per-order caps |
+| Amazon Associates India | Apply close to launch: 3 sales needed within 180 days |
+| Brand programs and direct deals | Coupon codes; terms must cover use of product images |
+
+## Creator content
+
+- [ ] Permission from each reference creator before their content is used for training
+
+## Model and provider terms
+
+- [ ] Commercial license recorded for every model
+- [ ] Fallback aggregator terms allow production use for end users
 
 ## Legal and finance
 
 - [ ] PAN and bank account for payouts
-- [ ] Chartered accountant advice on GST and company registration before brand contracts
-- [ ] Privacy policy and consent flows compliant with India's data protection law
+- [ ] Chartered accountant advice on GST and company registration
+- [ ] Privacy policy and consent compliant with India's data protection law
 - [ ] Affiliate disclosure in the app
-- [ ] Commercial license confirmed for every model in the pipeline
 
 ## Product readiness
 
-- [ ] Golden set targets met on every phone tier
-- [ ] Catalog approved, links tested, app traffic allowed on every route
+- [ ] Phase 0 and phase 1 gates met
 - [ ] Vastu rule set reviewed by the expert consultant
-- [ ] Cost caps and spend alerts live
-- [ ] Entitlements switched off; no paywall visible anywhere
-- [ ] Store listings: screenshots, preview video in the before and after format
+- [ ] Spend alerts, soft per-user limits and fallback chain live
+- [ ] No paywall and no invite system anywhere in the app
+- [ ] Store listings with a before and after preview video
+- [ ] Marketing plan ready for launch day
