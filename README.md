@@ -41,4 +41,16 @@ eval/              Golden set tooling, render bake-off, evaluation suite
 docs/              Product and engineering documentation
 ```
 
+## Development
+
+TypeScript packages use pnpm workspaces; Python services use a uv workspace. The same commands run in CI as the fast tier.
+
+```
+pnpm install                    # TypeScript dependencies
+pnpm check                      # lint, format check, typecheck, tests
+uv sync --all-packages          # Python dependencies
+uv run ruff check . && uv run ruff format --check . && uv run mypy && uv run pytest
+python scripts/check_docs.py    # docs hygiene
+```
+
 Proprietary. All rights reserved.

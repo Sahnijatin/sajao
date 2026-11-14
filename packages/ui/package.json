@@ -1,0 +1,6 @@
+{
+  "name": "@sajao/ui",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Theme tokens, components, motion presets, haptic map"
+}

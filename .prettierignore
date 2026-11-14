@@ -1,0 +1,11 @@
+node_modules
+dist
+build
+.expo
+.venv
+pnpm-lock.yaml
+uv.lock
+**/generated/**
+.claude
+docs
+*.md

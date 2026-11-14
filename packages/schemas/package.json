@@ -1,0 +1,6 @@
+{
+  "name": "@sajao/schemas",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Versioned JSON schemas: the contract between app, API and workers"
+}
