@@ -1,0 +1,1898 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sajao.app/v1/bundle.schema.json",
+  "title": "SajaoContract",
+  "description": "Generated from schemas/v1. Do not edit.",
+  "x-top-level": [
+    "Brief",
+    "Capture",
+    "Design",
+    "Event",
+    "Plan",
+    "Product",
+    "Render",
+    "RoomProfile",
+    "ShoppingList",
+    "TasteProfile"
+  ],
+  "$defs": {
+    "AngleDeg": {
+      "type": "number",
+      "minimum": 0,
+      "exclusiveMaximum": 360,
+      "description": "Degrees, 0 inclusive to 360 exclusive."
+    },
+    "Brief": {
+      "title": "Brief",
+      "description": "Per-room choices on top of the taste profile. With the room profile and the catalog, the only input the design engine reads.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "room_profile_id",
+        "taste_profile_id",
+        "created_at",
+        "intent",
+        "budget",
+        "must_haves",
+        "keep_item_ids",
+        "consider_vastu"
+      ],
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "room_profile_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "taste_profile_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "created_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "intent": {
+          "type": "string",
+          "enum": [
+            "refresh",
+            "full_makeover",
+            "rearrange_only"
+          ]
+        },
+        "budget": {
+          "title": "Budget",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "limit",
+            "flexibility"
+          ],
+          "properties": {
+            "limit": {
+              "$ref": "#/$defs/Money"
+            },
+            "flexibility": {
+              "type": "string",
+              "enum": [
+                "strict",
+                "stretch_10"
+              ],
+              "description": "strict is never relaxed; stretch_10 allows up to 10% over."
+            }
+          }
+        },
+        "must_haves": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Product categories that must appear."
+        },
+        "keep_item_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LocalId"
+          },
+          "description": "Existing items in the room profile to keep."
+        },
+        "consider_vastu": {
+          "type": "boolean"
+        }
+      }
+    },
+    "Capture": {
+      "title": "Capture",
+      "description": "Input stage: the photos or video of one room, plus optional tape values.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "user_id",
+        "room_type",
+        "created_at",
+        "media",
+        "device"
+      ],
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "user_id": {
+          "$ref": "#/$defs/Uuid",
+          "description": "Owner. Guest sessions have a user id too."
+        },
+        "room_type": {
+          "$ref": "#/$defs/RoomType"
+        },
+        "created_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "media": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CaptureMedia"
+          },
+          "minItems": 1,
+          "maxItems": 40
+        },
+        "device": {
+          "$ref": "#/$defs/CaptureDevice"
+        },
+        "compass": {
+          "$ref": "#/$defs/CompassReading"
+        },
+        "tape_measurements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TapeMeasurement"
+          }
+        }
+      }
+    },
+    "CaptureDevice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "platform",
+        "tier",
+        "has_ar"
+      ],
+      "properties": {
+        "platform": {
+          "type": "string",
+          "enum": [
+            "ios",
+            "android"
+          ]
+        },
+        "tier": {
+          "type": "string",
+          "enum": [
+            "standard",
+            "low"
+          ],
+          "description": "Device tier detected at launch."
+        },
+        "has_ar": {
+          "type": "boolean"
+        }
+      }
+    },
+    "CaptureMedia": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "origin",
+        "storage_key",
+        "width_px",
+        "height_px",
+        "has_ar_pose"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "photo",
+            "video"
+          ]
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "camera",
+            "gallery"
+          ]
+        },
+        "storage_key": {
+          "$ref": "#/$defs/StorageKey"
+        },
+        "width_px": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height_px": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "duration_s": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Video only."
+        },
+        "sharpness": {
+          "$ref": "#/$defs/UnitScore",
+          "description": "On-device sharpness check result."
+        },
+        "has_ar_pose": {
+          "type": "boolean",
+          "description": "True when an ARKit or ARCore pose is attached. Never required."
+        },
+        "compass_heading_deg": {
+          "$ref": "#/$defs/AngleDeg"
+        }
+      }
+    },
+    "CheckReport": {
+      "description": "The verifier's independent re-check.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "passed",
+        "checked_at",
+        "rules",
+        "budget_ok",
+        "stock_ok"
+      ],
+      "properties": {
+        "passed": {
+          "type": "boolean",
+          "description": "True only when every hard rule, the budget and the stock check pass."
+        },
+        "checked_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "title": "RuleResult",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rule",
+              "kind",
+              "passed"
+            ],
+            "properties": {
+              "rule": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "hard",
+                  "soft"
+                ]
+              },
+              "passed": {
+                "type": "boolean"
+              },
+              "score": {
+                "$ref": "#/$defs/UnitScore"
+              },
+              "detail": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "budget_ok": {
+          "type": "boolean"
+        },
+        "stock_ok": {
+          "type": "boolean"
+        }
+      }
+    },
+    "CheckResult": {
+      "description": "Outcome of one automated check.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "passed"
+      ],
+      "properties": {
+        "passed": {
+          "type": "boolean"
+        },
+        "score": {
+          "$ref": "#/$defs/UnitScore"
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "CompassReading": {
+      "description": "Compass headings averaged across the capture, used for Vastu direction.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mean_heading_deg",
+        "sample_count"
+      ],
+      "properties": {
+        "mean_heading_deg": {
+          "$ref": "#/$defs/AngleDeg"
+        },
+        "sample_count": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "Design": {
+      "title": "Design",
+      "description": "One proposed transformation. The render, the plan and the shopping list are views of this object and must never disagree with it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "room_profile_id",
+        "brief_id",
+        "created_at",
+        "slot",
+        "archetype",
+        "items",
+        "materials",
+        "lighting",
+        "total_cost",
+        "relaxations",
+        "check_report",
+        "explanations"
+      ],
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "room_profile_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "brief_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "created_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "slot": {
+          "type": "string",
+          "enum": [
+            "best_value",
+            "best_match",
+            "bold"
+          ],
+          "description": "Which of the three intents this design fills."
+        },
+        "archetype": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Layout archetype key."
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DesignItem"
+          },
+          "minItems": 1
+        },
+        "materials": {
+          "title": "DesignMaterials",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [],
+          "properties": {
+            "wall_paint": {
+              "$ref": "#/$defs/Material"
+            },
+            "flooring": {
+              "$ref": "#/$defs/Material"
+            }
+          }
+        },
+        "lighting": {
+          "title": "LightingScheme",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "layers"
+          ],
+          "properties": {
+            "layers": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "ambient",
+                  "task",
+                  "accent"
+                ]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          }
+        },
+        "total_cost": {
+          "$ref": "#/$defs/Money",
+          "description": "Sum of the item prices, computed by code from the same items the render shows."
+        },
+        "relaxations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "drop_optional_items",
+              "smaller_products",
+              "switch_archetype",
+              "reduce_walkway",
+              "reduce_program"
+            ]
+          },
+          "uniqueItems": true,
+          "description": "Every relaxation used, in the order applied. Shown on the design."
+        },
+        "check_report": {
+          "$ref": "#/$defs/CheckReport"
+        },
+        "explanations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Why this works, generated from the solver's own scores."
+        }
+      }
+    },
+    "DesignItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "product",
+        "position",
+        "rotation_deg",
+        "placed_by"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "product": {
+          "$ref": "#/$defs/Product",
+          "description": "Snapshot of the product at design time."
+        },
+        "position": {
+          "$ref": "#/$defs/Point2",
+          "description": "Center of the item's footprint in the room frame."
+        },
+        "rotation_deg": {
+          "$ref": "#/$defs/AngleDeg"
+        },
+        "placed_by": {
+          "type": "string",
+          "enum": [
+            "solver",
+            "user"
+          ],
+          "description": "Positions come from the solver or a user drag, never from a generative model."
+        }
+      }
+    },
+    "Dimension": {
+      "description": "A length that is honest about where it came from. Every dimension carries a value, a source and an error band.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value_m",
+        "source",
+        "error_band_m"
+      ],
+      "properties": {
+        "value_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Best value in metres."
+        },
+        "source": {
+          "$ref": "#/$defs/DimensionSource"
+        },
+        "error_band_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Half-width of the error band in metres: the true value is expected within value_m plus or minus error_band_m. The solver adds it as margin."
+        }
+      }
+    },
+    "DimensionSource": {
+      "type": "string",
+      "enum": [
+        "measured",
+        "estimated",
+        "user_confirmed"
+      ],
+      "description": "measured: tape or verified retailer data. estimated: from geometry models or unverified listings. user_confirmed: accepted by the user without a tape value."
+    },
+    "Event": {
+      "title": "Event",
+      "description": "Action stage: one entry in the event log (saves, swaps, buy taps, shares).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "name",
+        "occurred_at",
+        "session_id",
+        "properties"
+      ],
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "maxLength": 64,
+          "description": "Event name from the tracking plan."
+        },
+        "occurred_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "session_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "user_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "platform": {
+          "type": "string",
+          "enum": [
+            "ios",
+            "android",
+            "web"
+          ]
+        },
+        "app_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "room_profile_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "design_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "product_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "position": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Position of the tapped item in its list, for click attribution."
+        },
+        "properties": {
+          "type": "object",
+          "description": "Event-specific properties from the tracking plan.",
+          "additionalProperties": true
+        }
+      }
+    },
+    "ExistingItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "center",
+        "width",
+        "depth",
+        "rotation_deg",
+        "action"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "center": {
+          "$ref": "#/$defs/Point2"
+        },
+        "width": {
+          "$ref": "#/$defs/Dimension"
+        },
+        "depth": {
+          "$ref": "#/$defs/Dimension"
+        },
+        "height": {
+          "$ref": "#/$defs/Dimension"
+        },
+        "rotation_deg": {
+          "$ref": "#/$defs/AngleDeg"
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "keep",
+            "replace",
+            "remove"
+          ],
+          "description": "The user's choice for this item."
+        }
+      }
+    },
+    "Fixture": {
+      "description": "A wall fixture that must stay accessible.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "wall_id",
+        "offset",
+        "mount_height"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "switchboard",
+            "socket",
+            "ac_unit"
+          ]
+        },
+        "wall_id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "offset": {
+          "$ref": "#/$defs/Dimension"
+        },
+        "mount_height": {
+          "$ref": "#/$defs/Dimension"
+        },
+        "width": {
+          "$ref": "#/$defs/Dimension"
+        }
+      }
+    },
+    "HexColor": {
+      "type": "string",
+      "pattern": "^#[0-9a-f]{6}$"
+    },
+    "HttpsUrl": {
+      "type": "string",
+      "pattern": "^https://\\S+$",
+      "maxLength": 2048
+    },
+    "LocalId": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]{1,40}$",
+      "description": "Identifier that is unique inside its parent object, for example a wall or a design item."
+    },
+    "Material": {
+      "description": "Wall paint or flooring, a first-class part of the design.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "color"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "color": {
+          "$ref": "#/$defs/HexColor"
+        },
+        "finish": {
+          "type": "string",
+          "minLength": 1
+        },
+        "product_id": {
+          "$ref": "#/$defs/Uuid"
+        }
+      }
+    },
+    "Money": {
+      "description": "A price. Set only from retailer data, never by a generative model.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "amount_minor"
+      ],
+      "properties": {
+        "currency": {
+          "const": "INR"
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Amount in paise."
+        }
+      }
+    },
+    "Opening": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "wall_id",
+        "offset",
+        "width",
+        "height"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "door",
+            "window"
+          ]
+        },
+        "wall_id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "offset": {
+          "$ref": "#/$defs/Dimension",
+          "description": "Distance along the wall from its start to the near edge of the opening."
+        },
+        "width": {
+          "$ref": "#/$defs/Dimension"
+        },
+        "height": {
+          "$ref": "#/$defs/Dimension"
+        },
+        "sill_height": {
+          "$ref": "#/$defs/Dimension"
+        },
+        "swing": {
+          "description": "Door swing. Its clearance is a hard rule.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hinge",
+            "opens"
+          ],
+          "properties": {
+            "hinge": {
+              "type": "string",
+              "enum": [
+                "start",
+                "end"
+              ]
+            },
+            "opens": {
+              "type": "string",
+              "enum": [
+                "inward",
+                "outward"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Plan": {
+      "title": "Plan",
+      "description": "Spatial view: the dimensioned 2D plan derived from one design and its room profile.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "design_id",
+        "created_at",
+        "verified",
+        "outline",
+        "openings",
+        "items",
+        "clearances"
+      ],
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "design_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "created_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "verified": {
+          "type": "boolean",
+          "description": "False draws the error band as a soft halo."
+        },
+        "outline": {
+          "$ref": "#/$defs/Polygon"
+        },
+        "openings": {
+          "type": "array",
+          "items": {
+            "title": "PlanOpening",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "start",
+              "end"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "door",
+                  "window"
+                ]
+              },
+              "start": {
+                "$ref": "#/$defs/Point2"
+              },
+              "end": {
+                "$ref": "#/$defs/Point2"
+              }
+            }
+          }
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "title": "PlanItem",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "design_item_id",
+              "label",
+              "center",
+              "width_m",
+              "depth_m",
+              "rotation_deg"
+            ],
+            "properties": {
+              "design_item_id": {
+                "$ref": "#/$defs/LocalId"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "center": {
+                "$ref": "#/$defs/Point2"
+              },
+              "width_m": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "depth_m": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "rotation_deg": {
+                "$ref": "#/$defs/AngleDeg"
+              }
+            }
+          }
+        },
+        "clearances": {
+          "type": "array",
+          "items": {
+            "title": "Clearance",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label",
+              "distance",
+              "minimum_m",
+              "ok"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "distance": {
+                "$ref": "#/$defs/Dimension"
+              },
+              "minimum_m": {
+                "type": "number",
+                "minimum": 0
+              },
+              "ok": {
+                "type": "boolean",
+                "description": "True only when the distance minus its error band meets the minimum."
+              }
+            }
+          }
+        }
+      }
+    },
+    "Point2": {
+      "description": "A point on the floor in the room frame, in metres.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x_m",
+        "y_m"
+      ],
+      "properties": {
+        "x_m": {
+          "type": "number"
+        },
+        "y_m": {
+          "type": "number"
+        }
+      }
+    },
+    "Polygon": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Point2"
+      },
+      "minItems": 3,
+      "description": "Closed floor polygon; the last point joins the first."
+    },
+    "Product": {
+      "title": "Product",
+      "description": "A real, curated catalog item. Dimensions, price and stock come from retailer data and checks, never from a generative model.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "source",
+        "sku",
+        "title",
+        "group",
+        "category",
+        "dimensions",
+        "price",
+        "in_stock",
+        "checked_at",
+        "images",
+        "image_use_permitted",
+        "routes"
+      ],
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Catalog source key, as recorded in the catalog sources tracker."
+        },
+        "sku": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The retailer's identifier."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "brand": {
+          "type": "string",
+          "minLength": 1
+        },
+        "group": {
+          "$ref": "#/$defs/ProductGroup"
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Fine category, for example sofa or floor_lamp."
+        },
+        "dimensions": {
+          "title": "ProductDimensions",
+          "description": "Only measured dimensions may sit in tight spots.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "width",
+            "depth",
+            "height"
+          ],
+          "properties": {
+            "width": {
+              "$ref": "#/$defs/Dimension"
+            },
+            "depth": {
+              "$ref": "#/$defs/Dimension"
+            },
+            "height": {
+              "$ref": "#/$defs/Dimension"
+            }
+          }
+        },
+        "color": {
+          "type": "string",
+          "minLength": 1
+        },
+        "material": {
+          "type": "string",
+          "minLength": 1
+        },
+        "style_tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StyleProfile"
+          },
+          "uniqueItems": true
+        },
+        "price": {
+          "$ref": "#/$defs/Money"
+        },
+        "in_stock": {
+          "type": "boolean"
+        },
+        "checked_at": {
+          "$ref": "#/$defs/Timestamp",
+          "description": "When price, stock and link were last checked."
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HttpsUrl"
+          },
+          "minItems": 1
+        },
+        "image_use_permitted": {
+          "const": true,
+          "description": "A product enters the contract only with permission to use its images."
+        },
+        "routes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ProductRoute"
+          },
+          "minItems": 1,
+          "description": "At least one permitted buy or rent route."
+        }
+      }
+    },
+    "ProductGroup": {
+      "type": "string",
+      "enum": [
+        "furniture",
+        "lighting",
+        "decor",
+        "paint",
+        "flooring"
+      ],
+      "description": "Top-level grouping used for the cost breakdown."
+    },
+    "ProductRoute": {
+      "description": "A permitted affiliate or rental route to a product.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "retailer",
+        "url",
+        "price"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "buy",
+            "rent"
+          ]
+        },
+        "retailer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "$ref": "#/$defs/HttpsUrl",
+          "description": "Retailer destination. The app always opens it through the redirect service."
+        },
+        "price": {
+          "$ref": "#/$defs/Money",
+          "description": "Purchase price for buy routes; price per month for rent routes."
+        },
+        "coupon_code": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "Render": {
+      "title": "Render",
+      "description": "Visualisation stage: an image derived from one design. Always labelled illustrative.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "design_id",
+        "created_at",
+        "kind",
+        "quality",
+        "source_media_id",
+        "image",
+        "illustrative"
+      ],
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "design_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "created_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "guided_photo",
+            "fallback_3d"
+          ],
+          "description": "guided_photo is a guided edit of the user's own photo; fallback_3d is the clean 3D render shown when checks fail."
+        },
+        "quality": {
+          "type": "string",
+          "enum": [
+            "preview_1k",
+            "full_2k"
+          ]
+        },
+        "source_media_id": {
+          "$ref": "#/$defs/Uuid",
+          "description": "The capture media this render is seen from."
+        },
+        "image": {
+          "title": "RenderImage",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "storage_key",
+            "width_px",
+            "height_px"
+          ],
+          "properties": {
+            "storage_key": {
+              "$ref": "#/$defs/StorageKey"
+            },
+            "width_px": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "height_px": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "illustrative": {
+          "const": true,
+          "description": "Every render carries the illustrative label."
+        },
+        "model": {
+          "title": "ModelRef",
+          "description": "Pinned model that produced a guided photo render.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "provider",
+            "name",
+            "version"
+          ],
+          "properties": {
+            "provider": {
+              "type": "string",
+              "minLength": 1
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "checks": {
+          "title": "RenderChecks",
+          "description": "Required for guided_photo renders, enforced by the render step: a guided photo reaches a user only when all four pass.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "structure",
+            "grounding",
+            "likeness",
+            "aesthetic"
+          ],
+          "properties": {
+            "structure": {
+              "$ref": "#/$defs/CheckResult"
+            },
+            "grounding": {
+              "$ref": "#/$defs/CheckResult"
+            },
+            "likeness": {
+              "$ref": "#/$defs/CheckResult"
+            },
+            "aesthetic": {
+              "$ref": "#/$defs/CheckResult"
+            }
+          }
+        }
+      }
+    },
+    "RoomDirection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "north_deg",
+        "confidence",
+        "sources"
+      ],
+      "properties": {
+        "north_deg": {
+          "$ref": "#/$defs/AngleDeg",
+          "description": "Compass bearing of the room frame's positive y axis."
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "approximate",
+            "confirmed"
+          ],
+          "description": "confirmed only when more than the compass agrees. Strict Vastu needs confirmed."
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "compass",
+              "main_door_confirmation"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "RoomLight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "natural_light"
+      ],
+      "properties": {
+        "natural_light": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "main_direction_deg": {
+          "$ref": "#/$defs/AngleDeg"
+        }
+      }
+    },
+    "RoomProfile": {
+      "title": "RoomProfile",
+      "description": "Understanding stage: the room as a scene graph. Geometry models estimate, tape verifies; every dimension carries a value, a source and an error band.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "capture_id",
+        "room_type",
+        "created_at",
+        "verification",
+        "floor_polygon",
+        "walls",
+        "ceiling_height",
+        "openings",
+        "fixtures",
+        "existing_items",
+        "direction",
+        "scale"
+      ],
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "capture_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "room_type": {
+          "$ref": "#/$defs/RoomType"
+        },
+        "created_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "verification": {
+          "type": "string",
+          "enum": [
+            "estimated",
+            "verified"
+          ],
+          "description": "verified only when tape values cover the room's key dimensions."
+        },
+        "floor_polygon": {
+          "$ref": "#/$defs/Polygon"
+        },
+        "walls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Wall"
+          },
+          "minItems": 3
+        },
+        "ceiling_height": {
+          "$ref": "#/$defs/Dimension"
+        },
+        "openings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Opening"
+          }
+        },
+        "fixtures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Fixture"
+          }
+        },
+        "existing_items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ExistingItem"
+          }
+        },
+        "light": {
+          "$ref": "#/$defs/RoomLight"
+        },
+        "direction": {
+          "$ref": "#/$defs/RoomDirection"
+        },
+        "scale": {
+          "$ref": "#/$defs/ScaleEvidence"
+        }
+      }
+    },
+    "RoomType": {
+      "type": "string",
+      "enum": [
+        "living_room",
+        "bedroom"
+      ]
+    },
+    "ScaleEvidence": {
+      "description": "Independent scale anchors and whether they agree.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "anchors",
+        "anchors_agree",
+        "needs_tape_value"
+      ],
+      "properties": {
+        "anchors": {
+          "type": "array",
+          "items": {
+            "title": "ScaleAnchor",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "implied_scale"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "geometry_model",
+                  "door_height",
+                  "switchboard_height",
+                  "ceiling_prior",
+                  "tile_grid",
+                  "tape"
+                ]
+              },
+              "implied_scale": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "description": "Scale factor this anchor implies for the reconstruction."
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "anchors_agree": {
+          "type": "boolean",
+          "description": "Agreement tightens error bands; disagreement widens them."
+        },
+        "needs_tape_value": {
+          "type": "boolean",
+          "description": "True when the app should ask for one tape value."
+        }
+      }
+    },
+    "SchemaVersion": {
+      "type": "string",
+      "pattern": "^1\\.[0-9]+$",
+      "description": "Contract version of the object. Minor versions only add optional fields."
+    },
+    "ShoppingList": {
+      "title": "ShoppingList",
+      "description": "Commerce stage: the buyable view of one design. Totals come from the same items the render shows.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "design_id",
+        "created_at",
+        "checked_at",
+        "lines",
+        "breakdown",
+        "total",
+        "within_budget",
+        "all_in_stock"
+      ],
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "design_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "created_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "checked_at": {
+          "$ref": "#/$defs/Timestamp",
+          "description": "When budget and stock were last re-checked."
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "title": "ShoppingLine",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "design_item_id",
+              "product_id",
+              "title",
+              "group",
+              "price",
+              "in_stock",
+              "routes"
+            ],
+            "properties": {
+              "design_item_id": {
+                "$ref": "#/$defs/LocalId"
+              },
+              "product_id": {
+                "$ref": "#/$defs/Uuid"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "group": {
+                "$ref": "#/$defs/ProductGroup"
+              },
+              "price": {
+                "$ref": "#/$defs/Money"
+              },
+              "in_stock": {
+                "type": "boolean"
+              },
+              "routes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/ProductRoute"
+                },
+                "minItems": 1
+              },
+              "cheaper_alternative_product_id": {
+                "$ref": "#/$defs/Uuid"
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "breakdown": {
+          "type": "array",
+          "items": {
+            "title": "GroupSubtotal",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "group",
+              "subtotal"
+            ],
+            "properties": {
+              "group": {
+                "$ref": "#/$defs/ProductGroup"
+              },
+              "subtotal": {
+                "$ref": "#/$defs/Money"
+              }
+            }
+          }
+        },
+        "paint_litres": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Estimated from wall area."
+        },
+        "total": {
+          "$ref": "#/$defs/Money"
+        },
+        "within_budget": {
+          "type": "boolean"
+        },
+        "all_in_stock": {
+          "type": "boolean"
+        }
+      }
+    },
+    "StorageKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Object key in the media store. Never a public URL; clients receive signed URLs."
+    },
+    "StyleProfile": {
+      "type": "string",
+      "enum": [
+        "modern_indian",
+        "warm_luxe",
+        "japandi",
+        "warm_maximalist",
+        "eclectic_retro",
+        "minimal_wabi_sabi"
+      ],
+      "description": "The six launch style profiles."
+    },
+    "TapeMeasurement": {
+      "description": "An optional value read from a tape by the user.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "value_m"
+      ],
+      "properties": {
+        "target": {
+          "type": "string",
+          "enum": [
+            "wall_length",
+            "ceiling_height",
+            "door_height",
+            "door_width",
+            "window_width",
+            "other"
+          ]
+        },
+        "value_m": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "TasteAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "palette_warmth",
+        "saturation",
+        "boldness",
+        "clutter_tolerance",
+        "formality",
+        "trend_vs_timeless",
+        "material_preferences"
+      ],
+      "properties": {
+        "palette_warmth": {
+          "$ref": "#/$defs/UnitScore"
+        },
+        "saturation": {
+          "$ref": "#/$defs/UnitScore"
+        },
+        "boldness": {
+          "$ref": "#/$defs/UnitScore"
+        },
+        "clutter_tolerance": {
+          "$ref": "#/$defs/UnitScore"
+        },
+        "formality": {
+          "$ref": "#/$defs/UnitScore"
+        },
+        "trend_vs_timeless": {
+          "$ref": "#/$defs/UnitScore",
+          "description": "0 is trend-led, 1 is timeless."
+        },
+        "material_preferences": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "TasteContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "age_band",
+        "household",
+        "tenure"
+      ],
+      "properties": {
+        "age_band": {
+          "type": "string",
+          "enum": [
+            "18_24",
+            "25_34",
+            "35_44",
+            "45_54",
+            "55_plus"
+          ],
+          "description": "A weak prior for the first guess only. Never filters products and is never shown back as a label."
+        },
+        "household": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "alone",
+              "couple",
+              "family_with_kids",
+              "parents",
+              "pets"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "tenure": {
+          "type": "string",
+          "enum": [
+            "owned",
+            "rented"
+          ]
+        }
+      }
+    },
+    "TasteProfile": {
+      "title": "TasteProfile",
+      "description": "Personalisation stage: a learned taste, as a vector plus readable attributes the user can view, correct and reset.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "user_id",
+        "updated_at",
+        "context",
+        "embedding",
+        "attributes",
+        "style_blend",
+        "summary"
+      ],
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "user_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "updated_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "context": {
+          "$ref": "#/$defs/TasteContext"
+        },
+        "swipes": {
+          "type": "array",
+          "items": {
+            "title": "TasteSwipe",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "card_id",
+              "liked"
+            ],
+            "properties": {
+              "card_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "liked": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "reference_media": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StorageKey"
+          }
+        },
+        "embedding": {
+          "title": "TasteEmbedding",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "model",
+            "vector"
+          ],
+          "properties": {
+            "model": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Pinned embedding model identifier."
+            },
+            "vector": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 1
+            }
+          }
+        },
+        "attributes": {
+          "$ref": "#/$defs/TasteAttributes"
+        },
+        "style_blend": {
+          "type": "array",
+          "items": {
+            "title": "StyleWeight",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "style",
+              "weight"
+            ],
+            "properties": {
+              "style": {
+                "$ref": "#/$defs/StyleProfile"
+              },
+              "weight": {
+                "$ref": "#/$defs/UnitScore"
+              }
+            }
+          },
+          "minItems": 1,
+          "maxItems": 6,
+          "description": "The taste described as a blend of the launch style profiles."
+        },
+        "loved_colors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HexColor"
+          }
+        },
+        "banned_colors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HexColor"
+          }
+        },
+        "summary": {
+          "type": "string",
+          "description": "The taste in plain words, editable by the user. Never mentions the age band."
+        }
+      }
+    },
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant, RFC 3339."
+    },
+    "UnitScore": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "A score from 0 to 1."
+    },
+    "Uuid": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "Wall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "start",
+        "end",
+        "length"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "start": {
+          "$ref": "#/$defs/Point2"
+        },
+        "end": {
+          "$ref": "#/$defs/Point2"
+        },
+        "length": {
+          "$ref": "#/$defs/Dimension"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sajao.app/v1/brief.schema.json",
+  "title": "Brief",
+  "description": "Per-room choices on top of the taste profile. With the room profile and the catalog, the only input the design engine reads.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "room_profile_id",
+    "taste_profile_id",
+    "created_at",
+    "intent",
+    "budget",
+    "must_haves",
+    "keep_item_ids",
+    "consider_vastu"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/SchemaVersion"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "room_profile_id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taste_profile_id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "created_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp"
+    },
+    "intent": {
+      "type": "string",
+      "enum": ["refresh", "full_makeover", "rearrange_only"]
+    },
+    "budget": {
+      "title": "Budget",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["limit", "flexibility"],
+      "properties": {
+        "limit": {
+          "$ref": "common.schema.json#/$defs/Money"
+        },
+        "flexibility": {
+          "type": "string",
+          "enum": ["strict", "stretch_10"],
+          "description": "strict is never relaxed; stretch_10 allows up to 10% over."
+        }
+      }
+    },
+    "must_haves": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Product categories that must appear."
+    },
+    "keep_item_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/LocalId"
+      },
+      "description": "Existing items in the room profile to keep."
+    },
+    "consider_vastu": {
+      "type": "boolean"
+    }
+  }
+}

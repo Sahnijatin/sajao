@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sajao.app/v1/event.schema.json",
+  "title": "Event",
+  "description": "Action stage: one entry in the event log (saves, swaps, buy taps, shares).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "name", "occurred_at", "session_id", "properties"],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/SchemaVersion"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "maxLength": 64,
+      "description": "Event name from the tracking plan."
+    },
+    "occurred_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp"
+    },
+    "session_id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "user_id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "platform": {
+      "type": "string",
+      "enum": ["ios", "android", "web"]
+    },
+    "app_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "room_profile_id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "design_id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "product_id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "position": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Position of the tapped item in its list, for click attribution."
+    },
+    "properties": {
+      "type": "object",
+      "description": "Event-specific properties from the tracking plan.",
+      "additionalProperties": true
+    }
+  }
+}

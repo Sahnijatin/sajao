@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sajao.app/v1/render.schema.json",
+  "title": "Render",
+  "description": "Visualisation stage: an image derived from one design. Always labelled illustrative.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "design_id",
+    "created_at",
+    "kind",
+    "quality",
+    "source_media_id",
+    "image",
+    "illustrative"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/SchemaVersion"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "design_id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "created_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp"
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["guided_photo", "fallback_3d"],
+      "description": "guided_photo is a guided edit of the user's own photo; fallback_3d is the clean 3D render shown when checks fail."
+    },
+    "quality": {
+      "type": "string",
+      "enum": ["preview_1k", "full_2k"]
+    },
+    "source_media_id": {
+      "$ref": "common.schema.json#/$defs/Uuid",
+      "description": "The capture media this render is seen from."
+    },
+    "image": {
+      "title": "RenderImage",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["storage_key", "width_px", "height_px"],
+      "properties": {
+        "storage_key": {
+          "$ref": "common.schema.json#/$defs/StorageKey"
+        },
+        "width_px": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height_px": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "illustrative": {
+      "const": true,
+      "description": "Every render carries the illustrative label."
+    },
+    "model": {
+      "title": "ModelRef",
+      "description": "Pinned model that produced a guided photo render.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "name", "version"],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "checks": {
+      "title": "RenderChecks",
+      "description": "Required for guided_photo renders, enforced by the render step: a guided photo reaches a user only when all four pass.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["structure", "grounding", "likeness", "aesthetic"],
+      "properties": {
+        "structure": {
+          "$ref": "common.schema.json#/$defs/CheckResult"
+        },
+        "grounding": {
+          "$ref": "common.schema.json#/$defs/CheckResult"
+        },
+        "likeness": {
+          "$ref": "common.schema.json#/$defs/CheckResult"
+        },
+        "aesthetic": {
+          "$ref": "common.schema.json#/$defs/CheckResult"
+        }
+      }
+    }
+  }
+}

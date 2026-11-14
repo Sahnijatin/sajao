@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0",
+  "id": "00000000-0000-4000-8000-000000000003",
+  "user_id": "00000000-0000-4000-8000-000000000100",
+  "updated_at": "2026-01-05T10:00:00Z",
+  "context": {
+    "age_band": "25_34",
+    "household": ["couple", "pets"],
+    "tenure": "rented"
+  },
+  "swipes": [
+    {
+      "card_id": "card-japandi-03",
+      "liked": true
+    },
+    {
+      "card_id": "card-maximalist-01",
+      "liked": false
+    }
+  ],
+  "reference_media": ["references/100/ref-1.jpg"],
+  "embedding": {
+    "model": "image-text-embedding-v1",
+    "vector": [0.12, -0.4, 0.33, 0.9]
+  },
+  "attributes": {
+    "palette_warmth": 0.7,
+    "saturation": 0.3,
+    "boldness": 0.35,
+    "clutter_tolerance": 0.2,
+    "formality": 0.4,
+    "trend_vs_timeless": 0.75,
+    "material_preferences": ["oak", "linen", "jute"]
+  },
+  "style_blend": [
+    {
+      "style": "japandi",
+      "weight": 0.6
+    },
+    {
+      "style": "warm_luxe",
+      "weight": 0.3
+    },
+    {
+      "style": "minimal_wabi_sabi",
+      "weight": 0.1
+    }
+  ],
+  "loved_colors": ["#d9c7a3"],
+  "banned_colors": ["#ff00aa"],
+  "summary": "Calm, warm and uncluttered, with natural wood and one bold accent."
+}
