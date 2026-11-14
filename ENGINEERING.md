@@ -4,39 +4,45 @@ Every change to Sajao follows these rules. Breaking one requires a decision log 
 
 ## Scope
 
-1. Build only the current tier of the cut line in `docs/01-bottom-line.md`. Deep before wide.
-2. Claims marked unvalidated are hypotheses. Do not build on them until phase 0 replaces them with measured results.
+1. Work starts only from a task in the current sprint. Anything else is out of scope by default.
+2. A needed change outside scope is proposed as a scope change and waits for founder approval before any code, task or doc edit.
+3. Deep before wide: finish the current tier before starting the next.
 
 ## Product truth
 
-3. Room dimensions come from tape entry. No language or image model ever sets a dimension, position or rotation.
-4. Every design passes the verifier before it reaches a user. When none passes, follow the relaxation order, then show an honest result.
-5. Only verified-dimension products may back a "fits" claim or sit in tight spots.
-6. Photo renders are labelled illustrative and pass the outline and likeness checks, or the 3D render is shown.
-7. Every product has a permitted affiliate route and permission to use its images; buy links open in a browser tab we control.
-8. No paywall, lock, upgrade prompt or paid badge appears in the app until the entitlement switch is turned on.
-9. Vastu advice is labelled guidance; strict mode runs only when direction is confirmed.
+4. Generative models never set a dimension, position, rotation, price or stock value. Geometry models estimate; tape verifies; code decides fit.
+5. Every dimension carries a value, a source (measured, estimated, user-confirmed) and an error band. The solver uses the band as margin.
+6. Every design passes the verifier before it reaches a user. When none passes, follow the relaxation order, then show an honest result.
+7. The render, the plan and the shopping list are derived from one `Design` object and are cross-checked: render to plan (grounding), render to cart (likeness), plan to cart (dimensions, budget, stock).
+8. Renders are labelled illustrative and pass structure, grounding, likeness and aesthetic checks, or the 3D render is shown. Never a broken image.
+9. Every product has a permitted affiliate or rental route and permission to use its images. Buy links go through our redirect service.
+10. No paywall, lock, upgrade prompt or paid badge appears in the app until the founder switches entitlements on.
+11. Vastu advice is labelled guidance; strict mode runs only when direction is confirmed by more than the compass.
 
 ## Code
 
-10. Schemas in `packages/schemas` are the contract; validate at every boundary.
-11. All model calls go through the model gateway with its fallback chain. The app never stops suddenly; it degrades.
-12. Every model output is validated: schema for text, geometry for layouts, outline and similarity for images.
-13. Every model has a recorded commercial license; every external data source has a recorded permission.
-14. Fast-tier tests must pass to merge. Nightly and release tiers are reviewed with confidence intervals.
-15. The solver, verifier and relaxation order are pure, deterministic and property-tested.
-16. Changes reach `main` only through pull requests. Secrets never enter the repository.
+12. Schemas in `packages/schemas` are the contract; validate at every boundary. Schema changes are their own reviewed change.
+13. All model calls go through the model gateway: primary, fallback, caps, caching, logging. The app degrades, it never stops suddenly.
+14. Every model output is validated: schema for text, geometry for layouts, image checks for renders.
+15. Prompts and model versions are pinned in the repo. Changing either reruns the golden-set evaluations.
+16. Every model has a recorded commercial license; every external data source has a recorded permission.
+17. The solver, verifier and relaxation order are pure, deterministic and property-tested.
+18. Every write endpoint accepts an idempotency key. Pipeline steps are durable and resume where they stopped.
+19. Expensive endpoints require app attestation and respect per-user, per-device and global spend caps.
+20. Database changes go only through migrations in the repo and are backward compatible (expand, then contract).
+21. Fast-tier tests must pass to merge. Changes reach `main` only through pull requests. Secrets never enter the repository, logs or chat.
 
 ## Experience
 
-17. Every screen works on the budget Android in the device matrix.
-18. Motion and haptics follow `docs/10-design-language-and-motion.md`; reduced motion is respected.
-19. No spinner where a meaningful progress animation is possible. No time promises until measured.
+22. Every screen uses the theme package, motion presets and haptic map, and works on the budget Android in the device matrix.
+23. Reduced motion is respected. Low-tier phones get lighter effects, never broken ones.
+24. Strings are externalised (English and Hindi); dimensions in cm or feet and inches by user choice; prices in INR.
 
 ## Privacy
 
-20. Raw capture video is deleted after processing; faces and personal photos are blurred in anything stored; training use requires consent.
+25. Raw capture video is deleted after processing; faces and personal photos are blurred in anything stored; training use requires consent.
 
 ## Repository hygiene
 
-21. Text, commits and pull requests contain no personal names and no mention of tools used to write the code.
+26. No em dashes. Use "license". Gender-neutral copy ("you", "they").
+27. No personal names in text, code, commits or pull requests. No mention of tools used to write the code. No calendar dates in repo docs.

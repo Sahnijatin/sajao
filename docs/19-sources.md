@@ -54,3 +54,16 @@
 ## Stores
 
 - [Google Play testing requirements](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en)
+
+## Charter v2 additions
+
+- [Single-image metric depth shrinks distant geometry (MetricScenes)](https://arxiv.org/pdf/2606.02379)
+- [Gemini 3 Pro Image reference images](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/3-pro-image)
+- [Image model pricing](https://benchlm.ai/media-pricing/nano-banana)
+- [Flipkart affiliate Product Feed API](https://affiliate.flipkart.com/api-docs/af_prod_ref.html)
+- [Flipkart in-app tracking](https://affiliate.flipkart.com/tools/mobile-tracking-info)
+- [Amazon PA-API deprecation and Creators API](https://affiliate-program.amazon.com/creatorsapi/docs/en-us/paapiv5-deprecation)
+- [Furlenco on Cuelinks](https://www.cuelinks.com/campaigns/furlenco-affiliate-program)
+- [Rentomojo on Cuelinks](https://www.cuelinks.com/campaigns/rentmojo-affiliate-program)
+- [Truecaller SDK FAQ](https://truecaller4developers.gitbook.io/truecaller-sdk/faqs/general)
+- [WhatsApp Business API pricing in India](https://ozonetel.com/whatsapp-business-api/)

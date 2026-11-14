@@ -1,6 +1,6 @@
 # Design language, motion and haptics
 
-Sajao uses the LiveMap design system: bright frosted glass, soft layered shadows, one confident accent, and spring motion. The room is the hero, so the interface stays neutral and lets her space carry the colour. Minimal, modern, sleek, and calm.
+Sajao uses the LiveMap design system: bright frosted glass, soft layered shadows, one confident accent, and spring motion. The room is the hero, so the interface stays neutral and lets your space carry the colour. Minimal, modern, sleek, and calm.
 
 ## Tokens carried over from LiveMap
 
@@ -38,13 +38,13 @@ Android motors vary widely, so patterns stay simple there. Haptics respect syste
 
 ## Wow moments, in order
 
-| Moment | What she sees | Low-end fallback |
+| Moment | What you see | Low-end fallback |
 | --- | --- | --- |
 | Scan painting | A grid glows over captured surfaces; edges light up; corners tick | Edges, ring and corner dots |
 | Tape lock | An animated tape stretches along the wall; dimensions snap in; Verified | Same |
 | Plan draws itself | Floor plan drawn line by line, measurements tick in | Same |
 | Room rises | Walls lift from the plan; camera eases into a dollhouse orbit | Cross-fade |
-| Design reveal | Her photo dissolves into the redesigned room, lamps glowing | Cross-fade |
+| Design reveal | Your photo dissolves into the redesigned room, lamps glowing | Cross-fade |
 | Living drag | Lifted item, deeper shadow, magnetic snap, live cm | Snap and distances |
 | Swap | Old item melts into the new; price rolls | Cross-fade |
 | Paint sweep | Colour sweeps across the wall like a roller | Instant change |

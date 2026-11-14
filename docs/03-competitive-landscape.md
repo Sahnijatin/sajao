@@ -1,6 +1,6 @@
 # Competitive landscape
 
-Nobody combines her own measured room, curated real products across brands, an automatic full-room design, an editable 3D view and an honest photoreal reveal. Each competitor has two or three of these, and none is built for India.
+Nobody combines your own measured room, curated real products across brands, an automatic full-room design, an editable 3D view and an honest photoreal reveal. Each competitor has two or three of these, and none is built for India.
 
 | Player | What it does well | Where it stops |
 | --- | --- | --- |

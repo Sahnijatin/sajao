@@ -1,52 +1,38 @@
-# Catalog and 3D assets
+# Catalog
 
-The catalog is the real bottleneck, so it is its own workstream that starts now, in parallel with phase 0. Products are curated for taste first, then checked for data quality, an app-safe affiliate route and permission to use their images.
+We ingest widely and show narrowly: thousands of products come in from feeds, and AI plus a human gate decides which few hundred per style are good enough to appear in a design.
 
-## Categories
+## Sources
 
-Lighting (ambient, task, accent), paint and wall finishes, flooring and rugs, curtains and blinds, sofas and seating, beds, tables, storage, wall art, decor, plants and planters.
-
-## v1 size
-
-A few hundred approved items across both room types and the six style profiles, deep enough that every profile can fill every slot. Breadth grows after launch.
-
-## How a product gets in
-
-1. **Brand map.** Brands per category tagged with the [style profiles](14-style-profiles.md) they serve.
-2. **Route and permission.** An affiliate network campaign, the brand's own affiliate program, or a direct deal, whose terms allow app traffic and cover use of product images and data. Recorded in the permissions log. No route or no permission, no listing.
-3. **Product data.** From the brand's feed or store under those terms. Marketplaces fill gaps for basics only.
-4. **Extraction.** A language model pulls dimensions, materials, colours and finish in an offline batch; range rules check every number.
-5. **Human approval.** Every product is approved by a person with a style tag and a "verified dimensions" flag. Only verified items may sit in tight spots.
-
-Each product carries: dimensions, category, style tags, colour, material, price, stock, deliverable pincodes, images, affiliate routes and coupon code where available, embeddings, and a 3D model.
-
-## Starting brand candidates (route and permission to confirm)
-
-| Category | Candidates |
-| --- | --- |
-| Lighting | The Purple Turtles, Ellementry, Pure Home + Living, The Artment, Zwende, The Decor Kart |
-| Decor and tableware | Nestasia, Ellementry, Pure Home + Living |
-| Furniture | Pepperfry, Urban Ladder, IKEA, WoodenStreet, plus D2C makers found during curation |
-| Rugs | Jaipur Rugs and homegrown rug labels found during curation |
-| Paint | Asian Paints, Berger, Nerolac shade cards |
-
-## Paint, wall finishes and flooring
-
-- **Paint** is a material on a wall: shade card colour, sheen and texture, shown on her photo through wall masks, with litres and cost from measured wall area.
-- **Wall finishes** such as colour blocks and panels use the same masks.
-- **Flooring** is a material swap on the floor plane: rugs for everyone, peel-and-stick vinyl for renters, tiles and laminate for owners.
-
-## 3D models
-
-| Priority | Method | Fits |
+| Source | How we get products | Tracking notes |
 | --- | --- | --- |
-| 1 | Brand-supplied GLB or USDZ | Partners with AR assets |
-| 2 | Parametric templates textured with product photos | Boxy items |
-| 3 | Image to 3D with TRELLIS.2 (MIT) or SAM 3D Objects (SAM license), rescaled to listed dimensions | Sofas, chairs, lamps, sculptural decor |
-| 4 | Simple proxy with a "shape approximate" tag | Anything failing checks |
+| Flipkart | Official affiliate Product Feed API by category | Deeplinks track inside Flipkart's apps |
+| Amazon India | Creators API (replaced PA-API) | Reported to need qualifying sales before access; until then, links added by hand from the Associates dashboard |
+| Affiliate networks | Cuelinks, EarnKaro, vCommission, INRDeals deeplink APIs | Per-campaign rules on app traffic must be checked |
+| D2C brands | Direct deals: feed or CSV, coupon codes | Coupons survive app switching; best attribution |
+| Rental | Furlenco via Cuelinks; other rental platforms by direct outreach | "Rent instead: Rs X/month" shown beside buy prices |
 
-Every generated model is rendered and reviewed against the product photo; hero pieces always get a human check.
+Each source is a row in the Notion "Catalog sources" database with its route, app traffic rule, image permission and status.
 
-## Keeping it fresh
+## AI curation pipeline (offline, batch)
 
-Daily price and stock sync, link checks, and nearest-equivalent swaps in saved designs with a notice.
+1. **Extract.** A small language model reads titles and specs into dimensions, material, colour and finish; range rules reject impossible numbers.
+2. **Look.** A vision model scores image quality, background and aesthetic fit per style profile; near-duplicates are merged.
+3. **Trust.** Rating, review count, return signals, seller quality, delivery coverage.
+4. **Fit for rooms.** Dimension confidence; only verified-dimension items may sit in tight spots.
+5. **Human gate.** Hero pieces (sofas, beds, rugs, statement lights) approved by a person in the admin review tool; long-tail decor auto-approved above a score threshold and spot-checked.
+6. **Embed and index.** Image and text embeddings in pgvector for taste retrieval.
+
+Batch pricing is used for all offline model work.
+
+## Freshness
+
+Daily price, stock and link checks. A design whose item goes out of stock offers the nearest equivalent with a notice. Coverage is reported weekly per style and budget band.
+
+## Paint and flooring
+
+Paint colours and flooring finishes are first-class materials in a `Design`. Paint quantity is estimated in litres from wall area.
+
+## 3D assets
+
+Needed for the 3D view and the render fallback. Hero products get 3D models (from brands where available, otherwise generated from product images and reviewed); long-tail decor uses simple proxies. The 2D plan needs only dimensions.

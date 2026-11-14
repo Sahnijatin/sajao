@@ -1,49 +1,40 @@
 # Tech stack and cost
 
-| Layer | Choice | Reason |
-| --- | --- | --- |
-| Mobile app | React Native with Expo (dev builds) | One codebase, native modules where needed |
-| Camera and guides | react-native-vision-camera with frame processors | Edge and sharpness checks on every phone without on-device AI |
-| Motion and effects | Reanimated, Gesture Handler, Skia | 60 fps springs, glass, glows, scanning grid |
-| 3D | react-native-filament | Native rendering, light on budget phones |
-| Haptics | expo-haptics plus native patterns | Designed haptic map |
-| Backend | Python, FastAPI, modular monolith | Same language as engine and model code |
-| Database | Postgres with pgvector (Supabase to start) | Rooms, catalog, embeddings, auth |
-| Jobs | Queue plus workers | Scans, renders and asset generation are asynchronous |
-| GPU | Serverless GPU with memory snapshots | Pay only while working; faster cold starts |
-| Solver | OR-Tools, Shapely | CPU, deterministic, testable |
-| Model gateway | One internal service for all model calls | Fallbacks, caching, caps, cost logging, provider swap |
-| Observability | Crash reporting and product analytics from the first build | Find failures on real phones |
+## Stack
 
-## Model gateway and the fallback chain
+| Layer | Choice |
+| --- | --- |
+| Mobile | Expo (React Native, dev builds, EAS Build, Submit and Update), TypeScript, Expo Router |
+| UI and motion | Reanimated, Gesture Handler, Skia, expo-haptics, react-native-filament (3D, Next) |
+| Camera | react-native-vision-camera with frame processors for guides |
+| App state | Zustand for UI state, TanStack Query for server state |
+| Backend | Python FastAPI modular monolith, stateless, on Google Cloud Run in Mumbai |
+| Pipeline workers | Modal: GPU geometry, model calls, renders, nightly catalog sync; durable steps with idempotency |
+| Data | Supabase in Mumbai: Postgres, JSONB, pgvector, row-level security, Auth, Realtime |
+| Auth | Supabase Auth: Truecaller, Google, Apple, WhatsApp OTP fallback, anonymous guest sessions |
+| Media | Cloudflare R2 and image CDN; resumable uploads; signed URLs |
+| Models | One model gateway: primary, fallback, caps, caching, logging per call |
+| Solver | OR-Tools, Shapely |
+| Subscriptions | RevenueCat (entitlements off at launch) |
+| Observability | Sentry (crashes, errors), PostHog (product analytics, feature flags) |
+| Web | Landing page and shared-design viewer on Vercel |
+| CI | GitHub Actions; EAS Build for apps |
 
-The app never stops suddenly. Each model job has an ordered chain; the gateway moves down it on errors, timeouts or when a cost cap is reached:
+## Model gateway
 
-| Step | Language and vision jobs | Image render jobs |
-| --- | --- | --- |
-| 1. Primary | Best-quality hosted model | Primary image model |
-| 2. Open-model aggregator | Open-weight models through a pay-per-use aggregator (for example NanoGPT or similar) | Self-hosted Qwen-Image-Edit on serverless GPU |
-| 3. Self-hosted open model | Small open model on our own GPU worker | Same, queued |
-| 4. Degraded mode | Templates plus rules, no AI designer | 3D render instead of photo render; photo render queued and delivered later with a notification |
+Per-provider concurrency limits, backoff, a circuit breaker to the fallback provider, caching by content hash, parallel renders, batch pricing for offline catalog work, per-call cost and latency logging, and spend caps per user, per day and globally. The fallback chain ends in a degraded mode (3D render instead of photo render, rules instead of the AI designer), so the app never stops suddenly.
 
-Notes:
+## Estimated variable cost per room
 
-- Aggregator terms must allow serving end users in a production app. NanoGPT's subscription was reported at 12 dollars a month from May 2026 with a weekly token cap and open-weight models only; confirm terms before relying on it.
-- NVIDIA's free API catalog is for evaluation and prototyping; production use needs paid endpoints. Usable for phase 0 experiments, not as a launch fallback.
-- The gateway logs provider, model, latency and cost for every call.
+To be measured on the default path. USD at about 88 rupees.
 
-## Latency
+| Step | Estimate |
+| --- | --- |
+| Room understanding (GPU seconds) | Rs 1 to 3 |
+| Brief, designer and judge calls | Rs 3 to 6 |
+| Three design renders at 1K on the cheaper image model | Rs 12 to 18 |
+| Opened design upgraded to 2K on the premium model | Rs 12 |
+| Storage, delivery, reel | Rs 1 to 2 |
+| **Total** | **about Rs 30 to 40** |
 
-No fixed time is promised. Results are staged (3D first, photo render after). GPU workers stay warm during peak evening hours, use memory snapshots otherwise, and every step's latency is measured nightly.
-
-## Estimated variable cost per room (to be measured in phase 0)
-
-| Step | Default path | With optional critique and extra renders |
-| --- | --- | --- |
-| Reconstruction and segmentation | 2 to 3 rupees | 2 to 3 rupees |
-| AI designer | 2 to 6 rupees (single pass) | 5 to 20 rupees |
-| Photo render of the opened design | 3 to 6 rupees hosted; less self-hosted | Per extra render |
-| Storage and delivery | Under 1 rupee | Under 1 rupee |
-| **Total** | **About 8 to 15 rupees** | **About 12 to 30 rupees** |
-
-Launch cloud budget: 5,000 to 20,000 rupees a month. Public launch means demand is not gated, so spend is controlled by spend alerts, soft per-user daily limits that move heavy users down the fallback chain rather than blocking them, and the fallback chain itself. If demand exceeds budget, funding is added rather than turning users away.
+At a cloud budget of 5,000 to 20,000 rupees a month that is roughly 150 to 650 full rooms a month, so caps, caching and per-user soft limits matter from day one. Funding is added if traffic outgrows the budget.

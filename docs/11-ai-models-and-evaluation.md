@@ -1,46 +1,48 @@
 # AI models and evaluation
 
-AI decides taste and appearance; code decides geometry and fit. Every model output passes a measurable check before she sees it.
+AI decides taste and appearance; geometry and code decide fit. Every model output passes a measurable check before you see it.
 
 ## Models
 
 | Job | Model | License | Tier |
 | --- | --- | --- | --- |
-| Camera positions and rough shape | MapAnything or VGGT (benchmark both) | Apache 2.0 release; commercial checkpoint | Must |
-| Depth assist | Depth Anything 3 Base, Small or Metric | Apache 2.0 | Must, if it helps in phase 0 |
+| Camera poses, point cloud, planes (multi-view) | MapAnything (Apache 2.0 release) or VGGT commercial checkpoint | Apache 2.0; commercial checkpoint | Must |
+| Single-image metric geometry | MoGe-2 | To confirm before use | Must |
 | Surface and item segmentation | SAM 3 | SAM license (commercial use allowed) | Must |
-| Image to 3D for products | TRELLIS.2, SAM 3D Objects | MIT; SAM license | Must (offline) |
-| Style and product embeddings | Open embedding model | Permissive, to confirm | Must |
-| Brief parsing, product extraction, AI designer | Language models behind the model gateway | Provider terms | Must |
-| Photo render harmonization | Qwen-Image-Edit-2509 or hosted Gemini image model | Apache 2.0; provider terms | Must |
-| Floor plan reading, chat, AI judge | Vision and language models | Provider terms | Next |
-| Taste ranker, compatibility model, catalog checker | Small models trained by us | Ours | Next |
-| Layout rules, archetypes, Vastu rules | Hand-authored | Ours | Must |
+| Item naming, light direction, catalog vision scoring | Vision-language model via gateway | Provider terms | Must |
+| Brief to spec, AI designer, product extraction | Language models via gateway | Provider terms | Must |
+| Guided render | Winner of the render bake-off (primary) and cheaper runner-up (fallback) | Provider terms | Must |
+| Aesthetic judge, likeness and structure checks | Vision model plus embedding similarity | Provider terms; permissive | Must |
+| Taste and product embeddings | Open image-text embedding model (SigLIP 2 class) | Permissive, to confirm | Must |
+| Upload safety classifier | Off-the-shelf classifier | To confirm | Must |
+| Image to 3D for hero products | TRELLIS.2, SAM 3D Objects | MIT; SAM license | Next |
+| Floor plan reading, design chat | Vision and language models | Provider terms | Next |
+| Taste ranker, compatibility model | Small models trained by us | Ours | Later |
 
-Every license is recorded and re-checked before a model enters the pipeline. All model calls go through the gateway described in [tech stack and cost](15-tech-stack-and-cost.md), which handles fallbacks.
+Every license is recorded before a model enters the pipeline. Prompts and model versions are pinned in the repo.
 
-## Training data for our own models (Next tier)
+## Render bake-off
 
-- **Taste ranker:** blind pairwise votes on our own renders, the reference library, and expert review.
-- **Compatibility model:** curated looks from brand lookbooks (with brand permission), designer sets, and reference reels (with creator permission).
-- **Catalog checker:** products approved or rejected during curation.
+Real rooms run through Gemini 3 Pro Image, Gemini 3.1 Flash Image, Seedream, FLUX.2 and Qwen-Image-Edit with the same guide and product references, scored blind on excitement, product fidelity and structure. The winner becomes the primary; the cheaper runner-up becomes the fallback in the gateway. The bake-off reruns whenever a candidate model changes.
 
-Permissions for every external source are logged before use.
+## Golden set
+
+About 25 real Indian rooms to start (photos, a short video and tape values), growing over time and weighted toward typical flats. It is the ground truth for geometry error bands, render checks, design feasibility and cost per room. Tracked in the Notion "Golden set" database.
 
 ## Evaluation tiers
 
 | Tier | Runs | Contents | Blocks merge? |
 | --- | --- | --- | --- |
-| Fast | Every commit, in CI | Schema round trips, solver and verifier property tests, relaxation order tests, fixed-room design tests, Vastu rule cases | Yes |
-| Nightly | Scheduled | Reconstruction benchmark on the golden set, render outline and likeness checks, cost per room | No; regressions are reviewed |
-| Release | Before each store release | Blind human votes, catalog audit, device matrix run | Yes, for the release |
+| Fast | Every commit, in CI | Schema round trips, solver and verifier property tests, relaxation order, fixed-room design tests, Vastu rule cases, gateway fallback tests | Yes |
+| Nightly | Scheduled | Geometry accuracy on the golden set, render checks, cost per room | No; regressions are reviewed |
+| Release | Before each store build | Blind votes, catalog audit, device matrix run | Yes, for the release |
 
-Nightly and release measurements are compared with confidence intervals, not single numbers, so noise does not block work.
+Nightly and release measurements are compared with confidence intervals, not single numbers.
 
 ## Not doing
 
-Generating whole rooms with an image model; training our own reconstruction or image model; fine-tuning a large language model before real usage data exists.
+Generating whole rooms from a text prompt; training our own reconstruction or image model; fine-tuning a large language model before real usage data exists.
 
-## v2: learning from users
+## Learning from users (Later)
 
-Swaps, drags, saves, purchases and winning designs tune the taste ranker and soft scores through a gated pipeline (candidate, evaluation, shadow, small traffic share, promote or roll back). Hard rules and the verifier never change from learning.
+Swaps, drags, saves, buy taps and skipped designs update the taste profile immediately and, later, train a taste ranker through a gated pipeline (candidate, evaluation, shadow, small traffic share, promote or roll back). Hard rules and the verifier never change from learning.

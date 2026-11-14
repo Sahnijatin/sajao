@@ -1,31 +1,38 @@
 # Assumptions and accuracy
 
-Zero error is not achievable. What is achievable is a known error band, shown to the user, and a system that never makes a fit claim it cannot back.
+## What accurate means
 
-## Why the tape sets the numbers
+Accuracy is a promise about each number we show, not about the model behind it. Every dimension in a Room Profile carries a value, a source and an error band. A claim is only made when the evidence covers it.
 
-Typical Indian "before" rooms are white walls and glossy vitrified tile: the hardest surfaces for camera reconstruction. A scan taken by turning in place adds almost no parallax. Even a good 2 to 3% reconstruction error is 8 to 12 cm on a 4 m wall, which is too much to back fit claims in small rooms, and one tape measurement fixes scale but not shape distortion. So:
+## Room dimension targets
 
-- **Dimensions come from the tape:** length, width, ceiling height, and any extra wall segment of a non-rectangular room. Accuracy is about 1 cm.
-- **The scan proposes everything else:** room shape, door and window positions, existing items, wall and floor masks, camera positions for renders and reels. She confirms by dragging.
-- **Reconstruction-only measuring is a phase 0 experiment** (unvalidated). If it meets the gate in the roadmap, the tape can become optional later.
+To be measured on the golden set; nothing here is proven until then.
 
-## Engineering rules
+| Measure | Estimated (photos only) | Verified (with tape) |
+| --- | --- | --- |
+| Wall length | Error band shown; target median within 5% | Within 1 to 2 cm |
+| Ceiling height | Target median within 5% | Within 1 cm |
+| Door and window position | Target median within 15 cm | Within 10 cm after confirm |
 
-| Rule | What it means in the product |
+Scale is cross-checked from independent anchors (geometry model, door height, switchboard height, ceiling priors, vitrified tile grid). Agreement tightens the band; disagreement widens it and asks for one tape value.
+
+## Quality gates before store submission
+
+| Non-negotiable | Gate |
 | --- | --- |
-| Every number carries a source | Each dimension is tagged measured, user-confirmed or estimated. Only measured and user-confirmed values can back a "fits" claim. |
-| Fit uses a safety margin | Clearances add the error band of every value involved. Estimated door and window positions carry a 10 cm margin. |
-| Ask instead of guess | A tight spot near an estimated value triggers one targeted measurement request. |
-| Nothing unverified ships | The verifier re-tests collisions, clearances, budget and stock on every design. |
-| Renders never claim exactness | The photo render is illustrative; exact layout and sizes live in the 3D view. |
-| Direction is cross-checked | Vastu advice uses compass, building outline and user confirmation together. |
+| Visual quality | At least 70% of blind votes rate the render 4 or 5 out of 5 on "I want this room"; structure preserved in at least 95% of renders |
+| Visual quality | At least 90% of shown products pass the likeness check against their SKU photo |
+| Spatial credibility | Zero designs with collisions, blocked doors or walkways under 60 cm |
+| Spatial credibility | The true dimension falls inside the shown error band in at least 90% of golden rooms |
+| Commercial utility | 100% of shown items have a live link and in-stock price checked within 24 hours |
+| Commercial utility | Shown total within 5% of the sum of retailer prices at check time |
+| App | Crash-free sessions at least 99%; every screen usable on the budget Android |
 
-## Targets (gates live in the roadmap)
+## Assumptions to prove early
 
-| Measure | Target |
+| Assumption | How we test it |
 | --- | --- |
-| Room dimensions from tape entry | Median error 1% or less, 90th percentile 2% or less against golden truth |
-| Door and window position from scan, after confirm | Median error 10 cm or less |
-| Room orientation for Vastu | Within 10 degrees when the building outline is found (unvalidated) |
-| Product dimension accuracy | 99% of audited items match the brand's listing |
+| Photo-only geometry is good enough for living rooms and bedrooms with margin | Geometry spike on tape-measured rooms, then the full golden set |
+| A multi-reference image edit keeps products recognisable and the room unchanged | Render bake-off on real rooms, scored blind |
+| Feeds and networks give enough good products per style and budget band | Weekly coverage report |
+| Cost per room stays near Rs 30 to 40 | Measured per step through the gateway |

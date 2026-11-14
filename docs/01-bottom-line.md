@@ -1,34 +1,33 @@
 # Principles and scope
 
-These decisions hold everything else together. A change that breaks one of them needs a decision log entry with a reason first.
-
-## How to read these docs
-
-They describe intended design, not working software. Anything marked **(unvalidated)** is a hypothesis for phase 0. When building, implement only what is inside the current tier of the cut line below, and build it deeply.
-
 ## Principles
 
-1. **Geometry is measured, never generated.** Room dimensions come from her tape. The scan proposes shape, openings and items; she confirms. No language or image model ever decides a dimension or a position.
-2. **AI decides taste and appearance; code decides fit.** An AI designer chooses the program, pairings and products. A solver places them. An independent verifier re-checks every hard rule.
-3. **Always an honest result.** If a room cannot fit what she asked for, she is told what does fit and why. A design that fails the verifier is never shown.
-4. **Every item is real and curated.** In stock, verified dimensions, matched to a style profile, with a working affiliate route and permission to use its images.
-5. **The reveal is the product.** 3D first, then her photo redesigned, then a shareable before and after reel.
-6. **Light app, heavy server.** The phone captures and displays; heavy models run in the cloud.
-7. **Check everything AI produces.** Schema checks for text, geometry checks for layouts, outline and similarity checks for images.
-8. **Honest by design.** Error bands shown, renders labelled illustrative, Vastu labelled guidance.
-9. **Never stop suddenly.** When a model or provider fails or a cost cap is reached, the app degrades to a simpler path instead of failing.
-10. **Learning from users comes in v2.**
+1. **AI decides taste and appearance; geometry and code decide fit; everything is checked before you see it.**
+2. **One Design object.** The render, the plan and the shopping list are views of one `Design`. If they can disagree, the design is wrong.
+3. **Estimate honestly, verify optionally.** Photos give estimated dimensions with an error band; tape values make them Verified. The solver always uses the band as margin.
+4. **Ingest widely, show narrowly.** Thousands of products come in; only curated, verified items appear in designs.
+5. **Never a broken experience.** Every model call has a fallback; every render has a 3D fallback; every infeasible brief gets an honest result.
+6. **Design quality from day one.** No screen merges without the theme package, motion and haptics.
+7. **Built to scale without a rebuild.** Stateless services, durable jobs, standard Postgres, one model gateway.
 
-## Cut line
+## The Design object
 
-| Tier | Scope |
+A `Design` holds the room it belongs to, the chosen products (real SKUs with dimensions, price, stock and links), each item's position and rotation in metres, paint and flooring materials, the lighting scheme, the total cost and a check report.
+
+| Non-negotiable | Enforced by |
 | --- | --- |
-| **Must (v1 launch)** | Scan plus tape measurement on any phone; living room and bedroom; curated catalog of a few hundred items; AI designer plus solver plus verifier with the relaxation order; 3D editor plus 2D plan fallback; photo render when a design is opened; buy list with affiliate links; room-level Vastu; simple share reel; event logging; model gateway with fallbacks |
-| **Next** | Whole-home Vastu from a floor plan photo; chat; web viewer; photo mode for the weakest phones; the three self-trained taste models; multiple 3D viewer tiers; entitlements (switched off) |
-| **Later** | AR view; reconstruction-only measuring (if phase 0 proves it); photoreal walk-throughs; service leads; flat-type library; v2 learning |
+| Visual quality | Guided render from your photo with the exact product photos as references; aesthetic judge; retry before you see it |
+| Spatial credibility | Solver placement on the room with error-band margin; verifier on collisions, walkways, doors, windows and margins; grounding check on the render |
+| Commercial utility | Live SKUs with price, stock and link; totals from the same list the render shows; budget and stock re-checked at reveal |
 
-## v1 scope facts
+Honesty labels: "Illustrative render" on images, "Estimated ±X cm" on unverified dimensions, "Fits with Y cm to spare" only when the margin covers the error band.
 
-- India, consumer app, Android and iOS, any phone with a camera.
-- Categories: lighting, paint and wall finishes, flooring and rugs, curtains, seating, beds, tables, storage, wall art, decor, plants.
-- Public launch on the App Store and Google Play, free for everyone. No invite system and no paywall anywhere in the app.
+## Tiers
+
+| Tier | Contents |
+| --- | --- |
+| Must (store launch) | Photo or video capture with guides; Room Profile with confirm and optional tape; taste profile with adaptive swipes; three designs with three intents; guided render with checks and 3D fallback; dimensioned 2D plan with drag and rotate; shopping list with buy and rent links; basic Vastu tab; share reel; save and history; login with guest first; English and Hindi |
+| Next | 3D dollhouse view on capable phones; design chat ("make it cosier"); whole-home Vastu from floor plans; Vastu expert call; subscription switched on; all room types if accuracy holds |
+| Later | Vastu home visit; own trained taste and ranking models; carpentry and built-ins |
+
+Room types at launch: living room and bedroom. Rearrange-only mode uses the same journey with your existing items as the catalog.
