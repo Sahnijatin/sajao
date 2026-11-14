@@ -1,29 +1,48 @@
 # Engineering process
 
-The process is set up before any product code is written.
+## Tracking
 
-## Before the first line of product code
+Notion is the single tracker. Sprints, epics, tasks, decisions, scope changes, bugs, the golden set and catalog sources all live there. Dates live there too, never in repo docs.
 
-- [ ] Branch protection on `main`: changes arrive through pull requests; fast-tier CI must pass.
-- [ ] CI running the fast tier (schemas, solver and verifier property tests, relaxation order, fixed-room design tests, Vastu cases).
-- [ ] Schemas for room, product, brief and design in `packages/schemas`.
-- [ ] Device matrix in hand: iPhone 17 Pro (LiDAR), iPhone 16, iPhone 13, a mid-range ARCore Android, an old budget Android not on ARCore's supported list (3 to 4 GB RAM).
+1. Anything not in an approved task is out of scope by default.
+2. A needed change becomes a row in "Scope changes" with its impact, and work on it stops until the founder approves.
+3. Only after approval are tasks, sprints, the decision log and repo docs updated.
+4. Each work session starts by reading the active sprint and ends by updating task status, PR links and notes.
+
+The repo skill `.claude/skills/sajao-notion-sync` holds the database locations and the exact steps.
+
+## Work split
+
+| In the repo | Desktop, browser, docs | Founder |
+| --- | --- | --- |
+| App code, backend, pipelines, schemas, migrations | Notion upkeep: sprints, tasks, decisions | Approves scope, scope changes and screen designs |
+| Tests, CI, build configs | Screen mockups before coding | Accounts, keys, payments, store submissions |
+| Model gateway, prompt files, eval scripts | Brand and affiliate research, sign-up forms | Brand calls and direct deals |
+| Catalog ingestion and curation tool | Curation reviews and blind render votes | Tape-measuring golden rooms, device testing |
+| Pull requests; repo docs kept in sync | Store copy, privacy policy, terms, disclosures | Recruiting testers |
+| Performance and device fixes | Competitor teardowns, launch plan | Vastu consultant review |
+
+Anything that ends in a commit is done in the repo; anything that ends in a document, spreadsheet, browser action or decision is done outside it. Neither side adds scope without an approved scope change.
 
 ## Working rules
 
-1. **Build to the cut line.** Only the current tier in [principles and scope](01-bottom-line.md). Deep before wide.
-2. **Contracts first.** Schema changes are their own reviewed change.
-3. **Golden set grows weekly** toward 50 rooms, weighted to typical Indian flats.
-4. **Evaluation in three tiers** as defined in [AI models and evaluation](11-ai-models-and-evaluation.md). Only the fast tier blocks merges; nightly regressions are reviewed with confidence intervals.
-5. **Decision log with reasons.** Every "chose X over Y" gets one line of reason in the roadmap doc.
-6. **Small pull requests.** One feature per branch.
-7. **Unvalidated claims stay marked** until phase 0 data replaces them with measured numbers.
-8. **Observability from the first build:** crashes, analytics, cost and latency per step, gateway logs.
-9. **Cost guardrails:** per-user caps, spend alerts, fallback chain tested monthly.
-10. **Feature switches** for entitlements, new models and risky features.
-11. **Privacy by default:** raw video deleted after processing, blurring, consent before training use.
-12. **Permissions log:** every brand and creator source and the permission covering it.
+1. **Contracts first.** Schemas in `packages/schemas`; schema changes are their own reviewed change.
+2. **Screens are designed before they are coded** and approved by the founder.
+3. **Small pull requests,** one task each, tests passing, linked from the Notion task.
+4. **Evaluation in three tiers** as defined in [AI models and evaluation](11-ai-models-and-evaluation.md). Only the fast tier blocks merges.
+5. **Decision log with reasons.** Every "chose X over Y" gets one line in Notion "Decisions" and, for lasting architecture choices, in the roadmap doc.
+6. **Measure before claiming.** Targets stay targets until the golden set measures them.
+7. **Observability from the first build.** Crashes, analytics, cost and latency per step, gateway logs.
+8. **Feature flags** for entitlements, new models and risky features.
+
+## Repo guardrails
+
+`CLAUDE.md` and `.claude/skills/` hold the rules every coding session loads: the `sajao-guardrails` checklist, the Notion sync steps, and vendored third-party skills (listed with licenses in `.claude/skills/THIRD_PARTY_NOTICES.md`). CI checks docs for hygiene rules.
+
+## Device matrix
+
+A recent iPhone, an older iPhone, a mid-range Android with ARCore, and a budget Android with 3 to 4 GB RAM that is not on ARCore's supported list. Every screen must work on the budget Android.
 
 ## Release flow
 
-Internal builds on the device matrix, then closed beta, then stores. On Google Play, a personal developer account created after November 2023 needs a closed test with at least 12 opted-in testers for 14 continuous days before production access.
+Internal builds on the device matrix, then the Play closed test (a personal developer account needs at least 12 opted-in testers for 14 continuous days before production access) and TestFlight, then store submission. Phased rollouts, EAS Update for over-the-air fixes with instant rollback.

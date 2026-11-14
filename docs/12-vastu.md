@@ -1,35 +1,26 @@
 # Vastu
 
-Vastu guidance is offered as close to correct as a phone allows, labelled honestly: "Vastu guidance, as close as possible. For a full consultation, speak to an expert." The rule set is drafted from published sources and reviewed by an expert consultant before launch.
+Vastu gets its own tab: basic room-level guidance at launch, labelled honestly, and a path to deeper help later. An expert consultant reviews the rules behind the scenes and is not named in the product.
 
-## Direction (v1)
+## Stages
 
-Phone compasses inside concrete buildings can be off by tens of degrees, so a compass reading alone is never trusted:
+| Stage | What you get | Tier |
+| --- | --- | --- |
+| 1. Direction | Compass averaged during capture, plus a one-tap "your main door faces roughly East?" confirmation; marked approximate when unsure | Must |
+| 2. Room check | A short scorecard: bed head direction, heavy furniture toward south-west, TV wall and seating, mirror placement, desk facing, colour guidance, plants and water elements | Must |
+| 3. Vastu in designs | "Consider Vastu" toggle in the brief; designs show which points they meet | Must |
+| 4. Whole home | Upload the builder floor plan; 16-zone analysis, centre of home, entrance direction | Next |
+| 5. Expert call | Book a paid call with our Vastu professional | Next |
+| 6. Home visit | The expert visits and takes it forward | Later |
 
-1. **Compass during the scan,** logged and averaged across the walk, with a calibration prompt when unstable.
-2. **Building outline** from open building datasets (Google Open Buildings covers India). Room walls usually run parallel to the building's outer walls, so the outline gives the angle; the compass only picks which side is north. (unvalidated: measured on the golden set)
-3. **One-tap confirmation** on a map: "Your main door faces roughly East?"
+## Direction
 
-If the outline is missing or the sources disagree, direction is marked approximate and only guidance mode is available.
+Phone compasses are unreliable indoors. Direction is averaged across the capture, cross-checked with your confirmation of the main door, and marked approximate when sources disagree. Strict mode (Vastu rules as hard solver constraints) waits until direction is confirmed by more than the compass; otherwise Vastu is a soft score.
 
-## Room-level Vastu (v1)
+## Rules
 
-Bed head direction and placement; heavy furniture toward the south-west; TV wall, seating direction and entrance clearance; desk facing; mirror placement, colour guidance, plant and water element placement.
+Rules are hand-authored, versioned in the repo, reviewed by the consultant, and covered by test cases in the fast tier.
 
-| Mode | Behaviour |
-| --- | --- |
-| Off | No Vastu influence |
-| Guidance | Adds to the soft score; designs show which points they meet |
-| Strict | Key rules become hard constraints (only when direction is confirmed) |
+## Label
 
-## Whole-home Vastu (Next tier)
-
-16-zone analysis from a photo of the builder's floor plan read by a vision model, or the room marked on a 3 by 3 grid. Gives each room's zone, the centre of the home and the entrance direction.
-
-## Testing
-
-Expert-approved test rooms run in the fast CI tier. Orientation error is measured on the golden set.
-
-## Later
-
-Live sessions with a Vastu expert, booked in the app.
+Every Vastu screen carries: "Vastu guidance, as close as possible. For a full consultation, speak to an expert."

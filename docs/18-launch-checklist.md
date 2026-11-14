@@ -1,51 +1,51 @@
 # Launch checklist
 
+Status and owners are tracked in Notion; this list is the reference.
+
 ## Repository and process
 
 - [ ] Branch protection on `main` and fast-tier CI
-- [ ] Permissions log started (brands, creators)
+- [ ] Separate dev, staging and production environments
+- [ ] Permissions log for brands, networks and creators (Notion "Catalog sources")
 
 ## Accounts
 
 - [x] Apple Developer Program
-- [x] Google Play Console
-- [ ] Confirm whether the Play account is personal or organisation (personal needs the 12-tester, 14-day closed test)
-- [ ] Closed testing group of 12 or more Android testers (Play Console) and iOS testers (TestFlight), run outside the app
+- [x] Google Play Console (personal account: closed test with 12 or more testers for 14 continuous days)
+- [ ] Supabase, Modal, Google Cloud, Cloudflare, model providers, Sentry, PostHog, EAS, RevenueCat, Vercel
+- [ ] Truecaller SDK and WhatsApp OTP provider
+- [ ] Testers recruited for the Play closed test and TestFlight
 - [ ] Domain and landing page
 - [ ] Name, domain, store and trademark checks
 
 ## Catalog and affiliates
 
-| Where | Notes |
-| --- | --- |
-| [Cuelinks](https://www.cuelinks.com/campaigns/pepperfry-affiliate-program) | Check each campaign's app traffic rules and status |
-| [vCommission](https://www.vcommission.com/blog/publishers/top-indian-e-commerce-affiliate-programs-with-high-payouts-in-2026/) | Route to custom terms |
-| [EarnKaro](https://earnkaro.com/blog/ikea-affiliate-program) | Tracking may not work inside retailer apps |
-| Flipkart Affiliate | Per-order caps |
-| Amazon Associates India | Apply close to launch: 3 sales needed within 180 days |
-| Brand programs and direct deals | Coupon codes; terms must cover use of product images |
-
-## Creator content
-
-- [ ] Permission from each reference creator before their content is used for training
+- [ ] Flipkart Affiliate with Product Feed API access
+- [ ] Amazon Associates India (Creators API once eligible; manual links until then)
+- [ ] Cuelinks, EarnKaro, vCommission, INRDeals
+- [ ] Rental partners (Furlenco via Cuelinks, others direct)
+- [ ] D2C brand deals with coupon codes and image permission
+- [ ] App traffic rules confirmed per campaign
 
 ## Model and provider terms
 
 - [ ] Commercial license recorded for every model
-- [ ] Fallback aggregator terms allow production use for end users
+- [ ] Provider quotas raised for launch traffic
 
 ## Legal and finance
 
 - [ ] PAN and bank account for payouts
-- [ ] Chartered accountant advice on GST and company registration
-- [ ] Privacy policy and consent compliant with India's data protection law
+- [ ] GST and company registration advice
+- [ ] Privacy policy, terms and consent at first use
+- [ ] In-app account and data deletion
 - [ ] Affiliate disclosure in the app
 
 ## Product readiness
 
-- [ ] Phase 0 and phase 1 gates met
-- [ ] Vastu rule set reviewed by the expert consultant
-- [ ] Spend alerts, soft per-user limits and fallback chain live
-- [ ] No paywall and no invite system anywhere in the app
+- [ ] Quality gates in [assumptions and accuracy](02-assumptions-and-accuracy.md) passed on the golden set
+- [ ] Vastu rule set reviewed by the consultant
+- [ ] Spend caps, alerts and fallback chain live
+- [ ] Load test at 10 times expected launch traffic
+- [ ] No paywall anywhere in the app; entitlements off
 - [ ] Store listings with a before and after preview video
 - [ ] Marketing plan ready for launch day
