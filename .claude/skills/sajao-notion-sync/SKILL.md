@@ -24,10 +24,19 @@ Notion is the single tracker. Work that is not a task there does not start.
 
 Task fields: Name, Sprint, Epic, Owner (Claude Code, Cowork, Founder), Status (Backlog, Ready, In progress, In review, Blocked, Done), Priority (P0 to P2), Acceptance criteria, Non-negotiable, Size, PR.
 
+## Reading Notion
+
+The workspace plan does not allow database queries (SQL or view queries return an entitlement error). Navigate by fetching pages instead:
+
+- Search for the sprint by name, or fetch the Sprints database page, to find the sprint with Status "Active".
+- Fetch the sprint page; its `Tasks` property lists every task page URL in the sprint.
+- Fetch each task page to read Owner, Status, Priority and Acceptance criteria.
+- Update tasks with page updates (properties: Status, PR); these work on every plan.
+
 ## Session start
 
 1. Find the sprint with Status "Active".
-2. Query Tasks in that sprint for your owner (Claude Code or Cowork).
+2. Fetch the tasks in that sprint and keep those for your owner (Claude Code or Cowork).
 3. Pick the highest-priority task in "Ready" or "In progress". Read its acceptance criteria; they define done.
 4. Set it to "In progress" before you begin.
 
