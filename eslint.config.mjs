@@ -28,4 +28,10 @@ export default tseslint.config(
     files: ["**/*.{js,mjs,cjs}"],
     languageOptions: { globals: globals.node },
   },
+  {
+    // CommonJS config files (jest, metro, babel).
+    files: ["**/*.{js,cjs}"],
+    languageOptions: { globals: { ...globals.node, ...globals.jest } },
+    rules: { "@typescript-eslint/no-require-imports": "off" },
+  },
 );
