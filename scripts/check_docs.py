@@ -19,7 +19,10 @@ RULES: list[tuple[str, re.Pattern[str]]] = [
     ("em dash", re.compile("—")),
     ("use 'license'", re.compile(r"\blicence\b", re.IGNORECASE)),
     ("gender-neutral wording", re.compile(r"\b(she|her|hers|herself)\b", re.IGNORECASE)),
-    ("no AI tool mentions", re.compile(r"\b(claude|anthropic|chatgpt|copilot|co-authored-by)\b", re.IGNORECASE)),
+    (
+        "no AI tool mentions",
+        re.compile(r"\b(claude|anthropic|chatgpt|copilot|co-authored-by)\b", re.IGNORECASE),
+    ),
 ]
 
 # Repository paths that hold agent configuration are allowed as references.

@@ -1,0 +1,41 @@
+[project]
+name = "sajao"
+version = "0.0.0"
+description = "Sajao Python workspace root"
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "mypy>=1.18",
+    "pytest>=8.4",
+    "ruff>=0.14",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["services/api", "services/workers"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+extend-exclude = [".claude", "**/generated/**"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF", "S", "ASYNC"]
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S101"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+files = ["services"]
+exclude = ["/generated/"]
+
+[tool.pytest.ini_options]
+testpaths = ["services"]
+addopts = "--import-mode=importlib"
