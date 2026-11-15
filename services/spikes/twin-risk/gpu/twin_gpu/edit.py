@@ -210,11 +210,25 @@ def _quat_from_matrix(r: np.ndarray) -> np.ndarray:
     return q
 
 
-def plane_fill(
-    params, keep: np.ndarray, box: UprightBox, up: np.ndarray, cam_center: np.ndarray, metric: bool
-):
-    """Approach A. Returns new Gaussian tensors and per-plane diagnostics."""
-    import cv2
+def _corners(box: UprightBox) -> np.ndarray:
+    center = np.asarray(box.center)
+    a_, b_ = (i for i in range(3) if i != box.up_axis)
+    c, s = math.cos(box.yaw), math.sin(box.yaw)
+    out = []
+    for su in (-1, 1):
+        for sv in (-1, 1):
+            for sh in (-1, 1):
+                p = center.copy()
+                p[a_] += su * box.length / 2 * c - sv * box.width / 2 * s
+                p[b_] += su * box.length / 2 * s + sv * box.width / 2 * c
+                p[box.up_axis] += sh * box.height / 2
+                out.append(p)
+    return np.array(out)
+
+
+def shell_planes(params, keep, box: UprightBox, up, cam_center, metric: bool):
+    """Shell planes around the object (its support and nearby walls), fitted to
+    Gaussians outside the object. Returns (planes, inlier threshold)."""
     import torch
 
     means = params["means"].detach().cpu().numpy()
@@ -224,39 +238,40 @@ def plane_fill(
         _inside_box(means, box, up, pad=0.6 * max(box.length, box.height)) & keep & (opac > 0.3)
     )
     thr = max(0.012 * diag, 0.01) if metric else 0.012 * diag
-    planes = ransac_planes(means[region], thr)
     center = np.asarray(box.center)
     bottom = center @ up - box.height / 2
-    corners = []
-    a_, b_ = (i for i in range(3) if i != box.up_axis)
-    for su in (-1, 1):
-        for sv in (-1, 1):
-            for sh in (-1, 1):
-                c, s = math.cos(box.yaw), math.sin(box.yaw)
-                p = center.copy()
-                p[a_] += su * box.length / 2 * c - sv * box.width / 2 * s
-                p[b_] += su * box.length / 2 * s + sv * box.width / 2 * c
-                p[box.up_axis] += sh * box.height / 2
-                corners.append(p)
-    corners = np.array(corners)
-    new = {k: [] for k in ("means", "scales", "quats", "opacities", "sh0")}
-    diags = []
-    for n, origin, n_in in planes:
+    planes = []
+    for n, origin, n_in in ransac_planes(means[region], thr):
         if np.dot(n, cam_center - origin) < 0:
             n = -n
         ndotup = abs(float(np.dot(n, up)))
-        height = float(origin @ up)
         if ndotup > 0.9:
-            if height > bottom + 0.15 * box.height:
+            if float(origin @ up) > bottom + 0.15 * box.height:
                 continue  # a horizontal surface above the object's base is not its support
             kind = "support"
         elif ndotup < 0.2:
-            dist = abs(float((center - origin) @ n))
-            if dist > 0.5 * diag + max(box.length, box.width) / 2:
+            if abs(float((center - origin) @ n)) > 0.5 * diag + max(box.length, box.width) / 2:
                 continue
             kind = "wall"
         else:
             continue
+        planes.append((n, origin, n_in, kind))
+    return planes, thr
+
+
+def plane_fill(params, keep: np.ndarray, box: UprightBox, up: np.ndarray, planes, thr: float):
+    """Approach A. Returns new Gaussian tensors and per-plane diagnostics."""
+    import cv2
+    import torch
+
+    means = params["means"].detach().cpu().numpy()
+    diag = math.sqrt(box.length**2 + box.width**2 + box.height**2)
+    center = np.asarray(box.center)
+    corners = _corners(box)
+    new = {k: [] for k in ("means", "scales", "quats", "opacities", "sh0")}
+    diags = []
+    for n, origin, n_in, kind in planes:
+        ndotup = abs(float(np.dot(n, up)))
         o = origin + n * float((center - origin) @ n)  # object centre projected on the plane
         if ndotup < 0.9:
             ref = up
@@ -293,13 +308,14 @@ def plane_fill(
         region_m = np.zeros((hpx, wpx), np.uint8)
         cv2.fillConvexPoly(region_m, hull.astype(np.int32), 1)
         region_m = cv2.dilate(region_m, np.ones((9, 9), np.uint8)) > 0
-        hole = region_m & (alpha < 0.7)
+        unseen = alpha < 0.7
+        hole = region_m & unseen  # where new Gaussians go: behind the object only
         if hole.sum() < 20:
             diags.append(
                 {"kind": kind, "inliers": n_in, "hole_px": int(hole.sum()), "skipped": True}
             )
             continue
-        filled = lama.inpaint(tex, hole)
+        filled = lama.inpaint(tex, unseen)  # context only from texels that were seen
         ys, xs = np.nonzero(hole)
         stride = 1 if len(ys) < 80_000 else 2
         ys, xs = ys[::stride], xs[::stride]
@@ -446,20 +462,29 @@ def run_edit(name: str, finetune_steps: int = 5000) -> dict:
     if target is None:
         raise RuntimeError("no suitable object to hide")
     label, box, nframes = boxes[target]
+    metric = scene.get("metric", True)
     means_np = params["means"].detach().cpu().numpy()
     voted = labels == target
     support_h = float(np.asarray(box.center) @ up - box.height / 2)
     above = (means_np @ up) > support_h + 0.04 * box.height
     in_box = _inside_box(means_np, box, up, pad=0.03 * max(box.length, 1e-3)) & above
-    remove = voted | in_box
-    keep = ~remove
     cams = np.array([np.asarray(f["c2w"])[:3, 3] for f in scene["frames"]])
     cam_center = cams.mean(0)
+    # Space behind and under the object was never seen, so the splat there is
+    # unconstrained. Clear a margin around the object, keeping shell planes.
+    planes, thr = shell_planes(params, ~(voted | in_box), box, up, cam_center, metric)
+    on_shell = np.zeros(len(means_np), bool)
+    for n, origin, _, _ in planes:
+        on_shell |= np.abs((means_np - origin) @ n) < 1.5 * thr
+    margin = _inside_box(means_np, box, up, pad=0.15 * max(box.length, box.width)) & above
+    cleared = margin & ~on_shell & ~(voted | in_box)
+    remove = voted | in_box | cleared
+    keep = ~remove
 
     removed = merge(params, keep, {})
     t0 = time.time()
     plane_fill.textures = []
-    new, plane_diag = plane_fill(params, keep, box, up, cam_center, scene.get("metric", True))
+    new, plane_diag = plane_fill(params, keep, box, up, planes, thr)
     filled_a = merge(params, keep, new)
     torch.cuda.synchronize()
     timings["fill_a_seconds"] = round(time.time() - t0, 1)
@@ -582,6 +607,7 @@ def run_edit(name: str, finetune_steps: int = 5000) -> dict:
             "box": box_json(label, box, nframes),
             "gaussians_voted": int(voted.sum()),
             "gaussians_in_box_extra": int((in_box & ~voted).sum()),
+            "gaussians_cleared_around": int(cleared.sum()),
             "split_mask_iou": float(np.mean(ious[target])) if target in ious else None,
         },
         "fill_a": {"planes": plane_diag, "new_gaussians": int(sum(len(x) for x in new["means"]))},
