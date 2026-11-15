@@ -9,9 +9,20 @@ type Variant = "development" | "preview" | "production";
 // the slowest part of a build, so development and preview builds target
 // 64-bit ARM only, which is what current phones use. The store build also
 // covers 32-bit ARM phones. Emulator types (x86) are never built.
-const VARIANTS: Record<Variant, { name: string; id: string; androidArchs: string[] }> = {
+const VARIANTS: Record<
+  Variant,
+  { name: string; id: string; iosId?: string; androidArchs: string[] }
+> = {
   development: { name: "Sajao (Dev)", id: "app.sajao.dev", androidArchs: ["arm64-v8a"] },
-  preview: { name: "Sajao (Preview)", id: "app.sajao.preview", androidArchs: ["arm64-v8a"] },
+  preview: {
+    name: "Sajao (Preview)",
+    id: "app.sajao.preview",
+    // Temporary: Apple has a signing profile only for the development id so
+    // far. Until one exists for app.sajao.preview, the iOS preview build uses
+    // the development id and so replaces the development build on a phone.
+    iosId: "app.sajao.dev",
+    androidArchs: ["arm64-v8a"],
+  },
   // Confirmed by the founder. A store listing can never change its application id.
   production: { name: "Sajao", id: "app.sajao", androidArchs: ["arm64-v8a", "armeabi-v7a"] },
 };
@@ -24,7 +35,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...config,
     name: variant.name,
     slug: config.slug ?? "sajao",
-    ios: { ...config.ios, bundleIdentifier: variant.id },
+    ios: { ...config.ios, bundleIdentifier: variant.iosId ?? variant.id },
     android: { ...config.android, package: variant.id },
     plugins: [
       ...(config.plugins ?? []),
