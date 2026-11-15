@@ -78,7 +78,32 @@
       "yaw": "Yaw deg",
       "gyro": "Gyroscope",
       "usable": "Usable frames",
-      "error": "Last error"
+      "error": "Last error",
+      "tracking": "AR tracking",
+      "lidar": "LiDAR",
+      "planes": "Planes",
+      "meshTriangles": "Mesh triangles",
+      "mappedPoints": "Mapped points",
+      "detector": "Detector",
+      "labels": "Labels"
+    },
+    "labels": {
+      "fridge": "Fridge",
+      "sofa": "Sofa",
+      "chair": "Chair",
+      "table": "Table",
+      "bed": "Bed",
+      "tv": "TV",
+      "microwave": "Microwave",
+      "oven": "Oven",
+      "sink": "Sink",
+      "toilet": "Toilet",
+      "plant": "Plant",
+      "laptop": "Laptop",
+      "clock": "Clock",
+      "vase": "Vase",
+      "bench": "Bench",
+      "toaster": "Toaster"
     }
   },
   "space": {

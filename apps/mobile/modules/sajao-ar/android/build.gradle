@@ -1,0 +1,26 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'app.sajao'
+version = '0.1.0'
+
+android {
+  namespace "app.sajao.ar"
+  defaultConfig {
+    versionCode 1
+    versionName "0.1.0"
+  }
+  sourceSets {
+    // The detector model is shared with the iOS module.
+    main.assets.srcDirs += ['../ios/Assets']
+  }
+}
+
+dependencies {
+  // ARCore SDK for Android: Apache 2.0 client library; Google Play Services for AR terms at runtime.
+  implementation 'com.google.ar:core:1.57.0'
+  // MediaPipe Tasks: Apache 2.0.
+  implementation 'com.google.mediapipe:tasks-vision:0.10.33'
+}

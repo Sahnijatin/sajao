@@ -6,6 +6,8 @@ import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCameraPermission } from "react-native-vision-camera";
+import { getArCapabilities, getArView } from "../../modules/sajao-ar";
+import { shownLabels } from "@/capture/ar/labels";
 import { mappedSectors } from "@/capture/coverage";
 import { DebugOverlay } from "@/capture/debug-overlay";
 import type { GuardrailId, GuardrailStatus } from "@/capture/guardrails";
@@ -97,14 +99,39 @@ function RoundButton({
  */
 export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenProps) {
   const { t } = useTranslation();
-  const { tokens } = useTheme();
+  const { tokens, tier, reducedMotion } = useTheme();
   const { spacing, radius } = tokens;
   const insets = useSafeAreaInsets();
   const window = useWindowDimensions();
   const permission = useCameraPermission();
   const [torch, setTorch] = useState(false);
-  const { state, debug, onFrame, onExposure, onDiagnostics, scanAnyway } = useScanSession(
-    permission.hasPermission,
+  const {
+    state,
+    debug,
+    labels,
+    onFrame,
+    onExposure,
+    onDiagnostics,
+    onArStatus,
+    onArPose,
+    onArDetections,
+    scanAnyway,
+  } = useScanSession(permission.hasPermission);
+  // AR-anchored scan where the phone supports it; otherwise the 2D scan.
+  const capabilities = useMemo(() => getArCapabilities(), []);
+  const ArView = useMemo(() => getArView(), []);
+  const [arFailed, setArFailed] = useState(false);
+  const arMode = capabilities.arSupported && ArView !== null && !arFailed;
+  const labelProps = useMemo(
+    () =>
+      shownLabels(labels).map((label) => ({
+        id: label.id,
+        text: t(`capture.labels.${label.kind}`),
+        x: label.x,
+        y: label.y,
+        z: label.z,
+      })),
+    [labels, t],
   );
   const aspect = state.frame?.aspect ?? 9 / 16;
   const points = useMemo(() => toScreen(state.mesh, window, aspect), [state.mesh, window, aspect]);
@@ -153,21 +180,49 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
   return (
     <View style={{ flex: 1, backgroundColor: "#000000" }}>
       {/* The camera keeps running while paused, so the scan can see the fix and resume. */}
-      <ScanCamera
-        style={StyleSheet.absoluteFill}
-        active
-        torch={torch}
-        onAnalysed={onFrame}
-        onExposure={onExposure}
-        onDiagnostics={onDiagnostics}
-      />
-      <MeshEffect
-        style={StyleSheet.absoluteFill}
-        width={window.width}
-        height={window.height}
-        points={points}
-        triangles={state.mesh.triangles}
-      />
+      {arMode && ArView ? (
+        <ArView
+          style={StyleSheet.absoluteFill}
+          active
+          torch={torch}
+          lite={tier === "low"}
+          reducedMotion={reducedMotion}
+          labels={labelProps}
+          onArStatus={({ nativeEvent }) => {
+            // A session that cannot start falls back to the 2D scan.
+            if ("error" in nativeEvent) setArFailed(true);
+            else onArStatus(nativeEvent);
+          }}
+          onArPose={({ nativeEvent }) => onArPose(nativeEvent)}
+          onArDetections={({ nativeEvent }) =>
+            onArDetections(
+              (nativeEvent.detections ?? []).map((detection) => ({
+                detectorClass: detection.detectorClass,
+                score: detection.score,
+                world: detection.world ?? null,
+              })),
+            )
+          }
+        />
+      ) : (
+        <>
+          <ScanCamera
+            style={StyleSheet.absoluteFill}
+            active
+            torch={torch}
+            onAnalysed={onFrame}
+            onExposure={onExposure}
+            onDiagnostics={onDiagnostics}
+          />
+          <MeshEffect
+            style={StyleSheet.absoluteFill}
+            width={window.width}
+            height={window.height}
+            points={points}
+            triangles={state.mesh.triangles}
+          />
+        </>
+      )}
       <Pressable
         testID="scan-camera-area"
         accessible={false}
