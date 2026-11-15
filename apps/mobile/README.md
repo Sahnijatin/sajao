@@ -19,6 +19,10 @@ The Sajao app shell: Expo with Expo Router, four native tabs, English and Hindi,
 - Lengths are metres in data and are shown through `formatLength` in the user's units. Prices are paise in data and are shown through `formatInr`.
 - Colors, spacing, motion and haptics come from `@sajao/ui`.
 
+## Hindi copy: needs native review
+
+`src/i18n/locales/hi.json` has not been read by a fluent Hindi speaker yet. It must be reviewed before the closed test; the review is tracked in Notion.
+
 ## Running it
 
 ```

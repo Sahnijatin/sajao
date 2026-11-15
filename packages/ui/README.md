@@ -36,6 +36,10 @@ On Android a live blur needs a `blurTarget`; without one `GlassSurface` shows th
 
 The design doc fixes colors, glass, radius, the transition ease and the selection spring. It does not give numbers for the spacing scale, the type scale, the shadow offsets, the glass border or the low-tier tint. Those are set here to sensible values and should be confirmed against the screen mockups. Blur saturation (180%) is recorded as a token but not applied, because the blur view has no saturation control.
 
+## Hindi copy: needs native review
+
+The Hindi strings in `apps/mobile/src/i18n/locales/hi.json` have not been read by a fluent speaker. They must be reviewed and corrected before the closed test. Components here take their text as props, so any new Hindi string added for a component goes through the same review.
+
 ## Tests
 
 `pnpm --filter @sajao/ui test` checks the tokens and presets against the design doc, every haptic pattern on both platforms, the low-tier and reduced-motion fallbacks, and that the gallery renders.
