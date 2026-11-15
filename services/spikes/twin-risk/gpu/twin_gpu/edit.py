@@ -543,10 +543,10 @@ def hide_and_fill(name: str, ctx: dict, kind: str, finetune_steps: int) -> dict:
     filled_a = merge(params, keep, new)
     torch.cuda.synchronize()
     timings["fill_a_seconds"] = round(time.time() - t0, 1)
-    for t_i, (kind, tex, hole, filled) in enumerate(plane_fill.textures):
+    for t_i, (pkind, tex, hole, filled) in enumerate(plane_fill.textures):
         vis = tex.copy()
         vis[hole] = (vis[hole] * 0.4 + np.array([255, 0, 0]) * 0.6).astype(np.uint8)
-        write_rgb(ed / f"plane_{t_i}_{kind}.jpg", np.concatenate([vis, filled], axis=1))
+        write_rgb(ed / f"plane_{t_i}_{pkind}.jpg", np.concatenate([vis, filled], axis=1))
 
     # Approach B: inpaint each training frame, then fine-tune the object-free splat.
     t0 = time.time()

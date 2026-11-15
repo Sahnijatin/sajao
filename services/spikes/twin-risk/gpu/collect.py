@@ -6,10 +6,8 @@ root after the stages finish: python services/spikes/twin-risk/gpu/collect.py
 
 from __future__ import annotations
 
-import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -34,16 +32,6 @@ JSON = [
     "stream.json",
     "light_mesh.json",
 ]
-IMAGES = [
-    "topdown_gdino_lidar.png",
-    "topdown_gdino_mapanything.png",
-    "topdown_yoloe_lidar.png",
-    "topdown_yoloe_mapanything.png",
-    "topdown_gdino_lidar_refined.png",
-    "topdown_yoloe_lidar_refined.png",
-    "splat/test_0.jpg",
-    "edit",
-]
 
 
 def get(remote: str, local: Path) -> bool:
@@ -56,23 +44,34 @@ def get(remote: str, local: Path) -> bool:
     return res.returncode == 0
 
 
+def ls(remote: str) -> list[str]:
+    res = subprocess.run(["modal", "volume", "ls", VOLUME, remote], capture_output=True, text=True)
+    return [x.strip() for x in res.stdout.splitlines() if x.strip().startswith("out/")]
+
+
+def images_under(remote: str) -> list[str]:
+    """Image files under a remote folder, recursing into subfolders."""
+    out = []
+    for entry in ls(remote):
+        if entry.endswith((".jpg", ".png")):
+            out.append(entry)
+        elif "." not in Path(entry).name:
+            out.extend(images_under(entry))
+    return out
+
+
 def main(scenes: list[str]) -> None:
     for scene in scenes:
         for name in JSON:
             get(f"out/{scene}/{name}", DEST / "results" / scene / name)
-        for name in IMAGES:
-            with tempfile.TemporaryDirectory() as tmp:
-                if not get(f"out/{scene}/{name}", Path(tmp) / "x"):
-                    continue
-                src = Path(tmp) / "x"
-                files = [src] if src.is_file() else sorted(src.rglob("*"))
-                for f in files:
-                    if f.is_file() and f.suffix.lower() in (".jpg", ".png"):
-                        rel = Path(name) / f.relative_to(src) if src.is_dir() else Path(name).name
-                        dst = DEST / "images" / scene / rel
-                        dst.parent.mkdir(parents=True, exist_ok=True)
-                        shutil.copy(f, dst)
-        print(f"collected {scene}")
+        top = ls(f"out/{scene}")
+        files = [x for x in top if x.endswith(".png")]
+        for sub in ("splat", "edit"):
+            files += images_under(f"out/{scene}/{sub}")
+        for remote in files:
+            rel = Path(remote).relative_to(f"out/{scene}")
+            get(remote, DEST / "images" / scene / rel)
+        print(f"collected {scene}: {len(files)} images")
 
 
 if __name__ == "__main__":
