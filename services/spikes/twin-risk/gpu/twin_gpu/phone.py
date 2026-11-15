@@ -23,21 +23,6 @@ BUDGETS = [None, 1_000_000, 500_000, 250_000]
 PHONE_W, PHONE_H = 720, 1280
 
 
-def importance(params) -> np.ndarray:
-    import torch
-
-    op = torch.sigmoid(params["opacities"]).detach()
-    vol = torch.exp(params["scales"]).detach().prod(1).pow(1 / 3)
-    return (op * vol).cpu().numpy()
-
-
-def keep_top(params, budget):
-    n = len(params["means"])
-    if budget is None or budget >= n:
-        return None
-    return np.sort(np.argsort(-importance(params))[:budget])
-
-
 def subset(params, keep, sh_degree=3):
     import torch
 
@@ -115,45 +100,72 @@ def time_render(p, vms, ks, sh_degree=3, repeats=1) -> float:
 
 
 def export_variants(name: str) -> dict:
-    """Write PLY variants (full and pruned) for compression on the CPU job."""
-    import torch
-
+    """GPU job: write the full splat as PLY; decimated variants come from the CPU job."""
     scene = load_scene(name)
     od = out_dir(name)
     params = load_params(od / "splat.pt")
     _, timgs, tks, tvms = load_frames(scene, name, "test")
     vdir = od / "phone"
     vdir.mkdir(parents=True, exist_ok=True)
-    rows = []
-    n = len(params["means"])
-    for budget in BUDGETS:
-        if budget is not None and budget >= n:
-            continue
-        keep = keep_top(params, budget)
-        tag = "full" if budget is None else f"{budget // 1000}k"
-        count = export_ply(params, vdir / f"{tag}.ply", keep=keep)
-        p = subset(params, keep)
-        rows.append(
-            {
-                "variant": tag,
-                "gaussians": count,
-                "ply_bytes": (vdir / f"{tag}.ply").stat().st_size,
-                "psnr_sh3": psnr_on_test(p, timgs, tks, tvms, 3),
-                "psnr_sh0": psnr_on_test(subset(params, keep, 0), timgs, tks, tvms, 0),
-            }
-        )
-    torch.cuda.empty_cache()
+    count = export_ply(params, vdir / "full.ply")
+    rows = [
+        {
+            "variant": "full",
+            "gaussians": count,
+            "ply_bytes": (vdir / "full.ply").stat().st_size,
+            "psnr_sh3": psnr_on_test(params, timgs, tks, tvms, 3),
+            "psnr_sh0": psnr_on_test(subset(params, None, 0), timgs, tks, tvms, 0),
+        }
+    ]
     save_json(od / "phone_variants.json", rows)
     return {"scene": name, "variants": rows}
 
 
+def _ply_count(path: Path) -> int:
+    with open(path, "rb") as fh:
+        for line in fh:
+            if line.startswith(b"element vertex"):
+                return int(line.split()[-1])
+            if line.startswith(b"end_header"):
+                break
+    return 0
+
+
+def _splat_transform(args: list[str]) -> tuple[bool, str]:
+    res = subprocess.run(
+        ["splat-transform", "-w", "-g", "cpu", *args], capture_output=True, text=True
+    )
+    return res.returncode == 0, (res.stderr or res.stdout)[-600:]
+
+
 def compress_variants(name: str) -> dict:
-    """CPU job: splat-transform each PLY to SOG (SH3 and SH0), compressed PLY and SPZ."""
+    """CPU job: decimate to Gaussian budgets (adaptive, mass-preserving), then
+    compress each variant to SOG (SH3 and SH0), compressed PLY and SPZ."""
     od = out_dir(name)
     vdir = od / "phone"
     rows = load_json(od / "phone_variants.json", [])
+    full = next(r for r in rows if r["variant"] == "full")
+    rows = [full]
+    for budget in BUDGETS:
+        if budget is None or budget >= full["gaussians"]:
+            continue
+        tag = f"{budget // 1000}k"
+        dst = vdir / f"{tag}.ply"
+        t0 = time.time()
+        ok, err = _splat_transform(
+            [str(vdir / "full.ply"), "--decimate-adaptive", str(budget), str(dst)]
+        )
+        row = {"variant": tag, "decimate_seconds": round(time.time() - t0, 1)}
+        if not ok:
+            row["decimate_error"] = err
+            rows.append(row)
+            continue
+        row.update(gaussians=_ply_count(dst), ply_bytes=dst.stat().st_size)
+        rows.append(row)
     for r in rows:
         src = vdir / f"{r['variant']}.ply"
+        if not src.exists():
+            continue
         outs = {
             "sog_sh3": (vdir / f"{r['variant']}.sog", []),
             "sog_sh0": (vdir / f"{r['variant']}_sh0.sog", ["-H", "0"]),
@@ -162,18 +174,14 @@ def compress_variants(name: str) -> dict:
         }
         for key, (dst, actions) in outs.items():
             t0 = time.time()
-            cmd = ["splat-transform", "-q", "-w", "-g", "cpu", str(src), *actions, str(dst)]
-            res = subprocess.run(cmd, capture_output=True, text=True)
-            if res.returncode != 0:
-                r[f"{key}_error"] = res.stderr[-400:]
+            ok, err = _splat_transform([str(src), *actions, str(dst)])
+            if not ok:
+                r[f"{key}_error"] = err
                 continue
             r[f"{key}_bytes"] = dst.stat().st_size
             r[f"{key}_seconds"] = round(time.time() - t0, 1)
-        # Decode the SOG back to PLY so the GPU job can measure its quality loss.
-        dec = vdir / f"{r['variant']}_sog_decoded.ply"
-        subprocess.run(
-            ["splat-transform", "-q", "-w", str(outs["sog_sh3"][0]), str(dec)], check=False
-        )
+        # Decode the SOG back to PLY so the GPU job can measure what compression costs.
+        _splat_transform([str(outs["sog_sh3"][0]), str(vdir / f"{r['variant']}_sog_decoded.ply")])
     save_json(od / "phone_variants.json", rows)
     return {"scene": name, "variants": rows}
 
@@ -234,7 +242,12 @@ def measure(name: str, gpu: str) -> dict:
     _, timgs, tks, tvms = load_frames(scene, name, "test")
     vms, ks = orbit(scene)
     for r in rows:
+        if not (vdir / f"{r['variant']}.ply").exists():
+            continue
         p = read_ply_params(vdir / f"{r['variant']}.ply")
+        if "psnr_sh3" not in r:
+            r["psnr_sh3"] = psnr_on_test(p, timgs, tks, tvms, 3)
+            r["psnr_sh0"] = psnr_on_test(p, timgs, tks, tvms, 0)
         r[f"render_ms_{gpu}_sh3"] = time_render(p, vms, ks, 3)
         r[f"render_ms_{gpu}_sh0"] = time_render(p, vms, ks, 0)
         dec = vdir / f"{r['variant']}_sog_decoded.ply"

@@ -22,6 +22,19 @@ import numpy as np
 VOL = Path("/vol")
 
 
+def _local_kernels() -> None:
+    """Load gsplat's compiled kernels from local disk: an open file on the
+    volume would block volume commits."""
+    import shutil
+
+    src, dst = VOL / "torch_extensions", Path(os.environ.get("TORCH_EXTENSIONS_DIR", "/root/x"))
+    if src.is_dir() and not dst.exists() and str(dst).startswith("/root"):
+        shutil.copytree(src, dst)
+
+
+_local_kernels()
+
+
 def scene_dir(name: str) -> Path:
     return VOL / "scenes" / name
 

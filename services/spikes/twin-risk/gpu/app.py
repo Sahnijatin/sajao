@@ -74,7 +74,7 @@ gpu_image = (
         {
             "HF_HOME": "/vol/hf",
             "PYTHONUNBUFFERED": "1",
-            "TORCH_EXTENSIONS_DIR": "/vol/torch_extensions",
+            "TORCH_EXTENSIONS_DIR": "/root/torch_extensions",
         }
     )
     .add_local_dir(SRC, "/root/twin_risk")
@@ -253,6 +253,7 @@ def smoke() -> dict:
     import mapanything  # noqa: F401
     import torch
     import transformers
+    import twin_gpu.common  # noqa: F401  (copies cached kernels to local disk)
     from gsplat import rasterization
     from transformers import Sam2Model  # noqa: F401
 
@@ -274,7 +275,11 @@ def smoke() -> dict:
         gsplat=str(gsplat.__version__),
         transformers=str(transformers.__version__),
     )
-    vol.commit()  # keep the compiled gsplat kernels for later jobs
+    import shutil
+
+    # Keep the compiled kernels for later jobs (they load from a local copy).
+    shutil.copytree("/root/torch_extensions", "/vol/torch_extensions", dirs_exist_ok=True)
+    vol.commit()
     return out
 
 
