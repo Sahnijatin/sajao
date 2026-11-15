@@ -9,3 +9,4 @@ uv.lock
 .claude
 docs
 *.md
+services/api/openapi.json
