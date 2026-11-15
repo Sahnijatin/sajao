@@ -245,6 +245,12 @@ def shell_planes(params, keep, box: UprightBox, up, cam_center, metric: bool):
         if np.dot(n, cam_center - origin) < 0:
             n = -n
         ndotup = abs(float(np.dot(n, up)))
+        # Floors are level and walls are vertical: snap the fitted normal.
+        if ndotup > 0.9:
+            n = up * np.sign(np.dot(n, up))
+        elif ndotup < 0.2:
+            n = n - up * float(np.dot(n, up))
+            n /= np.linalg.norm(n)
         if ndotup > 0.9:
             if float(origin @ up) > bottom + 0.15 * box.height:
                 continue  # a horizontal surface above the object's base is not its support
