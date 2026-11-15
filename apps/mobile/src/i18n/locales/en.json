@@ -1,0 +1,41 @@
+{
+  "tabs": {
+    "home": "Home",
+    "rooms": "My rooms",
+    "vastu": "Vastu",
+    "profile": "Profile"
+  },
+  "home": {
+    "tagline": "Scan your room. See it redone. Buy what fits.",
+    "intro": "Share a few photos or a short video of a room and get three redesigns built from real products that fit."
+  },
+  "rooms": {
+    "title": "My rooms",
+    "emptyTitle": "No rooms yet",
+    "emptyBody": "Rooms you scan and designs you save will appear here."
+  },
+  "vastu": {
+    "title": "Vastu",
+    "label": "Vastu guidance, as close as possible. For a full consultation, speak to an expert.",
+    "body": "Scan a room to see its direction and a room scorecard."
+  },
+  "profile": {
+    "title": "Profile",
+    "guestTitle": "You are browsing as a guest",
+    "guestBody": "Explore freely. We ask you to sign in only when you are ready to design a room.",
+    "language": "Language",
+    "units": "Units",
+    "unitsCm": "Centimetres",
+    "unitsFtIn": "Feet and inches",
+    "unitsExample": "A 3.4 m wall shows as {{length}}",
+    "gallery": "Component gallery"
+  },
+  "languages": {
+    "en": "English",
+    "hi": "हिन्दी"
+  },
+  "length": {
+    "cm": "{{value}} cm",
+    "ftIn": "{{feet}} ft {{inches}} in"
+  }
+}
