@@ -5,7 +5,7 @@ The contract between the app, the API and the workers. One JSON Schema source pe
 | Object | Stage |
 | --- | --- |
 | `Capture` | Input |
-| `RoomProfile` | Understanding |
+| `SpaceProfile` | Understanding |
 | `TasteProfile`, `Brief` | Personalisation |
 | `Product` | Catalog item, embedded in a design |
 | `Design` | Design |
@@ -15,6 +15,7 @@ The contract between the app, the API and the workers. One JSON Schema source pe
 ## Rules the schemas enforce
 
 - Every dimension is a `Dimension`: a value in metres, a source (`measured`, `estimated`, `user_confirmed`) and an error band. A test fails if a bare length is added anywhere else.
+- A space is whatever was scanned: `Capture` has no room type. `SpaceProfile` carries the detected `space_type` and `extent`, who set each (`detected` or `user`), and the `redo` choice (all of it, or just a part).
 - Money is INR in paise, as an integer.
 - A `Product` needs image permission and at least one buy or rent route.
 - A `DesignItem` is placed by the solver or the user, never by a model.

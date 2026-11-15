@@ -14,6 +14,8 @@ def test_settings_come_from_the_environment(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.setenv("SAJAO_ENVIRONMENT", "staging")
     monkeypatch.setenv("SAJAO_DATABASE_URL", "postgresql://user:hunter2@db.internal/sajao")
     monkeypatch.setenv("SAJAO_MIN_APP_VERSION", "1.2.0")
+    monkeypatch.setenv("SAJAO_AUTH_JWKS_URL", "https://auth.test/jwks.json")
+    monkeypatch.setenv("SAJAO_AUTH_ISSUER", "https://auth.test")
     settings = Settings()
     assert settings.environment == "staging"
     assert settings.min_app_version == "1.2.0"
@@ -40,6 +42,8 @@ def test_a_database_is_required_outside_dev(
 ) -> None:
     monkeypatch.setenv("SAJAO_ENVIRONMENT", environment)
     monkeypatch.delenv("SAJAO_DATABASE_URL", raising=False)
+    monkeypatch.setenv("SAJAO_AUTH_JWKS_URL", "https://auth.test/jwks.json")
+    monkeypatch.setenv("SAJAO_AUTH_ISSUER", "https://auth.test")
     with pytest.raises(ValidationError, match="SAJAO_DATABASE_URL is required"):
         Settings()
 

@@ -34,11 +34,6 @@ export type Timestamp = string
  */
 export type LocalId = string
 /**
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "RoomType".
- */
-export type RoomType = ("living_room" | "bedroom")
-/**
  * Object key in the media store. Never a public URL; clients receive signed URLs.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -84,6 +79,13 @@ export type HttpsUrl = string
  */
 export type HexColor = string
 /**
+ * detected: worked out from the scan. user: changed or confirmed by the user.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "DetectionSource".
+ */
+export type DetectionSource = ("detected" | "user")
+/**
  * Closed floor polygon; the last point joins the first.
  * 
  * @minItems 3
@@ -92,6 +94,13 @@ export type HexColor = string
  * via the `definition` "Polygon".
  */
 export type Polygon = [Point2, Point2, Point2, ...(Point2)[]]
+/**
+ * What the scanned space is. Detected from the scan, never picked up front; the user can change it.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "SpaceType".
+ */
+export type SpaceType = ("living_room" | "bedroom" | "balcony" | "other")
 
 /**
  * Generated from schemas/v1. Do not edit.
@@ -100,7 +109,7 @@ export interface SajaoContract {
 [k: string]: unknown
 }
 /**
- * Per-room choices on top of the taste profile. With the room profile and the catalog, the only input the design engine reads.
+ * Per-room choices on top of the taste profile. With the space profile and the catalog, the only input the design engine reads.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
  * via the `definition` "Brief".
@@ -108,7 +117,7 @@ export interface SajaoContract {
 export interface Brief {
 schema_version: SchemaVersion
 id: Uuid
-room_profile_id: Uuid
+space_profile_id: Uuid
 taste_profile_id: Uuid
 created_at: Timestamp
 intent: ("refresh" | "full_makeover" | "rearrange_only")
@@ -118,7 +127,7 @@ budget: Budget
  */
 must_haves: string[]
 /**
- * Existing items in the room profile to keep.
+ * Existing items in the space profile to keep.
  */
 keep_item_ids: LocalId[]
 consider_vastu: boolean
@@ -144,7 +153,7 @@ currency: "INR"
 amount_minor: number
 }
 /**
- * Input stage: the photos or video of one room, plus optional tape values.
+ * Input stage: the photos or video of any space, at any extent (a whole room, a corner, a balcony), plus optional tape values. The space type is detected later, not picked here.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
  * via the `definition` "Capture".
@@ -153,7 +162,6 @@ export interface Capture {
 schema_version: SchemaVersion
 id: Uuid
 user_id: Uuid
-room_type: RoomType
 created_at: Timestamp
 /**
  * @minItems 1
@@ -262,7 +270,7 @@ detail?: string
 export interface Design {
 schema_version: SchemaVersion
 id: Uuid
-room_profile_id: Uuid
+space_profile_id: Uuid
 brief_id: Uuid
 created_at: Timestamp
 /**
@@ -389,7 +397,7 @@ price: Money
 coupon_code?: string
 }
 /**
- * A point on the floor in the room frame, in metres.
+ * A point on the floor in the space frame, in metres.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
  * via the `definition` "Point2".
@@ -438,7 +446,7 @@ session_id: Uuid
 user_id?: Uuid
 platform?: ("ios" | "android" | "web")
 app_version?: string
-room_profile_id?: Uuid
+space_profile_id?: Uuid
 design_id?: Uuid
 product_id?: Uuid
 /**
@@ -504,7 +512,7 @@ opens: ("inward" | "outward")
 }
 }
 /**
- * Spatial view: the dimensioned 2D plan derived from one design and its room profile.
+ * Spatial view: the dimensioned 2D plan derived from one design and its space profile.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
  * via the `definition` "Plan".
@@ -544,6 +552,16 @@ minimum_m: number
  * True only when the distance minus its error band meets the minimum.
  */
 ok: boolean
+}
+/**
+ * What the user wants redone: all of the scanned space, or just a part they drew around.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "RedoArea".
+ */
+export interface RedoArea {
+scope: ("all" | "part")
+polygon?: Polygon
 }
 /**
  * Visualisation stage: an image derived from one design. Always labelled illustrative.
@@ -591,68 +609,6 @@ structure: CheckResult
 grounding: CheckResult
 likeness: CheckResult
 aesthetic: CheckResult
-}
-/**
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "RoomDirection".
- */
-export interface RoomDirection {
-north_deg: AngleDeg
-/**
- * confirmed only when more than the compass agrees. Strict Vastu needs confirmed.
- */
-confidence: ("approximate" | "confirmed")
-/**
- * @minItems 1
- */
-sources: [("compass" | "main_door_confirmation"), ...(("compass" | "main_door_confirmation"))[]]
-}
-/**
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "RoomLight".
- */
-export interface RoomLight {
-natural_light: ("low" | "medium" | "high")
-main_direction_deg?: AngleDeg
-}
-/**
- * Understanding stage: the room as a scene graph. Geometry models estimate, tape verifies; every dimension carries a value, a source and an error band.
- * 
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "RoomProfile".
- */
-export interface RoomProfile {
-schema_version: SchemaVersion
-id: Uuid
-capture_id: Uuid
-room_type: RoomType
-created_at: Timestamp
-/**
- * verified only when tape values cover the room's key dimensions.
- */
-verification: ("estimated" | "verified")
-floor_polygon: Polygon
-/**
- * @minItems 3
- */
-walls: [Wall, Wall, Wall, ...(Wall)[]]
-ceiling_height: Dimension
-openings: Opening[]
-fixtures: Fixture[]
-existing_items: ExistingItem[]
-light?: RoomLight
-direction: RoomDirection
-scale: ScaleEvidence
-}
-/**
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "Wall".
- */
-export interface Wall {
-id: LocalId
-start: Point2
-end: Point2
-length: Dimension
 }
 /**
  * Independent scale anchors and whether they agree.
@@ -722,6 +678,77 @@ cheaper_alternative_product_id?: Uuid
 export interface GroupSubtotal {
 group: ProductGroup
 subtotal: Money
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "SpaceDirection".
+ */
+export interface SpaceDirection {
+north_deg: AngleDeg
+/**
+ * confirmed only when more than the compass agrees. Strict Vastu needs confirmed.
+ */
+confidence: ("approximate" | "confirmed")
+/**
+ * @minItems 1
+ */
+sources: [("compass" | "main_door_confirmation"), ...(("compass" | "main_door_confirmation"))[]]
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "SpaceLight".
+ */
+export interface SpaceLight {
+natural_light: ("low" | "medium" | "high")
+main_direction_deg?: AngleDeg
+}
+/**
+ * Understanding stage: the scanned space as a scene graph. It may be a whole room or only part of one. Geometry models estimate, tape verifies; every dimension carries a value, a source and an error band.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "SpaceProfile".
+ */
+export interface SpaceProfile {
+schema_version: SchemaVersion
+id: Uuid
+capture_id: Uuid
+space_type: SpaceType
+space_type_source: DetectionSource
+/**
+ * How much was scanned: a whole room, or part of one such as a corner or one wall.
+ */
+extent: ("whole_room" | "part")
+extent_source: DetectionSource
+redo: RedoArea
+created_at: Timestamp
+/**
+ * verified only when tape values cover the space's key dimensions.
+ */
+verification: ("estimated" | "verified")
+floor_polygon: Polygon
+/**
+ * Walls seen in the scan. A partial scan may have one or two.
+ * 
+ * @minItems 1
+ */
+walls: [Wall, ...(Wall)[]]
+ceiling_height: Dimension
+openings: Opening[]
+fixtures: Fixture[]
+existing_items: ExistingItem[]
+light?: SpaceLight
+direction: SpaceDirection
+scale: ScaleEvidence
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "Wall".
+ */
+export interface Wall {
+id: LocalId
+start: Point2
+end: Point2
+length: Dimension
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema

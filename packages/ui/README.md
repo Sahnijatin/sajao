@@ -63,6 +63,10 @@ Instrument Serif has Latin letters only. Hindi headlines fall back to the system
 - **Low-tier dark glass tint** (78% opacity) is not on the mockups; it was chosen so white text stays legible without a blur.
 - Blur saturation (180% light, 160% dark) is recorded as a token but not applied, because the blur view has no saturation control.
 
+## Hindi copy: needs native review
+
+The Hindi strings in `apps/mobile/src/i18n/locales/hi.json` have not been read by a fluent speaker. They must be reviewed and corrected before the closed test. Components here take their text as props, so any new Hindi string added for a component goes through the same review.
+
 ## Tests
 
 `pnpm --filter @sajao/ui test` checks the tokens and presets against the design doc, every haptic pattern on both platforms, the low-tier and reduced-motion fallbacks, and that the gallery renders.

@@ -8,7 +8,7 @@ import { validate } from "./validate";
 const fixtures = join(import.meta.dirname, "..", "fixtures", "v1");
 const load = (path: string): unknown => JSON.parse(readFileSync(path, "utf8"));
 
-// "room-profile.dimension-without-source.json" -> "RoomProfile"
+// "space-profile.dimension-without-source.json" -> "SpaceProfile"
 function objectName(file: string): ObjectName {
   const kebab = file.split(".")[0] ?? "";
   const name = kebab.replace(/(^|-)([a-z])/g, (_match, _dash, letter: string) =>
@@ -39,6 +39,27 @@ describe("contract v1", () => {
   it.each(readdirSync(join(fixtures, "invalid")))("rejects invalid/%s", (file) => {
     const result = validate(objectName(file), load(join(fixtures, "invalid", file)));
     expect(result.ok).toBe(false);
+  });
+});
+
+describe("scan any space at any extent", () => {
+  const whole = load(join(fixtures, "valid", "space-profile.json")) as Record<string, unknown>;
+
+  it("accepts a corner of a balcony with two walls and a part to redo", () => {
+    const corner = {
+      ...whole,
+      space_type: "balcony",
+      space_type_source: "user",
+      extent: "part",
+      walls: (whole.walls as unknown[]).slice(0, 2),
+      redo: { scope: "part", polygon: (whole.floor_polygon as unknown[]).slice(0, 3) },
+    };
+    expect(validate("SpaceProfile", corner).ok).toBe(true);
+  });
+
+  it("has no room type on a capture: the space type is detected, not picked", () => {
+    expect(Object.keys(bundle.$defs.Capture.properties)).not.toContain("room_type");
+    expect(Object.keys(bundle.$defs.Capture.properties)).not.toContain("space_type");
   });
 });
 

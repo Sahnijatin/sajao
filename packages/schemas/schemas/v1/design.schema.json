@@ -8,7 +8,7 @@
   "required": [
     "schema_version",
     "id",
-    "room_profile_id",
+    "space_profile_id",
     "brief_id",
     "created_at",
     "slot",
@@ -28,7 +28,7 @@
     "id": {
       "$ref": "common.schema.json#/$defs/Uuid"
     },
-    "room_profile_id": {
+    "space_profile_id": {
       "$ref": "common.schema.json#/$defs/Uuid"
     },
     "brief_id": {
@@ -131,7 +131,7 @@
         },
         "position": {
           "$ref": "common.schema.json#/$defs/Point2",
-          "description": "Center of the item's footprint in the room frame."
+          "description": "Center of the item's footprint in the space frame."
         },
         "rotation_deg": {
           "$ref": "common.schema.json#/$defs/AngleDeg"

@@ -97,7 +97,7 @@ class Swing(BaseModel):
 
 class Point2(BaseModel):
     """
-    A point on the floor in the room frame, in metres.
+    A point on the floor in the space frame, in metres.
     """
 
     model_config = ConfigDict(
@@ -131,6 +131,24 @@ class ProductRoute(BaseModel):
     coupon_code: Annotated[str | None, Field(min_length=1)] = None
 
 
+class RedoArea(BaseModel):
+    """
+    What the user wants redone: all of the scanned space, or just a part they drew around.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    scope: Literal["all", "part"]
+    polygon: Annotated[
+        list[Point2] | None,
+        Field(
+            description="The part to redo, in the space frame. Present when scope is part; the design engine checks this.",
+            min_length=3,
+        ),
+    ] = None
+
+
 class ModelRef(BaseModel):
     """
     Pinned model that produced a guided photo render.
@@ -142,33 +160,6 @@ class ModelRef(BaseModel):
     provider: Annotated[str, Field(min_length=1)]
     name: Annotated[str, Field(min_length=1)]
     version: Annotated[str, Field(min_length=1)]
-
-
-class RoomDirection(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    north_deg: Annotated[
-        float,
-        Field(description="Compass bearing of the room frame's positive y axis.", ge=0.0, lt=360.0),
-    ]
-    confidence: Annotated[
-        Literal["approximate", "confirmed"],
-        Field(
-            description="confirmed only when more than the compass agrees. Strict Vastu needs confirmed."
-        ),
-    ]
-    sources: Annotated[list[Literal["compass", "main_door_confirmation"]], Field(min_length=1)]
-
-
-class RoomLight(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    natural_light: Literal["low", "medium", "high"]
-    main_direction_deg: Annotated[
-        float | None, Field(description="Degrees, 0 inclusive to 360 exclusive.", ge=0.0, lt=360.0)
-    ] = None
 
 
 class ScaleAnchor(BaseModel):
@@ -209,6 +200,35 @@ class GroupSubtotal(BaseModel):
         Field(description="Top-level grouping used for the cost breakdown."),
     ]
     subtotal: Money
+
+
+class SpaceDirection(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    north_deg: Annotated[
+        float,
+        Field(
+            description="Compass bearing of the space frame's positive y axis.", ge=0.0, lt=360.0
+        ),
+    ]
+    confidence: Annotated[
+        Literal["approximate", "confirmed"],
+        Field(
+            description="confirmed only when more than the compass agrees. Strict Vastu needs confirmed."
+        ),
+    ]
+    sources: Annotated[list[Literal["compass", "main_door_confirmation"]], Field(min_length=1)]
+
+
+class SpaceLight(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    natural_light: Literal["low", "medium", "high"]
+    main_direction_deg: Annotated[
+        float | None, Field(description="Degrees, 0 inclusive to 360 exclusive.", ge=0.0, lt=360.0)
+    ] = None
 
 
 class StorageKey(RootModel[str]):
@@ -286,7 +306,7 @@ class Budget(BaseModel):
 
 class Brief(BaseModel):
     """
-    Per-room choices on top of the taste profile. With the room profile and the catalog, the only input the design engine reads.
+    Per-room choices on top of the taste profile. With the space profile and the catalog, the only input the design engine reads.
     """
 
     model_config = ConfigDict(
@@ -300,14 +320,14 @@ class Brief(BaseModel):
         ),
     ]
     id: UUID
-    room_profile_id: UUID
+    space_profile_id: UUID
     taste_profile_id: UUID
     created_at: Annotated[AwareDatetime, Field(description="UTC instant, RFC 3339.")]
     intent: Literal["refresh", "full_makeover", "rearrange_only"]
     budget: Annotated[Budget, Field(title="Budget")]
     must_haves: Annotated[list[MustHave], Field(description="Product categories that must appear.")]
     keep_item_ids: Annotated[
-        list[LocalId], Field(description="Existing items in the room profile to keep.")
+        list[LocalId], Field(description="Existing items in the space profile to keep.")
     ]
     consider_vastu: bool
 
@@ -436,7 +456,7 @@ class Event(BaseModel):
     user_id: UUID | None = None
     platform: Literal["ios", "android", "web"] | None = None
     app_version: Annotated[str | None, Field(min_length=1)] = None
-    room_profile_id: UUID | None = None
+    space_profile_id: UUID | None = None
     design_id: UUID | None = None
     product_id: UUID | None = None
     position: Annotated[
@@ -591,7 +611,7 @@ class Clearance(BaseModel):
 
 class Plan(BaseModel):
     """
-    Spatial view: the dimensioned 2D plan derived from one design and its room profile.
+    Spatial view: the dimensioned 2D plan derived from one design and its space profile.
     """
 
     model_config = ConfigDict(
@@ -922,7 +942,7 @@ class Wall(BaseModel):
 
 class Capture(BaseModel):
     """
-    Input stage: the photos or video of one room, plus optional tape values.
+    Input stage: the photos or video of any space, at any extent (a whole room, a corner, a balcony), plus optional tape values. The space type is detected later, not picked here.
     """
 
     model_config = ConfigDict(
@@ -937,7 +957,6 @@ class Capture(BaseModel):
     ]
     id: UUID
     user_id: Annotated[UUID, Field(description="Owner. Guest sessions have a user id too.")]
-    room_type: Literal["living_room", "bedroom"]
     created_at: Annotated[AwareDatetime, Field(description="UTC instant, RFC 3339.")]
     media: Annotated[list[CaptureMedia], Field(max_length=40, min_length=1)]
     device: CaptureDevice
@@ -966,7 +985,7 @@ class DesignItem(BaseModel):
     ]
     product: Annotated[Product, Field(description="Snapshot of the product at design time.")]
     position: Annotated[
-        Point2, Field(description="Center of the item's footprint in the room frame.")
+        Point2, Field(description="Center of the item's footprint in the space frame.")
     ]
     rotation_deg: Annotated[
         float, Field(description="Degrees, 0 inclusive to 360 exclusive.", ge=0.0, lt=360.0)
@@ -979,9 +998,9 @@ class DesignItem(BaseModel):
     ]
 
 
-class RoomProfile(BaseModel):
+class SpaceProfile(BaseModel):
     """
-    Understanding stage: the room as a scene graph. Geometry models estimate, tape verifies; every dimension carries a value, a source and an error band.
+    Understanding stage: the scanned space as a scene graph. It may be a whole room or only part of one. Geometry models estimate, tape verifies; every dimension carries a value, a source and an error band.
     """
 
     model_config = ConfigDict(
@@ -996,23 +1015,55 @@ class RoomProfile(BaseModel):
     ]
     id: UUID
     capture_id: UUID
-    room_type: Literal["living_room", "bedroom"]
+    space_type: Annotated[
+        Literal["living_room", "bedroom", "balcony", "other"],
+        Field(
+            description="What the scanned space is. Detected from the scan, never picked up front; the user can change it."
+        ),
+    ]
+    space_type_source: Annotated[
+        Literal["detected", "user"],
+        Field(
+            description="detected: worked out from the scan. user: changed or confirmed by the user."
+        ),
+    ]
+    extent: Annotated[
+        Literal["whole_room", "part"],
+        Field(
+            description="How much was scanned: a whole room, or part of one such as a corner or one wall."
+        ),
+    ]
+    extent_source: Annotated[
+        Literal["detected", "user"],
+        Field(
+            description="detected: worked out from the scan. user: changed or confirmed by the user."
+        ),
+    ]
+    redo: RedoArea
     created_at: Annotated[AwareDatetime, Field(description="UTC instant, RFC 3339.")]
     verification: Annotated[
         Literal["estimated", "verified"],
-        Field(description="verified only when tape values cover the room's key dimensions."),
+        Field(description="verified only when tape values cover the space's key dimensions."),
     ]
     floor_polygon: Annotated[
         list[Point2],
-        Field(description="Closed floor polygon; the last point joins the first.", min_length=3),
+        Field(
+            description="The scanned floor area. For a partial scan this is only the part that was covered.",
+            min_length=3,
+        ),
     ]
-    walls: Annotated[list[Wall], Field(min_length=3)]
+    walls: Annotated[
+        list[Wall],
+        Field(
+            description="Walls seen in the scan. A partial scan may have one or two.", min_length=1
+        ),
+    ]
     ceiling_height: Dimension
     openings: list[Opening]
     fixtures: list[Fixture]
     existing_items: list[ExistingItem]
-    light: RoomLight | None = None
-    direction: RoomDirection
+    light: SpaceLight | None = None
+    direction: SpaceDirection
     scale: ScaleEvidence
 
 
@@ -1032,7 +1083,7 @@ class Design(BaseModel):
         ),
     ]
     id: UUID
-    room_profile_id: UUID
+    space_profile_id: UUID
     brief_id: UUID
     created_at: Annotated[AwareDatetime, Field(description="UTC instant, RFC 3339.")]
     slot: Annotated[

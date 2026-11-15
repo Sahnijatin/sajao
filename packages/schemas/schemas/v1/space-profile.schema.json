@@ -1,15 +1,19 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.sajao.app/v1/room-profile.schema.json",
-  "title": "RoomProfile",
-  "description": "Understanding stage: the room as a scene graph. Geometry models estimate, tape verifies; every dimension carries a value, a source and an error band.",
+  "$id": "https://schemas.sajao.app/v1/space-profile.schema.json",
+  "title": "SpaceProfile",
+  "description": "Understanding stage: the scanned space as a scene graph. It may be a whole room or only part of one. Geometry models estimate, tape verifies; every dimension carries a value, a source and an error band.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "schema_version",
     "id",
     "capture_id",
-    "room_type",
+    "space_type",
+    "space_type_source",
+    "extent",
+    "extent_source",
+    "redo",
     "created_at",
     "verification",
     "floor_polygon",
@@ -31,8 +35,22 @@
     "capture_id": {
       "$ref": "common.schema.json#/$defs/Uuid"
     },
-    "room_type": {
-      "$ref": "common.schema.json#/$defs/RoomType"
+    "space_type": {
+      "$ref": "common.schema.json#/$defs/SpaceType"
+    },
+    "space_type_source": {
+      "$ref": "common.schema.json#/$defs/DetectionSource"
+    },
+    "extent": {
+      "type": "string",
+      "enum": ["whole_room", "part"],
+      "description": "How much was scanned: a whole room, or part of one such as a corner or one wall."
+    },
+    "extent_source": {
+      "$ref": "common.schema.json#/$defs/DetectionSource"
+    },
+    "redo": {
+      "$ref": "#/$defs/RedoArea"
     },
     "created_at": {
       "$ref": "common.schema.json#/$defs/Timestamp"
@@ -40,17 +58,19 @@
     "verification": {
       "type": "string",
       "enum": ["estimated", "verified"],
-      "description": "verified only when tape values cover the room's key dimensions."
+      "description": "verified only when tape values cover the space's key dimensions."
     },
     "floor_polygon": {
-      "$ref": "common.schema.json#/$defs/Polygon"
+      "$ref": "common.schema.json#/$defs/Polygon",
+      "description": "The scanned floor area. For a partial scan this is only the part that was covered."
     },
     "walls": {
       "type": "array",
       "items": {
         "$ref": "#/$defs/Wall"
       },
-      "minItems": 3
+      "minItems": 1,
+      "description": "Walls seen in the scan. A partial scan may have one or two."
     },
     "ceiling_height": {
       "$ref": "common.schema.json#/$defs/Dimension"
@@ -74,10 +94,10 @@
       }
     },
     "light": {
-      "$ref": "#/$defs/RoomLight"
+      "$ref": "#/$defs/SpaceLight"
     },
     "direction": {
-      "$ref": "#/$defs/RoomDirection"
+      "$ref": "#/$defs/SpaceDirection"
     },
     "scale": {
       "$ref": "#/$defs/ScaleEvidence"
@@ -210,45 +230,6 @@
         }
       }
     },
-    "RoomLight": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["natural_light"],
-      "properties": {
-        "natural_light": {
-          "type": "string",
-          "enum": ["low", "medium", "high"]
-        },
-        "main_direction_deg": {
-          "$ref": "common.schema.json#/$defs/AngleDeg"
-        }
-      }
-    },
-    "RoomDirection": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["north_deg", "confidence", "sources"],
-      "properties": {
-        "north_deg": {
-          "$ref": "common.schema.json#/$defs/AngleDeg",
-          "description": "Compass bearing of the room frame's positive y axis."
-        },
-        "confidence": {
-          "type": "string",
-          "enum": ["approximate", "confirmed"],
-          "description": "confirmed only when more than the compass agrees. Strict Vastu needs confirmed."
-        },
-        "sources": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": ["compass", "main_door_confirmation"]
-          },
-          "minItems": 1,
-          "uniqueItems": true
-        }
-      }
-    },
     "ScaleEvidence": {
       "description": "Independent scale anchors and whether they agree.",
       "type": "object",
@@ -290,6 +271,61 @@
         "needs_tape_value": {
           "type": "boolean",
           "description": "True when the app should ask for one tape value."
+        }
+      }
+    },
+    "SpaceLight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["natural_light"],
+      "properties": {
+        "natural_light": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        },
+        "main_direction_deg": {
+          "$ref": "common.schema.json#/$defs/AngleDeg"
+        }
+      }
+    },
+    "SpaceDirection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["north_deg", "confidence", "sources"],
+      "properties": {
+        "north_deg": {
+          "$ref": "common.schema.json#/$defs/AngleDeg",
+          "description": "Compass bearing of the space frame's positive y axis."
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["approximate", "confirmed"],
+          "description": "confirmed only when more than the compass agrees. Strict Vastu needs confirmed."
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["compass", "main_door_confirmation"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "RedoArea": {
+      "description": "What the user wants redone: all of the scanned space, or just a part they drew around.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope"],
+      "properties": {
+        "scope": {
+          "type": "string",
+          "enum": ["all", "part"]
+        },
+        "polygon": {
+          "$ref": "common.schema.json#/$defs/Polygon",
+          "description": "The part to redo, in the space frame. Present when scope is part; the design engine checks this."
         }
       }
     }

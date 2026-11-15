@@ -51,6 +51,11 @@ async def test_requests_are_logged_as_json_with_the_request_id(
 async def test_docs_are_served_only_in_dev(make_client: ClientFactory) -> None:
     async with make_client() as client:
         assert (await client.get("/v1/docs")).status_code == 200
-    staging = Settings(environment="staging", database_url=SecretStr("postgresql://unused"))
+    staging = Settings(
+        environment="staging",
+        database_url=SecretStr("postgresql://unused"),
+        auth_jwks_url="https://auth.test/jwks.json",
+        auth_issuer="https://auth.test",
+    )
     async with make_client(staging) as client:
         assert (await client.get("/v1/docs")).status_code == 404

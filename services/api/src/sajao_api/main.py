@@ -5,8 +5,11 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from psycopg_pool import AsyncConnectionPool
+from starlette.types import Scope
 
 from sajao_api import __version__, v1
+from sajao_api.auth import JwksTokenVerifier, TokenVerifier
+from sajao_api.errors import ApiError, api_error_handler
 from sajao_api.idempotency import (
     IdempotencyStore,
     InMemoryIdempotencyStore,
@@ -14,16 +17,28 @@ from sajao_api.idempotency import (
 )
 from sajao_api.logging import configure_logging
 from sajao_api.middleware.app_version import MinimumAppVersionMiddleware
+from sajao_api.middleware.auth import AuthMiddleware
 from sajao_api.middleware.idempotency import IdempotencyMiddleware
 from sajao_api.middleware.request_context import RequestContextMiddleware
 from sajao_api.settings import Settings
 
 
+def _key_owner(scope: Scope) -> str:
+    """Idempotency keys belong to the caller, so users never see each other's responses."""
+    principal = scope.get("state", {}).get("principal")
+    return principal.user_id if principal is not None else "anonymous"
+
+
 def create_app(
-    settings: Settings | None = None, idempotency_store: IdempotencyStore | None = None
+    settings: Settings | None = None,
+    idempotency_store: IdempotencyStore | None = None,
+    token_verifier: TokenVerifier | None = None,
 ) -> FastAPI:
     settings = settings or Settings()
     configure_logging(settings.log_level)
+
+    if token_verifier is None and settings.auth_jwks_url and settings.auth_issuer:
+        token_verifier = JwksTokenVerifier(settings.auth_jwks_url, settings.auth_issuer)
 
     pool: AsyncConnectionPool | None = None
     store = idempotency_store
@@ -61,6 +76,7 @@ def create_app(
     )
     app.state.settings = settings
     app.include_router(v1.router)
+    app.add_exception_handler(ApiError, api_error_handler)
 
     # Added innermost first: the request id wraps everything else.
     app.add_middleware(
@@ -68,7 +84,9 @@ def create_app(
         store=store,
         ttl_seconds=settings.idempotency_ttl_seconds,
         in_progress_seconds=settings.idempotency_in_progress_seconds,
+        scope_for=_key_owner,
     )
+    app.add_middleware(AuthMiddleware, verifier=token_verifier)
     app.add_middleware(MinimumAppVersionMiddleware, minimum=settings.min_app_version)
     app.add_middleware(RequestContextMiddleware)
     return app

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.sajao.app/v1/plan.schema.json",
   "title": "Plan",
-  "description": "Spatial view: the dimensioned 2D plan derived from one design and its room profile.",
+  "description": "Spatial view: the dimensioned 2D plan derived from one design and its space profile.",
   "type": "object",
   "additionalProperties": false,
   "required": [

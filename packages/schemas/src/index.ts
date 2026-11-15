@@ -5,7 +5,7 @@ export type * from "./generated/v1";
 /** The journey objects, one per stage. Each has a schema in schemas/v1. */
 export const OBJECT_NAMES = [
   "Capture",
-  "RoomProfile",
+  "SpaceProfile",
   "TasteProfile",
   "Brief",
   "Product",
