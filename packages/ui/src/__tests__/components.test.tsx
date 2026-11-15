@@ -54,6 +54,25 @@ describe("Button", () => {
     expect(played).toBe(1);
   });
 
+  it("is a 56 px pill by default and a 32 px pill when small", async () => {
+    await renderIn(
+      <>
+        <Button label="Large" />
+        <Button label="Small" size="small" variant="tint" />
+      </>,
+    );
+    const large = styleOf(screen.getByRole("button", { name: "Large" }));
+    const small = styleOf(screen.getByRole("button", { name: "Small" }));
+    expect([large.height, large.borderRadius]).toEqual([56, 999]);
+    expect(small.height).toBe(32);
+    expect(large.boxShadow).toBe(shadows.standard.accentGlow);
+  });
+
+  it("drops the accent glow on the low tier", async () => {
+    await renderIn(<Button label="Go" />, { tier: "low" });
+    expect(styleOf(screen.getByRole("button", { name: "Go" })).boxShadow).toBe("none");
+  });
+
   it("does not press when disabled", async () => {
     const onPress = jest.fn();
     await renderIn(<Button label="Off" disabled onPress={onPress} />);
@@ -93,18 +112,51 @@ describe("low-tier fallbacks", () => {
   it("glass uses a live blur on standard devices", async () => {
     await renderIn(<GlassSurface testID="glass" />);
     expect(screen.queryByTestId("glass-blur")).not.toBeNull();
-    expect(styleOf(screen.getByTestId("glass")).backgroundColor).toBe(glass.fill);
+    expect(styleOf(screen.getByTestId("glass")).backgroundColor).toBe(glass.light.fill);
+  });
+
+  it("dark glass, for camera screens, uses the dark fill and border", async () => {
+    await renderIn(<GlassSurface testID="glass" tone="dark" />);
+    const style = styleOf(screen.getByTestId("glass"));
+    expect(style.backgroundColor).toBe(glass.dark.fill);
+    expect(style.borderColor).toBe(glass.dark.border);
+  });
+
+  it("dark glass also falls back to a tint on the low tier", async () => {
+    await renderIn(<GlassSurface testID="glass" tone="dark" />, { tier: "low" });
+    expect(screen.queryByTestId("glass-blur")).toBeNull();
+    expect(styleOf(screen.getByTestId("glass")).backgroundColor).toBe(glass.dark.fallbackFill);
   });
 
   it("glass falls back to a tint, with no blur, on the low tier", async () => {
     await renderIn(<GlassSurface testID="glass" />, { tier: "low" });
     expect(screen.queryByTestId("glass-blur")).toBeNull();
-    expect(styleOf(screen.getByTestId("glass")).backgroundColor).toBe(glass.fallbackFill);
+    expect(styleOf(screen.getByTestId("glass")).backgroundColor).toBe(glass.light.fallbackFill);
   });
 
   it("cards drop to one shadow on the low tier", async () => {
     await renderIn(<Card testID="card" />, { tier: "low" });
-    expect(styleOf(screen.getByTestId("card")).boxShadow).toBe(shadows.low);
+    expect(styleOf(screen.getByTestId("card")).boxShadow).toBe(shadows.low.card);
+  });
+});
+
+describe("Text", () => {
+  it("sets headlines in the serif and switches to the italic cut on request", async () => {
+    await renderIn(
+      <>
+        <Text variant="title">Warm</Text>
+        <Text variant="title" italic>
+          Japandi
+        </Text>
+        <Text variant="label" italic>
+          Label
+        </Text>
+      </>,
+    );
+    expect(styleOf(screen.getByText("Warm")).fontFamily).toBe("InstrumentSerif-Regular");
+    expect(styleOf(screen.getByText("Japandi")).fontFamily).toBe("InstrumentSerif-Italic");
+    // Italic applies to serif headlines only.
+    expect(styleOf(screen.getByText("Label")).fontFamily).not.toBe("InstrumentSerif-Italic");
   });
 });
 
@@ -117,5 +169,11 @@ describe("gallery", () => {
     await fireEvent.press(screen.getByRole("button", { name: "Low tier" }));
     expect(screen.getByText(/Tier: low/)).toBeTruthy();
     expect(screen.queryByTestId("glass-blur")).toBeNull();
+  });
+
+  it("shows both glass tones", async () => {
+    await render(<GalleryScreen />);
+    expect(screen.getByTestId("glass-light")).toBeTruthy();
+    expect(screen.getByTestId("glass-dark")).toBeTruthy();
   });
 });

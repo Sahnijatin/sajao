@@ -8,12 +8,13 @@ Sajao uses the LiveMap design system: bright frosted glass, soft layered shadows
 | --- | --- | --- |
 | Canvas | #eef0f5 with slow drifting colour blobs (blue, pink, amber) | Home, brief, list screens |
 | Ink | #1d1d1f; secondary #55595f and #636873 | Text |
-| Glass | White at 62%, 28 px blur, 180% saturation, hairline border | Camera overlays, sheets, floating toolbars over 3D |
+| Glass | Light: white at 62%, 28 px blur, 180% saturation, hairline border. Dark: near-black at 42%, 28 px blur, 160% saturation, white text | Light over the canvas and photos, on sheets and floating toolbars; dark on camera screens |
 | Shadows | Three stacked soft shadows | Cards, lifted furniture, product tiles |
 | Accent | #0a7cff with 10% tints | Primary actions, selection, Verified badge |
 | Status | Green #1fae55, red #ff3b30, orange #ff8a00 | Scan guides, collisions, warnings |
-| Radius | 20 px panes, 14 px cards | Same |
-| Type | SF Pro on iOS, Geist bundled on Android | Same |
+| Radius | 20 px panes, 20 px cards, 30 px sheet corners; buttons and chips fully rounded | Same |
+| Type | Instrument Serif headlines, bundled on both platforms; body in SF Pro on iOS and bundled Geist on Android | Same |
+| Buttons | 56 px pills; 32 px small pills | Primary actions; inline actions |
 | Ease | cubic-bezier(.32, .72, 0, 1), 0.45 s | Screen and sheet transitions |
 | Selection spring | Stiffness 380, damping 32 | Chips, toggles, item selection |
 | Layout glide | Critically damped, 0.45 s | Lists and panels resizing |

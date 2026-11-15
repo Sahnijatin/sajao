@@ -11,9 +11,9 @@ import { formatLength } from "@/utils/format-length";
 function Setting({ title, children }: { title: string; children: ReactNode }) {
   const { tokens } = useTheme();
   return (
-    <Card style={{ gap: tokens.spacing.md }}>
+    <Card style={{ gap: tokens.spacing.xl }}>
       <Text variant="label">{title}</Text>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: tokens.spacing.sm }}>
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: tokens.spacing.md }}>
         {children}
       </View>
     </Card>
@@ -63,7 +63,7 @@ export function ProfileScreen() {
       {__DEV__ ? (
         <Button
           label={t("profile.gallery")}
-          variant="secondary"
+          variant="outline"
           onPress={() => router.push("/gallery")}
         />
       ) : null}

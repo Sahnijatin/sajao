@@ -1,6 +1,15 @@
 import { tierFor } from "../deviceTier";
 import { motion, resolveDuration } from "../motion";
-import { colors, fontFor, glass, radius, shadows } from "../tokens";
+import {
+  colors,
+  controlHeight,
+  fontFor,
+  glass,
+  radius,
+  shadows,
+  spacing,
+  typography,
+} from "../tokens";
 
 const GB = 1024 ** 3;
 
@@ -18,14 +27,71 @@ describe("LiveMap tokens match the design doc", () => {
     });
   });
 
-  it("glass, radius and shadows", () => {
-    expect(glass).toMatchObject({ fill: "rgba(255, 255, 255, 0.62)", blurRadius: 28 });
-    expect(radius).toMatchObject({ pane: 20, card: 14 });
-    expect(shadows.standard.split("),")).toHaveLength(3);
-    expect(shadows.low.split("),")).toHaveLength(1);
+  it("light and dark glass", () => {
+    expect(glass.blurRadius).toBe(28);
+    expect(glass.light).toMatchObject({ fill: "rgba(255, 255, 255, 0.62)", saturation: 1.8 });
+    // Dark glass is for camera screens.
+    expect(glass.dark).toMatchObject({
+      fill: "rgba(20, 22, 26, 0.42)",
+      border: "rgba(255, 255, 255, 0.18)",
+      saturation: 1.6,
+      text: "#ffffff",
+    });
   });
 
-  it("type: system font on iOS, bundled Geist on Android", () => {
+  it("radius: panes, cards, sheets and pills", () => {
+    expect(radius).toEqual({ pane: 20, card: 20, sheet: 30, pill: 999 });
+  });
+
+  it("shadows: three stacked on standard devices, one on the low tier", () => {
+    expect(shadows.standard.card.split("),")).toHaveLength(3);
+    expect(shadows.low.card.split("),")).toHaveLength(1);
+    expect(shadows.standard.sheet).toBe("0 -16px 40px rgba(29, 29, 31, 0.12)");
+    expect(shadows.standard.accentGlow).toBe("0 10px 24px rgba(10, 124, 255, 0.35)");
+    expect(shadows.low.accentGlow).toBe("none");
+  });
+});
+
+describe("values from the approved mockups", () => {
+  it("spacing ladder", () => {
+    expect(spacing).toEqual({
+      xxs: 2,
+      xs: 4,
+      sm: 6,
+      md: 8,
+      lg: 10,
+      xl: 12,
+      xxl: 14,
+      gutter: 16,
+      sheetBottom: 26,
+    });
+  });
+
+  it("control heights: 56 px pill buttons", () => {
+    expect(controlHeight).toEqual({ button: 56, buttonSmall: 32, chip: 36 });
+  });
+
+  it("type scale: Instrument Serif headlines over a sans body", () => {
+    expect(typography.display).toEqual({
+      fontSize: 46,
+      lineHeight: 46,
+      face: "serif",
+      letterSpacing: -0.8,
+    });
+    expect(typography.title).toEqual({ fontSize: 34, lineHeight: 36, face: "serif" });
+    expect(typography.heading).toEqual({ fontSize: 26, lineHeight: 28, face: "serif" });
+    expect(typography.body).toEqual({ fontSize: 16, lineHeight: 23, face: "regular" });
+    expect(typography.label).toEqual({ fontSize: 14, lineHeight: 18, face: "semibold" });
+    expect(typography.micro.fontSize).toBe(11);
+    const serif = Object.entries(typography).filter(([, style]) => style.face === "serif");
+    expect(serif.map(([name]) => name)).toEqual(["display", "title", "heading"]);
+  });
+
+  it("fonts: the serif is bundled on both platforms; body is system on iOS, Geist on Android", () => {
+    for (const os of ["ios", "android"]) {
+      expect(fontFor("serif", os)).toEqual({ fontFamily: "InstrumentSerif-Regular" });
+      expect(fontFor("serifItalic", os)).toEqual({ fontFamily: "InstrumentSerif-Italic" });
+    }
     expect(fontFor("medium", "ios")).toEqual({ fontWeight: "500" });
     expect(fontFor("medium", "android")).toEqual({ fontFamily: "Geist-Medium" });
   });

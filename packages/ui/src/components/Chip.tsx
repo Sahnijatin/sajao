@@ -18,11 +18,9 @@ export interface ChipProps extends Omit<PressableProps, "children" | "style"> {
   haptic?: HapticMoment;
 }
 
-const VISUAL_HEIGHT = 36;
-
 export function Chip({ label, selected, haptic, onPress, ...rest }: ChipProps) {
   const { tokens, reducedMotion } = useTheme();
-  const { colors, radius, spacing } = tokens;
+  const { colors, radius, spacing, controlHeight } = tokens;
   const progress = useSharedValue(selected ? 1 : 0);
 
   useEffect(() => {
@@ -41,7 +39,7 @@ export function Chip({ label, selected, haptic, onPress, ...rest }: ChipProps) {
       accessibilityRole="button"
       accessibilityState={{ selected }}
       // The visual is smaller than the touch target, so widen the hit area.
-      hitSlop={(touchTarget - VISUAL_HEIGHT) / 2}
+      hitSlop={(touchTarget - controlHeight.chip) / 2}
       onPress={(event) => {
         if (haptic) void playHaptic(haptic);
         onPress?.(event);
@@ -51,8 +49,8 @@ export function Chip({ label, selected, haptic, onPress, ...rest }: ChipProps) {
       <Animated.View
         style={[
           {
-            height: VISUAL_HEIGHT,
-            paddingHorizontal: spacing.lg,
+            height: controlHeight.chip,
+            paddingHorizontal: spacing.xxl,
             borderRadius: radius.pill,
             borderWidth: 1,
             justifyContent: "center",
@@ -60,7 +58,7 @@ export function Chip({ label, selected, haptic, onPress, ...rest }: ChipProps) {
           animatedStyle,
         ]}
       >
-        <Text variant="label" tone={selected ? "accent" : "secondary"}>
+        <Text variant="meta" tone={selected ? "accent" : "secondary"}>
           {label}
         </Text>
       </Animated.View>

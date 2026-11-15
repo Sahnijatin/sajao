@@ -1,5 +1,6 @@
 import { BottomSheet, type BottomSheetProps, Host } from "@expo/ui";
 import { useTheme } from "../theme";
+import { sheetModifiers } from "./sheet-modifiers";
 
 export type SheetProps = Pick<
   BottomSheetProps,
@@ -16,8 +17,14 @@ export function Sheet({ children, ...rest }: SheetProps) {
     <Host>
       <BottomSheet
         showDragIndicator
-        containerColor={tokens.colors.canvas}
-        contentPadding={tokens.spacing.lg}
+        containerColor={tokens.colors.surface}
+        contentPadding={{
+          top: tokens.spacing.xxl,
+          left: tokens.spacing.gutter,
+          right: tokens.spacing.gutter,
+          bottom: tokens.spacing.sheetBottom,
+        }}
+        modifiers={sheetModifiers(tokens.radius.sheet)}
         {...rest}
       >
         {children}

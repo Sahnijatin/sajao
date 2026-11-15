@@ -6,7 +6,7 @@ The Sajao design system: LiveMap tokens, motion presets, the haptic map and core
 
 | Piece | File | Notes |
 | --- | --- | --- |
-| Tokens | `src/tokens.ts` | Colors, glass, radius, spacing, shadows, type. Light theme only; the dark slot is reserved in `themes`. |
+| Tokens | `src/tokens.ts` | Colors, light and dark glass, radius, spacing, control heights, shadows, type. Light theme only; the dark slot is reserved in `themes`. |
 | Motion presets | `src/motion.ts` | Transition ease, press feedback, selection spring, layout glide. |
 | Haptic map | `src/haptics.ts` | One entry per moment in the design doc, with separate iOS and Android patterns. |
 | Device tier | `src/deviceTier.ts` | `standard` or `low`; Android phones with up to 4 GB of RAM are low. |
@@ -26,15 +26,42 @@ The Sajao design system: LiveMap tokens, motion presets, the haptic map and core
 
 | Effect | Standard | Low tier | Reduced motion |
 | --- | --- | --- | --- |
-| Glass | Live blur under a 62% white fill | Tinted fill, no blur | Same as tier |
-| Shadows | Three stacked | One | Same as tier |
+| Glass | Live blur under a light or dark fill | Tinted fill, no blur | Same as tier |
+| Shadows | Three stacked; glow under the accent button | One; no glow | Same as tier |
 | Press and selection | Preset durations and spring | Durations cut by a third | Instant change |
 
 On Android a live blur needs a `blurTarget`; without one `GlassSurface` shows the tinted fill.
 
-## Provisional values
+## Values from the approved mockups
 
-The design doc fixes colors, glass, radius, the transition ease and the selection spring. It does not give numbers for the spacing scale, the type scale, the shadow offsets, the glass border or the low-tier tint. Those are set here to sensible values and should be confirmed against the screen mockups. Blur saturation (180%) is recorded as a token but not applied, because the blur view has no saturation control.
+Spacing, type and shadows come from the approved key-screen mockups.
+
+| Token | Values |
+| --- | --- |
+| Spacing | 2, 4, 6, 8, 10, 12, 14; 16 for screen and card padding; 26 under sheets |
+| Type | Instrument Serif headlines: display 46, title 34, heading 26. Sans body: 16, 14, 13, 12, 11; totals 24 semibold |
+| Buttons | 56 px pills; 32 px small pills. Variants: `primary`, `ink`, `outline`, `tint`, `ghost` |
+| Radius | Cards 20 px, panes 20 px, sheets 30 px; buttons and chips fully rounded |
+| Sheets | 30 px top corners, white, with an upward shadow |
+| Shadows | Card (three stacked), sheet, accent glow, segment; each with a low-tier version |
+| Glass | `light` over the canvas and photos; `dark` (`tone="dark"`) on camera screens |
+
+## Fonts
+
+The app loads these at startup under exactly these family names (`fontFamilies` in `src/tokens.ts`):
+
+| Family name | Font | Platforms |
+| --- | --- | --- |
+| `InstrumentSerif-Regular`, `InstrumentSerif-Italic` | Instrument Serif (SIL Open Font License) | iOS and Android |
+| `Geist-Regular`, `Geist-Medium`, `Geist-SemiBold` | Geist (SIL Open Font License) | Android only; iOS uses the system font |
+
+Instrument Serif has Latin letters only. Hindi headlines fall back to the system Devanagari font, so they need a look on a device.
+
+## Still open
+
+- **Sheet corners on Android.** iOS gets the 30 px radius. The Android sheet keeps its Material shape, because the native sheet does not take a radius.
+- **Low-tier dark glass tint** (78% opacity) is not on the mockups; it was chosen so white text stays legible without a blur.
+- Blur saturation (180% light, 160% dark) is recorded as a token but not applied, because the blur view has no saturation control.
 
 ## Hindi copy: needs native review
 

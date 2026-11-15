@@ -4,18 +4,33 @@ import { fontFor, type TypographyVariant } from "../tokens";
 
 export interface TextProps extends NativeTextProps {
   variant?: TypographyVariant;
-  tone?: "primary" | "secondary" | "tertiary" | "accent" | "onAccent";
+  tone?: "primary" | "secondary" | "tertiary" | "accent" | "onAccent" | "onDark";
+  /** Serif variants only: the italic cut, for one emphasised word in a headline. */
+  italic?: boolean;
 }
 
-export function Text({ variant = "body", tone = "primary", style, ...rest }: TextProps) {
+export function Text({ variant = "body", tone = "primary", italic, style, ...rest }: TextProps) {
   const { tokens } = useTheme();
-  const { fontSize, lineHeight, weight } = tokens.typography[variant];
+  const type: { fontSize: number; lineHeight: number; face: string; letterSpacing?: number } =
+    tokens.typography[variant];
   const color = {
     primary: tokens.colors.ink,
     secondary: tokens.colors.inkSecondary,
     tertiary: tokens.colors.inkTertiary,
     accent: tokens.colors.accent,
     onAccent: tokens.colors.onAccent,
+    onDark: tokens.glass.dark.text,
   }[tone];
-  return <NativeText style={[{ fontSize, lineHeight, color }, fontFor(weight), style]} {...rest} />;
+  const face = italic && type.face === "serif" ? "serifItalic" : tokens.typography[variant].face;
+  return (
+    <NativeText
+      style={[
+        { fontSize: type.fontSize, lineHeight: type.lineHeight, color },
+        type.letterSpacing === undefined ? null : { letterSpacing: type.letterSpacing },
+        fontFor(face),
+        style,
+      ]}
+      {...rest}
+    />
+  );
 }
