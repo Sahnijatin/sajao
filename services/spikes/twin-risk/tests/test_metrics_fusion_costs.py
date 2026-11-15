@@ -1,7 +1,7 @@
 import pytest
 
 from twin_risk.costs import bitrate_mbps, gpu_cost_usd, stream_gpu_cost_per_minute
-from twin_risk.fusion import Observation, fuse, instance_boxes, voxelize
+from twin_risk.fusion import Observation, fuse, instance_boxes, merge_instances, voxelize
 from twin_risk.geometry import UprightBox
 from twin_risk.metrics import LabelledBox, canonical_class, greedy_match, summarise
 from twin_risk.split import BACKGROUND, decide_label, mask_iou
@@ -87,3 +87,23 @@ def test_costs() -> None:
     assert bitrate_mbps(1_000_000, 8.0) == pytest.approx(1.0)
     with pytest.raises(ValueError):
         gpu_cost_usd("T4", -1)
+
+
+def test_merge_instances_joins_split_object() -> None:
+    left = [(x * 0.05, 0.0, 0.0) for x in range(10)]
+    right = [(x * 0.05, 0.0, 0.0) for x in range(6, 16)]
+    far = [(x * 0.05 + 5, 0.0, 0.0) for x in range(10)]
+    inst = fuse(
+        [
+            Observation(0, "sofa", 1.0, voxelize(left, 0.05), key=1),
+            Observation(1, "sofa", 1.0, voxelize(right, 0.05), key=2),
+            Observation(2, "sofa", 1.0, voxelize(far, 0.05), key=3),
+        ],
+        min_overlap=0.5,
+    )
+    assert len(inst) == 3
+    merged = merge_instances(inst, min_overlap=0.3)
+    assert len(merged) == 2
+    big = max(merged, key=lambda i: len(i.hits))
+    assert big.frames == {0, 1}
+    assert sorted(big.members) == [(0, 1), (1, 2)]

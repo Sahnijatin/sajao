@@ -102,6 +102,46 @@ def fuse(observations: Iterable[Observation], min_overlap: float = 0.2) -> list[
     return instances
 
 
+def merge_instances(instances: Iterable[Instance], min_overlap: float = 0.3) -> list[Instance]:
+    """Merge same-class instances whose voxels overlap, until none do.
+
+    Per-frame fusion can split one object into several instances when early
+    views see different parts; this second pass joins them.
+    """
+    pool = list(instances)
+    merged = True
+    while merged:
+        merged = False
+        for i in range(len(pool)):
+            for j in range(i + 1, len(pool)):
+                a, b = pool[i], pool[j]
+                if _group(a.label) != _group(b.label):
+                    continue
+                shared = sum(1 for k in b.hits if k in a.hits)
+                if shared / max(1, min(len(a.hits), len(b.hits))) < min_overlap:
+                    continue
+                _absorb(a, b)
+                del pool[j]
+                merged = True
+                break
+            if merged:
+                break
+    return pool
+
+
+def _absorb(a: Instance, b: Instance) -> None:
+    a.frames |= b.frames
+    a.members.extend(b.members)
+    for lab, sc in b.labels.items():
+        a.labels[lab] = a.labels.get(lab, 0.0) + sc
+    a.label = max(a.labels, key=lambda k: a.labels[k])
+    for key, h in b.hits.items():
+        a.hits[key] = a.hits.get(key, 0) + h
+        acc = a.sums.setdefault(key, [0.0, 0.0, 0.0, 0.0])
+        for i, v in enumerate(b.sums[key]):
+            acc[i] += v
+
+
 def instance_boxes(
     instances: Iterable[Instance],
     up_axis: int,

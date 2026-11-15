@@ -25,7 +25,7 @@ from twin_gpu.common import (
     voxel_stats,
 )
 
-from twin_risk.fusion import Observation, fuse, instance_boxes
+from twin_risk.fusion import Observation, fuse, instance_boxes, merge_instances
 from twin_risk.geometry import UprightBox, box_from_obb
 from twin_risk.metrics import LabelledBox, canonical_class, summarise
 
@@ -83,9 +83,13 @@ def _yoloe():
 
     models = Path("/vol/models")
     models.mkdir(parents=True, exist_ok=True)
+    cwd = os.getcwd()
     os.chdir(models)  # the text encoder downloads into the working directory
-    m = Yoloe(YOLOE)
-    m.set_classes(VOCAB)
+    try:
+        m = Yoloe(YOLOE)
+        m.set_classes(VOCAB)
+    finally:
+        os.chdir(cwd)  # a working directory inside the volume blocks volume commits
     return m
 
 
@@ -112,6 +116,9 @@ def segment(name: str, max_frames: int = 160) -> dict:
         Sam2Processor,
     )
 
+    cached = out_dir(name) / f"segment_{DET}.json"
+    if cached.exists():
+        return json.loads(cached.read_text())
     scene = load_scene(name)
     sd = scene_dir(name)
     od = out_dir(name) / f"masks_{DET}"
@@ -321,7 +328,8 @@ def fuse_and_score(name: str, obs: list[Observation], mode: str) -> dict:
     scene = load_scene(name)
     upi = up_axis(scene)
     t0 = time.time()
-    inst = fuse(obs)
+    raw = fuse(obs)
+    inst = merge_instances(raw)
     boxes = instance_boxes(inst, upi)
     fuse_s = time.time() - t0
     preds = [LabelledBox(lab, b) for lab, b, _ in boxes]
@@ -331,6 +339,7 @@ def fuse_and_score(name: str, obs: list[Observation], mode: str) -> dict:
         "mode": mode,
         "detector": DET,
         "observations": len(obs),
+        "instances_before_merge": len(raw),
         "instances": len(boxes),
         "fuse_seconds": round(fuse_s, 2),
         "metrics": summarise(preds, gts) if gts else None,

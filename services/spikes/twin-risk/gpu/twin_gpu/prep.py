@@ -330,7 +330,7 @@ def render_replica(scene: str, width: int = 640, height: int = 480, focal: float
 
     mesh = trimesh.load(VOL / "raw" / "replica" / scene / "mesh.ply", process=False, force="mesh")
     verts = np.asarray(mesh.vertices, dtype=np.float32)
-    faces = np.asarray(mesh.faces, dtype=np.int32)
+    faces = np.asarray(mesh.faces, dtype=np.uint32)
     vcol = np.asarray(mesh.visual.vertex_colors[:, :3], dtype=np.float32) / 255.0
     ext = verts.max(0) - verts.min(0)
     upi = int(np.argmin(ext))

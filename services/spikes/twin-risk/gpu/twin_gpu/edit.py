@@ -34,7 +34,7 @@ from twin_gpu.splat import (
     scene_scale,
 )
 
-from twin_risk.fusion import fuse
+from twin_risk.fusion import fuse, merge_instances
 from twin_risk.geometry import UprightBox, fit_upright_box
 from twin_risk.metrics import canonical_class
 from twin_risk.split import BACKGROUND, decide_label
@@ -76,7 +76,7 @@ def instances_from_splat(params, name):
     frames = object_frames(scene)
     depths = splat_depth(params, scene, name, frames)
     obs, _ = lift(name, frames, depths.get)
-    inst = fuse(obs)
+    inst = merge_instances(fuse(obs))
     return inst, frames, depths
 
 
