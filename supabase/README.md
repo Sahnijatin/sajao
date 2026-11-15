@@ -43,4 +43,6 @@ SAJAO_AUTH_JWKS_URL=https://<project ref>.supabase.co/auth/v1/.well-known/jwks.j
 SAJAO_AUTH_ISSUER=https://<project ref>.supabase.co/auth/v1
 ```
 
+Guest-first: anonymous sign-ins are on for the development project, limited to 30 per hour per IP address by the built-in rate limit. The local stack has them on too (`config.toml`). App attestation on guest sessions is required before the closed test.
+
 The app uses `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, set on the EAS environment. Only a publishable key may ship in the app; the app refuses to start with any other kind.
