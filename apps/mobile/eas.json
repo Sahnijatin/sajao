@@ -8,7 +8,8 @@
       "node": "22.14.0",
       "pnpm": "10.28.0",
       "env": {
-        "EAS_USE_CACHE": "1"
+        "EAS_USE_CACHE": "1",
+        "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-XX:MaxMetaspaceSize=1g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=2 -Dorg.gradle.daemon=false"
       }
     },
     "development": {
@@ -19,7 +20,8 @@
       "autoIncrement": true,
       "env": {
         "EAS_USE_CACHE": "1",
-        "APP_VARIANT": "development"
+        "APP_VARIANT": "development",
+        "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-XX:MaxMetaspaceSize=1g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=2 -Dorg.gradle.daemon=false"
       },
       "android": {
         "buildType": "apk"
@@ -33,7 +35,8 @@
       "autoIncrement": true,
       "env": {
         "EAS_USE_CACHE": "1",
-        "APP_VARIANT": "preview"
+        "APP_VARIANT": "preview",
+        "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-XX:MaxMetaspaceSize=1g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=2 -Dorg.gradle.daemon=false"
       },
       "android": {
         "buildType": "apk"
@@ -46,7 +49,8 @@
       "autoIncrement": true,
       "env": {
         "EAS_USE_CACHE": "1",
-        "APP_VARIANT": "production"
+        "APP_VARIANT": "production",
+        "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-XX:MaxMetaspaceSize=1g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=2 -Dorg.gradle.daemon=false"
       },
       "channel": "production"
     }
