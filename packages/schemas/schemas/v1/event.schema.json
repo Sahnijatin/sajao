@@ -36,7 +36,7 @@
       "type": "string",
       "minLength": 1
     },
-    "room_profile_id": {
+    "space_profile_id": {
       "$ref": "common.schema.json#/$defs/Uuid"
     },
     "design_id": {

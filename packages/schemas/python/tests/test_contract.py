@@ -16,7 +16,7 @@ BUNDLE: dict[str, Any] = json.loads((PACKAGE / "generated" / "v1.schema.json").r
 
 
 def object_name(path: Path) -> str:
-    """room-profile.dimension-without-source.json -> RoomProfile"""
+    """space-profile.dimension-without-source.json -> SpaceProfile"""
     return "".join(part.capitalize() for part in path.name.split(".")[0].split("-"))
 
 
@@ -56,6 +56,21 @@ def test_invalid_fixture_is_rejected_by_schema_and_model(path: Path) -> None:
     assert list(schema_validator(name).iter_errors(data)) != []
     with pytest.raises(ValidationError):
         OBJECTS[name].model_validate(data)
+
+
+def test_a_partial_scan_of_any_space_is_a_valid_space_profile() -> None:
+    whole = json.loads((FIXTURES / "valid" / "space-profile.json").read_text())
+    corner = {
+        **whole,
+        "space_type": "balcony",
+        "space_type_source": "user",
+        "extent": "part",
+        "walls": whole["walls"][:2],
+        "redo": {"scope": "part", "polygon": whole["floor_polygon"][:3]},
+    }
+    assert list(schema_validator("SpaceProfile").iter_errors(corner)) == []
+    assert to_json_dict(OBJECTS["SpaceProfile"].model_validate(corner)) == corner
+    assert "room_type" not in OBJECTS["Capture"].model_fields
 
 
 def test_every_dimension_needs_value_source_and_error_band() -> None:

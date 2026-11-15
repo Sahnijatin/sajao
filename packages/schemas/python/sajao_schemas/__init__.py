@@ -18,8 +18,8 @@ from sajao_schemas.generated.v1 import (
     Plan,
     Product,
     Render,
-    RoomProfile,
     ShoppingList,
+    SpaceProfile,
     TasteProfile,
 )
 
@@ -29,7 +29,7 @@ OBJECTS: dict[str, type[BaseModel]] = {
     model.__name__: model
     for model in (
         Capture,
-        RoomProfile,
+        SpaceProfile,
         TasteProfile,
         Brief,
         Product,
@@ -59,8 +59,8 @@ __all__ = [
     "Plan",
     "Product",
     "Render",
-    "RoomProfile",
     "ShoppingList",
+    "SpaceProfile",
     "TasteProfile",
     "to_json_dict",
 ]

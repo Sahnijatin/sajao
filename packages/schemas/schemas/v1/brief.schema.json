@@ -2,13 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.sajao.app/v1/brief.schema.json",
   "title": "Brief",
-  "description": "Per-room choices on top of the taste profile. With the room profile and the catalog, the only input the design engine reads.",
+  "description": "Per-room choices on top of the taste profile. With the space profile and the catalog, the only input the design engine reads.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "schema_version",
     "id",
-    "room_profile_id",
+    "space_profile_id",
     "taste_profile_id",
     "created_at",
     "intent",
@@ -24,7 +24,7 @@
     "id": {
       "$ref": "common.schema.json#/$defs/Uuid"
     },
-    "room_profile_id": {
+    "space_profile_id": {
       "$ref": "common.schema.json#/$defs/Uuid"
     },
     "taste_profile_id": {
@@ -66,7 +66,7 @@
       "items": {
         "$ref": "common.schema.json#/$defs/LocalId"
       },
-      "description": "Existing items in the room profile to keep."
+      "description": "Existing items in the space profile to keep."
     },
     "consider_vastu": {
       "type": "boolean"

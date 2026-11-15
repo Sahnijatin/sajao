@@ -2,10 +2,10 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.sajao.app/v1/capture.schema.json",
   "title": "Capture",
-  "description": "Input stage: the photos or video of one room, plus optional tape values.",
+  "description": "Input stage: the photos or video of any space, at any extent (a whole room, a corner, a balcony), plus optional tape values. The space type is detected later, not picked here.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "id", "user_id", "room_type", "created_at", "media", "device"],
+  "required": ["schema_version", "id", "user_id", "created_at", "media", "device"],
   "properties": {
     "schema_version": {
       "$ref": "common.schema.json#/$defs/SchemaVersion"
@@ -16,9 +16,6 @@
     "user_id": {
       "$ref": "common.schema.json#/$defs/Uuid",
       "description": "Owner. Guest sessions have a user id too."
-    },
-    "room_type": {
-      "$ref": "common.schema.json#/$defs/RoomType"
     },
     "created_at": {
       "$ref": "common.schema.json#/$defs/Timestamp"
