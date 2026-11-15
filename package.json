@@ -11,7 +11,8 @@
     "format:check": "prettier --check .",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",
-    "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test"
+    "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test",
+    "db:types": "npx --yes supabase@3 gen types typescript --project-id lofesiqfpxoniwaipdaw --schema public > supabase/types/database.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",

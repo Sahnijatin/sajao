@@ -45,6 +45,10 @@ Keys belong to the caller, so two users with the same key never see each other's
 
 Secrets are set in the platform's secret manager and reach the service as environment variables. Never commit them.
 
+## Development environment
+
+The development Supabase project is `sajao-dev` (see `supabase/README.md`). To point the API at it, set `SAJAO_AUTH_JWKS_URL` and `SAJAO_AUTH_ISSUER` to that project's values and `SAJAO_DATABASE_URL` to its connection string from the secret manager. The idempotency table is already applied there.
+
 ## Local development
 
 The local stack is the Supabase CLI (needs Docker). No cloud keys are involved.
