@@ -13,6 +13,35 @@ class SajaoContract(RootModel[Any]):
     ]
 
 
+class ArPoint(BaseModel):
+    """
+    A point in the AR session's world frame, in metres, y up.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    x_m: float
+    y_m: float
+    z_m: float
+
+
+class RotationItem(RootModel[float]):
+    root: Annotated[float, Field(ge=-1.0, le=1.0)]
+
+
+class ArPose(BaseModel):
+    """
+    Camera pose from AR tracking: position and a unit quaternion (x, y, z, w).
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    position: ArPoint
+    rotation: Annotated[list[RotationItem], Field(max_length=4, min_length=4)]
+
+
 class MustHave(RootModel[str]):
     root: Annotated[str, Field(min_length=1)]
 
@@ -29,10 +58,6 @@ class CameraIntrinsics(BaseModel):
     height_px: Annotated[int, Field(ge=1)]
 
 
-class RotationItem(RootModel[float]):
-    root: Annotated[float, Field(ge=-1.0, le=1.0)]
-
-
 class CaptureDevice(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -42,6 +67,15 @@ class CaptureDevice(BaseModel):
         Literal["standard", "low"], Field(description="Device tier detected at launch.")
     ]
     has_ar: bool
+
+
+class Ar(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    tracking: Literal["arkit", "arcore", "none"]
+    lidar: bool
+    depth: Annotated[bool, Field(description="Depth images are in the package.")]
 
 
 class CompassReading(BaseModel):
@@ -428,6 +462,33 @@ class CameraPose(BaseModel):
     rotation: Annotated[list[RotationItem], Field(max_length=4, min_length=4)]
 
 
+class CaptureKeyframe(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    image: Annotated[
+        str,
+        Field(
+            description="Object key in the media store. Never a public URL; clients receive signed URLs.",
+            max_length=512,
+            min_length=1,
+        ),
+    ]
+    captured_at_ms: Annotated[
+        int, Field(description="Milliseconds from the start of the scan.", ge=0)
+    ]
+    sharpness: Annotated[float, Field(ge=0.0)]
+    pose: ArPose | None = None
+    intrinsics: CameraIntrinsics | None = None
+
+
 class CaptureMedia(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -655,6 +716,18 @@ class Keyframe(BaseModel):
     pose: CameraPose
     intrinsics: CameraIntrinsics
     sharpness: Annotated[float | None, Field(ge=0.0)] = None
+
+
+class LiveDetection(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    detector_class: Annotated[str, Field(max_length=60, min_length=1)]
+    score: Annotated[float, Field(description="A score from 0 to 1.", ge=0.0, le=1.0)]
+    at_ms: Annotated[int, Field(ge=0)]
+    world: Annotated[
+        ArPoint | None, Field(description="Where the detection hit the AR scene, when it did.")
+    ] = None
 
 
 class Material(BaseModel):
@@ -1326,28 +1399,51 @@ class AddEdit(BaseModel):
     label: Annotated[str, Field(max_length=80, min_length=1)]
 
 
-class Capture(BaseModel):
+class CapturePackage(BaseModel):
     """
-    Input stage: the photos or video of any space, at any extent (a whole room, a corner, a balcony), plus optional tape values. The space type is detected later, not picked here.
+    Everything the scan recorded for building the twin, uploaded as one package. Works without AR: then there is video and keyframes only, with no poses. AR poses and points are in the AR session's world frame: metres, gravity aligned, y up; the twin converts them to the space frame.
     """
 
     model_config = ConfigDict(
         extra="forbid",
     )
-    schema_version: Annotated[
+    ar: Ar
+    video: Annotated[
+        str | None,
+        Field(description="The scan video, when recorded.", max_length=512, min_length=1),
+    ] = None
+    keyframes: Annotated[list[CaptureKeyframe], Field(max_length=120, min_length=1)]
+    planes: Annotated[
+        str | None, Field(description="AR planes as JSON.", max_length=512, min_length=1)
+    ] = None
+    scene_mesh: Annotated[
+        str | None,
+        Field(
+            description="LiDAR scene mesh with surface classes, when the phone has LiDAR.",
+            max_length=512,
+            min_length=1,
+        ),
+    ] = None
+    depth: Annotated[
+        str | None,
+        Field(
+            description="Depth images aligned to keyframes, when the phone provides them.",
+            max_length=512,
+            min_length=1,
+        ),
+    ] = None
+    detections: Annotated[
+        list[LiveDetection],
+        Field(description="Live detector results during the scan.", max_length=4000),
+    ]
+    sensor_log: Annotated[
         str,
         Field(
-            description="Contract version of the object. Minor versions only add optional fields.",
-            pattern="^1\\.[0-9]+$",
+            description="Motion, pose and light readings over time, as JSON lines.",
+            max_length=512,
+            min_length=1,
         ),
     ]
-    id: UUID
-    user_id: Annotated[UUID, Field(description="Owner. Guest sessions have a user id too.")]
-    created_at: Annotated[AwareDatetime, Field(description="UTC instant, RFC 3339.")]
-    media: Annotated[list[CaptureMedia], Field(max_length=40, min_length=1)]
-    device: CaptureDevice
-    compass: CompassReading | None = None
-    tape_measurements: list[TapeMeasurement] | None = None
 
 
 class DesignMaterials(BaseModel):
@@ -1510,6 +1606,31 @@ class TwinReference(BaseModel):
     twin_id: UUID
     twin_version: Annotated[int, Field(ge=1)]
     edits: list[MoveEdit | RotateEdit | RemoveEdit | ReplaceEdit | AddEdit | RestyleSurfaceEdit]
+
+
+class Capture(BaseModel):
+    """
+    Input stage: the photos or video of any space, at any extent (a whole room, a corner, a balcony), plus optional tape values. The space type is detected later, not picked here.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    schema_version: Annotated[
+        str,
+        Field(
+            description="Contract version of the object. Minor versions only add optional fields.",
+            pattern="^1\\.[0-9]+$",
+        ),
+    ]
+    id: UUID
+    user_id: Annotated[UUID, Field(description="Owner. Guest sessions have a user id too.")]
+    created_at: Annotated[AwareDatetime, Field(description="UTC instant, RFC 3339.")]
+    media: Annotated[list[CaptureMedia], Field(max_length=40, min_length=1)]
+    device: CaptureDevice
+    compass: CompassReading | None = None
+    tape_measurements: list[TapeMeasurement] | None = None
+    package: CapturePackage | None = None
 
 
 class Design(BaseModel):
