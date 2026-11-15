@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     # Postgres connection string. Required outside dev so the service stays stateless.
     database_url: SecretStr | None = None
 
+    # Where the auth service publishes its public signing keys, and the issuer its
+    # tokens carry. Without these no token can be verified, so every caller is anonymous.
+    auth_jwks_url: str | None = None
+    auth_issuer: str | None = None
+
     # Apps older than this are told to update. "0.0.0" allows every version.
     min_app_version: str = Field(default="0.0.0", pattern=r"^\d+\.\d+\.\d+$")
 
@@ -32,4 +37,8 @@ class Settings(BaseSettings):
     def _require_database_outside_dev(self) -> Self:
         if self.environment != "dev" and self.database_url is None:
             raise ValueError("SAJAO_DATABASE_URL is required in staging and production")
+        if (self.auth_jwks_url is None) != (self.auth_issuer is None):
+            raise ValueError("SAJAO_AUTH_JWKS_URL and SAJAO_AUTH_ISSUER must be set together")
+        if self.environment != "dev" and self.auth_jwks_url is None:
+            raise ValueError("SAJAO_AUTH_JWKS_URL is required in staging and production")
         return self

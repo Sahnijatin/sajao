@@ -10,6 +10,7 @@ The Sajao API: a stateless FastAPI modular monolith behind a versioned `/v1`. Pr
 | Health | `v1/health.py` | `GET /v1/health`. Liveness only. |
 | Request context | `middleware/request_context.py` | `X-Request-ID` on every response and one JSON log line per request. Query strings, headers and bodies are never logged. |
 | Minimum app version | `middleware/app_version.py` | Apps sending an `X-App-Version` below the minimum get `426` with code `app_update_required`. |
+| Auth | `auth.py`, `middleware/auth.py`, `v1/me.py` | Bearer tokens from the auth service are verified against its public keys. No token means anonymous; a bad token is always `401`. Endpoints that need a caller use the `current_user` dependency. Guests have a real user id. |
 | Idempotency | `middleware/idempotency.py`, `idempotency.py` | Every write needs an `Idempotency-Key`. See below. |
 | OpenAPI | `openapi.py`, `openapi.json` | The exported document the typed client in `packages/api-client` is generated from. |
 
@@ -27,7 +28,7 @@ Errors always have one shape: `{"error": {"code": "...", "message": "..."}}`.
 | First attempt ended in a 5xx or crashed | Nothing stored; a retry runs again |
 | Unfinished request older than the in-progress window | A retry takes it over |
 
-Keys are stored in Postgres (`private.idempotency_keys`) so any instance can answer a retry. Without a database (dev only) they are kept in memory.
+Keys belong to the caller, so two users with the same key never see each other's responses. They are stored in Postgres (`private.idempotency_keys`) so any instance can answer a retry. Without a database (dev only) they are kept in memory.
 
 ## Settings
 
@@ -35,6 +36,8 @@ Keys are stored in Postgres (`private.idempotency_keys`) so any instance can ans
 | --- | --- | --- |
 | `SAJAO_ENVIRONMENT` | `dev` | `dev`, `staging` or `production` |
 | `SAJAO_DATABASE_URL` | none | Postgres connection string; required outside dev |
+| `SAJAO_AUTH_JWKS_URL` | none | Where the auth service publishes its public signing keys; required outside dev |
+| `SAJAO_AUTH_ISSUER` | none | The issuer its tokens carry; set together with the keys URL |
 | `SAJAO_MIN_APP_VERSION` | `0.0.0` | Oldest app version allowed |
 | `SAJAO_LOG_LEVEL` | `INFO` | Log level |
 | `SAJAO_IDEMPOTENCY_TTL_SECONDS` | `86400` | How long a finished write can be replayed |
@@ -49,6 +52,7 @@ The local stack is the Supabase CLI (needs Docker). No cloud keys are involved.
 ```
 npx supabase start                     # local Postgres and services; applies supabase/migrations
 npx supabase status                    # prints the local database URL
+# For auth, also set SAJAO_AUTH_JWKS_URL=<API URL>/auth/v1/.well-known/jwks.json and SAJAO_AUTH_ISSUER=<API URL>/auth/v1
 SAJAO_DATABASE_URL=<local database URL> uv run uvicorn --factory sajao_api.main:create_app --reload
 ```
 

@@ -29,6 +29,24 @@
         ],
         "title": "Health",
         "type": "object"
+      },
+      "Me": {
+        "properties": {
+          "is_guest": {
+            "title": "Is Guest",
+            "type": "boolean"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "is_guest"
+        ],
+        "title": "Me",
+        "type": "object"
       }
     }
   },
@@ -57,6 +75,28 @@
         "summary": "Get Health",
         "tags": [
           "health"
+        ]
+      }
+    },
+    "/v1/me": {
+      "get": {
+        "description": "The caller's own identity. Guests have one too.",
+        "operationId": "getMe",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Me",
+        "tags": [
+          "account"
         ]
       }
     }
