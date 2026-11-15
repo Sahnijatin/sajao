@@ -42,89 +42,112 @@ def cm(v):
     return f(None if v is None else v * 100, "{:.0f} cm")
 
 
-def objects_table() -> str:
+def _obj_row(scene, det, mode, poses, r, key):
+    m = r[key]
+    return (
+        f"| {scene.replace('arkit_', '')} | {det} | {mode} | {poses} | {m['gt_objects']} | "
+        f"{r['instances']} | {pct(m['recall_class_iou25'])} | {pct(m['recall_any_class_iou25'])} | "
+        f"{pct(m['recall_class_iou05'])} | {pct(m['precision_class_iou25'])} | "
+        f"{cm(m['median_center_error_m'])} | {cm(m['median_length_error_m'])} / "
+        f"{cm(m['median_width_error_m'])} / {cm(m['median_height_error_m'])} | "
+        f"{pct(m['median_size_error_rel'])} |"
+    )
+
+
+def objects_table(key: str = "metrics") -> str:
+    """key: "metrics" (all annotated objects) or "metrics_seen" (objects in view)."""
     rows = [
-        "| Scene | Detector | Depth | GT objects | Found | Recall (class, IoU 0.25) | Recall (any class) | "
-        "Precision | Centre error | Length / width / height error | Size error |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| Scene | Detector | Depth | Poses | Annotated objects | Instances | Recall, class, IoU 0.25 | "
+        "Recall, any class | Recall, class, IoU 0.05 | Precision | Centre error | "
+        "Length / width / height error | Size error |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
-    combos = [(d, m) for d in ("gdino", "yoloe") for m in ("lidar", "mapanything")]
-    agg: dict[tuple[str, str], list] = {c: [] for c in combos}
+    combos = [
+        (d, m, p)
+        for d in ("gdino", "yoloe")
+        for m in ("lidar", "mapanything")
+        for p in ("raw", "refined")
+    ]
+    agg: dict[tuple[str, str, str], list] = {c: [] for c in combos}
     for s in ARKIT:
-        for det, mode in combos:
-            r = load(s, f"objects_{det}_{mode}.json")
-            if not r or not r.get("metrics"):
-                rows.append(f"| {s} | {det} | {mode} | failed or not run | | | | | | | |")
+        for det, mode, poses in combos:
+            r = load(s, f"objects_{det}_{mode}{'' if poses == 'raw' else '_refined'}.json")
+            if not r or not r.get(key):
                 continue
-            m = r["metrics"]
-            agg[(det, mode)].append(m)
-            rows.append(
-                f"| {s.replace('arkit_', '')} | {det} | {mode} | {m['gt_objects']} | {r['instances']} | "
-                f"{pct(m['recall_class_iou25'])} | {pct(m['recall_any_class_iou25'])} | "
-                f"{pct(m['precision_class_iou25'])} | {cm(m['median_center_error_m'])} | "
-                f"{cm(m['median_length_error_m'])} / {cm(m['median_width_error_m'])} / "
-                f"{cm(m['median_height_error_m'])} | {pct(m['median_size_error_rel'])} |"
-            )
-    for (det, mode), ms in agg.items():
+            agg[(det, mode, poses)].append(r[key])
+            rows.append(_obj_row(s, det, mode, poses, r, key))
+    rows.append("")
+    rows.append(
+        "| Detector | Depth | Poses | Annotated objects | Recall, class, IoU 0.25 | Recall, class, IoU 0.05 | "
+        "Median centre error | Median size error |"
+    )
+    rows.append("| --- | --- | --- | --- | --- | --- | --- | --- |")
+    for (det, mode, poses), ms in agg.items():
         if not ms:
             continue
         gt = sum(m["gt_objects"] for m in ms)
         found = sum(round(m["recall_class_iou25"] * m["gt_objects"]) for m in ms)
         loose = sum(round((m["recall_class_iou05"] or 0) * m["gt_objects"]) for m in ms)
 
-        def med(k: str, ms: list = ms) -> list:
-            return sorted(m[k] for m in ms if m[k] is not None)
+        def mid(k: str, ms: list = ms):
+            xs = sorted(m[k] for m in ms if m[k] is not None)
+            return xs[len(xs) // 2] if xs else None
 
-        mid = lambda xs: xs[len(xs) // 2] if xs else None  # noqa: E731
         rows.append(
-            f"| **All 5** | **{det}** | **{mode}** | {gt} | | **{found / gt:.0%}** | | | "
-            f"{cm(mid(med('median_center_error_m')))} | | {pct(mid(med('median_size_error_rel')))} |"
-        )
-        rows.append(
-            f"|  | {det} | {mode}, loose match (IoU 0.05) | | | {loose / gt:.0%} | | | | | |"
+            f"| {det} | {mode} | {poses} | {gt} | {found / gt:.0%} | {loose / gt:.0%} | "
+            f"{cm(mid('median_center_error_m'))} | {pct(mid('median_size_error_rel'))} |"
         )
     return "\n".join(rows)
 
 
 def splat_table() -> str:
     rows = [
-        "| Scene | Train views | Gaussians | Train time | PSNR (held-out) | SSIM |",
-        "| --- | --- | --- | --- | --- | --- |",
+        "| Scene | Train views | Gaussians | Train time | PSNR, raw poses | PSNR (held-out) | SSIM | "
+        "Pose correction (median) |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for s in ARKIT + OTHER:
         r = load(s, "splat.json")
         if not r:
-            rows.append(f"| {s} | not run | | | | |")
+            rows.append(f"| {s} | not run | | | | | | |")
             continue
+        corr = (
+            f"{r['pose_correction_median_cm']:.1f} cm, {r['pose_correction_median_deg']:.2f} deg"
+            if r.get("pose_and_exposure_refined")
+            else "none (poses not refined)"
+        )
         rows.append(
             f"| {s} | {r['train_views']} | {r['gaussians'] / 1e6:.2f} M | {r['train_seconds'] / 60:.1f} min | "
-            f"{r['psnr']:.1f} dB | {r['ssim']:.3f} |"
+            f"{f(r.get('psnr_raw_poses'), '{:.1f} dB')} | {r['psnr']:.1f} dB | {r['ssim']:.3f} | {corr} |"
         )
     return "\n".join(rows)
 
 
 def edit_table() -> str:
     rows = [
-        "| Scene | Hidden object | Split mask IoU (object / all) | Hole covered: hidden / A / B | "
-        "Detector still sees it: photo / hidden / A / B | Time A | Time B |",
-        "| --- | --- | --- | --- | --- | --- | --- |",
+        "| Scene | Kind | Hidden object | Split IoU, object / scene mean | Hole covered: hidden / A / B | "
+        "Detector score on the object: photo / hidden / A / B | Time A | Time B |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for s in ARKIT + OTHER:
         r = load(s, "edit.json")
         if not r:
-            rows.append(f"| {s} | not run | | | | | |")
+            rows.append(f"| {s} | not run | | | | | | |")
             continue
-        h = r["hidden_object"]
-        v = r["views"][0] if r["views"] else None
-        cov = v["alpha_in_hole"] if v else {}
-        det = v["detector_score_for_object"] if v else {}
-        t = r["timings"]
-        rows.append(
-            f"| {s} | {h['label']} | {f(h['split_mask_iou'])} / {f(r['split_mask_iou_mean'])} | "
-            f"{pct(cov.get('removed'))} / {pct(cov.get('fill_a'))} / {pct(cov.get('fill_b'))} | "
-            f"{f(det.get('photo'))} / {f(det.get('removed'))} / {f(det.get('fill_a'))} / {f(det.get('fill_b'))} | "
-            f"{t['fill_a_seconds']:.0f} s | {t['fill_b_seconds'] / 60:.1f} min |"
-        )
+        for kind, h in r.get("hidden", {}).items():
+            if "skipped" in h:
+                rows.append(f"| {s} | {kind} | {h['skipped']} | | | | | |")
+                continue
+            v = h["views"][0] if h["views"] else {}
+            cov = v.get("alpha_in_hole", {})
+            det = v.get("detector_score_for_object", {})
+            t = h["timings"]
+            rows.append(
+                f"| {s} | {kind} | {h['label']} | {f(h['split_mask_iou'])} / {f(r['split_mask_iou_mean'])} | "
+                f"{pct(cov.get('removed'))} / {pct(cov.get('fill_a'))} / {pct(cov.get('fill_b'))} | "
+                f"{f(det.get('photo'))} / {f(det.get('removed'))} / {f(det.get('fill_a'))} / {f(det.get('fill_b'))} | "
+                f"{t['fill_a_seconds']:.0f} s | {t['fill_b_seconds'] / 60:.1f} min |"
+            )
     return "\n".join(rows)
 
 
@@ -197,9 +220,16 @@ def main() -> None:
         "",
         "Generated by `services/spikes/twin-risk/gpu/tables.py` from `results/`.",
         "",
-        "## Objects versus ARKitScenes ground truth",
+        "## Objects versus ARKitScenes ground truth: all annotated objects",
         "",
-        objects_table(),
+        objects_table("metrics"),
+        "",
+        "## Objects versus ARKitScenes ground truth: objects in view",
+        "",
+        "Annotated objects whose centre was within 5 m, in frame and not hidden behind a nearer LiDAR "
+        "surface in at least 5 frames.",
+        "",
+        objects_table("metrics_seen"),
         "",
         "## Splat quality",
         "",

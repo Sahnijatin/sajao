@@ -24,6 +24,10 @@ JSON = [
     "objects_gdino_mapanything.json",
     "objects_yoloe_lidar.json",
     "objects_yoloe_mapanything.json",
+    "objects_gdino_lidar_refined.json",
+    "objects_gdino_mapanything_refined.json",
+    "objects_yoloe_lidar_refined.json",
+    "objects_yoloe_mapanything_refined.json",
     "splat.json",
     "edit.json",
     "phone_variants.json",
@@ -35,6 +39,8 @@ IMAGES = [
     "topdown_gdino_mapanything.png",
     "topdown_yoloe_lidar.png",
     "topdown_yoloe_mapanything.png",
+    "topdown_gdino_lidar_refined.png",
+    "topdown_yoloe_lidar_refined.png",
     "splat/test_0.jpg",
     "edit",
 ]
@@ -62,7 +68,7 @@ def main(scenes: list[str]) -> None:
                 files = [src] if src.is_file() else sorted(src.rglob("*"))
                 for f in files:
                     if f.is_file() and f.suffix.lower() in (".jpg", ".png"):
-                        rel = f.name if src.is_dir() else Path(name).name
+                        rel = Path(name) / f.relative_to(src) if src.is_dir() else Path(name).name
                         dst = DEST / "images" / scene / rel
                         dst.parent.mkdir(parents=True, exist_ok=True)
                         shutil.copy(f, dst)
