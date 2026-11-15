@@ -1,6 +1,6 @@
 # System architecture
 
-The phone stays light. The server turns your inputs into a Room Profile and a Taste Profile, the engine produces three `Design` objects, and render, plan and commerce are all derived from them.
+The phone stays light. The server turns your inputs into a Space Profile and a Taste Profile, the engine produces three `Design` objects, and render, plan and commerce are all derived from them.
 
 ```mermaid
 flowchart LR
@@ -11,7 +11,7 @@ flowchart LR
     SHOP["Shop and share: buy or rent, reel"]
   end
   subgraph Server["Server: FastAPI + Modal workers"]
-    RP["Room profile: geometry, scale anchors, error bands"]
+    RP["Space profile: geometry, scale anchors, error bands"]
     TP["Taste profile: vector + readable attributes"]
     DE["Design engine: designer, solver, verifier"]
     DO["Design object x3: products, positions, materials, cost"]
