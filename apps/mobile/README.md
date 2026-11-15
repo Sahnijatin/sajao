@@ -44,7 +44,7 @@ The app is linked to the EAS project `@sahniijatinn/sajao`. `eas.json` has three
 | --- | --- | --- |
 | `development` | Development client, internal distribution | Sajao (Dev), `app.sajao.dev` |
 | `preview` | Release build for testers, internal distribution | Sajao (Preview), `app.sajao.preview` |
-| `production` | Store build | Sajao, `app.sajao` (working id, to confirm before the first store build) |
+| `production` | Store build | Sajao, `app.sajao` |
 
 ```
 eas build --platform android --profile development

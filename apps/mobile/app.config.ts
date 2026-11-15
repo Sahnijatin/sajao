@@ -8,8 +8,7 @@ type Variant = "development" | "preview" | "production";
 const VARIANTS: Record<Variant, { name: string; id: string }> = {
   development: { name: "Sajao (Dev)", id: "app.sajao.dev" },
   preview: { name: "Sajao (Preview)", id: "app.sajao.preview" },
-  // Working identifier: confirm it before the first store build, because a
-  // store listing can never change its application id.
+  // Confirmed by the founder. A store listing can never change its application id.
   production: { name: "Sajao", id: "app.sajao" },
 };
 
