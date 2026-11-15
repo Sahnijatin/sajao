@@ -32,7 +32,11 @@ def out_dir(name: str) -> Path:
     return d
 
 
-def load_scene(name: str) -> dict:
+def load_scene(name: str, refined: bool = True) -> dict:
+    """Scene cameras; by default with poses refined during splat training, if any."""
+    ref = VOL / "out" / name / "cameras_refined.json"
+    if refined and ref.exists():
+        return json.loads(ref.read_text())
     return json.loads((scene_dir(name) / "cameras.json").read_text())
 
 

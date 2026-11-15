@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import math
 import time
 from pathlib import Path
@@ -93,6 +94,42 @@ def scene_scale(c2w_inv) -> float:
     return float((centers - centers.mean(0)).norm(dim=1).max() * 1.1)
 
 
+def se3(delta):
+    """(N, 6) axis-angle rotation and translation -> (N, 4, 4) transforms."""
+    import torch
+
+    n = len(delta)
+    w, t = delta[:, :3], delta[:, 3:]
+    zero = torch.zeros(n, device=delta.device)
+    k = torch.stack(
+        [zero, -w[:, 2], w[:, 1], w[:, 2], zero, -w[:, 0], -w[:, 1], w[:, 0], zero], 1
+    ).view(n, 3, 3)
+    r = torch.linalg.matrix_exp(k)
+    top = torch.cat([r, t[:, :, None]], 2)
+    bottom = torch.tensor([0.0, 0, 0, 1], device=delta.device).expand(n, 1, 4)
+    return torch.cat([top, bottom], 1)
+
+
+def adjusted_viewmats(viewmats, delta):
+    """Apply per-camera pose corrections: c2w' = c2w @ T(delta)."""
+    import torch
+
+    return torch.linalg.inv(torch.linalg.inv(viewmats) @ se3(delta))
+
+
+def new_camera_params(n: int):
+    import torch
+
+    return {
+        "delta": torch.nn.Parameter(torch.zeros(n, 6, device="cuda")),
+        "color": torch.nn.Parameter(torch.zeros(n, 6, device="cuda")),
+    }
+
+
+def apply_color(pred, color_row):
+    return pred * (1.0 + color_row[:3]) + color_row[3:]
+
+
 def optimise(
     params,
     imgs,
@@ -104,7 +141,10 @@ def optimise(
     refine_start=500,
     reset_every=3000,
     log="",
+    cams=None,
 ):
+    """Train Gaussians. With `cams` (from new_camera_params), also refine each
+    camera's pose and a per-image colour gain and bias (exposure)."""
     import torch
     from gsplat.strategy import DefaultStrategy
     from pytorch_msssim import ssim
@@ -122,6 +162,12 @@ def optimise(
         for k, lr in lrs.items()
     }
     sched = torch.optim.lr_scheduler.ExponentialLR(opts["means"], gamma=0.01 ** (1.0 / steps))
+    cam_opt = cam_sched = None
+    if cams is not None:
+        cam_opt = torch.optim.Adam(
+            [{"params": [cams["delta"]], "lr": 1e-3}, {"params": [cams["color"]], "lr": 1e-3}]
+        )
+        cam_sched = torch.optim.lr_scheduler.ExponentialLR(cam_opt, gamma=0.1 ** (1.0 / steps))
     strategy = DefaultStrategy(
         verbose=False,
         refine_start_iter=refine_start,
@@ -138,9 +184,16 @@ def optimise(
         i = int(torch.randint(len(imgs), (1,), generator=gen))
         gt = imgs[i].float() / 255.0
         sh_deg = min(step // 1000, 3)
-        rc, _, info = render(params, viewmats[i : i + 1], ks[i : i + 1], w, h, sh_degree=sh_deg)
+        vm = viewmats[i : i + 1]
+        use_cams = cams is not None and step >= 500
+        if use_cams:
+            vm = adjusted_viewmats(vm, cams["delta"][i : i + 1])
+        rc, _, info = render(params, vm, ks[i : i + 1], w, h, sh_degree=sh_deg)
         strategy.step_pre_backward(params, opts, state, step, info)
-        pred = rc[0].clamp(0, 1)
+        pred = rc[0]
+        if use_cams:
+            pred = apply_color(pred, cams["color"][i])
+        pred = pred.clamp(0, 1)
         l1 = (pred - gt).abs().mean()
         s = ssim(
             pred.permute(2, 0, 1)[None],
@@ -154,6 +207,10 @@ def optimise(
             o.step()
             o.zero_grad(set_to_none=True)
         sched.step()
+        if cam_opt is not None:
+            cam_opt.step()
+            cam_opt.zero_grad(set_to_none=True)
+            cam_sched.step()
         strategy.step_post_backward(params, opts, state, step, info, packed=False)
         if step % 2000 == 0:
             print(
@@ -164,7 +221,30 @@ def optimise(
     return params
 
 
-def evaluate(params, imgs, viewmats, ks):
+def refine_test_cameras(params, imgs, viewmats, ks, steps: int = 300):
+    """Fit pose and exposure of held-out views with the splat frozen (standard
+    when training refines poses), so the score measures the splat, not pose noise."""
+    import torch
+
+    cams = new_camera_params(len(imgs))
+    frozen = {k: v.detach() for k, v in params.items()}
+    h, w = imgs.shape[1:3]
+    opt = torch.optim.Adam(
+        [{"params": [cams["delta"]], "lr": 1e-3}, {"params": [cams["color"]], "lr": 1e-3}]
+    )
+    for i in range(len(imgs)):
+        gt = imgs[i].float() / 255.0
+        for _ in range(steps):
+            vm = adjusted_viewmats(viewmats[i : i + 1], cams["delta"][i : i + 1])
+            rc, _, _ = render(frozen, vm, ks[i : i + 1], w, h)
+            loss = (apply_color(rc[0], cams["color"][i]).clamp(0, 1) - gt).abs().mean()
+            loss.backward()
+            opt.step()
+            opt.zero_grad(set_to_none=True)
+    return cams
+
+
+def evaluate(params, imgs, viewmats, ks, cams=None):
     import torch
     from pytorch_msssim import ssim
 
@@ -172,8 +252,12 @@ def evaluate(params, imgs, viewmats, ks):
     psnrs, ssims = [], []
     with torch.no_grad():
         for i in range(len(imgs)):
-            rc, _, _ = render(params, viewmats[i : i + 1], ks[i : i + 1], w, h)
-            pred = rc[0].clamp(0, 1)
+            vm = viewmats[i : i + 1]
+            if cams is not None:
+                vm = adjusted_viewmats(vm, cams["delta"][i : i + 1])
+            rc, _, _ = render(params, vm, ks[i : i + 1], w, h)
+            pred = rc[0] if cams is None else apply_color(rc[0], cams["color"][i])
+            pred = pred.clamp(0, 1)
             gt = imgs[i].float() / 255.0
             mse = ((pred - gt) ** 2).mean()
             psnrs.append(float(-10 * torch.log10(mse)))
@@ -197,27 +281,59 @@ def load_params(path: Path):
 
 
 def train_scene(name: str, steps: int = 15000) -> dict:
+    """Train on raw poses; for phone captures (ARKitScenes) also refine poses and
+    exposure, then save the refined cameras for the edit and phone stages."""
     import torch
 
-    scene = load_scene(name)
+    scene = load_scene(name, refined=False)
+    refine = scene["source"] == "arkitscenes"
     torch.manual_seed(0)
     pts = np.load(scene_dir(name) / "points.npy")
     idx, imgs, ks, vms = load_frames(scene, name, "train")
     tidx, timgs, tks, tvms = load_frames(scene, name, "test")
     scale = scene_scale(vms)
     params = init_params(pts)
+    cams = new_camera_params(len(idx)) if refine else None
     t0 = time.time()
-    params = optimise(params, imgs, vms, ks, steps, scale, refine_stop=int(steps * 0.66), log=name)
+    params = optimise(
+        params, imgs, vms, ks, steps, scale, refine_stop=int(steps * 0.66), log=name, cams=cams
+    )
     torch.cuda.synchronize()
     train_s = time.time() - t0
-    ev = evaluate(params, timgs, tvms, tks)
+    raw = evaluate(params, timgs, tvms, tks)
+    ev = dict(raw)
+    tcams = None
+    if refine:
+        t1 = time.time()
+        tcams = refine_test_cameras(params, timgs, tvms, tks)
+        ev = evaluate(params, timgs, tvms, tks, tcams)
+        ev["test_pose_refine_seconds"] = round(time.time() - t1, 1)
+        # Save refined camera-to-world matrices for every frame.
+        with torch.no_grad():
+            new_train = torch.linalg.inv(adjusted_viewmats(vms, cams["delta"])).cpu().numpy()
+            new_test = torch.linalg.inv(adjusted_viewmats(tvms, tcams["delta"])).cpu().numpy()
+        refined = json.loads(json.dumps(scene))
+        for j, fi in enumerate(idx):
+            refined["frames"][fi]["c2w"] = new_train[j].tolist()
+        for j, fi in enumerate(tidx):
+            refined["frames"][fi]["c2w"] = new_test[j].tolist()
+        delta = cams["delta"].detach()
+        ev["pose_correction_median_cm"] = float(delta[:, 3:].norm(dim=1).median() * 100)
+        ev["pose_correction_median_deg"] = float(delta[:, :3].norm(dim=1).median() * 180 / math.pi)
+        save_json(out_dir(name) / "cameras_refined.json", refined)
     od = out_dir(name)
     save_params(params, od / "splat.pt")
     h, w = timgs.shape[1:3]
     with torch.no_grad():
         for j in range(min(3, len(timgs))):
-            rc, _, _ = render(params, tvms[j : j + 1], tks[j : j + 1], w, h)
-            pred = (rc[0].clamp(0, 1).cpu().numpy() * 255).astype(np.uint8)
+            vm = (
+                tvms[j : j + 1]
+                if tcams is None
+                else adjusted_viewmats(tvms[j : j + 1], tcams["delta"][j : j + 1])
+            )
+            rc, _, _ = render(params, vm, tks[j : j + 1], w, h)
+            pred = rc[0] if tcams is None else apply_color(rc[0], tcams["color"][j])
+            pred = (pred.clamp(0, 1).cpu().numpy() * 255).astype(np.uint8)
             gt = timgs[j].cpu().numpy()
             write_rgb(od / "splat" / f"test_{j}.jpg", np.concatenate([gt, pred], axis=1))
     result = {
@@ -229,6 +345,9 @@ def train_scene(name: str, steps: int = 15000) -> dict:
         "steps": steps,
         "train_seconds": round(train_s, 1),
         "scene_scale": scale,
+        "pose_and_exposure_refined": refine,
+        "psnr_raw_poses": raw["psnr"],
+        "ssim_raw_poses": raw["ssim"],
         **ev,
     }
     save_json(od / "splat.json", result)
