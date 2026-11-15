@@ -31,6 +31,12 @@
         "projectId": "7fef2ddd-9260-44b5-8a73-5e6919ac0837"
       }
     },
-    "owner": "sahniijatinn"
+    "owner": "sahniijatinn",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/7fef2ddd-9260-44b5-8a73-5e6919ac0837"
+    }
   }
 }

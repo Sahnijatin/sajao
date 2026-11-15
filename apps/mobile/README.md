@@ -53,3 +53,13 @@ pnpm --filter @sajao/mobile start                    # then open the development
 ```
 
 Each EAS environment (development, preview, production) holds that environment's `EXPO_PUBLIC_*` values. Nothing secret goes in `EXPO_PUBLIC_*` values: they ship inside the app.
+
+## Updates without a rebuild
+
+Preview and production builds check for a JavaScript update when they start. Each build listens on the channel named after its profile.
+
+```
+eas update --channel preview --environment preview --message "<what changed>"
+```
+
+An update reaches a build only when the app version matches, and it can only change JavaScript, styling and bundled assets. Adding or changing a native package needs a new build, and the app version in `app.json` must be raised with it so older builds do not receive JavaScript they cannot run. On the phone, close the app fully and open it up to twice: the first launch downloads the update, the next one runs it.

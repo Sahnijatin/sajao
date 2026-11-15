@@ -10,6 +10,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { Platform } from "react-native";
 import i18n, { resolveLanguage } from "@/i18n";
+import { previewScreensEnabled } from "@/preview-screens";
 import { useSettings } from "@/state/settings";
 
 // Headlines use Instrument Serif on both platforms. Body text is the system
@@ -44,7 +45,7 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="capture" options={{ presentation: "fullScreenModal" }} />
-        <Stack.Protected guard={__DEV__}>
+        <Stack.Protected guard={previewScreensEnabled()}>
           <Stack.Screen name="gallery" options={{ headerShown: true, title: "Gallery" }} />
           <Stack.Screen name="space-preview" />
           <Stack.Screen name="taste-preview" />

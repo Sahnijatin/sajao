@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { Screen } from "@/components/screen";
 import { LANGUAGES, resolveLanguage } from "@/i18n";
+import { previewScreensEnabled } from "@/preview-screens";
 import { useSettings } from "@/state/settings";
 import { formatLength } from "@/utils/format-length";
 
@@ -60,7 +61,7 @@ export function ProfileScreen() {
         </Text>
       </Setting>
 
-      {__DEV__ ? (
+      {previewScreensEnabled() ? (
         <>
           <Button
             label={t("profile.gallery")}
