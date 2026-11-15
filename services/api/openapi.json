@@ -1,6 +1,96 @@
 {
   "components": {
     "schemas": {
+      "CompleteUpload": {
+        "properties": {
+          "key": {
+            "maxLength": 128,
+            "title": "Key",
+            "type": "string"
+          },
+          "parts": {
+            "items": {
+              "$ref": "#/components/schemas/Part"
+            },
+            "maxItems": 10000,
+            "minItems": 1,
+            "title": "Parts",
+            "type": "array"
+          },
+          "upload_id": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "title": "Upload Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "upload_id",
+          "parts"
+        ],
+        "title": "CompleteUpload",
+        "type": "object"
+      },
+      "CompletedUpload": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "key",
+          "size_bytes"
+        ],
+        "title": "CompletedUpload",
+        "type": "object"
+      },
+      "CreateUpload": {
+        "properties": {
+          "content_type": {
+            "title": "Content Type",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "photo",
+              "video"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "size_bytes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "kind",
+          "content_type",
+          "size_bytes"
+        ],
+        "title": "CreateUpload",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
       "Health": {
         "properties": {
           "environment": {
@@ -46,6 +136,168 @@
           "is_guest"
         ],
         "title": "Me",
+        "type": "object"
+      },
+      "Part": {
+        "properties": {
+          "etag": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Etag",
+            "type": "string"
+          },
+          "part_number": {
+            "maximum": 10000.0,
+            "minimum": 1.0,
+            "title": "Part Number",
+            "type": "integer"
+          },
+          "size_bytes": {
+            "minimum": 0.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "part_number",
+          "size_bytes",
+          "etag"
+        ],
+        "title": "Part",
+        "type": "object"
+      },
+      "PartUrl": {
+        "properties": {
+          "part_number": {
+            "title": "Part Number",
+            "type": "integer"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "part_number",
+          "url"
+        ],
+        "title": "PartUrl",
+        "type": "object"
+      },
+      "ResumeUpload": {
+        "properties": {
+          "key": {
+            "maxLength": 128,
+            "title": "Key",
+            "type": "string"
+          },
+          "size_bytes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "upload_id": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "title": "Upload Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "upload_id",
+          "size_bytes"
+        ],
+        "title": "ResumeUpload",
+        "type": "object"
+      },
+      "UploadPlan": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "part_count": {
+            "title": "Part Count",
+            "type": "integer"
+          },
+          "part_size_bytes": {
+            "title": "Part Size Bytes",
+            "type": "integer"
+          },
+          "parts": {
+            "items": {
+              "$ref": "#/components/schemas/PartUrl"
+            },
+            "title": "Parts",
+            "type": "array"
+          },
+          "upload_id": {
+            "title": "Upload Id",
+            "type": "string"
+          },
+          "uploaded": {
+            "items": {
+              "$ref": "#/components/schemas/Part"
+            },
+            "title": "Uploaded",
+            "type": "array"
+          },
+          "url_expires_in_seconds": {
+            "title": "Url Expires In Seconds",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "key",
+          "upload_id",
+          "part_size_bytes",
+          "part_count",
+          "uploaded",
+          "parts",
+          "url_expires_in_seconds"
+        ],
+        "title": "UploadPlan",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
         "type": "object"
       }
     }
@@ -97,6 +349,132 @@
         "summary": "Get Me",
         "tags": [
           "account"
+        ]
+      }
+    },
+    "/v1/uploads": {
+      "post": {
+        "description": "Plan a new upload and get signed URLs for its parts.",
+        "operationId": "createUpload",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUpload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadPlan"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Upload",
+        "tags": [
+          "uploads"
+        ]
+      }
+    },
+    "/v1/uploads/complete": {
+      "post": {
+        "description": "Join the uploaded parts into the stored file.",
+        "operationId": "completeUpload",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteUpload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompletedUpload"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Complete Upload",
+        "tags": [
+          "uploads"
+        ]
+      }
+    },
+    "/v1/uploads/resume": {
+      "post": {
+        "description": "After a dropped connection: which parts arrived, and fresh URLs for the rest.",
+        "operationId": "resumeUpload",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResumeUpload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadPlan"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Resume Upload",
+        "tags": [
+          "uploads"
         ]
       }
     }

@@ -21,6 +21,7 @@ from sajao_api.middleware.auth import AuthMiddleware
 from sajao_api.middleware.idempotency import IdempotencyMiddleware
 from sajao_api.middleware.request_context import RequestContextMiddleware
 from sajao_api.settings import Settings
+from sajao_api.storage import ObjectStorage, S3ObjectStorage
 
 
 def _key_owner(scope: Scope) -> str:
@@ -33,6 +34,7 @@ def create_app(
     settings: Settings | None = None,
     idempotency_store: IdempotencyStore | None = None,
     token_verifier: TokenVerifier | None = None,
+    storage: ObjectStorage | None = None,
 ) -> FastAPI:
     settings = settings or Settings()
     configure_logging(settings.log_level)
@@ -75,6 +77,22 @@ def create_app(
         redoc_url=None,
     )
     app.state.settings = settings
+    if (
+        storage is None
+        and settings.storage_endpoint
+        and settings.storage_region
+        and settings.storage_bucket
+        and settings.storage_access_key_id
+        and settings.storage_secret_access_key
+    ):
+        storage = S3ObjectStorage(
+            endpoint=settings.storage_endpoint,
+            region=settings.storage_region,
+            bucket=settings.storage_bucket,
+            access_key_id=settings.storage_access_key_id.get_secret_value(),
+            secret_access_key=settings.storage_secret_access_key.get_secret_value(),
+        )
+    app.state.storage = storage
     app.include_router(v1.router)
     app.add_exception_handler(ApiError, api_error_handler)
 
