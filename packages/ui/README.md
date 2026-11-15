@@ -41,6 +41,7 @@ Spacing, type and shadows come from the approved key-screen mockups.
 | Spacing | 2, 4, 6, 8, 10, 12, 14; 16 for screen and card padding; 26 under sheets |
 | Type | Instrument Serif headlines: display 46, title 34, heading 26. Sans body: 16, 14, 13, 12, 11; totals 24 semibold |
 | Buttons | 56 px pills; 32 px small pills. Variants: `primary`, `ink`, `outline`, `tint`, `ghost` |
+| Radius | Cards 20 px, panes 20 px, sheets 30 px; buttons and chips fully rounded |
 | Sheets | 30 px top corners, white, with an upward shadow |
 | Shadows | Card (three stacked), sheet, accent glow, segment; each with a low-tier version |
 | Glass | `light` over the canvas and photos; `dark` (`tone="dark"`) on camera screens |
@@ -58,7 +59,6 @@ Instrument Serif has Latin letters only. Hindi headlines fall back to the system
 
 ## Still open
 
-- **Card radius.** The design doc says 14 px cards and 20 px panes, which is what the tokens hold. The mockups draw cards at 18 to 24 px. Not changed here; it needs a decision.
 - **Sheet corners on Android.** iOS gets the 30 px radius. The Android sheet keeps its Material shape, because the native sheet does not take a radius.
 - **Low-tier dark glass tint** (78% opacity) is not on the mockups; it was chosen so white text stays legible without a blur.
 - Blur saturation (180% light, 160% dark) is recorded as a token but not applied, because the blur view has no saturation control.

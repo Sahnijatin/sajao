@@ -40,7 +40,7 @@ describe("LiveMap tokens match the design doc", () => {
   });
 
   it("radius: panes, cards, sheets and pills", () => {
-    expect(radius).toEqual({ pane: 20, card: 14, sheet: 30, pill: 999 });
+    expect(radius).toEqual({ pane: 20, card: 20, sheet: 30, pill: 999 });
   });
 
   it("shadows: three stacked on standard devices, one on the low tier", () => {

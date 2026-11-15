@@ -44,9 +44,10 @@ export type GlassTone = "light" | "dark";
 
 export const radius = {
   pane: 20,
-  card: 14,
+  card: 20,
   /** Top corners of bottom sheets. */
   sheet: 30,
+  /** Buttons and chips are fully rounded. */
   pill: 999,
 } as const;
 
