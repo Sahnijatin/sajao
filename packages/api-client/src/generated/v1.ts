@@ -44,10 +44,103 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/uploads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Upload
+         * @description Plan a new upload and get signed URLs for its parts.
+         */
+        post: operations["createUpload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/uploads/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Complete Upload
+         * @description Join the uploaded parts into the stored file.
+         */
+        post: operations["completeUpload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/uploads/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resume Upload
+         * @description After a dropped connection: which parts arrived, and fresh URLs for the rest.
+         */
+        post: operations["resumeUpload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** CompleteUpload */
+        CompleteUpload: {
+            /** Key */
+            key: string;
+            /** Parts */
+            parts: components["schemas"]["Part"][];
+            /** Upload Id */
+            upload_id: string;
+        };
+        /** CompletedUpload */
+        CompletedUpload: {
+            /** Key */
+            key: string;
+            /** Size Bytes */
+            size_bytes: number;
+        };
+        /** CreateUpload */
+        CreateUpload: {
+            /** Content Type */
+            content_type: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "photo" | "video";
+            /** Size Bytes */
+            size_bytes: number;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
+        };
         /** Health */
         Health: {
             /**
@@ -69,6 +162,61 @@ export interface components {
             is_guest: boolean;
             /** User Id */
             user_id: string;
+        };
+        /** Part */
+        Part: {
+            /** Etag */
+            etag: string;
+            /** Part Number */
+            part_number: number;
+            /** Size Bytes */
+            size_bytes: number;
+        };
+        /** PartUrl */
+        PartUrl: {
+            /** Part Number */
+            part_number: number;
+            /** Url */
+            url: string;
+        };
+        /** ResumeUpload */
+        ResumeUpload: {
+            /** Key */
+            key: string;
+            /** Size Bytes */
+            size_bytes: number;
+            /** Upload Id */
+            upload_id: string;
+        };
+        /** UploadPlan */
+        UploadPlan: {
+            /** Key */
+            key: string;
+            /** Part Count */
+            part_count: number;
+            /** Part Size Bytes */
+            part_size_bytes: number;
+            /** Parts */
+            parts: components["schemas"]["PartUrl"][];
+            /** Upload Id */
+            upload_id: string;
+            /** Uploaded */
+            uploaded: components["schemas"]["Part"][];
+            /** Url Expires In Seconds */
+            url_expires_in_seconds: number;
+        };
+        /** ValidationError */
+        ValidationError: {
+            /** Context */
+            ctx?: Record<string, never>;
+            /** Input */
+            input?: unknown;
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
         };
     };
     responses: never;
@@ -115,6 +263,105 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    createUpload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateUpload"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadPlan"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    completeUpload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompleteUpload"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompletedUpload"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resumeUpload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResumeUpload"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadPlan"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

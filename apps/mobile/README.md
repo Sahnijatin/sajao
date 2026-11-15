@@ -11,6 +11,7 @@ The Sajao app shell: Expo with Expo Router, four native tabs, English and Hindi,
 | `src/components` | Shared building blocks for screens. Design system components come from `@sajao/ui`. |
 | `src/i18n` | String catalogs (`locales/en.json`, `locales/hi.json`) and language choice. |
 | `src/state` | On-device settings (language, units), saved across launches. |
+| `src/uploads` | Photo resizing and resumable uploads through signed URLs. |
 | `src/utils` | Length and INR formatting. |
 
 ## Rules for screens
