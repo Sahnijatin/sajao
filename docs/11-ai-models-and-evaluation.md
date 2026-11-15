@@ -20,9 +20,7 @@ AI decides taste and appearance; geometry and code decide fit. Every model outpu
 | Floor plan reading, design chat | Vision and language models | Provider terms | Next |
 | Taste ranker, compatibility model | Small models trained by us | Ours | Later |
 
-Every license is recorded before a model enters the pipeline. Prompts and model versions are pinned in the repo.
-
-On-device libraries for the AR scan: ARKit (Apple SDK agreement), ARCore SDK for Android (Apache 2.0 client library; Google Play Services for AR terms at runtime), MediaPipe Tasks Vision 0.10.33 (Apache 2.0). No AGPL components.
+Every model and dataset is listed in the third-party register (`docs/24-third-party-register.md`); the legal team reviews it separately. Prompts and model versions are pinned in the repo.
 
 ## Render bake-off
 
