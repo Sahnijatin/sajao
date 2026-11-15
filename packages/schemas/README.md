@@ -5,7 +5,8 @@ The contract between the app, the API and the workers. One JSON Schema source pe
 | Object | Stage |
 | --- | --- |
 | `Capture` | Input |
-| `SpaceProfile` | Understanding |
+| `SpaceProfile` | Understanding (a view of the `SpaceTwin`) |
+| `SpaceTwin` | The 3D twin: shell and every object as its own item |
 | `TasteProfile`, `Brief` | Personalisation |
 | `Product` | Catalog item, embedded in a design |
 | `Design` | Design |
@@ -20,6 +21,8 @@ The contract between the app, the API and the workers. One JSON Schema source pe
 - A `Product` needs image permission and at least one buy or rent route.
 - A `DesignItem` is placed by the solver or the user, never by a model.
 - A `Render` is always marked illustrative.
+- A `SpaceTwin` is never edited. A `Design` points at a twin id and version plus ordered `TwinEdit`s (move, rotate, remove, replace, add, restyle a surface), made by the user or the solver, never a model. `applyEdits` and `spaceProfileFromTwin` in `@sajao/schemas/twin` derive the edited twin and the `SpaceProfile`.
+- A twin object's size is its measured box; a generated 3D model is scaled to the box and never sets the size. Replaced and added items take their catalog size.
 - Unknown properties are rejected everywhere except `Event.properties`.
 
 ## Changing the contract
