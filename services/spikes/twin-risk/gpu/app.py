@@ -151,7 +151,7 @@ def replica_cpu(names: list[str]) -> dict:
 
 
 @app.function(image=gpu_image, volumes=V, gpu="L40S", timeout=3 * 3600)
-def objects_gpu(name: str, modes: list[str], detectors: list[str]) -> dict:
+def objects_gpu(name: str, modes: list[str], detectors: list[str], poses: list[str]) -> dict:
     vol.reload()
     from twin_gpu import objects
     from twin_gpu.common import timed
@@ -162,10 +162,10 @@ def objects_gpu(name: str, modes: list[str], detectors: list[str]) -> dict:
         with timed(name, f"segment_{det}", "L40S"):
             res[f"segment_{det}"] = objects.segment(name)
         vol.commit()
-        if modes:
-            with timed(name, f"objects_{det}_" + "_".join(modes), "L40S"):
-                res[f"metrics_{det}"] = objects.run_objects(name, modes)
-        vol.commit()
+        for p in poses if modes else []:
+            with timed(name, f"objects_{det}_{p}_" + "_".join(modes), "L40S"):
+                res[f"metrics_{det}_{p}"] = objects.run_objects(name, modes, p)
+            vol.commit()
     return res
 
 
@@ -188,6 +188,7 @@ def edit_gpu(name: str, detector: str) -> dict:
     from twin_gpu.common import timed
 
     objects.set_detector(detector)
+    objects.set_poses("refined")  # poses refined during splat training, where available
     with timed(name, "split_and_fill", "L40S"):
         r = edit.run_edit(name)
     vol.commit()
@@ -283,7 +284,11 @@ def _scenes(scenes: str) -> list[str]:
 
 @app.local_entrypoint()
 def main(
-    stage: str, scenes: str = "all", steps: int = 15000, detectors: str = "gdino,yoloe"
+    stage: str,
+    scenes: str = "all",
+    steps: int = 15000,
+    detectors: str = "gdino,yoloe",
+    poses: str = "raw",
 ) -> None:
     import json
 
@@ -304,7 +309,8 @@ def main(
             calls.append(replica_cpu.spawn(reps))
     elif stage == "objects":
         for n in names:
-            calls.append(objects_gpu.spawn(n, ["lidar", "mapanything"] if n in ARKIT else [], dets))
+            modes = ["lidar", "mapanything"] if n in ARKIT else []
+            calls.append(objects_gpu.spawn(n, modes, dets, poses.split(",")))
     elif stage == "splat":
         calls = [splat_gpu.spawn(n, steps) for n in names]
     elif stage == "edit":

@@ -67,6 +67,22 @@ MAPANYTHING = "facebook/map-anything"
 YOLOE = "yoloe-26x-seg.pt"
 DETECTORS = ("gdino", "yoloe")
 DET = "gdino"  # set by set_detector(); selects mask folder and result file names
+POSES = "raw"  # "raw" ARKit poses or "refined" poses saved by splat training
+
+
+def set_poses(poses: str) -> None:
+    global POSES
+    if poses not in ("raw", "refined"):
+        raise ValueError(poses)
+    POSES = poses
+
+
+def _scene(name: str) -> dict:
+    return load_scene(name, refined=POSES == "refined")
+
+
+def _tag() -> str:
+    return "" if POSES == "raw" else "_refined"
 
 
 def set_detector(det: str) -> None:
@@ -213,7 +229,7 @@ def mapanything_depth(name: str, frames: list[int]) -> dict[int, np.ndarray]:
     from mapanything.models import MapAnything
     from mapanything.utils.image import preprocess_inputs
 
-    scene = load_scene(name)
+    scene = _scene(name)
     sd = scene_dir(name)
     model = MapAnything.from_pretrained(MAPANYTHING).cuda().eval()
     out: dict[int, np.ndarray] = {}
@@ -270,7 +286,7 @@ def lift(name: str, frames: list[int], depth_for) -> tuple[list[Observation], di
     """Lift every mask to world voxels. Returns observations and (frame, mask) -> key."""
     import cv2
 
-    scene = load_scene(name)
+    scene = _scene(name)
     obs = []
     kernel = np.ones((5, 5), np.uint8)
     rng = np.random.default_rng(0)
@@ -311,6 +327,36 @@ def gt_boxes(name: str, upi: int) -> list[LabelledBox]:
     return out
 
 
+def gt_seen(
+    name: str, gts: list[LabelledBox], min_frames: int = 5, max_range: float = 5.0
+) -> list[bool]:
+    """Whether each annotated object was in view: its centre projects into the
+    frame within range in at least `min_frames` frames and LiDAR shows nothing
+    clearly in front of it."""
+    scene = _scene(name)
+    sd = scene_dir(name)
+    counts = [0] * len(gts)
+    centers = np.array([g.box.center for g in gts])
+    reach = np.array([max(g.box.length, g.box.width) / 2 + 0.25 for g in gts])
+    for f in scene["frames"][::3]:
+        if not f.get("depth"):
+            continue
+        depth = read_depth_m(sd / f["depth"])
+        w2c = np.linalg.inv(np.asarray(f["c2w"]))
+        k = np.asarray(f["K"])
+        cam = centers @ w2c[:3, :3].T + w2c[:3, 3]
+        z = cam[:, 2]
+        u = np.round(k[0, 0] * cam[:, 0] / np.maximum(z, 1e-6) + k[0, 2]).astype(int)
+        v = np.round(k[1, 1] * cam[:, 1] / np.maximum(z, 1e-6) + k[1, 2]).astype(int)
+        for i in range(len(gts)):
+            if not (0.3 < z[i] < max_range and 0 <= u[i] < f["w"] and 0 <= v[i] < f["h"]):
+                continue
+            d = depth[v[i], u[i]]
+            if d > 0 and d > z[i] - reach[i]:
+                counts[i] += 1
+    return [c >= min_frames for c in counts]
+
+
 def box_json(label: str, b: UprightBox, frames: int) -> dict:
     return {
         "label": label,
@@ -325,7 +371,7 @@ def box_json(label: str, b: UprightBox, frames: int) -> dict:
 
 
 def fuse_and_score(name: str, obs: list[Observation], mode: str) -> dict:
-    scene = load_scene(name)
+    scene = _scene(name)
     upi = up_axis(scene)
     t0 = time.time()
     raw = fuse(obs)
@@ -334,6 +380,8 @@ def fuse_and_score(name: str, obs: list[Observation], mode: str) -> dict:
     fuse_s = time.time() - t0
     preds = [LabelledBox(lab, b) for lab, b, _ in boxes]
     gts = gt_boxes(name, upi)
+    seen = gt_seen(name, gts) if gts else []
+    gts_seen = [g for g, ok in zip(gts, seen, strict=True) if ok]
     result = {
         "scene": name,
         "mode": mode,
@@ -342,12 +390,15 @@ def fuse_and_score(name: str, obs: list[Observation], mode: str) -> dict:
         "instances_before_merge": len(raw),
         "instances": len(boxes),
         "fuse_seconds": round(fuse_s, 2),
+        "poses": POSES,
         "metrics": summarise(preds, gts) if gts else None,
+        "metrics_seen": summarise(preds, gts_seen) if gts_seen else None,
+        "gt_seen": seen,
         "named_objects": sorted({lab for lab, _, _ in boxes}),
         "boxes": [box_json(lab, b, n) for lab, b, n in boxes],
         "gt": [box_json(g.label, g.box, 0) for g in gts],
     }
-    save_json(out_dir(name) / f"objects_{DET}_{mode}.json", result)
+    save_json(out_dir(name) / f"objects_{DET}_{mode}{_tag()}.json", result)
     draw_topdown(name, result, mode)
     return result
 
@@ -356,7 +407,7 @@ def draw_topdown(name: str, result: dict, mode: str) -> None:
     """Top-down plan: ground truth in grey, predictions in colour."""
     from PIL import Image, ImageDraw
 
-    scene = load_scene(name)
+    scene = _scene(name)
     upi = up_axis(scene)
     allb = [
         UprightBox(tuple(x["center"]), x["length"], x["width"], x["height"], x["yaw"], upi)
@@ -385,11 +436,12 @@ def draw_topdown(name: str, result: dict, mode: str) -> None:
         col = (220, 60, 60) if x["class"] else (60, 120, 220)
         dr.polygon(poly(bx), outline=col, width=2)
         dr.text(poly(bx)[2], x["label"], fill=col)
-    img.save(out_dir(name) / f"topdown_{DET}_{mode}.png")
+    img.save(out_dir(name) / f"topdown_{DET}_{mode}{_tag()}.png")
 
 
-def run_objects(name: str, modes: list[str]) -> dict:
-    scene = load_scene(name)
+def run_objects(name: str, modes: list[str], poses: str = "raw") -> dict:
+    set_poses(poses)
+    scene = _scene(name)
     sd = scene_dir(name)
     frames = object_frames(scene)
     results = {}
@@ -415,7 +467,7 @@ def run_objects(name: str, modes: list[str]) -> dict:
             raise ValueError(mode)
         r = fuse_and_score(name, obs, mode)
         r["seconds"] = round(time.time() - t0, 1)
-        save_json(out_dir(name) / f"objects_{DET}_{mode}.json", r)
+        save_json(out_dir(name) / f"objects_{DET}_{mode}{_tag()}.json", r)
         results[mode] = r["metrics"]
     return results
 
