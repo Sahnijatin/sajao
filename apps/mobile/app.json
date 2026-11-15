@@ -13,12 +13,24 @@
         "NSPhotoLibraryUsageDescription": "Photos you choose are used to redesign your space."
       }
     },
-    "plugins": ["expo-router", "expo-status-bar", "expo-localization", "expo-font"],
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-localization",
+      "expo-font",
+      "expo-dev-client"
+    ],
     "experiments": {
       "typedRoutes": true
     },
     "android": {
       "permissions": ["android.permission.CAMERA"]
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "7fef2ddd-9260-44b5-8a73-5e6919ac0837"
+      }
+    },
+    "owner": "sahniijatinn"
   }
 }
