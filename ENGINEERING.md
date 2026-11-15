@@ -25,7 +25,7 @@ Every change to Sajao follows these rules. Breaking one requires a decision log 
 13. All model calls go through the model gateway: primary, fallback, caps, caching, logging. The app degrades, it never stops suddenly.
 14. Every model output is validated: schema for text, geometry for layouts, image checks for renders.
 15. Prompts and model versions are pinned in the repo. Changing either reruns the golden-set evaluations.
-16. Every model has a recorded commercial license; every external data source has a recorded permission.
+16. Every model, library and dataset used (for building, training or evaluation) is listed in `docs/24-third-party-register.md` with its source and license. The legal team reviews the register separately; it does not block engineering.
 17. The solver, verifier and relaxation order are pure, deterministic and property-tested.
 18. Every write endpoint accepts an idempotency key. Pipeline steps are durable and resume where they stopped.
 19. Expensive endpoints require app attestation and respect per-user, per-device and global spend caps.
