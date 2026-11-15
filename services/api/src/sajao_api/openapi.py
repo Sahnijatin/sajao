@@ -12,7 +12,9 @@ from sajao_api.settings import Settings
 
 
 def main() -> None:
-    document = create_app(Settings(environment="dev", database_url=None)).openapi()
+    document = create_app(
+        Settings(environment="dev", database_url=None, auth_jwks_url=None, auth_issuer=None)
+    ).openapi()
     Path(sys.argv[1]).write_text(json.dumps(document, indent=2, sort_keys=True) + "\n")
 
 
