@@ -256,6 +256,74 @@ describe("scan session", () => {
     expect(canFinish(state)).toBe(true);
   });
 
+  describe("with AR tracking", () => {
+    const arPose = (
+      yaw: number,
+      atMs: number,
+      tracking: "normal" | "limited" = "normal",
+    ): ScanEvent => ({
+      type: "arPose",
+      yaw,
+      pitch: 0,
+      tracking,
+      atMs,
+    });
+    const arFrame = (
+      atMs: number,
+      change: Partial<Extract<ScanEvent, { type: "arFrame" }>> = {},
+    ): ScanEvent => ({
+      type: "arFrame",
+      brightness: 120,
+      lowLight: false,
+      featureCount: 40,
+      tracking: "normal",
+      atMs,
+      ...change,
+    });
+
+    it("takes the pose from AR and stops integrating the gyroscope", () => {
+      let state = run(INITIAL_SCAN, [arPose(30, 100)]);
+      state = run(state, [
+        { type: "motion", sample: { ...still, yawRate: 90 }, atMs: 200 },
+        { type: "motion", sample: { ...still, yawRate: 90 }, atMs: 300 },
+      ]);
+      expect(state.poseSource).toBe("ar");
+      expect(state.pose.yaw).toBe(30);
+    });
+
+    it("maps a full turn from AR poses and allows Done with usable AR frames", () => {
+      let state = INITIAL_SCAN;
+      let now = 0;
+      for (let yaw = 0; yaw <= 200; yaw += 3) {
+        now += 100;
+        state = run(state, [arPose(yaw, now), arFrame(now + 50)]);
+      }
+      expect(mappedShare(state)).toBe(1);
+      expect(canFinish(state)).toBe(true);
+    });
+
+    it("does not count frames while tracking is limited", () => {
+      let state = INITIAL_SCAN;
+      for (let i = 0; i < 30; i += 1) {
+        state = run(state, [
+          arPose(i * 5, i * 100, "limited"),
+          arFrame(i * 100 + 50, { tracking: "limited" }),
+        ]);
+      }
+      expect(state.usableFrames).toBe(0);
+      expect(mappedShare(state)).toBe(0);
+    });
+
+    it("turns the light chip amber from the AR light estimate", () => {
+      const state = run(INITIAL_SCAN, [arFrame(100, { brightness: 140, lowLight: true })]);
+      expect(state.guardrails.light).toBe("warn");
+      const dark = run(INITIAL_SCAN, [arFrame(100, { brightness: 20 })]);
+      expect(dark.guardrails.light).toBe("warn");
+      const fine = run(INITIAL_SCAN, [arFrame(100)]);
+      expect(fine.guardrails.light).toBe("good");
+    });
+  });
+
   it("tracks fewer points on a low-tier phone", () => {
     const t = timeline();
     const events = repeat(8, () => t.frame(goodStats, strip(12)));

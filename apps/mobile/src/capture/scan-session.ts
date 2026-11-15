@@ -36,6 +36,9 @@ import {
 } from "./mesh-tracker";
 import { type MotionSample, wrapDegrees } from "./pose";
 
+/** AR tracking quality as the native session reports it. */
+export type ArTracking = "none" | "initializing" | "normal" | "limited" | "notAvailable";
+
 export interface ScanState {
   mesh: MeshState;
   guardrails: GuardrailState;
@@ -51,6 +54,13 @@ export interface ScanState {
   meshPose: { yaw: number; pitch: number };
   coverage: CoverageState;
   hasGyro: boolean;
+  /**
+   * Where the pose comes from: the gyroscope (integrated, drifts slowly) or
+   * AR world tracking (anchored to the room, no drift). AR wins once it reports.
+   */
+  poseSource: "gyro" | "ar";
+  /** AR tracking quality; "none" when there is no AR session. */
+  tracking: ArTracking;
   /** Time of the last event and of the last motion reading, in ms. */
   clockMs: number | null;
   motionMs: number | null;
@@ -69,6 +79,8 @@ export const INITIAL_SCAN: ScanState = {
   meshPose: { yaw: 0, pitch: 0 },
   coverage: EMPTY_COVERAGE,
   hasGyro: false,
+  poseSource: "gyro",
+  tracking: "none",
   clockMs: null,
   motionMs: null,
   usableFrames: 0,
@@ -84,6 +96,26 @@ export type ScanEvent =
       atMs: number;
     }
   | { type: "motion"; sample: MotionSample; atMs: number }
+  | {
+      /** Camera direction from AR world tracking, gravity aligned, in degrees. */
+      type: "arPose";
+      yaw: number;
+      pitch: number;
+      tracking: ArTracking;
+      atMs: number;
+    }
+  | {
+      /** One AR camera frame's measurements, a few times a second. */
+      type: "arFrame";
+      /** Mean brightness of the camera image, 0 to 255. */
+      brightness: number;
+      /** The AR light estimate says the room is dim even if the picture looks bright. */
+      lowLight: boolean;
+      /** Feature points the tracker sees in this frame. */
+      featureCount: number;
+      tracking: ArTracking;
+      atMs: number;
+    }
   | { type: "exposure"; isoRatio: number }
   | { type: "scanAnyway" }
   | { type: "reset" };
@@ -141,6 +173,7 @@ export function scanReducer(tier: "standard" | "low") {
             : Math.min(MAX_STEP_MS, Math.max(0, atMs - state.motionMs)) / 1000;
         const smooth = (previous: number, next: number) =>
           previous + (next - previous) * MOTION_SMOOTHING;
+        const arPose = state.poseSource === "ar";
         const next: ScanState = {
           ...state,
           motion: {
@@ -149,10 +182,13 @@ export function scanReducer(tier: "standard" | "low") {
             rollDegrees: sample.rollDegrees,
             pitchDegrees: sample.pitchDegrees,
           },
-          pose: {
-            yaw: state.pose.yaw + sample.yawRate * dtSeconds,
-            pitch: state.pose.pitch + sample.pitchRate * dtSeconds,
-          },
+          // With AR tracking the pose comes from the AR session instead.
+          pose: arPose
+            ? state.pose
+            : {
+                yaw: state.pose.yaw + sample.yawRate * dtSeconds,
+                pitch: state.pose.pitch + sample.pitchRate * dtSeconds,
+              },
           hasGyro: state.hasGyro || sample.hasGyro,
           clockMs: atMs,
           motionMs: atMs,
@@ -161,10 +197,54 @@ export function scanReducer(tier: "standard" | "low") {
         // Holding steady while facing a direction counts towards coverage,
         // even when frames are thin. A swing or a pause does not.
         const steady =
-          sample.hasGyro && judged.guardrails.motion === "good" && !judged.pause.paused;
+          !arPose && sample.hasGyro && judged.guardrails.motion === "good" && !judged.pause.paused;
         return steady
           ? { ...judged, coverage: addSweep(judged.coverage, judged.pose.yaw) }
           : judged;
+      }
+      case "arPose": {
+        const judged = judge(
+          {
+            ...state,
+            pose: { yaw: event.yaw, pitch: event.pitch },
+            meshPose: { yaw: event.yaw, pitch: event.pitch },
+            poseSource: "ar",
+            tracking: event.tracking,
+            hasGyro: true,
+            clockMs: event.atMs,
+          },
+          stepMs(state, event.atMs),
+        );
+        const steady =
+          event.tracking === "normal" &&
+          judged.guardrails.motion === "good" &&
+          !judged.pause.paused;
+        return steady ? { ...judged, coverage: addSweep(judged.coverage, event.yaw) } : judged;
+      }
+      case "arFrame": {
+        const stats = { brightness: event.brightness, glare: 0, sharpness: 0 };
+        const judged = judge(
+          {
+            ...state,
+            frame: {
+              stats,
+              aspect: state.frame?.aspect ?? 9 / 16,
+              featureCount: event.featureCount,
+            },
+            isoRatio: event.lowLight ? 1 : 0,
+            tracking: event.tracking,
+            clockMs: event.atMs,
+          },
+          stepMs(state, event.atMs),
+        );
+        if (event.tracking !== "normal" || !shouldUseFrame(judged.pause, judged.guardrails)) {
+          return judged;
+        }
+        return {
+          ...judged,
+          coverage: addFrame(judged.coverage, judged.pose.yaw, event.featureCount),
+          usableFrames: judged.usableFrames + 1,
+        };
       }
       case "frame": {
         const { stats, points, aspect, atMs } = event;
