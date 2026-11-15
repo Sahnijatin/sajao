@@ -30,6 +30,9 @@ MIP = ["room", "kitchen", "counter"]
 REPLICA = ["frl_apartment_0", "apartment_1"]
 ALL = [*ARKIT, *MIP, *REPLICA]
 
+# Free-credit budget: never more than three GPU containers per function, no retries.
+MAX_GPUS = 3
+
 MAPANYTHING_REF = "3d10cf7a3016fc0f9bb13a071ee66c47b10be0d9"
 
 gpu_image = (
@@ -150,7 +153,7 @@ def replica_cpu(names: list[str]) -> dict:
     return out
 
 
-@app.function(image=gpu_image, volumes=V, gpu="L40S", timeout=3 * 3600)
+@app.function(image=gpu_image, volumes=V, gpu="L40S", timeout=3 * 3600, max_containers=MAX_GPUS)
 def objects_gpu(name: str, modes: list[str], detectors: list[str], poses: list[str]) -> dict:
     vol.reload()
     from twin_gpu import objects
@@ -169,7 +172,7 @@ def objects_gpu(name: str, modes: list[str], detectors: list[str], poses: list[s
     return res
 
 
-@app.function(image=gpu_image, volumes=V, gpu="L40S", timeout=3 * 3600)
+@app.function(image=gpu_image, volumes=V, gpu="L40S", timeout=3 * 3600, max_containers=MAX_GPUS)
 def splat_gpu(name: str, steps: int = 15000) -> dict:
     vol.reload()
     from twin_gpu import splat
@@ -181,7 +184,7 @@ def splat_gpu(name: str, steps: int = 15000) -> dict:
     return r
 
 
-@app.function(image=gpu_image, volumes=V, gpu="L40S", timeout=3 * 3600)
+@app.function(image=gpu_image, volumes=V, gpu="L40S", timeout=3 * 3600, max_containers=MAX_GPUS)
 def edit_gpu(name: str, detector: str) -> dict:
     vol.reload()
     from twin_gpu import edit, objects
@@ -195,7 +198,7 @@ def edit_gpu(name: str, detector: str) -> dict:
     return r
 
 
-@app.function(image=gpu_image, volumes=V, gpu="L40S", timeout=3600)
+@app.function(image=gpu_image, volumes=V, gpu="L40S", timeout=3600, max_containers=MAX_GPUS)
 def phone_export_gpu(name: str) -> dict:
     vol.reload()
     from twin_gpu import phone
@@ -231,22 +234,22 @@ def _measure(name: str, gpu: str) -> dict:
     return r
 
 
-@app.function(image=gpu_image, volumes=V, gpu="L4", timeout=3600)
+@app.function(image=gpu_image, volumes=V, gpu="L4", timeout=3600, max_containers=MAX_GPUS)
 def phone_measure_l4(name: str) -> dict:
     return _measure(name, "L4")
 
 
-@app.function(image=gpu_image, volumes=V, gpu="T4", timeout=3600)
+@app.function(image=gpu_image, volumes=V, gpu="T4", timeout=3600, max_containers=MAX_GPUS)
 def phone_measure_t4(name: str) -> dict:
     return _measure(name, "T4")
 
 
-@app.function(image=gpu_image, volumes=V, gpu="L40S", timeout=3600)
+@app.function(image=gpu_image, volumes=V, gpu="L40S", timeout=3600, max_containers=MAX_GPUS)
 def phone_measure_l40s(name: str) -> dict:
     return _measure(name, "L40S")
 
 
-@app.function(image=gpu_image, volumes=V, gpu="T4", timeout=1800)
+@app.function(image=gpu_image, volumes=V, gpu="T4", timeout=1800, max_containers=MAX_GPUS)
 def smoke() -> dict:
     """Check the image: library versions, gsplat pinhole and orthographic rendering."""
     import gsplat
