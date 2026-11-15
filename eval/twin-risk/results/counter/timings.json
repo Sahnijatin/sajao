@@ -1,0 +1,27 @@
+{
+  "prep": {
+    "seconds": 291.95,
+    "gpu": "cpu",
+    "device": "cpu"
+  },
+  "splat_train": {
+    "seconds": 383.24,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "segment_gdino": {
+    "seconds": 84.34,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "segment_yoloe": {
+    "seconds": 39.33,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "split_and_fill": {
+    "seconds": 272.33,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  }
+}
