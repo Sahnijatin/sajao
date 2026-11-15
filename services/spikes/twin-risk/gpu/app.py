@@ -83,7 +83,17 @@ gpu_image = (
 
 cpu_image = (
     modal.Image.debian_slim(python_version="3.11")
-    .apt_install("curl", "unzip", "pigz", "ca-certificates", "gnupg")
+    .apt_install(
+        "curl",
+        "unzip",
+        "pigz",
+        "ca-certificates",
+        "gnupg",
+        "libx11-6",
+        "libgl1",
+        "libgomp1",
+        "libegl1",
+    )
     .run_commands(
         "curl -fsSL https://deb.nodesource.com/setup_22.x | bash -",
         "apt-get install -y nodejs",
