@@ -61,11 +61,18 @@ export function ProfileScreen() {
       </Setting>
 
       {__DEV__ ? (
-        <Button
-          label={t("profile.gallery")}
-          variant="outline"
-          onPress={() => router.push("/gallery")}
-        />
+        <>
+          <Button
+            label={t("profile.gallery")}
+            variant="outline"
+            onPress={() => router.push("/gallery")}
+          />
+          <Button
+            label={t("profile.spacePreview")}
+            variant="outline"
+            onPress={() => router.push("/space-preview")}
+          />
+        </>
       ) : null}
     </Screen>
   );

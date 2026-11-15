@@ -61,6 +61,57 @@
     "permissionAllow": "कैमरे की अनुमति दें",
     "noCamera": "इस फ़ोन में कैमरा नहीं मिला। आप फ़ोटो चुन सकते हैं।"
   },
+  "space": {
+    "found": "हमें मिला",
+    "change": "बदलें",
+    "dragHint": "खींचकर ठीक करें",
+    "types": {
+      "living_room": "एक लिविंग रूम",
+      "bedroom": "एक बेडरूम",
+      "balcony": "एक बालकनी",
+      "other": "एक जगह"
+    },
+    "typeNames": {
+      "living_room": "लिविंग रूम",
+      "bedroom": "बेडरूम",
+      "balcony": "बालकनी",
+      "other": "कुछ और"
+    },
+    "partOf": "{{space}} का एक हिस्सा",
+    "changeTitle": "यह कौन-सी जगह है?",
+    "about": "लगभग {{area}}",
+    "windows_one": "{{count}} खिड़की",
+    "windows_other": "{{count}} खिड़कियाँ",
+    "doors_one": "{{count}} दरवाज़ा",
+    "doors_other": "{{count}} दरवाज़े",
+    "light": {
+      "morning": "सुबह की धूप",
+      "midday": "दोपहर की धूप",
+      "evening": "शाम की धूप",
+      "soft": "हल्की रोशनी"
+    },
+    "estimated": "अनुमानित ±{{band}}",
+    "verified": "सत्यापित",
+    "redoTitle": "हम क्या नया करें?",
+    "redoAll": "पूरी जगह",
+    "redoAllBody": "जितनी जगह आपने स्कैन की",
+    "redoPart": "बस एक हिस्सा",
+    "redoPartBody": "किसी कोने या दीवार के चारों ओर रेखा खींचें",
+    "itemsTitle": "यहाँ पहले से मौजूद चीज़ें",
+    "actions": {
+      "keep": "रखें",
+      "replace": "बदलें",
+      "remove": "हटाएँ"
+    },
+    "verify": "जाँचें",
+    "verifyTitle": "टेप का नाप जोड़ें",
+    "verifyBody": "किसी एक दीवार को टेप से नापें। नाप जुड़ते ही पूरी जगह उसी के अनुसार ठीक हो जाती है।",
+    "wall": "दीवार {{number}}",
+    "ceiling": "छत की ऊँचाई",
+    "valueLabel": "लंबाई मीटर में",
+    "apply": "नाप जोड़ें",
+    "showIdeas": "मुझे सुझाव दिखाएँ"
+  },
   "rooms": {
     "title": "मेरे कमरे",
     "emptyTitle": "अभी कोई कमरा नहीं",
@@ -80,7 +131,8 @@
     "unitsCm": "सेंटीमीटर",
     "unitsFtIn": "फ़ुट और इंच",
     "unitsExample": "3.4 मीटर की दीवार {{length}} दिखेगी",
-    "gallery": "कंपोनेंट गैलरी"
+    "gallery": "कंपोनेंट गैलरी",
+    "spacePreview": "स्पेस प्रोफ़ाइल प्रीव्यू"
   },
   "languages": {
     "en": "English",
@@ -89,5 +141,9 @@
   "length": {
     "cm": "{{value}} सेमी",
     "ftIn": "{{feet}} फ़ुट {{inches}} इंच"
+  },
+  "area": {
+    "m2": "{{value}} वर्ग मीटर",
+    "sqft": "{{value}} वर्ग फ़ुट"
   }
 }
