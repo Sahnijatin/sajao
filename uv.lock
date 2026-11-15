@@ -11,6 +11,7 @@ resolution-markers = [
 members = [
     "sajao",
     "sajao-api",
+    "sajao-gateway",
     "sajao-schemas",
     "sajao-workers",
 ]
@@ -1129,6 +1130,11 @@ requires-dist = [
     { name = "structlog", specifier = ">=25.4" },
     { name = "uvicorn", specifier = ">=0.38" },
 ]
+
+[[package]]
+name = "sajao-gateway"
+version = "0.0.0"
+source = { editable = "services/gateway" }
 
 [[package]]
 name = "sajao-schemas"

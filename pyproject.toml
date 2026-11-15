@@ -21,7 +21,7 @@ dev = [
 package = false
 
 [tool.uv.workspace]
-members = ["packages/schemas", "services/api", "services/workers"]
+members = ["packages/schemas", "services/api", "services/gateway", "services/workers"]
 
 [tool.ruff]
 line-length = 100
