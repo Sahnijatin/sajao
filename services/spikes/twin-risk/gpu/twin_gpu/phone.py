@@ -166,15 +166,18 @@ def compress_variants(name: str) -> dict:
         src = vdir / f"{r['variant']}.ply"
         if not src.exists():
             continue
+        # Fast formats first; SOG with full spherical harmonics clusters colours on
+        # the CPU (no WebGPU here), so it runs last with fewer iterations.
         outs = {
-            "sog_sh3": (vdir / f"{r['variant']}.sog", []),
-            "sog_sh0": (vdir / f"{r['variant']}_sh0.sog", ["-H", "0"]),
-            "compressed_ply": (vdir / f"{r['variant']}.compressed.ply", []),
             "spz": (vdir / f"{r['variant']}.spz", []),
+            "compressed_ply": (vdir / f"{r['variant']}.compressed.ply", []),
+            "sog_sh0": (vdir / f"{r['variant']}_sh0.sog", ["-H", "0"]),
+            "sog_sh3": (vdir / f"{r['variant']}.sog", ["-i", "3", "--max-workers", "16"]),
         }
         for key, (dst, actions) in outs.items():
             t0 = time.time()
             ok, err = _splat_transform([str(src), *actions, str(dst)])
+            save_json(od / "phone_variants.json", rows)  # keep partial results
             if not ok:
                 r[f"{key}_error"] = err
                 continue
