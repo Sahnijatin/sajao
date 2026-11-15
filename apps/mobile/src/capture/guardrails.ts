@@ -8,27 +8,46 @@ export type GuardrailId = "light" | "motion" | "level" | "glare";
 export type GuardrailStatus = "good" | "warn";
 
 export interface ScanReading extends FrameStats {
-  /** How fast the phone is turning, in degrees per second. */
+  /** How fast the phone is turning, in degrees per second (gyroscope). */
   rotationRate: number;
-  /** Sideways tilt away from level, in degrees. */
+  /** Shake: acceleration without gravity, in m/s² (accelerometer). */
+  acceleration: number;
+  /** Sideways tilt away from upright, in degrees. */
   rollDegrees: number;
+  /** Camera tilt up or down away from the horizon, in degrees. */
+  pitchDegrees: number;
+  /**
+   * How hard the camera is boosting its sensitivity, 0 (lowest ISO) to 1
+   * (highest). Auto exposure can brighten a dark room's picture, so a
+   * maxed-out ISO also counts as low light. 0 when unknown.
+   */
+  isoRatio: number;
 }
 
 export interface Thresholds {
-  /** Mean brightness below this is too dark for geometry. */
+  /** Mean brightness (0 to 255) below this is too dark for geometry. */
   minBrightness: number;
-  /** Turning faster than this blurs frames. */
+  /** ISO this close to the camera's maximum means the room is dim. */
+  maxIsoRatio: number;
+  /** Turning faster than this blurs frames. A slow pan is 20 to 40. */
   maxRotationRate: number;
-  /** Tilted further than this from level. */
+  /** Shaking harder than this blurs frames. */
+  maxAcceleration: number;
+  /** Tilted sideways further than this from upright. */
   maxRollDegrees: number;
+  /** Pointed further than this above or below the horizon. */
+  maxPitchDegrees: number;
   /** More than this share of blown-out pixels. */
   maxGlare: number;
 }
 
 export const THRESHOLDS: Thresholds = {
-  minBrightness: 45,
-  maxRotationRate: 60,
-  maxRollDegrees: 12,
+  minBrightness: 60,
+  maxIsoRatio: 0.9,
+  maxRotationRate: 70,
+  maxAcceleration: 2.5,
+  maxRollDegrees: 10,
+  maxPitchDegrees: 30,
   maxGlare: 0.12,
 };
 
@@ -53,7 +72,6 @@ function judge(
   limit: number,
   direction: "above" | "below",
 ): GuardrailStatus {
-  "worklet";
   // "above": the value must stay at or above the limit (brightness).
   // "below": the value must stay at or below the limit (speed, tilt, glare).
   const margin = previous === "warn" ? RECOVERY_MARGIN : 0;
@@ -61,16 +79,36 @@ function judge(
   return value <= limit * (1 - margin) ? "good" : "warn";
 }
 
+/** Several signals behind one chip: it warns when any of them does. */
+function judgeAll(
+  previous: GuardrailStatus,
+  checks: readonly (readonly [number, number, "above" | "below"])[],
+): GuardrailStatus {
+  return checks.some(
+    ([value, limit, direction]) => judge(previous, value, limit, direction) === "warn",
+  )
+    ? "warn"
+    : "good";
+}
+
 export function evaluateGuardrails(
   previous: GuardrailState,
   reading: ScanReading,
   thresholds: Thresholds = THRESHOLDS,
 ): GuardrailState {
-  "worklet";
   return {
-    light: judge(previous.light, reading.brightness, thresholds.minBrightness, "above"),
-    motion: judge(previous.motion, reading.rotationRate, thresholds.maxRotationRate, "below"),
-    level: judge(previous.level, Math.abs(reading.rollDegrees), thresholds.maxRollDegrees, "below"),
+    light: judgeAll(previous.light, [
+      [reading.brightness, thresholds.minBrightness, "above"],
+      [reading.isoRatio, thresholds.maxIsoRatio, "below"],
+    ]),
+    motion: judgeAll(previous.motion, [
+      [reading.rotationRate, thresholds.maxRotationRate, "below"],
+      [reading.acceleration, thresholds.maxAcceleration, "below"],
+    ]),
+    level: judgeAll(previous.level, [
+      [Math.abs(reading.rollDegrees), thresholds.maxRollDegrees, "below"],
+      [Math.abs(reading.pitchDegrees), thresholds.maxPitchDegrees, "below"],
+    ]),
     glare: judge(previous.glare, reading.glare, thresholds.maxGlare, "below"),
   };
 }
@@ -103,7 +141,6 @@ export function updatePause(
   guardrails: GuardrailState,
   elapsedMs: number,
 ): PauseState {
-  "worklet";
   const failing = PRIORITY.filter(
     (id) => guardrails[id] === "warn" && !previous.overridden.includes(id),
   );

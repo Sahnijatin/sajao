@@ -1,10 +1,12 @@
+import { DONE_DEGREES, FALLBACK_DONE_FRAMES } from "./coverage";
 import { ANALYSIS_WIDTH, downsampleLuma } from "./downsample";
 import { PAUSE_AFTER_MS } from "./guardrails";
+import type { MotionSample } from "./pose";
 import {
   canFinish,
+  frameFov,
   INITIAL_SCAN,
-  rollFromGravity,
-  rotationRateDegrees,
+  mappedShare,
   type ScanEvent,
   scanReducer,
   type ScanState,
@@ -13,6 +15,7 @@ import {
 const reduce = scanReducer("standard");
 const goodStats = { brightness: 120, glare: 0.01, sharpness: 400 };
 const darkStats = { ...goodStats, brightness: 10 };
+const STEP_MS = 80;
 
 /** Points covering a strip of the screen `columns` wide, from the left. */
 function strip(columns: number) {
@@ -25,18 +28,42 @@ function strip(columns: number) {
   return points;
 }
 
-const frame = (stats = goodStats, points = strip(6), elapsedMs = 120): ScanEvent => ({
-  type: "frame",
-  stats,
-  points,
-  elapsedMs,
-});
+const still: MotionSample = {
+  rotationRate: 0,
+  yawRate: 0,
+  pitchRate: 0,
+  acceleration: 0,
+  rollDegrees: 0,
+  pitchDegrees: 0,
+  hasGyro: true,
+};
+
+/** Replays events on a shared clock, one step apart. */
+function timeline() {
+  let now = 1_000;
+  return {
+    frame(stats = goodStats, points = strip(6)): ScanEvent {
+      now += STEP_MS;
+      return { type: "frame", stats, points, aspect: 9 / 16, atMs: now };
+    },
+    motion(change: Partial<MotionSample> = {}): ScanEvent {
+      now += STEP_MS;
+      return { type: "motion", sample: { ...still, ...change }, atMs: now };
+    },
+  };
+}
 
 const run = (state: ScanState, events: ScanEvent[]) => events.reduce(reduce, state);
+const repeat = (count: number, make: () => ScanEvent) => Array.from({ length: count }, make);
+const pauseSteps = Math.ceil(PAUSE_AFTER_MS / STEP_MS) + 2;
 
 describe("scan session", () => {
   it("grows the mesh as good frames arrive", () => {
-    const state = run(INITIAL_SCAN, Array(8).fill(frame()));
+    const t = timeline();
+    const state = run(
+      INITIAL_SCAN,
+      repeat(8, () => t.frame()),
+    );
     expect(state.mesh.points.length).toBeGreaterThan(50);
     expect(state.mesh.triangles.length).toBeGreaterThan(50);
     expect(state.usableFrames).toBe(8);
@@ -44,81 +71,182 @@ describe("scan session", () => {
   });
 
   it("pauses softly in the dark and keeps everything mapped so far", () => {
-    const mapped = run(INITIAL_SCAN, Array(8).fill(frame()));
-    const steps = Math.ceil(PAUSE_AFTER_MS / 120) + 1;
-    const dark = run(mapped, Array(steps).fill(frame(darkStats, [])));
+    const t = timeline();
+    const mapped = run(
+      INITIAL_SCAN,
+      repeat(8, () => t.frame()),
+    );
+    const dark = run(
+      mapped,
+      repeat(pauseSteps, () => t.frame(darkStats, [])),
+    );
 
     expect(dark.guardrails.light).toBe("warn");
     expect(dark.pause).toMatchObject({ paused: true, reason: "light" });
     // Nothing lost: the mesh is exactly what it was when the pause began.
-    const paused = run(dark, Array(50).fill(frame(darkStats, [])));
+    const paused = run(
+      dark,
+      repeat(50, () => t.frame(darkStats, [])),
+    );
     expect(paused.mesh).toEqual(dark.mesh);
     expect(paused.mesh.points.length).toBeGreaterThan(50);
   });
 
   it("resumes by itself when the light comes back", () => {
-    const steps = Math.ceil(PAUSE_AFTER_MS / 120) + 1;
-    const paused = run(INITIAL_SCAN, Array(steps).fill(frame(darkStats, [])));
+    const t = timeline();
+    const paused = run(
+      INITIAL_SCAN,
+      repeat(pauseSteps, () => t.frame(darkStats, [])),
+    );
     expect(paused.pause.paused).toBe(true);
-    const resumed = run(paused, [frame(), frame()]);
+    const resumed = run(paused, [t.frame(), t.frame()]);
     expect(resumed.pause.paused).toBe(false);
     expect(resumed.usableFrames).toBeGreaterThan(0);
   });
 
+  it("turns the light chip amber when the camera's ISO is maxed out", () => {
+    const t = timeline();
+    let state = run(INITIAL_SCAN, [t.frame()]);
+    state = reduce(state, { type: "exposure", isoRatio: 0.98 });
+    expect(state.guardrails.light).toBe("warn");
+  });
+
   it("carries on in the dark after Scan anyway", () => {
-    const steps = Math.ceil(PAUSE_AFTER_MS / 120) + 1;
-    let state = run(INITIAL_SCAN, Array(steps).fill(frame(darkStats, [])));
+    const t = timeline();
+    let state = run(
+      INITIAL_SCAN,
+      repeat(pauseSteps, () => t.frame(darkStats, [])),
+    );
     state = reduce(state, { type: "scanAnyway" });
     const before = state.usableFrames;
-    state = run(state, Array(30).fill(frame(darkStats)));
+    state = run(
+      state,
+      repeat(30, () => t.frame(darkStats)),
+    );
     expect(state.pause.paused).toBe(false);
     expect(state.usableFrames - before).toBe(30);
   });
 
-  it("skips frames taken while the phone is turning fast, without pausing at once", () => {
-    let state = reduce(INITIAL_SCAN, { type: "motion", rotationRate: 200, rollDegrees: 0 });
-    state = run(state, [frame(), frame()]);
-    expect(state.guardrails.motion).toBe("warn");
+  it("turns the steady chip amber from motion alone, before any frame", () => {
+    const t = timeline();
+    const swung = run(
+      INITIAL_SCAN,
+      repeat(3, () => t.motion({ rotationRate: 220 })),
+    );
+    expect(swung.guardrails.motion).toBe("warn");
+    const shaken = run(
+      INITIAL_SCAN,
+      repeat(3, () => t.motion({ acceleration: 8 })),
+    );
+    expect(shaken.guardrails.motion).toBe("warn");
+    const calm = run(
+      swung,
+      repeat(6, () => t.motion()),
+    );
+    expect(calm.guardrails.motion).toBe("good");
+  });
+
+  it("skips frames taken while swinging, and pauses if it goes on", () => {
+    const t = timeline();
+    let state = run(
+      INITIAL_SCAN,
+      repeat(3, () => t.motion({ rotationRate: 220 })),
+    );
+    state = run(state, [t.frame(), t.frame()]);
     expect(state.usableFrames).toBe(0);
     expect(state.pause.paused).toBe(false);
-    state = reduce(state, { type: "motion", rotationRate: 5, rollDegrees: 0 });
-    state = run(state, [frame()]);
+    state = run(
+      state,
+      repeat(pauseSteps, () => t.motion({ rotationRate: 220 })),
+    );
+    expect(state.pause).toMatchObject({ paused: true, reason: "motion" });
+    // Holding still resumes it, with no frame needed.
+    state = run(
+      state,
+      repeat(6, () => t.motion()),
+    );
+    expect(state.pause.paused).toBe(false);
+    state = run(state, [t.frame()]);
     expect(state.usableFrames).toBe(1);
   });
 
-  it("allows Done only once enough has been mapped", () => {
-    expect(canFinish(INITIAL_SCAN)).toBe(false);
-    const little = run(INITIAL_SCAN, Array(12).fill(frame(goodStats, strip(1))));
-    expect(canFinish(little)).toBe(false);
-    const enough = run(INITIAL_SCAN, Array(12).fill(frame(goodStats, strip(6))));
-    expect(canFinish(enough)).toBe(true);
+  it("nudges about tilt from the sensors but never pauses for it", () => {
+    const t = timeline();
+    const tilted = run(
+      INITIAL_SCAN,
+      repeat(40, () => t.motion({ rollDegrees: 25 })),
+    );
+    expect(tilted.guardrails.level).toBe("warn");
+    expect(tilted.pause.paused).toBe(false);
+    const pointedDown = run(INITIAL_SCAN, [t.motion({ pitchDegrees: 60 })]);
+    expect(pointedDown.guardrails.level).toBe("warn");
+  });
+
+  it("moves the mesh with the view so it stays on the walls", () => {
+    const t = timeline();
+    const before = run(INITIAL_SCAN, [t.motion(), t.frame(goodStats, strip(2))]);
+    const leftmost = Math.min(...before.mesh.points.map((point) => point.x));
+    // Turn left by a few degrees (positive yaw): the scene slides right.
+    const turned = run(before, [t.motion({ yawRate: 50 }), t.frame(goodStats, [])]);
+    const shifted = Math.min(...turned.mesh.points.map((point) => point.x));
+    // Two steps passed since the previous motion reading.
+    const expected = (50 * ((2 * STEP_MS) / 1000)) / frameFov(9 / 16).across;
+    expect(shifted - leftmost).toBeCloseTo(expected, 3);
+  });
+
+  it("measures coverage from where the phone pointed, and allows Done after a sweep", () => {
+    const t = timeline();
+    let state = run(INITIAL_SCAN, [t.motion()]);
+    expect(canFinish(state)).toBe(false);
+    // Looking at one wall for a while maps a little, not enough.
+    state = run(
+      state,
+      repeat(20, () => t.frame()),
+    );
+    expect(canFinish(state)).toBe(false);
+    expect(mappedShare(state)).toBeGreaterThan(0);
+    // A slow pan (30 degrees a second) across the room, filming as it goes.
+    for (let step = 0; step < 50 && !canFinish(state); step += 1) {
+      state = run(state, [t.motion({ yawRate: 30, rotationRate: 30 }), t.frame()]);
+    }
+    expect(canFinish(state)).toBe(true);
+    expect(mappedShare(state) * 180).toBeGreaterThanOrEqual(DONE_DEGREES);
+  });
+
+  it("does not count frames that saw no detail, like a blank wall", () => {
+    const t = timeline();
+    let state = run(INITIAL_SCAN, [t.motion()]);
+    for (let step = 0; step < 80; step += 1) {
+      state = run(state, [t.motion({ yawRate: 30, rotationRate: 30 }), t.frame(goodStats, [])]);
+    }
+    expect(mappedShare(state)).toBe(0);
+    expect(canFinish(state)).toBe(false);
+  });
+
+  it("falls back to counting detailed frames on a phone with no gyroscope", () => {
+    const t = timeline();
+    let state = run(INITIAL_SCAN, [t.motion({ hasGyro: false })]);
+    expect(state.hasGyro).toBe(false);
+    state = run(
+      state,
+      repeat(FALLBACK_DONE_FRAMES, () => t.frame()),
+    );
+    expect(canFinish(state)).toBe(true);
   });
 
   it("tracks fewer points on a low-tier phone", () => {
-    const low = Array(8)
-      .fill(frame(goodStats, strip(12)))
-      .reduce(scanReducer("low"), INITIAL_SCAN);
-    const full = run(INITIAL_SCAN, Array(8).fill(frame(goodStats, strip(12))));
+    const t = timeline();
+    const events = repeat(8, () => t.frame(goodStats, strip(12)));
+    const low = events.reduce(scanReducer("low"), INITIAL_SCAN);
+    const full = run(INITIAL_SCAN, events);
     expect(low.mesh.points.length).toBeLessThanOrEqual(60);
     expect(full.mesh.points.length).toBeGreaterThan(low.mesh.points.length);
   });
 
   it("starts over on reset", () => {
-    const state = run(INITIAL_SCAN, [frame(), { type: "reset" }]);
+    const t = timeline();
+    const state = run(INITIAL_SCAN, [t.frame(), { type: "reset" }]);
     expect(state).toEqual(INITIAL_SCAN);
-  });
-});
-
-describe("motion readings", () => {
-  it("reads sideways tilt from gravity", () => {
-    expect(rollFromGravity({ x: 0, y: -9.8 })).toBeCloseTo(0);
-    expect(rollFromGravity({ x: 9.8, y: -9.8 })).toBeCloseTo(45);
-    expect(rollFromGravity({ x: -9.8, y: 0 })).toBeCloseTo(-90);
-  });
-
-  it("converts turn rate to degrees per second", () => {
-    expect(rotationRateDegrees({ x: Math.PI, y: 0, z: 0 })).toBeCloseTo(180);
-    expect(rotationRateDegrees({ x: 0, y: 0, z: 0 })).toBe(0);
   });
 });
 

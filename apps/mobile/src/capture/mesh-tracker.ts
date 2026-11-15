@@ -3,6 +3,7 @@
 // and forgets ones that stop being seen, so the mesh spreads instead of
 // flickering.
 import type { FeaturePoint } from "./feature-points";
+import { coverToScreen } from "./orientation";
 import { type Point, type Triangle, triangulate } from "./triangulate";
 
 export interface TrackedPoint extends Point {
@@ -99,7 +100,25 @@ export function updateMesh(
   };
 }
 
-/** Points in screen pixels, for drawing. */
-export function toScreen(mesh: MeshState, size: { width: number; height: number }): Point[] {
-  return mesh.points.map((point) => ({ x: point.x * size.width, y: point.y * size.height }));
+/**
+ * Move the mapped points by how far the view turned since the last frame,
+ * so the mesh stays on the walls while you pan: points slide out on one side
+ * and new ones join at the frontier on the other. `dx` and `dy` are in
+ * frame widths and heights. Points that leave the frame are dropped.
+ */
+export function shiftMesh(mesh: MeshState, dx: number, dy: number): MeshState {
+  if (dx === 0 && dy === 0) return mesh;
+  const points = mesh.points
+    .map((point) => ({ ...point, x: point.x + dx, y: point.y + dy }))
+    .filter((point) => point.x >= 0 && point.x <= 1 && point.y >= 0 && point.y <= 1);
+  return { points, triangles: triangulate(points), coverage: mesh.coverage };
+}
+
+/** Points in screen pixels, for drawing, with the preview's "cover" crop. */
+export function toScreen(
+  mesh: MeshState,
+  size: { width: number; height: number },
+  frameAspect: number,
+): Point[] {
+  return mesh.points.map((point) => coverToScreen(point, frameAspect, size));
 }
