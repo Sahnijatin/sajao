@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "Sajao",
+    "slug": "sajao",
+    "scheme": "sajao",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false
+    },
+    "plugins": ["expo-router", "expo-status-bar", "expo-localization", "expo-font"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
