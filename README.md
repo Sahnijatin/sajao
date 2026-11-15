@@ -35,7 +35,7 @@ apps/web           Landing page and shared-design web viewer
 apps/admin         Catalog curation, support, flags and cost dashboard
 services/api       Python FastAPI modular monolith (versioned /v1 API)
 services/workers   Durable pipeline steps and GPU work on Modal
-packages/schemas   Versioned JSON schemas: Capture, RoomProfile, TasteProfile, Brief, Design, Render, Plan, ShoppingList, Event
+packages/schemas   Versioned JSON schemas: Capture, RoomProfile, TasteProfile, Brief, Product, Design, Render, Plan, ShoppingList, Event
 packages/ui        Theme tokens, components, motion presets, haptic map
 eval/              Golden set tooling, render bake-off, evaluation suite
 docs/              Product and engineering documentation

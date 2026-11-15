@@ -1,0 +1,169 @@
+{
+  "schema_version": "1.0",
+  "id": "00000000-0000-4000-8000-000000000005",
+  "room_profile_id": "00000000-0000-4000-8000-000000000002",
+  "brief_id": "00000000-0000-4000-8000-000000000004",
+  "created_at": "2026-01-05T10:00:00Z",
+  "slot": "best_match",
+  "archetype": "sofa_facing_window",
+  "items": [
+    {
+      "id": "sofa",
+      "product": {
+        "schema_version": "1.0",
+        "id": "00000000-0000-4000-8000-000000000050",
+        "source": "flipkart",
+        "sku": "SOFA-OAK-3S",
+        "title": "Oak frame three seater sofa",
+        "brand": "Example Home",
+        "group": "furniture",
+        "category": "sofa",
+        "dimensions": {
+          "width": {
+            "value_m": 1.95,
+            "source": "measured",
+            "error_band_m": 0.01
+          },
+          "depth": {
+            "value_m": 0.85,
+            "source": "measured",
+            "error_band_m": 0.01
+          },
+          "height": {
+            "value_m": 0.8,
+            "source": "measured",
+            "error_band_m": 0.01
+          }
+        },
+        "color": "oatmeal",
+        "material": "oak and linen",
+        "style_tags": ["japandi", "minimal_wabi_sabi"],
+        "price": {
+          "currency": "INR",
+          "amount_minor": 4299900
+        },
+        "in_stock": true,
+        "checked_at": "2026-01-05T10:00:00Z",
+        "images": ["https://cdn.example.com/products/sofa-oak-3s/front.jpg"],
+        "image_use_permitted": true,
+        "routes": [
+          {
+            "kind": "buy",
+            "retailer": "flipkart",
+            "url": "https://www.example.com/p/sofa-oak-3s",
+            "price": {
+              "currency": "INR",
+              "amount_minor": 4299900
+            }
+          },
+          {
+            "kind": "rent",
+            "retailer": "example-rentals",
+            "url": "https://rent.example.com/sofa-oak-3s",
+            "price": {
+              "currency": "INR",
+              "amount_minor": 129900
+            },
+            "coupon_code": "SAJAO10"
+          }
+        ]
+      },
+      "position": {
+        "x_m": 2.1,
+        "y_m": 2.85
+      },
+      "rotation_deg": 180,
+      "placed_by": "solver"
+    },
+    {
+      "id": "lamp",
+      "product": {
+        "schema_version": "1.0",
+        "id": "00000000-0000-4000-8000-000000000051",
+        "source": "flipkart",
+        "sku": "LAMP-PAPER-01",
+        "title": "Paper shade floor lamp",
+        "group": "lighting",
+        "category": "floor_lamp",
+        "dimensions": {
+          "width": {
+            "value_m": 0.4,
+            "source": "estimated",
+            "error_band_m": 0.03
+          },
+          "depth": {
+            "value_m": 0.4,
+            "source": "estimated",
+            "error_band_m": 0.03
+          },
+          "height": {
+            "value_m": 1.5,
+            "source": "estimated",
+            "error_band_m": 0.05
+          }
+        },
+        "price": {
+          "currency": "INR",
+          "amount_minor": 349900
+        },
+        "in_stock": true,
+        "checked_at": "2026-01-05T10:00:00Z",
+        "images": ["https://cdn.example.com/products/lamp-paper-01/front.jpg"],
+        "image_use_permitted": true,
+        "routes": [
+          {
+            "kind": "buy",
+            "retailer": "flipkart",
+            "url": "https://www.example.com/p/lamp-paper-01",
+            "price": {
+              "currency": "INR",
+              "amount_minor": 349900
+            }
+          }
+        ]
+      },
+      "position": {
+        "x_m": 3.8,
+        "y_m": 3.0
+      },
+      "rotation_deg": 0,
+      "placed_by": "user"
+    }
+  ],
+  "materials": {
+    "wall_paint": {
+      "name": "Warm white",
+      "color": "#f4efe6",
+      "finish": "matt"
+    }
+  },
+  "lighting": {
+    "layers": ["ambient", "accent"]
+  },
+  "total_cost": {
+    "currency": "INR",
+    "amount_minor": 4649800
+  },
+  "relaxations": ["drop_optional_items"],
+  "check_report": {
+    "passed": true,
+    "checked_at": "2026-01-05T10:00:00Z",
+    "budget_ok": true,
+    "stock_ok": true,
+    "rules": [
+      {
+        "rule": "walkway_min_60cm",
+        "kind": "hard",
+        "passed": true,
+        "detail": "Narrowest walkway 0.82 m"
+      },
+      {
+        "rule": "conversation_distance",
+        "kind": "soft",
+        "passed": true,
+        "score": 0.8
+      }
+    ]
+  },
+  "explanations": ["The sofa faces the window and keeps 0.82 m clear to the door."]
+}

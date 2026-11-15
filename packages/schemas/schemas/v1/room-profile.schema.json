@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sajao.app/v1/room-profile.schema.json",
+  "title": "RoomProfile",
+  "description": "Understanding stage: the room as a scene graph. Geometry models estimate, tape verifies; every dimension carries a value, a source and an error band.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "capture_id",
+    "room_type",
+    "created_at",
+    "verification",
+    "floor_polygon",
+    "walls",
+    "ceiling_height",
+    "openings",
+    "fixtures",
+    "existing_items",
+    "direction",
+    "scale"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/SchemaVersion"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "capture_id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "room_type": {
+      "$ref": "common.schema.json#/$defs/RoomType"
+    },
+    "created_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp"
+    },
+    "verification": {
+      "type": "string",
+      "enum": ["estimated", "verified"],
+      "description": "verified only when tape values cover the room's key dimensions."
+    },
+    "floor_polygon": {
+      "$ref": "common.schema.json#/$defs/Polygon"
+    },
+    "walls": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Wall"
+      },
+      "minItems": 3
+    },
+    "ceiling_height": {
+      "$ref": "common.schema.json#/$defs/Dimension"
+    },
+    "openings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Opening"
+      }
+    },
+    "fixtures": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Fixture"
+      }
+    },
+    "existing_items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ExistingItem"
+      }
+    },
+    "light": {
+      "$ref": "#/$defs/RoomLight"
+    },
+    "direction": {
+      "$ref": "#/$defs/RoomDirection"
+    },
+    "scale": {
+      "$ref": "#/$defs/ScaleEvidence"
+    }
+  },
+  "$defs": {
+    "Wall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "start", "end", "length"],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/LocalId"
+        },
+        "start": {
+          "$ref": "common.schema.json#/$defs/Point2"
+        },
+        "end": {
+          "$ref": "common.schema.json#/$defs/Point2"
+        },
+        "length": {
+          "$ref": "common.schema.json#/$defs/Dimension"
+        }
+      }
+    },
+    "Opening": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "wall_id", "offset", "width", "height"],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/LocalId"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["door", "window"]
+        },
+        "wall_id": {
+          "$ref": "common.schema.json#/$defs/LocalId"
+        },
+        "offset": {
+          "$ref": "common.schema.json#/$defs/Dimension",
+          "description": "Distance along the wall from its start to the near edge of the opening."
+        },
+        "width": {
+          "$ref": "common.schema.json#/$defs/Dimension"
+        },
+        "height": {
+          "$ref": "common.schema.json#/$defs/Dimension"
+        },
+        "sill_height": {
+          "$ref": "common.schema.json#/$defs/Dimension"
+        },
+        "swing": {
+          "description": "Door swing. Its clearance is a hard rule.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["hinge", "opens"],
+          "properties": {
+            "hinge": {
+              "type": "string",
+              "enum": ["start", "end"]
+            },
+            "opens": {
+              "type": "string",
+              "enum": ["inward", "outward"]
+            }
+          }
+        }
+      }
+    },
+    "Fixture": {
+      "description": "A wall fixture that must stay accessible.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "wall_id", "offset", "mount_height"],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/LocalId"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["switchboard", "socket", "ac_unit"]
+        },
+        "wall_id": {
+          "$ref": "common.schema.json#/$defs/LocalId"
+        },
+        "offset": {
+          "$ref": "common.schema.json#/$defs/Dimension"
+        },
+        "mount_height": {
+          "$ref": "common.schema.json#/$defs/Dimension"
+        },
+        "width": {
+          "$ref": "common.schema.json#/$defs/Dimension"
+        }
+      }
+    },
+    "ExistingItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "center", "width", "depth", "rotation_deg", "action"],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/LocalId"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "center": {
+          "$ref": "common.schema.json#/$defs/Point2"
+        },
+        "width": {
+          "$ref": "common.schema.json#/$defs/Dimension"
+        },
+        "depth": {
+          "$ref": "common.schema.json#/$defs/Dimension"
+        },
+        "height": {
+          "$ref": "common.schema.json#/$defs/Dimension"
+        },
+        "rotation_deg": {
+          "$ref": "common.schema.json#/$defs/AngleDeg"
+        },
+        "action": {
+          "type": "string",
+          "enum": ["keep", "replace", "remove"],
+          "description": "The user's choice for this item."
+        }
+      }
+    },
+    "RoomLight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["natural_light"],
+      "properties": {
+        "natural_light": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        },
+        "main_direction_deg": {
+          "$ref": "common.schema.json#/$defs/AngleDeg"
+        }
+      }
+    },
+    "RoomDirection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["north_deg", "confidence", "sources"],
+      "properties": {
+        "north_deg": {
+          "$ref": "common.schema.json#/$defs/AngleDeg",
+          "description": "Compass bearing of the room frame's positive y axis."
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["approximate", "confirmed"],
+          "description": "confirmed only when more than the compass agrees. Strict Vastu needs confirmed."
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["compass", "main_door_confirmation"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "ScaleEvidence": {
+      "description": "Independent scale anchors and whether they agree.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["anchors", "anchors_agree", "needs_tape_value"],
+      "properties": {
+        "anchors": {
+          "type": "array",
+          "items": {
+            "title": "ScaleAnchor",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "implied_scale"],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "geometry_model",
+                  "door_height",
+                  "switchboard_height",
+                  "ceiling_prior",
+                  "tile_grid",
+                  "tape"
+                ]
+              },
+              "implied_scale": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "description": "Scale factor this anchor implies for the reconstruction."
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "anchors_agree": {
+          "type": "boolean",
+          "description": "Agreement tightens error bands; disagreement widens them."
+        },
+        "needs_tape_value": {
+          "type": "boolean",
+          "description": "True when the app should ask for one tape value."
+        }
+      }
+    }
+  }
+}

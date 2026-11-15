@@ -7,16 +7,19 @@ dependencies = []
 
 [dependency-groups]
 dev = [
+    "datamodel-code-generator[ruff]>=0.35",
+    "jsonschema>=4.25",
     "mypy>=1.18",
     "pytest>=8.4",
     "ruff>=0.14",
+    "types-jsonschema>=4.25",
 ]
 
 [tool.uv]
 package = false
 
 [tool.uv.workspace]
-members = ["services/api", "services/workers"]
+members = ["packages/schemas", "services/api", "services/workers"]
 
 [tool.ruff]
 line-length = 100
@@ -27,15 +30,18 @@ extend-exclude = [".claude", "**/generated/**"]
 select = ["E", "F", "I", "B", "UP", "SIM", "RUF", "S", "ASYNC"]
 ignore = ["RUF001", "RUF002", "RUF003"]
 
+[tool.ruff.lint.isort]
+known-first-party = ["sajao_api", "sajao_gateway", "sajao_schemas", "sajao_workers"]
+
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**" = ["S101"]
 
 [tool.mypy]
 python_version = "3.13"
 strict = true
-files = ["services"]
+files = ["packages/schemas/python", "services"]
 exclude = ["/generated/"]
 
 [tool.pytest.ini_options]
-testpaths = ["services"]
+testpaths = ["packages", "services"]
 addopts = "--import-mode=importlib"

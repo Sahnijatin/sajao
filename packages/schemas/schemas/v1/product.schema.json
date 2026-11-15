@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sajao.app/v1/product.schema.json",
+  "title": "Product",
+  "description": "A real, curated catalog item. Dimensions, price and stock come from retailer data and checks, never from a generative model.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "source",
+    "sku",
+    "title",
+    "group",
+    "category",
+    "dimensions",
+    "price",
+    "in_stock",
+    "checked_at",
+    "images",
+    "image_use_permitted",
+    "routes"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/SchemaVersion"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Catalog source key, as recorded in the catalog sources tracker."
+    },
+    "sku": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The retailer's identifier."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "brand": {
+      "type": "string",
+      "minLength": 1
+    },
+    "group": {
+      "$ref": "common.schema.json#/$defs/ProductGroup"
+    },
+    "category": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Fine category, for example sofa or floor_lamp."
+    },
+    "dimensions": {
+      "title": "ProductDimensions",
+      "description": "Only measured dimensions may sit in tight spots.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "depth", "height"],
+      "properties": {
+        "width": {
+          "$ref": "common.schema.json#/$defs/Dimension"
+        },
+        "depth": {
+          "$ref": "common.schema.json#/$defs/Dimension"
+        },
+        "height": {
+          "$ref": "common.schema.json#/$defs/Dimension"
+        }
+      }
+    },
+    "color": {
+      "type": "string",
+      "minLength": 1
+    },
+    "material": {
+      "type": "string",
+      "minLength": 1
+    },
+    "style_tags": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/StyleProfile"
+      },
+      "uniqueItems": true
+    },
+    "price": {
+      "$ref": "common.schema.json#/$defs/Money"
+    },
+    "in_stock": {
+      "type": "boolean"
+    },
+    "checked_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp",
+      "description": "When price, stock and link were last checked."
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/HttpsUrl"
+      },
+      "minItems": 1
+    },
+    "image_use_permitted": {
+      "const": true,
+      "description": "A product enters the contract only with permission to use its images."
+    },
+    "routes": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/ProductRoute"
+      },
+      "minItems": 1,
+      "description": "At least one permitted buy or rent route."
+    }
+  }
+}

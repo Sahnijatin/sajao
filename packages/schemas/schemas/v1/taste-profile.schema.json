@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sajao.app/v1/taste-profile.schema.json",
+  "title": "TasteProfile",
+  "description": "Personalisation stage: a learned taste, as a vector plus readable attributes the user can view, correct and reset.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "user_id",
+    "updated_at",
+    "context",
+    "embedding",
+    "attributes",
+    "style_blend",
+    "summary"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/SchemaVersion"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "user_id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "updated_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp"
+    },
+    "context": {
+      "$ref": "#/$defs/TasteContext"
+    },
+    "swipes": {
+      "type": "array",
+      "items": {
+        "title": "TasteSwipe",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["card_id", "liked"],
+        "properties": {
+          "card_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "liked": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "reference_media": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/StorageKey"
+      }
+    },
+    "embedding": {
+      "title": "TasteEmbedding",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "vector"],
+      "properties": {
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Pinned embedding model identifier."
+        },
+        "vector": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "attributes": {
+      "$ref": "#/$defs/TasteAttributes"
+    },
+    "style_blend": {
+      "type": "array",
+      "items": {
+        "title": "StyleWeight",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["style", "weight"],
+        "properties": {
+          "style": {
+            "$ref": "common.schema.json#/$defs/StyleProfile"
+          },
+          "weight": {
+            "$ref": "common.schema.json#/$defs/UnitScore"
+          }
+        }
+      },
+      "minItems": 1,
+      "maxItems": 6,
+      "description": "The taste described as a blend of the launch style profiles."
+    },
+    "loved_colors": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/HexColor"
+      }
+    },
+    "banned_colors": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/HexColor"
+      }
+    },
+    "summary": {
+      "type": "string",
+      "description": "The taste in plain words, editable by the user. Never mentions the age band."
+    }
+  },
+  "$defs": {
+    "TasteContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["age_band", "household", "tenure"],
+      "properties": {
+        "age_band": {
+          "type": "string",
+          "enum": ["18_24", "25_34", "35_44", "45_54", "55_plus"],
+          "description": "A weak prior for the first guess only. Never filters products and is never shown back as a label."
+        },
+        "household": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["alone", "couple", "family_with_kids", "parents", "pets"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "tenure": {
+          "type": "string",
+          "enum": ["owned", "rented"]
+        }
+      }
+    },
+    "TasteAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "palette_warmth",
+        "saturation",
+        "boldness",
+        "clutter_tolerance",
+        "formality",
+        "trend_vs_timeless",
+        "material_preferences"
+      ],
+      "properties": {
+        "palette_warmth": {
+          "$ref": "common.schema.json#/$defs/UnitScore"
+        },
+        "saturation": {
+          "$ref": "common.schema.json#/$defs/UnitScore"
+        },
+        "boldness": {
+          "$ref": "common.schema.json#/$defs/UnitScore"
+        },
+        "clutter_tolerance": {
+          "$ref": "common.schema.json#/$defs/UnitScore"
+        },
+        "formality": {
+          "$ref": "common.schema.json#/$defs/UnitScore"
+        },
+        "trend_vs_timeless": {
+          "$ref": "common.schema.json#/$defs/UnitScore",
+          "description": "0 is trend-led, 1 is timeless."
+        },
+        "material_preferences": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

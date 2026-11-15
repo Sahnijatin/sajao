@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sajao.app/v1/common.schema.json",
+  "title": "Common",
+  "description": "Shared building blocks for every Sajao v1 object. Lengths are metres, angles are degrees, money is INR in minor units.",
+  "$defs": {
+    "SchemaVersion": {
+      "type": "string",
+      "pattern": "^1\\.[0-9]+$",
+      "description": "Contract version of the object. Minor versions only add optional fields."
+    },
+    "Uuid": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "LocalId": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]{1,40}$",
+      "description": "Identifier that is unique inside its parent object, for example a wall or a design item."
+    },
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC instant, RFC 3339."
+    },
+    "HttpsUrl": {
+      "type": "string",
+      "pattern": "^https://\\S+$",
+      "maxLength": 2048
+    },
+    "StorageKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Object key in the media store. Never a public URL; clients receive signed URLs."
+    },
+    "HexColor": {
+      "type": "string",
+      "pattern": "^#[0-9a-f]{6}$"
+    },
+    "AngleDeg": {
+      "type": "number",
+      "minimum": 0,
+      "exclusiveMaximum": 360,
+      "description": "Degrees, 0 inclusive to 360 exclusive."
+    },
+    "UnitScore": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "A score from 0 to 1."
+    },
+    "RoomType": {
+      "type": "string",
+      "enum": ["living_room", "bedroom"]
+    },
+    "StyleProfile": {
+      "type": "string",
+      "enum": [
+        "modern_indian",
+        "warm_luxe",
+        "japandi",
+        "warm_maximalist",
+        "eclectic_retro",
+        "minimal_wabi_sabi"
+      ],
+      "description": "The six launch style profiles."
+    },
+    "ProductGroup": {
+      "type": "string",
+      "enum": ["furniture", "lighting", "decor", "paint", "flooring"],
+      "description": "Top-level grouping used for the cost breakdown."
+    },
+    "DimensionSource": {
+      "type": "string",
+      "enum": ["measured", "estimated", "user_confirmed"],
+      "description": "measured: tape or verified retailer data. estimated: from geometry models or unverified listings. user_confirmed: accepted by the user without a tape value."
+    },
+    "Dimension": {
+      "description": "A length that is honest about where it came from. Every dimension carries a value, a source and an error band.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value_m", "source", "error_band_m"],
+      "properties": {
+        "value_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Best value in metres."
+        },
+        "source": {
+          "$ref": "#/$defs/DimensionSource"
+        },
+        "error_band_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Half-width of the error band in metres: the true value is expected within value_m plus or minus error_band_m. The solver adds it as margin."
+        }
+      }
+    },
+    "Point2": {
+      "description": "A point on the floor in the room frame, in metres.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x_m", "y_m"],
+      "properties": {
+        "x_m": {
+          "type": "number"
+        },
+        "y_m": {
+          "type": "number"
+        }
+      }
+    },
+    "Polygon": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Point2"
+      },
+      "minItems": 3,
+      "description": "Closed floor polygon; the last point joins the first."
+    },
+    "Money": {
+      "description": "A price. Set only from retailer data, never by a generative model.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["currency", "amount_minor"],
+      "properties": {
+        "currency": {
+          "const": "INR"
+        },
+        "amount_minor": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Amount in paise."
+        }
+      }
+    },
+    "CheckResult": {
+      "description": "Outcome of one automated check.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["passed"],
+      "properties": {
+        "passed": {
+          "type": "boolean"
+        },
+        "score": {
+          "$ref": "#/$defs/UnitScore"
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "ProductRoute": {
+      "description": "A permitted affiliate or rental route to a product.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "retailer", "url", "price"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["buy", "rent"]
+        },
+        "retailer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "$ref": "#/$defs/HttpsUrl",
+          "description": "Retailer destination. The app always opens it through the redirect service."
+        },
+        "price": {
+          "$ref": "#/$defs/Money",
+          "description": "Purchase price for buy routes; price per month for rent routes."
+        },
+        "coupon_code": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

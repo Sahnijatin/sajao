@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sajao.app/v1/plan.schema.json",
+  "title": "Plan",
+  "description": "Spatial view: the dimensioned 2D plan derived from one design and its room profile.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "design_id",
+    "created_at",
+    "verified",
+    "outline",
+    "openings",
+    "items",
+    "clearances"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/SchemaVersion"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "design_id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "created_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp"
+    },
+    "verified": {
+      "type": "boolean",
+      "description": "False draws the error band as a soft halo."
+    },
+    "outline": {
+      "$ref": "common.schema.json#/$defs/Polygon"
+    },
+    "openings": {
+      "type": "array",
+      "items": {
+        "title": "PlanOpening",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "start", "end"],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["door", "window"]
+          },
+          "start": {
+            "$ref": "common.schema.json#/$defs/Point2"
+          },
+          "end": {
+            "$ref": "common.schema.json#/$defs/Point2"
+          }
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "title": "PlanItem",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["design_item_id", "label", "center", "width_m", "depth_m", "rotation_deg"],
+        "properties": {
+          "design_item_id": {
+            "$ref": "common.schema.json#/$defs/LocalId"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "center": {
+            "$ref": "common.schema.json#/$defs/Point2"
+          },
+          "width_m": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "depth_m": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "rotation_deg": {
+            "$ref": "common.schema.json#/$defs/AngleDeg"
+          }
+        }
+      }
+    },
+    "clearances": {
+      "type": "array",
+      "items": {
+        "title": "Clearance",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "distance", "minimum_m", "ok"],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "distance": {
+            "$ref": "common.schema.json#/$defs/Dimension"
+          },
+          "minimum_m": {
+            "type": "number",
+            "minimum": 0
+          },
+          "ok": {
+            "type": "boolean",
+            "description": "True only when the distance minus its error band meets the minimum."
+          }
+        }
+      }
+    }
+  }
+}

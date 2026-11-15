@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sajao.app/v1/design.schema.json",
+  "title": "Design",
+  "description": "One proposed transformation. The render, the plan and the shopping list are views of this object and must never disagree with it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "room_profile_id",
+    "brief_id",
+    "created_at",
+    "slot",
+    "archetype",
+    "items",
+    "materials",
+    "lighting",
+    "total_cost",
+    "relaxations",
+    "check_report",
+    "explanations"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/SchemaVersion"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "room_profile_id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "brief_id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "created_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp"
+    },
+    "slot": {
+      "type": "string",
+      "enum": ["best_value", "best_match", "bold"],
+      "description": "Which of the three intents this design fills."
+    },
+    "archetype": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Layout archetype key."
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/DesignItem"
+      },
+      "minItems": 1
+    },
+    "materials": {
+      "title": "DesignMaterials",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "wall_paint": {
+          "$ref": "#/$defs/Material"
+        },
+        "flooring": {
+          "$ref": "#/$defs/Material"
+        }
+      }
+    },
+    "lighting": {
+      "title": "LightingScheme",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["layers"],
+      "properties": {
+        "layers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["ambient", "task", "accent"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "total_cost": {
+      "$ref": "common.schema.json#/$defs/Money",
+      "description": "Sum of the item prices, computed by code from the same items the render shows."
+    },
+    "relaxations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "drop_optional_items",
+          "smaller_products",
+          "switch_archetype",
+          "reduce_walkway",
+          "reduce_program"
+        ]
+      },
+      "uniqueItems": true,
+      "description": "Every relaxation used, in the order applied. Shown on the design."
+    },
+    "check_report": {
+      "$ref": "#/$defs/CheckReport"
+    },
+    "explanations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Why this works, generated from the solver's own scores."
+    }
+  },
+  "$defs": {
+    "DesignItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "product", "position", "rotation_deg", "placed_by"],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/LocalId"
+        },
+        "product": {
+          "$ref": "product.schema.json",
+          "description": "Snapshot of the product at design time."
+        },
+        "position": {
+          "$ref": "common.schema.json#/$defs/Point2",
+          "description": "Center of the item's footprint in the room frame."
+        },
+        "rotation_deg": {
+          "$ref": "common.schema.json#/$defs/AngleDeg"
+        },
+        "placed_by": {
+          "type": "string",
+          "enum": ["solver", "user"],
+          "description": "Positions come from the solver or a user drag, never from a generative model."
+        }
+      }
+    },
+    "Material": {
+      "description": "Wall paint or flooring, a first-class part of the design.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "color"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "color": {
+          "$ref": "common.schema.json#/$defs/HexColor"
+        },
+        "finish": {
+          "type": "string",
+          "minLength": 1
+        },
+        "product_id": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        }
+      }
+    },
+    "CheckReport": {
+      "description": "The verifier's independent re-check.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["passed", "checked_at", "rules", "budget_ok", "stock_ok"],
+      "properties": {
+        "passed": {
+          "type": "boolean",
+          "description": "True only when every hard rule, the budget and the stock check pass."
+        },
+        "checked_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "title": "RuleResult",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["rule", "kind", "passed"],
+            "properties": {
+              "rule": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "string",
+                "enum": ["hard", "soft"]
+              },
+              "passed": {
+                "type": "boolean"
+              },
+              "score": {
+                "$ref": "common.schema.json#/$defs/UnitScore"
+              },
+              "detail": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "budget_ok": {
+          "type": "boolean"
+        },
+        "stock_ok": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

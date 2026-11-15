@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sajao.app/v1/capture.schema.json",
+  "title": "Capture",
+  "description": "Input stage: the photos or video of one room, plus optional tape values.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "user_id", "room_type", "created_at", "media", "device"],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/SchemaVersion"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "user_id": {
+      "$ref": "common.schema.json#/$defs/Uuid",
+      "description": "Owner. Guest sessions have a user id too."
+    },
+    "room_type": {
+      "$ref": "common.schema.json#/$defs/RoomType"
+    },
+    "created_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp"
+    },
+    "media": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/CaptureMedia"
+      },
+      "minItems": 1,
+      "maxItems": 40
+    },
+    "device": {
+      "$ref": "#/$defs/CaptureDevice"
+    },
+    "compass": {
+      "$ref": "#/$defs/CompassReading"
+    },
+    "tape_measurements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/TapeMeasurement"
+      }
+    }
+  },
+  "$defs": {
+    "CaptureMedia": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "origin", "storage_key", "width_px", "height_px", "has_ar_pose"],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["photo", "video"]
+        },
+        "origin": {
+          "type": "string",
+          "enum": ["camera", "gallery"]
+        },
+        "storage_key": {
+          "$ref": "common.schema.json#/$defs/StorageKey"
+        },
+        "width_px": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height_px": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "duration_s": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Video only."
+        },
+        "sharpness": {
+          "$ref": "common.schema.json#/$defs/UnitScore",
+          "description": "On-device sharpness check result."
+        },
+        "has_ar_pose": {
+          "type": "boolean",
+          "description": "True when an ARKit or ARCore pose is attached. Never required."
+        },
+        "compass_heading_deg": {
+          "$ref": "common.schema.json#/$defs/AngleDeg"
+        }
+      }
+    },
+    "CaptureDevice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["platform", "tier", "has_ar"],
+      "properties": {
+        "platform": {
+          "type": "string",
+          "enum": ["ios", "android"]
+        },
+        "tier": {
+          "type": "string",
+          "enum": ["standard", "low"],
+          "description": "Device tier detected at launch."
+        },
+        "has_ar": {
+          "type": "boolean"
+        }
+      }
+    },
+    "CompassReading": {
+      "description": "Compass headings averaged across the capture, used for Vastu direction.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mean_heading_deg", "sample_count"],
+      "properties": {
+        "mean_heading_deg": {
+          "$ref": "common.schema.json#/$defs/AngleDeg"
+        },
+        "sample_count": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "TapeMeasurement": {
+      "description": "An optional value read from a tape by the user.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target", "value_m"],
+      "properties": {
+        "target": {
+          "type": "string",
+          "enum": [
+            "wall_length",
+            "ceiling_height",
+            "door_height",
+            "door_width",
+            "window_width",
+            "other"
+          ]
+        },
+        "value_m": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

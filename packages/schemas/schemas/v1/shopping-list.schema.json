@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sajao.app/v1/shopping-list.schema.json",
+  "title": "ShoppingList",
+  "description": "Commerce stage: the buyable view of one design. Totals come from the same items the render shows.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "design_id",
+    "created_at",
+    "checked_at",
+    "lines",
+    "breakdown",
+    "total",
+    "within_budget",
+    "all_in_stock"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/SchemaVersion"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "design_id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "created_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp"
+    },
+    "checked_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp",
+      "description": "When budget and stock were last re-checked."
+    },
+    "lines": {
+      "type": "array",
+      "items": {
+        "title": "ShoppingLine",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "design_item_id",
+          "product_id",
+          "title",
+          "group",
+          "price",
+          "in_stock",
+          "routes"
+        ],
+        "properties": {
+          "design_item_id": {
+            "$ref": "common.schema.json#/$defs/LocalId"
+          },
+          "product_id": {
+            "$ref": "common.schema.json#/$defs/Uuid"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "group": {
+            "$ref": "common.schema.json#/$defs/ProductGroup"
+          },
+          "price": {
+            "$ref": "common.schema.json#/$defs/Money"
+          },
+          "in_stock": {
+            "type": "boolean"
+          },
+          "routes": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/ProductRoute"
+            },
+            "minItems": 1
+          },
+          "cheaper_alternative_product_id": {
+            "$ref": "common.schema.json#/$defs/Uuid"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "breakdown": {
+      "type": "array",
+      "items": {
+        "title": "GroupSubtotal",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["group", "subtotal"],
+        "properties": {
+          "group": {
+            "$ref": "common.schema.json#/$defs/ProductGroup"
+          },
+          "subtotal": {
+            "$ref": "common.schema.json#/$defs/Money"
+          }
+        }
+      }
+    },
+    "paint_litres": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Estimated from wall area."
+    },
+    "total": {
+      "$ref": "common.schema.json#/$defs/Money"
+    },
+    "within_budget": {
+      "type": "boolean"
+    },
+    "all_in_stock": {
+      "type": "boolean"
+    }
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "id": "00000000-0000-4000-8000-000000000007",
+  "design_id": "00000000-0000-4000-8000-000000000005",
+  "created_at": "2026-01-05T10:00:00Z",
+  "verified": false,
+  "outline": [
+    {
+      "x_m": 0,
+      "y_m": 0
+    },
+    {
+      "x_m": 4.2,
+      "y_m": 0
+    },
+    {
+      "x_m": 4.2,
+      "y_m": 3.4
+    },
+    {
+      "x_m": 0,
+      "y_m": 3.4
+    }
+  ],
+  "openings": [
+    {
+      "kind": "door",
+      "start": {
+        "x_m": 0,
+        "y_m": 3.1
+      },
+      "end": {
+        "x_m": 0,
+        "y_m": 2.2
+      }
+    }
+  ],
+  "items": [
+    {
+      "design_item_id": "sofa",
+      "label": "Sofa",
+      "center": {
+        "x_m": 2.1,
+        "y_m": 2.85
+      },
+      "width_m": 1.95,
+      "depth_m": 0.85,
+      "rotation_deg": 180
+    },
+    {
+      "design_item_id": "lamp",
+      "label": "Floor lamp",
+      "center": {
+        "x_m": 3.8,
+        "y_m": 3.0
+      },
+      "width_m": 0.4,
+      "depth_m": 0.4,
+      "rotation_deg": 0
+    }
+  ],
+  "clearances": [
+    {
+      "label": "Sofa to door",
+      "distance": {
+        "value_m": 0.82,
+        "source": "estimated",
+        "error_band_m": 0.12
+      },
+      "minimum_m": 0.6,
+      "ok": true
+    }
+  ]
+}
