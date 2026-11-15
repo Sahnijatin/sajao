@@ -12,10 +12,9 @@ import {
 } from "react-native-vision-camera";
 import { useSharedValue } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
-import { downsampleLuma } from "./downsample";
-import { detectFeaturePoints, type FeaturePoint } from "./feature-points";
-import { type FrameStats, frameStats } from "./frame-stats";
-import { type FrameOrientation, uprightAspect, uprightPoint } from "./orientation";
+import { analyseFrame } from "./frame-analysis";
+import type { FeaturePoint } from "./feature-points";
+import type { FrameStats } from "./frame-stats";
 
 /**
  * Analyse about twelve frames a second; the preview itself stays at full
@@ -94,23 +93,12 @@ export function ScanCamera({
         const startMs = Date.now();
         if (startMs - lastMs.get() < ANALYSIS_INTERVAL_MS) return;
         lastMs.set(startMs);
-        const luma = frame.getPlanes()[0];
-        if (!luma) return;
-        const gray = downsampleLuma(luma.getPixelBuffer(), {
-          width: luma.width,
-          height: luma.height,
-          bytesPerRow: luma.bytesPerRow,
-        });
-        const orientation = frame.orientation as FrameOrientation;
-        const mirrored = frame.isMirrored;
-        const points = detectFeaturePoints(gray).map((point) => {
-          const upright = uprightPoint(point.x, point.y, orientation, mirrored);
-          return { x: upright.x, y: upright.y, strength: point.strength };
-        });
+        const result = analyseFrame(frame);
+        if (!result) return;
         const analysed: AnalysedFrame = {
-          stats: frameStats(gray),
-          points,
-          aspect: uprightAspect(luma.width, luma.height, orientation),
+          stats: result.stats,
+          points: result.points,
+          aspect: result.aspect,
           atMs: startMs,
           framesSeen: framesSeen.get(),
           analysisMs: Date.now() - startMs,

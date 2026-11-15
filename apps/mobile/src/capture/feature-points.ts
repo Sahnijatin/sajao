@@ -29,13 +29,12 @@ export const DEFAULT_FEATURE_OPTIONS: FeatureOptions = {
 
 const HARRIS_K = 0.05;
 
-export function detectFeaturePoints(
-  frame: GrayFrame,
-  options: FeatureOptions = DEFAULT_FEATURE_OPTIONS,
-): FeaturePoint[] {
+export function detectFeaturePoints(frame: GrayFrame, options?: FeatureOptions): FeaturePoint[] {
   "worklet";
+  // No default parameter: on the worklet runtime a default value is read
+  // before captured constants exist, so it is resolved here instead.
   const { data, width, height } = frame;
-  const { cellSize, maxPoints, minStrength } = options;
+  const { cellSize, maxPoints, minStrength } = options ?? DEFAULT_FEATURE_OPTIONS;
   if (width < 5 || height < 5) return [];
 
   // Image gradients (central differences).
