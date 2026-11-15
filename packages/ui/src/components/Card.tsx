@@ -9,8 +9,8 @@ export function Card({ style, ...rest }: ViewProps) {
         {
           backgroundColor: tokens.colors.surface,
           borderRadius: tokens.radius.card,
-          padding: tokens.spacing.lg,
-          boxShadow: tokens.shadows[tier],
+          padding: tokens.spacing.gutter,
+          boxShadow: tokens.shadows[tier].card,
         },
         style,
       ]}

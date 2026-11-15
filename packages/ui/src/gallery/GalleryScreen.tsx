@@ -17,7 +17,7 @@ import { colors, type TypographyVariant, typography } from "../tokens";
 function Section({ title, children }: { title: string; children: ReactNode }) {
   const { tokens } = useTheme();
   return (
-    <View style={{ gap: tokens.spacing.md }}>
+    <View style={{ gap: tokens.spacing.xl }}>
       <Text variant="heading">{title}</Text>
       {children}
     </View>
@@ -27,7 +27,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 function Row({ children }: { children: ReactNode }) {
   const { tokens } = useTheme();
   return (
-    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: tokens.spacing.sm }}>
+    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: tokens.spacing.md }}>
       {children}
     </View>
   );
@@ -64,7 +64,7 @@ function GalleryContent() {
     <ScrollView
       testID="gallery"
       style={{ backgroundColor: tokens.colors.canvas }}
-      contentContainerStyle={{ padding: spacing.lg, gap: spacing.xl }}
+      contentContainerStyle={{ padding: spacing.gutter, gap: spacing.sheetBottom }}
       contentInsetAdjustmentBehavior="automatic"
     >
       <Text variant="caption" tone="tertiary">
@@ -85,14 +85,24 @@ function GalleryContent() {
             {`${variant} · Scan your room`}
           </Text>
         ))}
+        <Text variant="title">
+          Warm{" "}
+          <Text variant="title" italic>
+            Japandi
+          </Text>
+        </Text>
       </Section>
 
       <Section title="Buttons">
+        <Button label="Show me ideas" />
         <Row>
-          <Button label="Primary" />
-          <Button label="Secondary" variant="secondary" />
-          <Button label="Ghost" variant="ghost" />
-          <Button label="Disabled" disabled />
+          <Button label="Rent instead" variant="outline" style={{ flex: 1 }} />
+          <Button label="Add to list" variant="ink" style={{ flex: 1 }} />
+        </Row>
+        <Row>
+          <Button label="Change" variant="tint" size="small" />
+          <Button label="Ghost" variant="ghost" size="small" />
+          <Button label="Disabled" disabled size="small" />
         </Row>
       </Section>
 
@@ -112,26 +122,40 @@ function GalleryContent() {
       <Section title="Card">
         <Card>
           <Text variant="label">Card</Text>
-          <Text tone="secondary">Soft stacked shadows; one shadow on the low tier.</Text>
+          <Text variant="bodySmall" tone="secondary">
+            Soft stacked shadows; one shadow on the low tier.
+          </Text>
         </Card>
       </Section>
 
       <Section title="Glass surface">
-        <View style={{ borderRadius: radius.pane, overflow: "hidden" }}>
-          <View style={{ flexDirection: "row", height: 140 }}>
-            <View style={{ flex: 1, backgroundColor: tokens.colors.accent }} />
-            <View style={{ flex: 1, backgroundColor: tokens.colors.warning }} />
-            <View style={{ flex: 1, backgroundColor: tokens.colors.success }} />
-          </View>
-          <GlassSurface
-            style={{ position: "absolute", left: spacing.lg, right: spacing.lg, top: spacing.xl }}
-          >
-            <View style={{ padding: spacing.lg }}>
-              <Text variant="label">Glass</Text>
-              <Text tone="secondary">Live blur, or a tint on the low tier.</Text>
+        {(["light", "dark"] as const).map((tone) => (
+          <View key={tone} style={{ borderRadius: radius.pane, overflow: "hidden" }}>
+            <View style={{ flexDirection: "row", height: 120 }}>
+              <View style={{ flex: 1, backgroundColor: tokens.colors.accent }} />
+              <View style={{ flex: 1, backgroundColor: tokens.colors.warning }} />
+              <View style={{ flex: 1, backgroundColor: tokens.colors.success }} />
             </View>
-          </GlassSurface>
-        </View>
+            <GlassSurface
+              tone={tone}
+              testID={`glass-${tone}`}
+              style={{
+                position: "absolute",
+                left: spacing.gutter,
+                right: spacing.gutter,
+                top: spacing.gutter,
+                padding: spacing.gutter,
+              }}
+            >
+              <Text variant="label" tone={tone === "dark" ? "onDark" : "primary"}>
+                {tone === "dark" ? "Dark glass, for camera screens" : "Light glass"}
+              </Text>
+              <Text variant="bodySmall" tone={tone === "dark" ? "onDark" : "secondary"}>
+                Live blur, or a tint on the low tier.
+              </Text>
+            </GlassSurface>
+          </View>
+        ))}
       </Section>
 
       <Section title="Input">
@@ -140,10 +164,10 @@ function GalleryContent() {
 
       <Section title="Sheet">
         <Row>
-          <Button label="Open sheet" variant="secondary" onPress={() => setSheetOpen(true)} />
+          <Button label="Open sheet" variant="outline" onPress={() => setSheetOpen(true)} />
         </Row>
         <Sheet isPresented={sheetOpen} onDismiss={() => setSheetOpen(false)} snapPoints={["half"]}>
-          <View style={{ gap: spacing.md }}>
+          <View style={{ gap: spacing.xxl }}>
             <Text variant="heading">Sheet</Text>
             <Button label="Close" onPress={() => setSheetOpen(false)} />
           </View>

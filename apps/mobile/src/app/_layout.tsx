@@ -1,7 +1,9 @@
 import { Geist_400Regular } from "@expo-google-fonts/geist/400Regular";
 import { Geist_500Medium } from "@expo-google-fonts/geist/500Medium";
 import { Geist_600SemiBold } from "@expo-google-fonts/geist/600SemiBold";
-import { ThemeProvider } from "@sajao/ui";
+import { InstrumentSerif_400Regular } from "@expo-google-fonts/instrument-serif/400Regular";
+import { InstrumentSerif_400Regular_Italic } from "@expo-google-fonts/instrument-serif/400Regular_Italic";
+import { fontFamilies, ThemeProvider } from "@sajao/ui";
 import { type FontSource, useFonts } from "expo-font";
 import { Stack } from "expo-router/stack";
 import { StatusBar } from "expo-status-bar";
@@ -10,16 +12,20 @@ import { Platform } from "react-native";
 import i18n, { resolveLanguage } from "@/i18n";
 import { useSettings } from "@/state/settings";
 
-// iOS uses the system font. Android bundles Geist, one file per weight,
-// under the family names the theme tokens expect.
-const fonts: Record<string, FontSource> =
-  Platform.OS === "android"
+// Headlines use Instrument Serif on both platforms. Body text is the system
+// font on iOS; Android bundles Geist, one file per weight. The family names
+// are the ones the theme tokens expect.
+const fonts: Record<string, FontSource> = {
+  [fontFamilies.serif]: InstrumentSerif_400Regular,
+  [fontFamilies.serifItalic]: InstrumentSerif_400Regular_Italic,
+  ...(Platform.OS === "android"
     ? {
-        "Geist-Regular": Geist_400Regular,
-        "Geist-Medium": Geist_500Medium,
-        "Geist-SemiBold": Geist_600SemiBold,
+        [fontFamilies.regular]: Geist_400Regular,
+        [fontFamilies.medium]: Geist_500Medium,
+        [fontFamilies.semibold]: Geist_600SemiBold,
       }
-    : {};
+    : {}),
+};
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts(fonts);

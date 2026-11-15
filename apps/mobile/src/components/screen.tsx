@@ -9,7 +9,7 @@ export function Screen({ title, children }: { title: string; children: ReactNode
   return (
     <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: tokens.colors.canvas }}>
       <ScrollView
-        contentContainerStyle={{ padding: tokens.spacing.lg, gap: tokens.spacing.lg }}
+        contentContainerStyle={{ padding: tokens.spacing.gutter, gap: tokens.spacing.gutter }}
         contentInsetAdjustmentBehavior="automatic"
       >
         <Text variant="title" accessibilityRole="header">

@@ -33,7 +33,7 @@ export function TextField({ label, style, onFocus, onBlur, ...rest }: TextFieldP
         style={[
           {
             minHeight: touchTarget,
-            paddingHorizontal: spacing.lg,
+            paddingHorizontal: spacing.gutter,
             borderRadius: radius.card,
             borderWidth: 1,
             borderColor: focused ? colors.accent : colors.hairline,
@@ -41,7 +41,7 @@ export function TextField({ label, style, onFocus, onBlur, ...rest }: TextFieldP
             color: colors.ink,
             fontSize: typography.body.fontSize,
           },
-          fontFor(typography.body.weight),
+          fontFor(typography.body.face),
           style,
         ]}
         {...rest}

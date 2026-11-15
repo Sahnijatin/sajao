@@ -12,7 +12,13 @@ const pressEasing = cubicBezier(...motion.press.bezier);
 
 export interface ButtonProps extends Omit<PressableProps, "children" | "style"> {
   label: string;
-  variant?: "primary" | "secondary" | "ghost";
+  /**
+   * primary: the accent call to action. ink: the dark call to action used on
+   * sheets. outline: the quieter choice beside one. tint and ghost: inline actions.
+   */
+  variant?: "primary" | "ink" | "outline" | "tint" | "ghost";
+  /** large is the 56 px pill; small is the 32 px inline pill. */
+  size?: "large" | "small";
   /** Play a haptic from the map on press, for presses that are real milestones. */
   haptic?: HapticMoment;
   style?: StyleProp<ViewStyle>;
@@ -21,6 +27,7 @@ export interface ButtonProps extends Omit<PressableProps, "children" | "style"> 
 export function Button({
   label,
   variant = "primary",
+  size = "large",
   haptic,
   disabled,
   onPressIn,
@@ -29,15 +36,27 @@ export function Button({
   style,
   ...rest
 }: ButtonProps) {
-  const { tokens, duration } = useTheme();
+  const { tokens, tier, duration } = useTheme();
   const [pressed, setPressed] = useState(false);
-  const { colors, radius, spacing } = tokens;
+  const { colors, radius, spacing, controlHeight } = tokens;
+  const height = size === "large" ? controlHeight.button : controlHeight.buttonSmall;
 
   const background = {
     primary: colors.accent,
-    secondary: colors.accentTint,
+    ink: colors.ink,
+    outline: colors.surface,
+    tint: colors.accentTint,
     ghost: "transparent",
   }[variant];
+  const labelTone = (
+    {
+      primary: "onAccent",
+      ink: "onAccent",
+      outline: "primary",
+      tint: "accent",
+      ghost: "accent",
+    } as const
+  )[variant];
 
   return (
     <AnimatedPressable
@@ -45,6 +64,8 @@ export function Button({
       accessibilityState={{ disabled: !!disabled }}
       disabled={disabled}
       pressRetentionOffset={16}
+      // The small pill is shorter than a touch target, so widen the hit area.
+      hitSlop={Math.max(0, (touchTarget - height) / 2)}
       // Feedback on press-in, commit on press-out.
       onPressIn={(event) => {
         setPressed(true);
@@ -60,9 +81,13 @@ export function Button({
       }}
       style={[
         {
-          minHeight: touchTarget,
-          paddingHorizontal: spacing.xl,
-          borderRadius: radius.card,
+          height,
+          paddingHorizontal: size === "large" ? spacing.gutter : spacing.xl,
+          borderRadius: radius.pill,
+          borderWidth: variant === "outline" ? 1 : 0,
+          borderColor: colors.hairline,
+          boxShadow:
+            variant === "primary" && size === "large" ? tokens.shadows[tier].accentGlow : "none",
           alignItems: "center",
           justifyContent: "center",
           backgroundColor: background,
@@ -76,7 +101,7 @@ export function Button({
       ]}
       {...rest}
     >
-      <Text variant="label" tone={variant === "primary" ? "onAccent" : "accent"}>
+      <Text variant={size === "large" ? "bodyStrong" : "captionStrong"} tone={labelTone}>
         {label}
       </Text>
     </AnimatedPressable>
