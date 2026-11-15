@@ -7,6 +7,7 @@
 // from the motion sensors, so a chip changes as soon as its signal does.
 import {
   addFrame,
+  addSweep,
   type CoverageState,
   coverageFraction,
   EMPTY_COVERAGE,
@@ -156,7 +157,14 @@ export function scanReducer(tier: "standard" | "low") {
           clockMs: atMs,
           motionMs: atMs,
         };
-        return judge(next, stepMs(state, atMs));
+        const judged = judge(next, stepMs(state, atMs));
+        // Holding steady while facing a direction counts towards coverage,
+        // even when frames are thin. A swing or a pause does not.
+        const steady =
+          sample.hasGyro && judged.guardrails.motion === "good" && !judged.pause.paused;
+        return steady
+          ? { ...judged, coverage: addSweep(judged.coverage, judged.pose.yaw) }
+          : judged;
       }
       case "frame": {
         const { stats, points, aspect, atMs } = event;

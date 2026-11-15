@@ -213,14 +213,36 @@ describe("scan session", () => {
     expect(mappedShare(state) * 180).toBeGreaterThanOrEqual(DONE_DEGREES);
   });
 
-  it("does not count frames that saw no detail, like a blank wall", () => {
+  it("counts a steady full turn even when every frame is thin", () => {
+    const t = timeline();
+    let state = run(INITIAL_SCAN, [t.motion()]);
+    // 30 degrees a second for 12 seconds, frames with no feature points.
+    for (let step = 0; step < 150; step += 1) {
+      state = run(state, [t.motion({ yawRate: 30, rotationRate: 30 }), t.frame(goodStats, [])]);
+    }
+    expect(state.pose.yaw).toBeGreaterThan(355);
+    expect(mappedShare(state)).toBe(1);
+    // Done still needs frames that were usable, which these were.
+    expect(canFinish(state)).toBe(true);
+  });
+
+  it("counts the sweep with no frames at all, but offers Done only with frames", () => {
     const t = timeline();
     let state = run(INITIAL_SCAN, [t.motion()]);
     for (let step = 0; step < 80; step += 1) {
-      state = run(state, [t.motion({ yawRate: 30, rotationRate: 30 }), t.frame(goodStats, [])]);
+      state = run(state, [t.motion({ yawRate: 30, rotationRate: 30 })]);
     }
-    expect(mappedShare(state)).toBe(0);
+    expect(mappedShare(state)).toBeGreaterThan(0.5);
     expect(canFinish(state)).toBe(false);
+  });
+
+  it("gives nothing for a fast swing", () => {
+    const t = timeline();
+    let state = run(INITIAL_SCAN, [t.motion()]);
+    for (let step = 0; step < 40; step += 1) {
+      state = run(state, [t.motion({ yawRate: 200, rotationRate: 200 })]);
+    }
+    expect(mappedShare(state)).toBeLessThan(0.1);
   });
 
   it("falls back to counting detailed frames on a phone with no gyroscope", () => {

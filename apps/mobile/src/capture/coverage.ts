@@ -1,7 +1,8 @@
 // How much of the space has been seen, from where the phone pointed (pose)
-// and whether the camera saw real detail there (feature points). The circle
-// around the person scanning is split into sectors; a sector is mapped once
-// a few steady frames with enough feature points were taken facing it.
+// and what the camera saw there. The circle around the person scanning is
+// split into sectors. Facing a sector while holding steady earns it points
+// from the gyroscope alone, so a full turn always shows progress even when
+// frames are thin; a frame with real detail (feature points) earns more.
 //
 // This is guidance for the person scanning, not a measurement: it never
 // sets a dimension.
@@ -12,8 +13,12 @@ export const SECTOR_COUNT = 360 / SECTOR_DEGREES;
 export const HALF_VIEW_DEGREES = 15;
 /** A frame with fewer feature points than this saw too little detail to count. */
 export const MIN_FEATURES = 8;
-/** Frames needed facing a sector before it counts as mapped. */
-export const HITS_TO_MAP = 2;
+/** Points a steady motion reading (about ten a second) gives the sectors in view. */
+export const SWEEP_POINTS = 1;
+/** Points a frame with enough feature points gives the sectors in view. */
+export const FRAME_POINTS = 2;
+/** Points a sector needs to count as mapped: under half a second of a steady pan. */
+export const HITS_TO_MAP = 4;
 /** Turning through this much counts as a full sweep: what you see standing in a doorway. */
 export const TARGET_DEGREES = 180;
 /** Done is offered once this much is mapped: a corner of a room is about 90 degrees. */
@@ -23,7 +28,7 @@ export const FALLBACK_TARGET_FRAMES = 60;
 export const FALLBACK_DONE_FRAMES = 30;
 
 export interface CoverageState {
-  /** Feature-rich frames seen facing each sector. */
+  /** Points earned by each sector, from steady sweeps and detailed frames. */
   hits: readonly number[];
   /** Feature-rich frames in total, used when there is no gyroscope. */
   richFrames: number;
@@ -39,6 +44,22 @@ export function sectorOf(yawDegrees: number): number {
   return Math.floor(turned / SECTOR_DEGREES) % SECTOR_COUNT;
 }
 
+function award(hits: readonly number[], yawDegrees: number, points: number): number[] {
+  const next = [...hits];
+  const reach = Math.floor(HALF_VIEW_DEGREES / SECTOR_DEGREES);
+  const centre = sectorOf(yawDegrees);
+  for (let offset = -reach; offset <= reach; offset += 1) {
+    const sector = (centre + offset + SECTOR_COUNT) % SECTOR_COUNT;
+    next[sector] = (next[sector] ?? 0) + points;
+  }
+  return next;
+}
+
+/** Record one steady motion reading taken facing `yawDegrees`. */
+export function addSweep(state: CoverageState, yawDegrees: number): CoverageState {
+  return { ...state, hits: award(state.hits, yawDegrees, SWEEP_POINTS) };
+}
+
 /** Record one usable frame taken facing `yawDegrees` with `featureCount` points. */
 export function addFrame(
   state: CoverageState,
@@ -46,14 +67,10 @@ export function addFrame(
   featureCount: number,
 ): CoverageState {
   if (featureCount < MIN_FEATURES) return state;
-  const hits = [...state.hits];
-  const reach = Math.floor(HALF_VIEW_DEGREES / SECTOR_DEGREES);
-  const centre = sectorOf(yawDegrees);
-  for (let offset = -reach; offset <= reach; offset += 1) {
-    const sector = (centre + offset + SECTOR_COUNT) % SECTOR_COUNT;
-    hits[sector] = (hits[sector] ?? 0) + 1;
-  }
-  return { hits, richFrames: state.richFrames + 1 };
+  return {
+    hits: award(state.hits, yawDegrees, FRAME_POINTS),
+    richFrames: state.richFrames + 1,
+  };
 }
 
 export function mappedSectors(state: CoverageState): boolean[] {
