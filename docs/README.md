@@ -26,3 +26,4 @@
 | 21 | [Infrastructure and scaling](21-infrastructure-and-scaling.md) | From 10 users to 1 lakh without a rebuild |
 | 22 | [Production readiness](22-production-readiness.md) | Environments, releases, security, observability |
 | 23 | [Space Twin](23-space-twin.md) | Every scan as a full 3D twin with every object editable |
+| 24 | [Third-party register](24-third-party-register.md) | Every model, library and dataset used, for the legal team |

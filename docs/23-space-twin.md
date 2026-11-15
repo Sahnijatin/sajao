@@ -48,7 +48,7 @@ Every dimension keeps a value, a source and an error band. Generated 3D models n
 
 ## Model and license rules
 
-Every model and library in this pipeline needs a recorded commercial license before use. No AGPL components (for example, Ultralytics YOLO). Candidates to evaluate: feed-forward reconstruction (MapAnything Apache 2.0 release, VGGT commercial checkpoint), segmentation (SAM 3), image to 3D (SAM 3D Objects, TRELLIS.2), splat training and rendering (gsplat, Apache 2.0), on-device detection (EfficientDet-Lite class, Apache 2.0).
+Engineering uses whatever gives the best result, including public datasets for training and evaluation. Every model, library and dataset goes into the third-party register (`docs/24-third-party-register.md`) with its source and license; the legal team reviews it separately. Candidates to evaluate: feed-forward reconstruction (MapAnything Apache 2.0 release, VGGT commercial checkpoint), segmentation (SAM 3), image to 3D (SAM 3D Objects, TRELLIS.2), splat training and rendering (gsplat, Apache 2.0), on-device detection (EfficientDet-Lite class, Apache 2.0).
 
 ## Risks to retire first
 
