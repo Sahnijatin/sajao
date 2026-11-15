@@ -21,6 +21,10 @@ AI decides taste and appearance; geometry and code decide fit. Every model outpu
 
 Every model and dataset is listed in the third-party register (`docs/24-third-party-register.md`); the legal team reviews it separately. Prompts and model versions are pinned in the repo.
 
+## Space Twin risk spike
+
+The twin risk spike (`services/spikes/twin-risk/`, report in `eval/twin-risk/`) compares candidates on public datasets and picks on quality, speed and cost. Every model, library and dataset it uses is listed in the third-party register.
+
 ## Render bake-off
 
 Real rooms run through Gemini 3 Pro Image, Gemini 3.1 Flash Image, Seedream, FLUX.2 and Qwen-Image-Edit with the same guide and product references, scored blind on excitement, product fidelity and structure. The winner becomes the primary; the cheaper runner-up becomes the fallback in the gateway. The bake-off reruns whenever a candidate model changes.
