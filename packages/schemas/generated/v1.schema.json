@@ -11,8 +11,8 @@
     "Plan",
     "Product",
     "Render",
-    "RoomProfile",
     "ShoppingList",
+    "SpaceProfile",
     "TasteProfile"
   ],
   "$defs": {
@@ -24,13 +24,13 @@
     },
     "Brief": {
       "title": "Brief",
-      "description": "Per-room choices on top of the taste profile. With the room profile and the catalog, the only input the design engine reads.",
+      "description": "Per-room choices on top of the taste profile. With the space profile and the catalog, the only input the design engine reads.",
       "type": "object",
       "additionalProperties": false,
       "required": [
         "schema_version",
         "id",
-        "room_profile_id",
+        "space_profile_id",
         "taste_profile_id",
         "created_at",
         "intent",
@@ -46,7 +46,7 @@
         "id": {
           "$ref": "#/$defs/Uuid"
         },
-        "room_profile_id": {
+        "space_profile_id": {
           "$ref": "#/$defs/Uuid"
         },
         "taste_profile_id": {
@@ -98,7 +98,7 @@
           "items": {
             "$ref": "#/$defs/LocalId"
           },
-          "description": "Existing items in the room profile to keep."
+          "description": "Existing items in the space profile to keep."
         },
         "consider_vastu": {
           "type": "boolean"
@@ -107,14 +107,13 @@
     },
     "Capture": {
       "title": "Capture",
-      "description": "Input stage: the photos or video of one room, plus optional tape values.",
+      "description": "Input stage: the photos or video of any space, at any extent (a whole room, a corner, a balcony), plus optional tape values. The space type is detected later, not picked here.",
       "type": "object",
       "additionalProperties": false,
       "required": [
         "schema_version",
         "id",
         "user_id",
-        "room_type",
         "created_at",
         "media",
         "device"
@@ -129,9 +128,6 @@
         "user_id": {
           "$ref": "#/$defs/Uuid",
           "description": "Owner. Guest sessions have a user id too."
-        },
-        "room_type": {
-          "$ref": "#/$defs/RoomType"
         },
         "created_at": {
           "$ref": "#/$defs/Timestamp"
@@ -353,7 +349,7 @@
       "required": [
         "schema_version",
         "id",
-        "room_profile_id",
+        "space_profile_id",
         "brief_id",
         "created_at",
         "slot",
@@ -373,7 +369,7 @@
         "id": {
           "$ref": "#/$defs/Uuid"
         },
-        "room_profile_id": {
+        "space_profile_id": {
           "$ref": "#/$defs/Uuid"
         },
         "brief_id": {
@@ -492,7 +488,7 @@
         },
         "position": {
           "$ref": "#/$defs/Point2",
-          "description": "Center of the item's footprint in the room frame."
+          "description": "Center of the item's footprint in the space frame."
         },
         "rotation_deg": {
           "$ref": "#/$defs/AngleDeg"
@@ -506,6 +502,14 @@
           "description": "Positions come from the solver or a user drag, never from a generative model."
         }
       }
+    },
+    "DetectionSource": {
+      "type": "string",
+      "enum": [
+        "detected",
+        "user"
+      ],
+      "description": "detected: worked out from the scan. user: changed or confirmed by the user."
     },
     "Dimension": {
       "description": "A length that is honest about where it came from. Every dimension carries a value, a source and an error band.",
@@ -588,7 +592,7 @@
           "type": "string",
           "minLength": 1
         },
-        "room_profile_id": {
+        "space_profile_id": {
           "$ref": "#/$defs/Uuid"
         },
         "design_id": {
@@ -817,7 +821,7 @@
     },
     "Plan": {
       "title": "Plan",
-      "description": "Spatial view: the dimensioned 2D plan derived from one design and its room profile.",
+      "description": "Spatial view: the dimensioned 2D plan derived from one design and its space profile.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -952,7 +956,7 @@
       }
     },
     "Point2": {
-      "description": "A point on the floor in the room frame, in metres.",
+      "description": "A point on the floor in the space frame, in metres.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -1145,6 +1149,27 @@
         }
       }
     },
+    "RedoArea": {
+      "description": "What the user wants redone: all of the scanned space, or just a part they drew around.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope"
+      ],
+      "properties": {
+        "scope": {
+          "type": "string",
+          "enum": [
+            "all",
+            "part"
+          ]
+        },
+        "polygon": {
+          "$ref": "#/$defs/Polygon",
+          "description": "The part to redo, in the space frame. Present when scope is part; the design engine checks this."
+        }
+      }
+    },
     "Render": {
       "title": "Render",
       "description": "Visualisation stage: an image derived from one design. Always labelled illustrative.",
@@ -1272,155 +1297,6 @@
           }
         }
       }
-    },
-    "RoomDirection": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "north_deg",
-        "confidence",
-        "sources"
-      ],
-      "properties": {
-        "north_deg": {
-          "$ref": "#/$defs/AngleDeg",
-          "description": "Compass bearing of the room frame's positive y axis."
-        },
-        "confidence": {
-          "type": "string",
-          "enum": [
-            "approximate",
-            "confirmed"
-          ],
-          "description": "confirmed only when more than the compass agrees. Strict Vastu needs confirmed."
-        },
-        "sources": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": [
-              "compass",
-              "main_door_confirmation"
-            ]
-          },
-          "minItems": 1,
-          "uniqueItems": true
-        }
-      }
-    },
-    "RoomLight": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "natural_light"
-      ],
-      "properties": {
-        "natural_light": {
-          "type": "string",
-          "enum": [
-            "low",
-            "medium",
-            "high"
-          ]
-        },
-        "main_direction_deg": {
-          "$ref": "#/$defs/AngleDeg"
-        }
-      }
-    },
-    "RoomProfile": {
-      "title": "RoomProfile",
-      "description": "Understanding stage: the room as a scene graph. Geometry models estimate, tape verifies; every dimension carries a value, a source and an error band.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "schema_version",
-        "id",
-        "capture_id",
-        "room_type",
-        "created_at",
-        "verification",
-        "floor_polygon",
-        "walls",
-        "ceiling_height",
-        "openings",
-        "fixtures",
-        "existing_items",
-        "direction",
-        "scale"
-      ],
-      "properties": {
-        "schema_version": {
-          "$ref": "#/$defs/SchemaVersion"
-        },
-        "id": {
-          "$ref": "#/$defs/Uuid"
-        },
-        "capture_id": {
-          "$ref": "#/$defs/Uuid"
-        },
-        "room_type": {
-          "$ref": "#/$defs/RoomType"
-        },
-        "created_at": {
-          "$ref": "#/$defs/Timestamp"
-        },
-        "verification": {
-          "type": "string",
-          "enum": [
-            "estimated",
-            "verified"
-          ],
-          "description": "verified only when tape values cover the room's key dimensions."
-        },
-        "floor_polygon": {
-          "$ref": "#/$defs/Polygon"
-        },
-        "walls": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/Wall"
-          },
-          "minItems": 3
-        },
-        "ceiling_height": {
-          "$ref": "#/$defs/Dimension"
-        },
-        "openings": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/Opening"
-          }
-        },
-        "fixtures": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/Fixture"
-          }
-        },
-        "existing_items": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/ExistingItem"
-          }
-        },
-        "light": {
-          "$ref": "#/$defs/RoomLight"
-        },
-        "direction": {
-          "$ref": "#/$defs/RoomDirection"
-        },
-        "scale": {
-          "$ref": "#/$defs/ScaleEvidence"
-        }
-      }
-    },
-    "RoomType": {
-      "type": "string",
-      "enum": [
-        "living_room",
-        "bedroom"
-      ]
     },
     "ScaleEvidence": {
       "description": "Independent scale anchors and whether they agree.",
@@ -1596,6 +1472,181 @@
           "type": "boolean"
         }
       }
+    },
+    "SpaceDirection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "north_deg",
+        "confidence",
+        "sources"
+      ],
+      "properties": {
+        "north_deg": {
+          "$ref": "#/$defs/AngleDeg",
+          "description": "Compass bearing of the space frame's positive y axis."
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "approximate",
+            "confirmed"
+          ],
+          "description": "confirmed only when more than the compass agrees. Strict Vastu needs confirmed."
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "compass",
+              "main_door_confirmation"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "SpaceLight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "natural_light"
+      ],
+      "properties": {
+        "natural_light": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "main_direction_deg": {
+          "$ref": "#/$defs/AngleDeg"
+        }
+      }
+    },
+    "SpaceProfile": {
+      "title": "SpaceProfile",
+      "description": "Understanding stage: the scanned space as a scene graph. It may be a whole room or only part of one. Geometry models estimate, tape verifies; every dimension carries a value, a source and an error band.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "capture_id",
+        "space_type",
+        "space_type_source",
+        "extent",
+        "extent_source",
+        "redo",
+        "created_at",
+        "verification",
+        "floor_polygon",
+        "walls",
+        "ceiling_height",
+        "openings",
+        "fixtures",
+        "existing_items",
+        "direction",
+        "scale"
+      ],
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "capture_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "space_type": {
+          "$ref": "#/$defs/SpaceType"
+        },
+        "space_type_source": {
+          "$ref": "#/$defs/DetectionSource"
+        },
+        "extent": {
+          "type": "string",
+          "enum": [
+            "whole_room",
+            "part"
+          ],
+          "description": "How much was scanned: a whole room, or part of one such as a corner or one wall."
+        },
+        "extent_source": {
+          "$ref": "#/$defs/DetectionSource"
+        },
+        "redo": {
+          "$ref": "#/$defs/RedoArea"
+        },
+        "created_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "verification": {
+          "type": "string",
+          "enum": [
+            "estimated",
+            "verified"
+          ],
+          "description": "verified only when tape values cover the space's key dimensions."
+        },
+        "floor_polygon": {
+          "$ref": "#/$defs/Polygon",
+          "description": "The scanned floor area. For a partial scan this is only the part that was covered."
+        },
+        "walls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Wall"
+          },
+          "minItems": 1,
+          "description": "Walls seen in the scan. A partial scan may have one or two."
+        },
+        "ceiling_height": {
+          "$ref": "#/$defs/Dimension"
+        },
+        "openings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Opening"
+          }
+        },
+        "fixtures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Fixture"
+          }
+        },
+        "existing_items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ExistingItem"
+          }
+        },
+        "light": {
+          "$ref": "#/$defs/SpaceLight"
+        },
+        "direction": {
+          "$ref": "#/$defs/SpaceDirection"
+        },
+        "scale": {
+          "$ref": "#/$defs/ScaleEvidence"
+        }
+      }
+    },
+    "SpaceType": {
+      "type": "string",
+      "enum": [
+        "living_room",
+        "bedroom",
+        "balcony",
+        "other"
+      ],
+      "description": "What the scanned space is. Detected from the scan, never picked up front; the user can change it."
     },
     "StorageKey": {
       "type": "string",

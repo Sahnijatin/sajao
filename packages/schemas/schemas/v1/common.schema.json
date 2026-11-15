@@ -50,9 +50,15 @@
       "maximum": 1,
       "description": "A score from 0 to 1."
     },
-    "RoomType": {
+    "SpaceType": {
       "type": "string",
-      "enum": ["living_room", "bedroom"]
+      "enum": ["living_room", "bedroom", "balcony", "other"],
+      "description": "What the scanned space is. Detected from the scan, never picked up front; the user can change it."
+    },
+    "DetectionSource": {
+      "type": "string",
+      "enum": ["detected", "user"],
+      "description": "detected: worked out from the scan. user: changed or confirmed by the user."
     },
     "StyleProfile": {
       "type": "string",
@@ -98,7 +104,7 @@
       }
     },
     "Point2": {
-      "description": "A point on the floor in the room frame, in metres.",
+      "description": "A point on the floor in the space frame, in metres.",
       "type": "object",
       "additionalProperties": false,
       "required": ["x_m", "y_m"],

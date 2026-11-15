@@ -2,7 +2,12 @@
   "schema_version": "1.0",
   "id": "00000000-0000-4000-8000-000000000002",
   "capture_id": "00000000-0000-4000-8000-000000000001",
-  "room_type": "living_room",
+  "space_type": "living_room",
+  "space_type_source": "detected",
+  "extent_source": "detected",
+  "redo": {
+    "scope": "all"
+  },
   "created_at": "2026-01-05T10:00:00Z",
   "verification": "estimated",
   "floor_polygon": [
@@ -91,7 +96,7 @@
   ],
   "ceiling_height": {
     "value_m": 2.9,
-    "source": "guessed",
+    "source": "estimated",
     "error_band_m": 0.08
   },
   "openings": [
