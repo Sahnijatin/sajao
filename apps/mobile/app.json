@@ -10,7 +10,8 @@
       "supportsTablet": false,
       "infoPlist": {
         "NSCameraUsageDescription": "The camera is used to scan the space you want redone.",
-        "NSPhotoLibraryUsageDescription": "Photos you choose are used to redesign your space."
+        "NSPhotoLibraryUsageDescription": "Photos you choose are used to redesign your space.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "plugins": [

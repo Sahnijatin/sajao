@@ -35,3 +35,21 @@ pnpm --filter @sajao/mobile typecheck
 ```
 
 The app uses native tabs and native sheets, so it needs a development build on a device or simulator rather than a browser.
+
+## Builds
+
+The app is linked to the EAS project `@sahniijatinn/sajao`. `eas.json` has three profiles:
+
+| Profile | What it is | App name and id |
+| --- | --- | --- |
+| `development` | Development client, internal distribution | Sajao (Dev), `app.sajao.dev` |
+| `preview` | Release build for testers, internal distribution | Sajao (Preview), `app.sajao.preview` |
+| `production` | Store build | Sajao, `app.sajao` (working id, to confirm before the first store build) |
+
+```
+eas build --platform android --profile development
+eas build --platform ios --profile development      # needs an Apple Developer account and a registered iPhone
+pnpm --filter @sajao/mobile start                    # then open the development build and connect
+```
+
+Each EAS environment (development, preview, production) holds that environment's `EXPO_PUBLIC_*` values. Nothing secret goes in `EXPO_PUBLIC_*` values: they ship inside the app.
