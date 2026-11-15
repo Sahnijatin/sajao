@@ -13,8 +13,49 @@ class SajaoContract(RootModel[Any]):
     ]
 
 
+class ArPoint(BaseModel):
+    """
+    A point in the AR session's world frame, in metres, y up.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    x_m: float
+    y_m: float
+    z_m: float
+
+
+class RotationItem(RootModel[float]):
+    root: Annotated[float, Field(ge=-1.0, le=1.0)]
+
+
+class ArPose(BaseModel):
+    """
+    Camera pose from AR tracking: position and a unit quaternion (x, y, z, w).
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    position: ArPoint
+    rotation: Annotated[list[RotationItem], Field(max_length=4, min_length=4)]
+
+
 class MustHave(RootModel[str]):
     root: Annotated[str, Field(min_length=1)]
+
+
+class CameraIntrinsics(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    fx: Annotated[float, Field(gt=0.0)]
+    fy: Annotated[float, Field(gt=0.0)]
+    cx: Annotated[float, Field(ge=0.0)]
+    cy: Annotated[float, Field(ge=0.0)]
+    width_px: Annotated[int, Field(ge=1)]
+    height_px: Annotated[int, Field(ge=1)]
 
 
 class CaptureDevice(BaseModel):
@@ -26,6 +67,15 @@ class CaptureDevice(BaseModel):
         Literal["standard", "low"], Field(description="Device tier detected at launch.")
     ]
     has_ar: bool
+
+
+class Ar(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    tracking: Literal["arkit", "arcore", "none"]
+    lidar: bool
+    depth: Annotated[bool, Field(description="Depth images are in the package.")]
 
 
 class CompassReading(BaseModel):
@@ -107,6 +157,19 @@ class Point2(BaseModel):
     y_m: float
 
 
+class Point3(BaseModel):
+    """
+    A point in the space frame, in metres. z is height above the floor.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    x_m: float
+    y_m: float
+    z_m: float
+
+
 class ProductRoute(BaseModel):
     """
     A permitted affiliate or rental route to a product.
@@ -149,6 +212,32 @@ class RedoArea(BaseModel):
     ] = None
 
 
+class RemoveEdit(BaseModel):
+    """
+    Remove an object; the fill behind it is a render concern.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    op: Literal["remove"]
+    by: Annotated[Literal["user", "solver"], Field(description="Who made the edit. Never a model.")]
+    object_id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+
+
 class ModelRef(BaseModel):
     """
     Pinned model that produced a guided photo render.
@@ -160,6 +249,35 @@ class ModelRef(BaseModel):
     provider: Annotated[str, Field(min_length=1)]
     name: Annotated[str, Field(min_length=1)]
     version: Annotated[str, Field(min_length=1)]
+
+
+class RotateEdit(BaseModel):
+    """
+    Turn an object about the vertical axis.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    op: Literal["rotate"]
+    by: Annotated[Literal["user", "solver"], Field(description="Who made the edit. Never a model.")]
+    object_id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    yaw_deg: Annotated[
+        float, Field(description="Degrees, 0 inclusive to 360 exclusive.", ge=0.0, lt=360.0)
+    ]
 
 
 class ScaleAnchor(BaseModel):
@@ -332,6 +450,45 @@ class Brief(BaseModel):
     consider_vastu: bool
 
 
+class CameraPose(BaseModel):
+    """
+    Camera position and orientation in the space frame. Rotation is a unit quaternion (x, y, z, w).
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    position: Point3
+    rotation: Annotated[list[RotationItem], Field(max_length=4, min_length=4)]
+
+
+class CaptureKeyframe(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    image: Annotated[
+        str,
+        Field(
+            description="Object key in the media store. Never a public URL; clients receive signed URLs.",
+            max_length=512,
+            min_length=1,
+        ),
+    ]
+    captured_at_ms: Annotated[
+        int, Field(description="Milliseconds from the start of the scan.", ge=0)
+    ]
+    sharpness: Annotated[float, Field(ge=0.0)]
+    pose: ArPose | None = None
+    intrinsics: CameraIntrinsics | None = None
+
+
 class CaptureMedia(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -359,6 +516,20 @@ class CaptureMedia(BaseModel):
     compass_heading_deg: Annotated[
         float | None, Field(description="Degrees, 0 inclusive to 360 exclusive.", ge=0.0, lt=360.0)
     ] = None
+
+
+class CatalogMatch(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    product_id: Annotated[str, Field(min_length=1)]
+    similarity: Annotated[float, Field(description="A score from 0 to 1.", ge=0.0, le=1.0)]
+    fits_box: Annotated[
+        bool,
+        Field(
+            description="The product's catalog size fits this object's box, with the error band as margin."
+        ),
+    ]
 
 
 class RuleResult(BaseModel):
@@ -520,6 +691,45 @@ class Fixture(BaseModel):
     width: Dimension | None = None
 
 
+class Keyframe(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    image: Annotated[
+        str,
+        Field(
+            description="Object key in the media store. Never a public URL; clients receive signed URLs.",
+            max_length=512,
+            min_length=1,
+        ),
+    ]
+    captured_at_ms: Annotated[
+        int, Field(description="Milliseconds from the start of the capture.", ge=0)
+    ]
+    pose: CameraPose
+    intrinsics: CameraIntrinsics
+    sharpness: Annotated[float | None, Field(ge=0.0)] = None
+
+
+class LiveDetection(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    detector_class: Annotated[str, Field(max_length=60, min_length=1)]
+    score: Annotated[float, Field(description="A score from 0 to 1.", ge=0.0, le=1.0)]
+    at_ms: Annotated[int, Field(ge=0)]
+    world: Annotated[
+        ArPoint | None, Field(description="Where the detection hit the AR scene, when it did.")
+    ] = None
+
+
 class Material(BaseModel):
     """
     Wall paint or flooring, a first-class part of the design.
@@ -532,6 +742,84 @@ class Material(BaseModel):
     color: Annotated[str, Field(pattern="^#[0-9a-f]{6}$")]
     finish: Annotated[str | None, Field(min_length=1)] = None
     product_id: UUID | None = None
+
+
+class MoveEdit(BaseModel):
+    """
+    Move an object: its box centre moves, its measured size does not.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    op: Literal["move"]
+    by: Annotated[Literal["user", "solver"], Field(description="Who made the edit. Never a model.")]
+    object_id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    to: Point3
+
+
+class ObjectModel(BaseModel):
+    """
+    A 3D model made from the object's own crops. Scaled to the measured box; the model never sets the size.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    key: Annotated[
+        str,
+        Field(
+            description="Object key in the media store. Never a public URL; clients receive signed URLs.",
+            max_length=512,
+            min_length=1,
+        ),
+    ]
+    generator: Annotated[
+        str, Field(description="Model name and pinned version that made it.", min_length=1)
+    ]
+    scaled_to_box: Literal[True]
+
+
+class ObjectView(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    keyframe_id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    mask: Annotated[
+        str,
+        Field(
+            description="Object key in the media store. Never a public URL; clients receive signed URLs.",
+            max_length=512,
+            min_length=1,
+        ),
+    ]
+    crop: Annotated[
+        str,
+        Field(
+            description="Object key in the media store. Never a public URL; clients receive signed URLs.",
+            max_length=512,
+            min_length=1,
+        ),
+    ]
 
 
 class Opening(BaseModel):
@@ -565,6 +853,23 @@ class Opening(BaseModel):
     swing: Annotated[
         Swing | None, Field(description="Door swing. Its clearance is a hard rule.")
     ] = None
+
+
+class OrientedBox(BaseModel):
+    """
+    An object's measured box: centre, turn about the vertical axis and size. Sizes are dimensions with a source and an error band.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    center: Point3
+    yaw_deg: Annotated[
+        float, Field(description="Degrees, 0 inclusive to 360 exclusive.", ge=0.0, lt=360.0)
+    ]
+    width: Dimension
+    depth: Dimension
+    height: Dimension
 
 
 class PlanOpening(BaseModel):
@@ -721,6 +1026,19 @@ class Product(BaseModel):
     ]
 
 
+class ProductSize(BaseModel):
+    """
+    A catalog product's size: retailer data, so measured or estimated, never set by a model.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    width: Dimension
+    depth: Dimension
+    height: Dimension
+
+
 class RenderImage(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -796,6 +1114,34 @@ class Render(BaseModel):
     ] = None
 
 
+class ReplaceEdit(BaseModel):
+    """
+    Replace an object with a catalog product of the given size.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    op: Literal["replace"]
+    by: Annotated[Literal["user", "solver"], Field(description="Who made the edit. Never a model.")]
+    object_id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    product_id: Annotated[str, Field(min_length=1)]
+    product_size: ProductSize
+
+
 class ShoppingLine(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -848,6 +1194,40 @@ class ShoppingList(BaseModel):
     total: Money
     within_budget: bool
     all_in_stock: bool
+
+
+class SplatRef(BaseModel):
+    """
+    The photoreal room splat trained on the keyframes.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    key: Annotated[
+        str,
+        Field(
+            description="Object key in the media store. Never a public URL; clients receive signed URLs.",
+            max_length=512,
+            min_length=1,
+        ),
+    ]
+    format: Literal["ply", "spz", "ksplat"]
+
+
+class SurfaceMaterial(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    kind: Literal["paint", "tile", "wood", "stone", "wallpaper", "other"]
+    color: Annotated[str | None, Field(pattern="^#[0-9a-f]{6}$")] = None
+    tile_size: Annotated[
+        Dimension | None, Field(description="Side of one tile, when the material is tile.")
+    ] = None
+    product_id: Annotated[
+        str | None,
+        Field(description="Catalog product for a restyle (paint or flooring).", min_length=1),
+    ] = None
 
 
 class TasteAttributes(BaseModel):
@@ -924,6 +1304,59 @@ class TasteProfile(BaseModel):
     ]
 
 
+class Detection(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    source: Literal["live_scan", "server_segmentation", "user"]
+    confidence: Annotated[float, Field(description="A score from 0 to 1.", ge=0.0, le=1.0)]
+
+
+class TwinObject(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    category: Annotated[
+        str,
+        Field(
+            description="Machine class, for example sofa or almirah.", max_length=60, min_length=1
+        ),
+    ]
+    label: Annotated[
+        str,
+        Field(
+            description="Name shown to the user, for example Grey three-seater sofa.",
+            max_length=80,
+            min_length=1,
+        ),
+    ]
+    box: OrientedBox
+    detection: Detection
+    views: Annotated[
+        list[ObjectView],
+        Field(description="Masks and best crops from the keyframes that see this object."),
+    ]
+    model: ObjectModel | None = None
+    splat_subset: Annotated[
+        str | None,
+        Field(description="This object's part of the room splat.", max_length=512, min_length=1),
+    ] = None
+    catalog_matches: list[CatalogMatch]
+    state: Annotated[
+        Literal["keep", "move", "remove", "replace"],
+        Field(
+            description="keep in a freshly built twin. Edits change it only in a derived view, never in the stored twin."
+        ),
+    ]
+
+
 class Wall(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -940,28 +1373,77 @@ class Wall(BaseModel):
     length: Dimension
 
 
-class Capture(BaseModel):
+class AddEdit(BaseModel):
     """
-    Input stage: the photos or video of any space, at any extent (a whole room, a corner, a balcony), plus optional tape values. The space type is detected later, not picked here.
+    Add a catalog product at a pose.
     """
 
     model_config = ConfigDict(
         extra="forbid",
     )
-    schema_version: Annotated[
+    id: Annotated[
         str,
         Field(
-            description="Contract version of the object. Minor versions only add optional fields.",
-            pattern="^1\\.[0-9]+$",
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
         ),
     ]
-    id: UUID
-    user_id: Annotated[UUID, Field(description="Owner. Guest sessions have a user id too.")]
-    created_at: Annotated[AwareDatetime, Field(description="UTC instant, RFC 3339.")]
-    media: Annotated[list[CaptureMedia], Field(max_length=40, min_length=1)]
-    device: CaptureDevice
-    compass: CompassReading | None = None
-    tape_measurements: list[TapeMeasurement] | None = None
+    op: Literal["add"]
+    by: Annotated[Literal["user", "solver"], Field(description="Who made the edit. Never a model.")]
+    product_id: Annotated[str, Field(min_length=1)]
+    product_size: ProductSize
+    to: Point3
+    yaw_deg: Annotated[
+        float, Field(description="Degrees, 0 inclusive to 360 exclusive.", ge=0.0, lt=360.0)
+    ]
+    label: Annotated[str, Field(max_length=80, min_length=1)]
+
+
+class CapturePackage(BaseModel):
+    """
+    Everything the scan recorded for building the twin, uploaded as one package. Works without AR: then there is video and keyframes only, with no poses. AR poses and points are in the AR session's world frame: metres, gravity aligned, y up; the twin converts them to the space frame.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    ar: Ar
+    video: Annotated[
+        str | None,
+        Field(description="The scan video, when recorded.", max_length=512, min_length=1),
+    ] = None
+    keyframes: Annotated[list[CaptureKeyframe], Field(max_length=120, min_length=1)]
+    planes: Annotated[
+        str | None, Field(description="AR planes as JSON.", max_length=512, min_length=1)
+    ] = None
+    scene_mesh: Annotated[
+        str | None,
+        Field(
+            description="LiDAR scene mesh with surface classes, when the phone has LiDAR.",
+            max_length=512,
+            min_length=1,
+        ),
+    ] = None
+    depth: Annotated[
+        str | None,
+        Field(
+            description="Depth images aligned to keyframes, when the phone provides them.",
+            max_length=512,
+            min_length=1,
+        ),
+    ] = None
+    detections: Annotated[
+        list[LiveDetection],
+        Field(description="Live detector results during the scan.", max_length=4000),
+    ]
+    sensor_log: Annotated[
+        str,
+        Field(
+            description="Motion, pose and light readings over time, as JSON lines.",
+            max_length=512,
+            min_length=1,
+        ),
+    ]
 
 
 class DesignMaterials(BaseModel):
@@ -996,6 +1478,52 @@ class DesignItem(BaseModel):
             description="Positions come from the solver or a user drag, never from a generative model."
         ),
     ]
+
+
+class RestyleSurfaceEdit(BaseModel):
+    """
+    Repaint or refloor a surface.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    op: Literal["restyle_surface"]
+    by: Annotated[Literal["user", "solver"], Field(description="Who made the edit. Never a model.")]
+    surface_id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    material: SurfaceMaterial
+
+
+class ShellSurface(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[
+        str, Field(description="A wall's id, or floor or ceiling.", pattern="^[a-z0-9_-]{1,40}$")
+    ]
+    kind: Literal["wall", "floor", "ceiling"]
+    texture: Annotated[
+        str | None,
+        Field(
+            description="Photo texture projected from the keyframes with objects masked out.",
+            max_length=512,
+            min_length=1,
+        ),
+    ] = None
+    material: SurfaceMaterial | None = None
 
 
 class SpaceProfile(BaseModel):
@@ -1067,6 +1595,44 @@ class SpaceProfile(BaseModel):
     scale: ScaleEvidence
 
 
+class TwinReference(BaseModel):
+    """
+    Which twin a design builds on, and the ordered edits it makes to it.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    twin_id: UUID
+    twin_version: Annotated[int, Field(ge=1)]
+    edits: list[MoveEdit | RotateEdit | RemoveEdit | ReplaceEdit | AddEdit | RestyleSurfaceEdit]
+
+
+class Capture(BaseModel):
+    """
+    Input stage: the photos or video of any space, at any extent (a whole room, a corner, a balcony), plus optional tape values. The space type is detected later, not picked here.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    schema_version: Annotated[
+        str,
+        Field(
+            description="Contract version of the object. Minor versions only add optional fields.",
+            pattern="^1\\.[0-9]+$",
+        ),
+    ]
+    id: UUID
+    user_id: Annotated[UUID, Field(description="Owner. Guest sessions have a user id too.")]
+    created_at: Annotated[AwareDatetime, Field(description="UTC instant, RFC 3339.")]
+    media: Annotated[list[CaptureMedia], Field(max_length=40, min_length=1)]
+    device: CaptureDevice
+    compass: CompassReading | None = None
+    tape_measurements: list[TapeMeasurement] | None = None
+    package: CapturePackage | None = None
+
+
 class Design(BaseModel):
     """
     One proposed transformation. The render, the plan and the shopping list are views of this object and must never disagree with it.
@@ -1117,3 +1683,92 @@ class Design(BaseModel):
         list[Explanation],
         Field(description="Why this works, generated from the solver's own scores."),
     ]
+    twin: Annotated[
+        TwinReference | None,
+        Field(
+            description="The twin this design builds on and its edits. The render, plan, 3D view and shopping list read the same twin plus edits."
+        ),
+    ] = None
+
+
+class Shell(BaseModel):
+    """
+    The room itself: floor, walls, ceiling, doors, windows and wall fixtures.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    floor_polygon: Annotated[
+        list[Point2],
+        Field(description="Closed floor polygon; the last point joins the first.", min_length=3),
+    ]
+    walls: Annotated[list[Wall], Field(min_length=1)]
+    ceiling_height: Dimension
+    openings: list[Opening]
+    fixtures: list[Fixture]
+    surfaces: Annotated[
+        list[ShellSurface], Field(description="Appearance of each wall, the floor and the ceiling.")
+    ]
+
+
+class SpaceTwin(BaseModel):
+    """
+    The 3D digital twin of a scanned space: the room shell and every object as its own editable item. Built from one immutable capture; a new reconstruction is a new version, and edits are deltas kept outside the twin. Every dimension carries a value, a source and an error band; generated 3D models never set an object's size, the measured box does. The space frame is metric: x and y on the floor (as in SpaceProfile), z up from the floor.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    schema_version: Annotated[
+        str,
+        Field(
+            description="Contract version of the object. Minor versions only add optional fields.",
+            pattern="^1\\.[0-9]+$",
+        ),
+    ]
+    id: UUID
+    capture_id: Annotated[
+        UUID, Field(description="The capture this twin was built from. The capture never changes.")
+    ]
+    version: Annotated[
+        int,
+        Field(
+            description="Reconstruction version for this capture. Designs reference a twin id and version.",
+            ge=1,
+        ),
+    ]
+    created_at: Annotated[AwareDatetime, Field(description="UTC instant, RFC 3339.")]
+    space_type: Annotated[
+        Literal["living_room", "bedroom", "balcony", "other"],
+        Field(
+            description="What the scanned space is. Detected from the scan, never picked up front; the user can change it."
+        ),
+    ]
+    space_type_source: Annotated[
+        Literal["detected", "user"],
+        Field(
+            description="detected: worked out from the scan. user: changed or confirmed by the user."
+        ),
+    ]
+    extent: Literal["whole_room", "part"]
+    extent_source: Annotated[
+        Literal["detected", "user"],
+        Field(
+            description="detected: worked out from the scan. user: changed or confirmed by the user."
+        ),
+    ]
+    shell: Shell
+    objects: Annotated[
+        list[TwinObject], Field(description="Every object found in the space, each its own item.")
+    ]
+    keyframes: Annotated[
+        list[Keyframe],
+        Field(
+            description="Sharp frames with camera poses and intrinsics, in the space frame.",
+            min_length=1,
+        ),
+    ]
+    scale: ScaleEvidence
+    direction: SpaceDirection
+    splat: SplatRef | None = None

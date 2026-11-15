@@ -6,6 +6,7 @@ export type * from "./generated/v1";
 export const OBJECT_NAMES = [
   "Capture",
   "SpaceProfile",
+  "SpaceTwin",
   "TasteProfile",
   "Brief",
   "Product",
