@@ -19,6 +19,9 @@ Pod::Spec.new do |s|
   # EfficientDet-Lite0 (COCO), Apache 2.0. Shared with the Android module.
   s.resource_bundles = { 'SajaoArAssets' => ['Assets/*.tflite'] }
   s.pod_target_xcconfig = {
-    'DEFINES_MODULE' => 'YES'
+    'DEFINES_MODULE' => 'YES',
+    # CocoaPods passes MediaPipe's copied static frameworks as header paths
+    # only; Swift needs them as framework paths to import the modules.
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) "${PODS_XCFRAMEWORKS_BUILD_DIR}/MediaPipeTasksVision" "${PODS_XCFRAMEWORKS_BUILD_DIR}/MediaPipeTasksCommon"'
   }
 end
