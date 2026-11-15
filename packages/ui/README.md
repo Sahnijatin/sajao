@@ -12,6 +12,7 @@ The Sajao design system: LiveMap tokens, motion presets, the haptic map and core
 | Device tier | `src/deviceTier.ts` | `standard` or `low`; Android phones with up to 4 GB of RAM are low. |
 | Theme | `src/theme.tsx` | `ThemeProvider` and `useTheme()`: tokens, tier, reduced motion and `duration()`. |
 | Components | `src/components` | `Text`, `Button`, `Card`, `Chip`, `GlassSurface`, `Sheet`, `TextField`. |
+| Effects | `src/effects` | Skia effect presets: scan mesh, canvas colour blobs, glow, perspective grid, paint sweep. Imported from `@sajao/ui/effects`. |
 | Gallery | `src/gallery/GalleryScreen.tsx` | Dev-only screen showing everything, with switches for the low tier and reduced motion. |
 
 ## Rules for screens
@@ -21,6 +22,20 @@ The Sajao design system: LiveMap tokens, motion presets, the haptic map and core
 - Haptics come only from `playHaptic(moment)`. They mark real milestones and are never the only feedback.
 - Glass never animates its blur. Crossfade the whole surface instead.
 - Components take their text as props. Strings live in the app's string catalogs.
+
+## Effects
+
+`src/effects/presets.ts` holds the numbers and geometry for every effect, taken from the mockups, and is fully unit-tested. The Skia components only draw what it describes.
+
+| Effect | Preset | Component | Low tier | Reduced motion |
+| --- | --- | --- | --- | --- |
+| Scan mesh | `scanMesh`, `scanMeshLayers` | `MeshEffect` | Dots and edges; no faces, glow or sweep | Full look, no moving sweep |
+| Canvas colour blobs | `canvasBlobs`, `blobAt` | `CanvasBlobs` | Blobs stand still | Blobs stand still |
+| Glow | `glow` | Used inside `MeshEffect` | No blur | Unchanged |
+| Perspective grid | `perspectiveGrid` | With the first screen that uses it | Same lines | Unchanged |
+| Paint sweep | `paintSweep`, `paintSweepAt` | With the plan and render screens | Instant change | Instant change |
+
+`effectLevel(theme)` picks `full`, `lite` (low tier) or `still` (reduced motion) in one place. Effects live behind `@sajao/ui/effects` so screens that do not draw with Skia do not load it.
 
 ## Fallbacks
 
