@@ -59,7 +59,27 @@
     "permissionTitle": "Sajao needs your camera",
     "permissionBody": "The camera is used only to scan the space you want redone.",
     "permissionAllow": "Allow camera",
-    "noCamera": "No camera was found on this phone. You can use photos instead."
+    "noCamera": "No camera was found on this phone. You can use photos instead.",
+    "mapped": "{{percent}}% mapped",
+    "debug": {
+      "cameraFps": "Camera fps",
+      "analysedFps": "Analysed fps",
+      "featurePoints": "Feature points",
+      "meshPoints": "Mesh points",
+      "analysisMs": "Analysis ms",
+      "dropped": "Dropped frames",
+      "waiting": "Waiting for frames",
+      "brightness": "Brightness",
+      "iso": "ISO share",
+      "turn": "Turn deg/s",
+      "shake": "Shake m/s2",
+      "roll": "Roll deg",
+      "pitch": "Pitch deg",
+      "yaw": "Yaw deg",
+      "gyro": "Gyroscope",
+      "usable": "Usable frames",
+      "error": "Last error"
+    }
   },
   "space": {
     "found": "We found",
@@ -223,5 +243,12 @@
     "title": "Something went wrong",
     "body": "Sajao hit a problem and could not show this screen. Nothing you saved is lost.",
     "retry": "Try again"
+  },
+  "nav": {
+    "app": "Sajao",
+    "gallery": "Gallery",
+    "spacePreview": "Space Profile",
+    "tastePreview": "Taste",
+    "capture": "Scan"
   }
 }
