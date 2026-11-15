@@ -8,9 +8,11 @@ dependencies = []
 [dependency-groups]
 dev = [
     "datamodel-code-generator[ruff]>=0.35",
+    "httpx>=0.28",
     "jsonschema>=4.25",
     "mypy>=1.18",
     "pytest>=8.4",
+    "pytest-asyncio>=1.2",
     "ruff>=0.14",
     "types-jsonschema>=4.25",
 ]
@@ -45,3 +47,5 @@ exclude = ["/generated/"]
 [tool.pytest.ini_options]
 testpaths = ["packages", "services"]
 addopts = "--import-mode=importlib"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"

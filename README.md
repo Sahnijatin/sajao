@@ -37,6 +37,8 @@ services/api       Python FastAPI modular monolith (versioned /v1 API)
 services/workers   Durable pipeline steps and GPU work on Modal
 packages/schemas   Versioned JSON schemas: Capture, RoomProfile, TasteProfile, Brief, Product, Design, Render, Plan, ShoppingList, Event
 packages/ui        Theme tokens, components, motion presets, haptic map
+packages/api-client  Typed TypeScript client generated from the API's OpenAPI document
+supabase/          Local stack config and database migrations
 eval/              Golden set tooling, render bake-off, evaluation suite
 docs/              Product and engineering documentation
 ```
