@@ -6,7 +6,10 @@
   "build": {
     "base": {
       "node": "22.14.0",
-      "pnpm": "10.28.0"
+      "pnpm": "10.28.0",
+      "env": {
+        "EAS_USE_CACHE": "1"
+      }
     },
     "development": {
       "extends": "base",
@@ -14,22 +17,35 @@
       "distribution": "internal",
       "environment": "development",
       "autoIncrement": true,
-      "env": { "APP_VARIANT": "development" },
-      "android": { "buildType": "apk" }
+      "env": {
+        "EAS_USE_CACHE": "1",
+        "APP_VARIANT": "development"
+      },
+      "android": {
+        "buildType": "apk"
+      }
     },
     "preview": {
       "extends": "base",
       "distribution": "internal",
       "environment": "preview",
       "autoIncrement": true,
-      "env": { "APP_VARIANT": "preview" },
-      "android": { "buildType": "apk" }
+      "env": {
+        "EAS_USE_CACHE": "1",
+        "APP_VARIANT": "preview"
+      },
+      "android": {
+        "buildType": "apk"
+      }
     },
     "production": {
       "extends": "base",
       "environment": "production",
       "autoIncrement": true,
-      "env": { "APP_VARIANT": "production" }
+      "env": {
+        "EAS_USE_CACHE": "1",
+        "APP_VARIANT": "production"
+      }
     }
   },
   "submit": {

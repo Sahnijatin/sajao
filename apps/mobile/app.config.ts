@@ -5,11 +5,15 @@ import type { ConfigContext, ExpoConfig } from "expo/config";
 
 type Variant = "development" | "preview" | "production";
 
-const VARIANTS: Record<Variant, { name: string; id: string }> = {
-  development: { name: "Sajao (Dev)", id: "app.sajao.dev" },
-  preview: { name: "Sajao (Preview)", id: "app.sajao.preview" },
+// Android processor types to compile for. Compiling the native libraries is
+// the slowest part of a build, so development and preview builds target
+// 64-bit ARM only, which is what current phones use. The store build also
+// covers 32-bit ARM phones. Emulator types (x86) are never built.
+const VARIANTS: Record<Variant, { name: string; id: string; androidArchs: string[] }> = {
+  development: { name: "Sajao (Dev)", id: "app.sajao.dev", androidArchs: ["arm64-v8a"] },
+  preview: { name: "Sajao (Preview)", id: "app.sajao.preview", androidArchs: ["arm64-v8a"] },
   // Confirmed by the founder. A store listing can never change its application id.
-  production: { name: "Sajao", id: "app.sajao" },
+  production: { name: "Sajao", id: "app.sajao", androidArchs: ["arm64-v8a", "armeabi-v7a"] },
 };
 
 export default ({ config }: ConfigContext): ExpoConfig => {
@@ -24,10 +28,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     android: { ...config.android, package: variant.id },
     plugins: [
       ...(config.plugins ?? []),
-      // Build only for real phones (64-bit and 32-bit ARM), not for emulators.
-      // Compiling the native libraries for all four processor types does not
-      // finish inside the build time limit.
-      ["expo-build-properties", { android: { buildArchs: ["arm64-v8a", "armeabi-v7a"] } }],
+      ["expo-build-properties", { android: { buildArchs: variant.androidArchs } }],
     ],
   };
 };
