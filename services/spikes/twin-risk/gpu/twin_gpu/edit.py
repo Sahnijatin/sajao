@@ -39,9 +39,6 @@ from twin_risk.geometry import UprightBox, fit_upright_box
 from twin_risk.metrics import canonical_class
 from twin_risk.split import BACKGROUND, decide_label
 
-PREFERRED = ["sofa", "chair", "table", "stool", "bed", "tv_monitor", "shelf", "cabinet"]
-PREFERRED_NAMES = ["potted plant", "lamp", "toy", "vase", "bowl", "ottoman"]
-
 
 def _torch_frames(scene, name, frames):
     import torch
@@ -141,21 +138,24 @@ def _inside_box(points: np.ndarray, b: UprightBox, up: np.ndarray, pad: float) -
     )
 
 
-def choose_object(boxes, inst_gauss_counts, metric: bool):
+LARGE = ["sofa", "bed", "table", "cabinet", "shelf", "tv_monitor"]
+SMALL = ["chair", "stool", "potted plant", "lamp", "toy", "vase", "bowl", "ottoman"]
+
+
+def choose_object(boxes, inst_gauss_counts, metric: bool, kind: str):
+    """Most-seen object of the preferred classes for `kind` ("large" or "small")."""
+    order = LARGE if kind == "large" else SMALL
+    size_ok = (0.6, 2.6) if kind == "large" else (0.2, 1.3)
     best, best_key = None, None
     for oid, (label, b, nframes) in boxes.items():
-        if inst_gauss_counts.get(oid, 0) < 1500 or nframes < 4:
+        if inst_gauss_counts.get(oid, 0) < 1000 or nframes < 4:
             continue
-        if metric and not (0.25 < b.length < 2.6):
+        if metric and not (size_ok[0] < b.length < size_ok[1]):
             continue
-        cls = canonical_class(label)
-        if cls in PREFERRED:
-            rank = PREFERRED.index(cls)
-        elif label in PREFERRED_NAMES:
-            rank = len(PREFERRED) + PREFERRED_NAMES.index(label)
-        else:
+        cls = canonical_class(label) or label
+        if cls not in order and label not in order:
             continue
-        key = (rank, -nframes)
+        key = (order.index(cls if cls in order else label), -nframes)
         if best_key is None or key < best_key:
             best, best_key = oid, key
     return best
@@ -402,7 +402,6 @@ def detector_score(rgb: np.ndarray, label: str, box_xyxy) -> float:
 
 
 def run_edit(name: str, finetune_steps: int = 5000) -> dict:
-    import cv2
     import torch
 
     scene = load_scene(name)
@@ -443,7 +442,7 @@ def run_edit(name: str, finetune_steps: int = 5000) -> dict:
     per_view = []
     for j, fi in enumerate(test_frames):
         f = scene["frames"][fi]
-        masks, mlabels, _, mboxes = load_masks(name, fi)
+        masks, mlabels, _, _ = load_masks(name, fi)
         for mi in range(len(mlabels)):
             o = inst_ids.get(fi * 1000 + mi)
             if not o or counts.get(o, 0) < 300:
@@ -458,9 +457,59 @@ def run_edit(name: str, finetune_steps: int = 5000) -> dict:
             ious.setdefault(o, []).append(iou)
             per_view.append((fi, mi, o, int(gt.sum())))
 
-    target = choose_object(boxes, counts, scene.get("metric", True))
+    ctx = {
+        "scene": scene,
+        "params": params,
+        "up": up,
+        "labels": labels,
+        "boxes": boxes,
+        "counts": counts,
+        "ious": ious,
+        "per_view": per_view,
+        "test_frames": test_frames,
+    }
+    hidden = {}
+    for kind in ("large", "small"):
+        try:
+            hidden[kind] = hide_and_fill(name, ctx, kind, finetune_steps)
+        except LookupError as exc:
+            hidden[kind] = {"skipped": str(exc)}
+    from twin_gpu.objects import DET
+
+    np.save(od / "labels.npy", labels)
+    result = {
+        "scene": name,
+        "detector": DET,
+        "instances": len(boxes),
+        "instance_labels": {str(k): v[0] for k, v in boxes.items()},
+        "gaussians": len(labels),
+        "gaussians_assigned_to_objects": int((labels != BACKGROUND).sum()),
+        "split_mask_iou_mean": float(np.mean([np.mean(v) for v in ious.values()]))
+        if ious
+        else None,
+        "split_mask_iou_by_object": {
+            boxes[o][0] + f"#{o}": float(np.mean(v)) for o, v in ious.items()
+        },
+        "split_seconds": timings["split_seconds"],
+        "hidden": hidden,
+    }
+    save_json(od / "edit.json", result)
+    return result
+
+
+def hide_and_fill(name: str, ctx: dict, kind: str, finetune_steps: int) -> dict:
+    import cv2
+    import torch
+
+    scene, params, up, labels = ctx["scene"], ctx["params"], ctx["up"], ctx["labels"]
+    boxes, counts, ious, per_view = ctx["boxes"], ctx["counts"], ctx["ious"], ctx["per_view"]
+    test_frames = ctx["test_frames"]
+    od = out_dir(name)
+    ed = od / "edit" / kind
+    timings = {}
+    target = choose_object(boxes, counts, scene.get("metric", True), kind)
     if target is None:
-        raise RuntimeError("no suitable object to hide")
+        raise LookupError(f"no {kind} object to hide")
     label, box, nframes = boxes[target]
     metric = scene.get("metric", True)
     means_np = params["means"].detach().cpu().numpy()
@@ -491,7 +540,7 @@ def run_edit(name: str, finetune_steps: int = 5000) -> dict:
     for t_i, (kind, tex, hole, filled) in enumerate(plane_fill.textures):
         vis = tex.copy()
         vis[hole] = (vis[hole] * 0.4 + np.array([255, 0, 0]) * 0.6).astype(np.uint8)
-        write_rgb(od / "edit" / f"plane_{t_i}_{kind}.jpg", np.concatenate([vis, filled], axis=1))
+        write_rgb(ed / f"plane_{t_i}_{kind}.jpg", np.concatenate([vis, filled], axis=1))
 
     # Approach B: inpaint each training frame, then fine-tune the object-free splat.
     t0 = time.time()
@@ -527,9 +576,8 @@ def run_edit(name: str, finetune_steps: int = 5000) -> dict:
     torch.cuda.synchronize()
     timings["fill_b_seconds"] = round(time.time() - t0, 1)
     timings["fill_b_inpaint_seconds"] = round(inpaint_s, 1)
-    save_params(filled_b, od / "splat_fill_b.pt")
-    save_params(filled_a, od / "splat_fill_a.pt")
-    np.save(od / "labels.npy", labels)
+    save_params(filled_b, od / f"splat_fill_b_{kind}.pt")
+    save_params(filled_a, od / f"splat_fill_a_{kind}.pt")
 
     # Before and after images on the two held-out views where the object is largest.
     views = sorted([v for v in per_view if v[2] == target], key=lambda v: -v[3])[:2]
@@ -583,33 +631,18 @@ def run_edit(name: str, finetune_steps: int = 5000) -> dict:
                 t, nm, (8, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv2.LINE_AA
             )
             strip.append(t)
-            write_rgb(od / "edit" / f"view{k_i}_{nm.split(':')[0].replace(' ', '_')}.jpg", t)
-        write_rgb(od / "edit" / f"view{k_i}_strip.jpg", np.concatenate(strip, axis=1))
+            write_rgb(ed / f"view{k_i}_{nm.split(':')[0].replace(' ', '_')}.jpg", t)
+        write_rgb(ed / f"view{k_i}_strip.jpg", np.concatenate(strip, axis=1))
 
-    from twin_gpu.objects import DET
-
-    result = {
-        "scene": name,
-        "detector": DET,
-        "instances": len(boxes),
-        "instance_labels": {str(k): v[0] for k, v in boxes.items()},
-        "gaussians": len(labels),
-        "gaussians_assigned_to_objects": int((labels != BACKGROUND).sum()),
-        "split_mask_iou_mean": float(np.mean([np.mean(v) for v in ious.values()]))
-        if ious
-        else None,
-        "split_mask_iou_by_object": {
-            boxes[o][0] + f"#{o}": float(np.mean(v)) for o, v in ious.items()
-        },
-        "hidden_object": {
-            "id": target,
-            "label": label,
-            "box": box_json(label, box, nframes),
-            "gaussians_voted": int(voted.sum()),
-            "gaussians_in_box_extra": int((in_box & ~voted).sum()),
-            "gaussians_cleared_around": int(cleared.sum()),
-            "split_mask_iou": float(np.mean(ious[target])) if target in ious else None,
-        },
+    return {
+        "kind": kind,
+        "id": target,
+        "label": label,
+        "box": box_json(label, box, nframes),
+        "gaussians_voted": int(voted.sum()),
+        "gaussians_in_box_extra": int((in_box & ~voted).sum()),
+        "gaussians_cleared_around": int(cleared.sum()),
+        "split_mask_iou": float(np.mean(ious[target])) if target in ious else None,
         "fill_a": {"planes": plane_diag, "new_gaussians": int(sum(len(x) for x in new["means"]))},
         "fill_b": {
             "frames_inpainted": len(tidx),
@@ -619,8 +652,6 @@ def run_edit(name: str, finetune_steps: int = 5000) -> dict:
         "views": report_views,
         "timings": timings,
     }
-    save_json(od / "edit.json", result)
-    return result
 
 
 VOCAB_SAFE = {"potted plant", "lamp", "toy", "vase", "bowl", "ottoman", "pillow"}
