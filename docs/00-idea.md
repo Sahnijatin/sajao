@@ -16,7 +16,7 @@ Sajao is transformation-first. You should feel that Sajao understands your home,
 
 | Promise | You give | You get back |
 | --- | --- | --- |
-| Understand my room | Photos or a short video; optional tape values | A Room Profile: shape, size with an error band, light, doors, windows, what you already own |
+| Understand my room | Photos or a short video; optional tape values | A Space Profile: shape, size with an error band, light, doors, windows, what you already own |
 | Understand my taste | A few swipes, budget, who lives there, optional references | A Taste Profile in plain words you can correct |
 | Show my possibilities | One tap | Three designed transformations of your own room |
 | Help me execute | Taps | Shopping list with prices, buy or rent links, a dimensioned plan, Vastu guidance and a share reel |

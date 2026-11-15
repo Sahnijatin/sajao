@@ -44,6 +44,10 @@ strict = true
 files = ["packages/schemas/python", "services"]
 exclude = ["/generated/"]
 
+[[tool.mypy.overrides]]
+module = ["boto3.*", "botocore.*"]
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["packages", "services"]
 addopts = "--import-mode=importlib"

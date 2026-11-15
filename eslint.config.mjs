@@ -6,6 +6,7 @@ export default tseslint.config(
   {
     ignores: [
       ".claude/**",
+      "supabase/types/**",
       "**/node_modules/**",
       "**/dist/**",
       "**/build/**",

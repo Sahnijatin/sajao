@@ -11,6 +11,7 @@ The Sajao API: a stateless FastAPI modular monolith behind a versioned `/v1`. Pr
 | Request context | `middleware/request_context.py` | `X-Request-ID` on every response and one JSON log line per request. Query strings, headers and bodies are never logged. |
 | Minimum app version | `middleware/app_version.py` | Apps sending an `X-App-Version` below the minimum get `426` with code `app_update_required`. |
 | Auth | `auth.py`, `middleware/auth.py`, `v1/me.py` | Bearer tokens from the auth service are verified against its public keys. No token means anonymous; a bad token is always `401`. Endpoints that need a caller use the `current_user` dependency. Guests have a real user id. |
+| Uploads | `storage.py`, `v1/uploads.py` | Resumable multipart uploads of capture media straight to object storage through short-lived signed URLs. See below. |
 | Idempotency | `middleware/idempotency.py`, `idempotency.py` | Every write needs an `Idempotency-Key`. See below. |
 | OpenAPI | `openapi.py`, `openapi.json` | The exported document the typed client in `packages/api-client` is generated from. |
 
@@ -30,6 +31,17 @@ Errors always have one shape: `{"error": {"code": "...", "message": "..."}}`.
 
 Keys belong to the caller, so two users with the same key never see each other's responses. They are stored in Postgres (`private.idempotency_keys`) so any instance can answer a retry. Without a database (dev only) they are kept in memory.
 
+## Uploads
+
+The file never passes through the API. The phone resizes photos to about 1600 px, then:
+
+1. `POST /v1/uploads` with the kind, content type and size. The answer is a plan: a key, an upload id, the part size (5 MiB) and a signed URL per part.
+2. `PUT` each part to its URL and keep the `ETag` from each response.
+3. After a dropped connection, `POST /v1/uploads/resume`: it lists the parts that arrived and gives fresh URLs for the rest.
+4. `POST /v1/uploads/complete` with the parts joins them into the stored file.
+
+Rules: callers must be signed in or guests; keys live under the caller's user id and other users get `404`; photos up to 20 MiB and video up to 200 MiB, checked again on what really arrived; signed URLs last 15 minutes; reading stored media also needs a signed URL.
+
 ## Settings
 
 | Variable | Default | Meaning |
@@ -38,6 +50,7 @@ Keys belong to the caller, so two users with the same key never see each other's
 | `SAJAO_DATABASE_URL` | none | Postgres connection string; required outside dev |
 | `SAJAO_AUTH_JWKS_URL` | none | Where the auth service publishes its public signing keys; required outside dev |
 | `SAJAO_AUTH_ISSUER` | none | The issuer its tokens carry; set together with the keys URL |
+| `SAJAO_STORAGE_ENDPOINT`, `_REGION`, `_BUCKET`, `_ACCESS_KEY_ID`, `_SECRET_ACCESS_KEY` | none | S3-compatible object storage; set all five or none. Without them uploads answer `503` |
 | `SAJAO_MIN_APP_VERSION` | `0.0.0` | Oldest app version allowed |
 | `SAJAO_LOG_LEVEL` | `INFO` | Log level |
 | `SAJAO_IDEMPOTENCY_TTL_SECONDS` | `86400` | How long a finished write can be replayed |
@@ -45,13 +58,18 @@ Keys belong to the caller, so two users with the same key never see each other's
 
 Secrets are set in the platform's secret manager and reach the service as environment variables. Never commit them.
 
+## Development environment
+
+The development Supabase project is `sajao-dev` (see `supabase/README.md`). To point the API at it, set `SAJAO_AUTH_JWKS_URL` and `SAJAO_AUTH_ISSUER` to that project's values and `SAJAO_DATABASE_URL` to its connection string from the secret manager. The idempotency table is already applied there.
+
 ## Local development
 
 The local stack is the Supabase CLI (needs Docker). No cloud keys are involved.
 
 ```
 npx supabase start                     # local Postgres and services; applies supabase/migrations
-npx supabase status                    # prints the local database URL
+npx supabase seed buckets              # creates the private captures bucket
+npx supabase status                    # prints the local database URL and storage keys
 # For auth, also set SAJAO_AUTH_JWKS_URL=<API URL>/auth/v1/.well-known/jwks.json and SAJAO_AUTH_ISSUER=<API URL>/auth/v1
 SAJAO_DATABASE_URL=<local database URL> uv run uvicorn --factory sajao_api.main:create_app --reload
 ```

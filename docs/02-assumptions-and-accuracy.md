@@ -2,7 +2,7 @@
 
 ## What accurate means
 
-Accuracy is a promise about each number we show, not about the model behind it. Every dimension in a Room Profile carries a value, a source and an error band. A claim is only made when the evidence covers it.
+Accuracy is a promise about each number we show, not about the model behind it. Every dimension in a Space Profile carries a value, a source and an error band. A claim is only made when the evidence covers it.
 
 ## Room dimension targets
 

@@ -10,3 +10,4 @@ uv.lock
 docs
 *.md
 services/api/openapi.json
+supabase/types

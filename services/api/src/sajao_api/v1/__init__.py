@@ -2,8 +2,9 @@
 
 from fastapi import APIRouter
 
-from sajao_api.v1 import health, me
+from sajao_api.v1 import health, me, uploads
 
 router = APIRouter(prefix="/v1")
 router.include_router(health.router)
 router.include_router(me.router)
+router.include_router(uploads.router)
