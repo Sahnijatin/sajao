@@ -33,10 +33,13 @@ beforeEach(async () => {
 });
 
 describe("tab screens", () => {
-  it("Home shows the tagline with no sign-in gate", async () => {
+  it("Home invites a scan of any space, with no sign-in gate and no room-type picker", async () => {
     await show(<HomeScreen />);
-    expect(screen.getByText("Scan your room. See it redone. Buy what fits.")).toBeTruthy();
+    expect(screen.getByText("Any corner, redone.")).toBeTruthy();
     expect(screen.queryByText(/sign in/i)).toBeNull();
+    expect(screen.queryByText(/living room|bedroom/i)).toBeNull();
+    await fireEvent.press(screen.getByRole("button", { name: "Start scanning" }));
+    expect(mockPush).toHaveBeenCalledWith("/capture");
   });
 
   it("My rooms shows an empty state", async () => {

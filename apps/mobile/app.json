@@ -7,11 +7,18 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSCameraUsageDescription": "The camera is used to scan the space you want redone.",
+        "NSPhotoLibraryUsageDescription": "Photos you choose are used to redesign your space."
+      }
     },
     "plugins": ["expo-router", "expo-status-bar", "expo-localization", "expo-font"],
     "experiments": {
       "typedRoutes": true
+    },
+    "android": {
+      "permissions": ["android.permission.CAMERA"]
     }
   }
 }
