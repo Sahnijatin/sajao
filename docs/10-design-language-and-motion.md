@@ -40,7 +40,7 @@ Android motors vary widely, so patterns stay simple there. Haptics respect syste
 
 | Moment | What you see | Low-end fallback |
 | --- | --- | --- |
-| Scan painting | A grid glows over captured surfaces; edges light up; corners tick | Edges, ring and corner dots |
+| Scan mesh | A glowing mesh spreads over what the camera has mapped, with a white sweep at its edge; corners tick | Dots and edges |
 | Tape lock | An animated tape stretches along the wall; dimensions snap in; Verified | Same |
 | Plan draws itself | Floor plan drawn line by line, measurements tick in | Same |
 | Room rises | Walls lift from the plan; camera eases into a dollhouse orbit | Cross-fade |
