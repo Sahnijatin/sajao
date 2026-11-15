@@ -24,4 +24,8 @@ Pod::Spec.new do |s|
     # only; Swift needs them as framework paths to import the modules.
     'FRAMEWORK_SEARCH_PATHS' => '$(inherited) "${PODS_XCFRAMEWORKS_BUILD_DIR}/MediaPipeTasksVision" "${PODS_XCFRAMEWORKS_BUILD_DIR}/MediaPipeTasksCommon"'
   }
+  # The app target scans this module's dependencies too.
+  s.user_target_xcconfig = {
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) "${PODS_XCFRAMEWORKS_BUILD_DIR}/MediaPipeTasksVision" "${PODS_XCFRAMEWORKS_BUILD_DIR}/MediaPipeTasksCommon"'
+  }
 end
