@@ -52,6 +52,21 @@ jobs:
   python:
     name: Fast tier (Python)
     runs-on: ubuntu-latest
+    services:
+      # Throwaway database for tests; migrations from supabase/migrations are applied by the tests.
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      SAJAO_TEST_DATABASE_URL: postgresql://postgres@localhost:5432/postgres
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
@@ -79,4 +94,5 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: uv sync --locked --all-packages
       - run: pnpm --filter @sajao/schemas generate
+      - run: pnpm --filter @sajao/api-client generate
       - run: git diff --exit-code

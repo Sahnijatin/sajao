@@ -1,0 +1,23 @@
+{
+  "name": "@sajao/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Typed client for the Sajao API, generated from its OpenAPI document",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "generate": "uv run python -m sajao_api.openapi ../../services/api/openapi.json && openapi-typescript ../../services/api/openapi.json -o src/generated/v1.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "openapi-fetch": "^0.17.0"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.13.0",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.0"
+  }
+}
