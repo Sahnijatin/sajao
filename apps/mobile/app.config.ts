@@ -22,5 +22,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     slug: config.slug ?? "sajao",
     ios: { ...config.ios, bundleIdentifier: variant.id },
     android: { ...config.android, package: variant.id },
+    plugins: [
+      ...(config.plugins ?? []),
+      // Build only for real phones (64-bit and 32-bit ARM), not for emulators.
+      // Compiling the native libraries for all four processor types does not
+      // finish inside the build time limit.
+      ["expo-build-properties", { android: { buildArchs: ["arm64-v8a", "armeabi-v7a"] } }],
+    ],
   };
 };
