@@ -18,6 +18,7 @@ import numpy as np
 
 from sajao_schemas import to_json_dict
 from sajao_schemas.generated.v1 import SpaceTwin
+from sajao_workers.twin.hero import ORBIT_YAW_DEG, SAFE_RADIUS_M
 from sajao_workers.twin.space import Space
 
 SCHEMA_VERSION = "1.0"
@@ -101,6 +102,31 @@ def _keyframes(capture: Mapping[str, Any], manifest: Mapping[str, Any], space: S
     return out
 
 
+def _viewing(
+    keyframes: Sequence[Mapping[str, Any]],
+    hero_views: Sequence[Mapping[str, Any]],
+    anchor_ids: Sequence[str],
+) -> dict[str, Any]:
+    """Hero views and the safe region around the keyframe positions."""
+    positions = {k["id"]: k["pose"]["position"] for k in keyframes}
+    return {
+        "hero_views": [
+            {
+                "id": f"h{index}",
+                "keyframe_id": view["keyframe_id"],
+                "coverage": view["coverage"],
+                "sharpness": view["sharpness"],
+                "orbit": {"max_offset_m": SAFE_RADIUS_M, "max_yaw_deg": ORBIT_YAW_DEG},
+            }
+            for index, view in enumerate(hero_views, start=1)
+        ],
+        "safe_region": {
+            "anchors": [positions[i] for i in anchor_ids if i in positions],
+            "radius_m": SAFE_RADIUS_M,
+        },
+    }
+
+
 def _objects(
     objects: Sequence[Mapping[str, Any]],
     crops: Mapping[tuple[str, str], str],
@@ -151,8 +177,14 @@ def assemble_twin(
     crops: Mapping[tuple[str, str], str],
     splat: str | None,
     phone_splats: Sequence[Mapping[str, Any]],
+    hero_views: Sequence[Mapping[str, Any]] = (),
+    anchor_ids: Sequence[str] = (),
 ) -> dict[str, Any]:
-    """The SpaceTwin as JSON-ready data, validated against the schema."""
+    """The SpaceTwin as JSON-ready data, validated against the schema.
+
+    `hero_views` are hero.pick_hero_views' picks and `anchor_ids` the keyframes
+    the safe region is built around; without hero views the twin has no viewing
+    section and nothing may show it from a free camera."""
     compass = capture.get("compass")
     if not compass:
         raise AssemblyError("the capture has no compass reading, so north cannot be set")
@@ -181,6 +213,8 @@ def assemble_twin(
             "sources": ["compass"],
         },
     }
+    if hero_views:
+        twin["viewing"] = _viewing(twin["keyframes"], hero_views, anchor_ids)
     if splat:
         twin["splat"] = {"key": storage_key(splat), "format": "ply"}
     if phone_splats:

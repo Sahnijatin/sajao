@@ -47,6 +47,7 @@ uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/workers/gpu/a
 ```bash
 uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/workers/gpu/app.py::splat_smoke
 ```
+- **Hero views and safe region** (`sajao_workers.twin.hero`, run in the assembly step): six to ten keyframes that together show the most of the room (10 cm cells from each keyframe's depth), weighted towards level views across the room, never the blurriest 30% and never two near duplicates. The safe region is 30 cm around the keyframe positions. Both go into the twin's `viewing`; pure code, no model, and no dependence on the room splat.
 - **Phone splat** (`sajao_workers.twin.phone_step`): decimate the room splat to 500k Gaussians (capable phones) and 250k (budget Android) and save each as colour-only SOG with PlayCanvas splat-transform on CPU (`compress_splat`, one container). Each variant must be 0.2 to 12 MB and hold exactly its budget. Not a model, so no gateway; the step keeps it durable.
 
 ## From capture to frames
