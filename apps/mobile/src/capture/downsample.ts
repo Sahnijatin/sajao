@@ -9,11 +9,13 @@ export function downsampleLuma(
   /** The brightness (Y) plane: one byte per pixel, rows padded to bytesPerRow. */
   plane: ArrayBuffer,
   size: { width: number; height: number; bytesPerRow: number },
-  targetWidth: number = ANALYSIS_WIDTH,
+  targetWidth?: number,
 ): GrayFrame {
   "worklet";
   const source = new Uint8Array(plane);
-  const width = Math.min(targetWidth, size.width);
+  // No default parameter: on the worklet runtime a default value is read
+  // before captured constants exist, so it is resolved here instead.
+  const width = Math.min(targetWidth ?? ANALYSIS_WIDTH, size.width);
   const height = Math.max(1, Math.round((size.height * width) / Math.max(1, size.width)));
   const data = new Uint8Array(width * height);
   for (let y = 0; y < height; y += 1) {

@@ -1,14 +1,18 @@
 import { Button, GlassSurface, Text, useTheme } from "@sajao/ui";
 import { MeshEffect } from "@sajao/ui/effects";
-import { useMemo, useState } from "react";
+import { Icon, type IconName } from "@sajao/ui/icons";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCameraPermission } from "react-native-vision-camera";
+import { mappedSectors } from "@/capture/coverage";
+import { DebugOverlay } from "@/capture/debug-overlay";
 import type { GuardrailId, GuardrailStatus } from "@/capture/guardrails";
 import { toScreen } from "@/capture/mesh-tracker";
+import { MiniMap } from "@/capture/mini-map";
 import { ScanCamera } from "@/capture/scan-camera";
-import { canFinish } from "@/capture/scan-session";
+import { canFinish, mappedShare } from "@/capture/scan-session";
 import { useScanSession } from "@/capture/use-scan-session";
 
 export interface CaptureScreenProps {
@@ -51,7 +55,17 @@ function StatusChip({ id, status }: { id: GuardrailId; status: GuardrailStatus }
   );
 }
 
-function RoundButton({ label, onPress, on }: { label: string; onPress: () => void; on?: boolean }) {
+function RoundButton({
+  label,
+  icon,
+  onPress,
+  on,
+}: {
+  label: string;
+  icon: IconName;
+  onPress: () => void;
+  on?: boolean;
+}) {
   const { tokens } = useTheme();
   return (
     <Pressable
@@ -70,9 +84,7 @@ function RoundButton({ label, onPress, on }: { label: string; onPress: () => voi
           justifyContent: "center",
         }}
       >
-        <Text variant="captionStrong" tone={on ? "primary" : "onDark"}>
-          {label.slice(0, 1)}
-        </Text>
+        <Icon name={icon} color={on ? tokens.colors.accent : "#ffffff"} />
       </GlassSurface>
     </Pressable>
   );
@@ -91,8 +103,24 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
   const window = useWindowDimensions();
   const permission = useCameraPermission();
   const [torch, setTorch] = useState(false);
-  const { state, onFrame, scanAnyway } = useScanSession(permission.hasPermission);
-  const points = useMemo(() => toScreen(state.mesh, window), [state.mesh, window]);
+  const { state, debug, onFrame, onExposure, onDiagnostics, scanAnyway } = useScanSession(
+    permission.hasPermission,
+  );
+  const aspect = state.frame?.aspect ?? 9 / 16;
+  const points = useMemo(() => toScreen(state.mesh, window, aspect), [state.mesh, window, aspect]);
+  const mapped = useMemo(() => mappedSectors(state.coverage), [state.coverage]);
+  const percent = Math.round(mappedShare(state) * 100);
+  const [showDebug, setShowDebug] = useState(false);
+  const taps = useRef<number[]>([]);
+  // Hidden debug overlay: three taps on the camera within a second.
+  const onCameraTap = useCallback(() => {
+    const now = Date.now();
+    taps.current = [...taps.current.filter((at) => now - at < 1000), now];
+    if (taps.current.length >= 3) {
+      taps.current = [];
+      setShowDebug((shown) => !shown);
+    }
+  }, []);
   const reason = state.pause.reason;
   // Glare has no chip of its own until it is a problem.
   const chips = state.guardrails.glare === "warn" ? [...CHIPS, "glare" as const] : CHIPS;
@@ -124,11 +152,14 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
 
   return (
     <View style={{ flex: 1, backgroundColor: "#000000" }}>
+      {/* The camera keeps running while paused, so the scan can see the fix and resume. */}
       <ScanCamera
         style={StyleSheet.absoluteFill}
-        active={!state.pause.paused}
+        active
         torch={torch}
         onAnalysed={onFrame}
+        onExposure={onExposure}
+        onDiagnostics={onDiagnostics}
       />
       <MeshEffect
         style={StyleSheet.absoluteFill}
@@ -136,6 +167,12 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
         height={window.height}
         points={points}
         triangles={state.mesh.triangles}
+      />
+      <Pressable
+        testID="scan-camera-area"
+        accessible={false}
+        style={StyleSheet.absoluteFill}
+        onPress={onCameraTap}
       />
 
       <View
@@ -150,7 +187,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
         <View
           style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
         >
-          <RoundButton label={t("capture.close")} onPress={onClose} />
+          <RoundButton label={t("capture.close")} icon="close" onPress={onClose} />
           <GlassSurface
             tone="dark"
             style={{
@@ -162,10 +199,14 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
           >
             <Text variant="meta" tone="onDark" accessibilityRole="header">
               {t("capture.title")}
+              <Text variant="meta" tone="onDark" testID="scan-mapped">
+                {`  ${t("capture.mapped", { percent })}`}
+              </Text>
             </Text>
           </GlassSurface>
           <RoundButton
             label={t("capture.torch")}
+            icon={torch ? "torchOn" : "torch"}
             on={torch}
             onPress={() => setTorch((on) => !on)}
           />
@@ -181,6 +222,18 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
           {chips.map((id) => (
             <StatusChip key={id} id={id} status={state.guardrails[id]} />
           ))}
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            {showDebug ? <DebugOverlay debug={debug} state={state} /> : null}
+          </View>
+          <MiniMap mapped={mapped} yaw={state.pose.yaw} />
         </View>
       </View>
 
