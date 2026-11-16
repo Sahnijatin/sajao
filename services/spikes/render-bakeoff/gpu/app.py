@@ -182,7 +182,7 @@ gen_image = (
     .add_local_dir(HERE / "bk", "/root/bk")
 )
 
-hf_secret = modal.Secret.from_name("huggingface", required_keys=["HF_TOKEN"])
+hf_secret = modal.Secret.from_name("huggingface-secret", required_keys=["HF_TOKEN"])
 gcp_secret = modal.Secret.from_name("gcp", required_keys=["GCP_SA_KEY"])
 
 TRELLIS_DEPS = {  # pinned commits of TRELLIS.2's CUDA extensions

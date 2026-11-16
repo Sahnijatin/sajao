@@ -34,4 +34,4 @@ python services/spikes/render-bakeoff/local/designs.py WORK_DIR
 $M --stage clear && $M --stage compose && $M --stage generate && $M --stage check
 ```
 
-The Gemini arm needs a Modal secret `gcp` with `GCP_SA_KEY`. TRELLIS.2 and SAM 3D Objects need a Modal secret `huggingface` with `HF_TOKEN` for an account that accepted the DINOv3 and SAM 3D Objects licenses.
+The Gemini arm needs a Modal secret `gcp` with `GCP_SA_KEY`. TRELLIS.2 and SAM 3D Objects need a Modal secret `huggingface-secret` with `HF_TOKEN` for an account that accepted the DINOv3 and SAM 3D Objects licenses.
