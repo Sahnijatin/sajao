@@ -87,13 +87,29 @@ def create_app(
         and settings.storage_access_key_id
         and settings.storage_secret_access_key
     ):
-        storage = S3ObjectStorage(
-            endpoint=settings.storage_endpoint,
-            region=settings.storage_region,
-            bucket=settings.storage_bucket,
-            access_key_id=settings.storage_access_key_id.get_secret_value(),
-            secret_access_key=settings.storage_secret_access_key.get_secret_value(),
+        endpoint, region, bucket = (
+            settings.storage_endpoint,
+            settings.storage_region,
+            settings.storage_bucket,
         )
+        access_key_id = settings.storage_access_key_id.get_secret_value()
+        secret_access_key = settings.storage_secret_access_key.get_secret_value()
+
+        def storage_for(session_token: str | None) -> ObjectStorage:
+            return S3ObjectStorage(
+                endpoint=endpoint,
+                region=region,
+                bucket=bucket,
+                access_key_id=access_key_id,
+                secret_access_key=secret_access_key,
+                session_token=session_token,
+            )
+
+        if settings.storage_user_sessions:
+            # One client per request, signed with that caller's own session.
+            app.state.storage_for_session = storage_for
+        else:
+            storage = storage_for(None)
     app.state.storage = storage
     app.state.captures = capture_store
     app.include_router(v1.router)

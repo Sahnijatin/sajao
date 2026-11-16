@@ -52,8 +52,16 @@ class S3ObjectStorage:
     """Any S3-compatible store: Cloudflare R2 in the cloud, the Supabase stack locally."""
 
     def __init__(
-        self, *, endpoint: str, region: str, bucket: str, access_key_id: str, secret_access_key: str
+        self,
+        *,
+        endpoint: str,
+        region: str,
+        bucket: str,
+        access_key_id: str,
+        secret_access_key: str,
+        session_token: str | None = None,
     ) -> None:
+        """`session_token` scopes every request, signed URLs included, to one user's session."""
         self._bucket = bucket
         self._client: Any = boto3.client(
             "s3",
@@ -61,6 +69,7 @@ class S3ObjectStorage:
             region_name=region,
             aws_access_key_id=access_key_id,
             aws_secret_access_key=secret_access_key,
+            aws_session_token=session_token,
             config=Config(
                 signature_version="s3v4",
                 s3={"addressing_style": "path"},
