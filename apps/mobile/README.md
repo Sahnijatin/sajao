@@ -12,6 +12,7 @@ The Sajao app shell: Expo with Expo Router, four native tabs, English and Hindi,
 | `src/capture` | Scan logic, all unit-tested: frame statistics, feature points, triangulation, mesh tracking, guardrails and the scan session. `scan-camera.tsx` is the only file that touches the camera library. |
 | `src/i18n` | String catalogs (`locales/en.json`, `locales/hi.json`) and language choice. |
 | `src/state` | On-device settings (language, units), saved across launches. |
+| `src/uploads` | Photo resizing and resumable uploads through signed URLs. |
 | `src/utils` | Length and INR formatting. |
 
 ## Rules for screens

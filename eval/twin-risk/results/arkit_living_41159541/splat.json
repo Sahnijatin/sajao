@@ -1,0 +1,19 @@
+{
+  "scene": "arkit_living_41159541",
+  "train_views": 240,
+  "test_views": 30,
+  "init_points": 300000,
+  "gaussians": 1912849,
+  "steps": 15000,
+  "train_seconds": 379.1,
+  "scene_scale": 2.2315077781677246,
+  "pose_and_exposure_refined": true,
+  "psnr_raw_poses": 18.345786221822102,
+  "ssim_raw_poses": 0.5923270771900813,
+  "psnr": 25.742501576741535,
+  "ssim": 0.7933961947758993,
+  "views": 30,
+  "test_pose_refine_seconds": 93.5,
+  "pose_correction_median_cm": 2.0133135318756104,
+  "pose_correction_median_deg": 0.576572835445404
+}
