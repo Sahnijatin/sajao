@@ -210,7 +210,7 @@ def phone_export_gpu(name: str) -> dict:
     return r
 
 
-@app.function(image=cpu_image, volumes=V, cpu=16, memory=32768, timeout=2 * 3600)
+@app.function(image=cpu_image, volumes=V, cpu=16, memory=32768, timeout=3600)
 def phone_compress_cpu(name: str) -> dict:
     vol.reload()
     from twin_gpu import phone

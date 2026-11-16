@@ -153,19 +153,23 @@ def edit_table() -> str:
 
 def phone_table() -> str:
     rows = [
-        "| Scene | Variant | Gaussians | PLY | SOG (SH3) | SOG (SH0) | SPZ | PSNR SH3 / SH0 / SOG | "
-        "Render ms L40S / L4 / T4 (720x1280) |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| Scene | Variant | Decimation | Gaussians | PLY | Compressed PLY | SPZ | SOG (SH0) | "
+        "PSNR SH3 / SH0 / SOG SH0 decoded | Render ms SH3, L40S / L4 / T4 (720x1280) |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     mb = lambda b: f(None if b is None else b / 1e6, "{:.1f} MB")  # noqa: E731
     for s in ARKIT + OTHER:
         vs = load(s, "phone_variants.json") or []
         for v in vs:
+            if "gaussians" not in v:
+                continue
             rows.append(
-                f"| {s} | {v['variant']} | {v['gaussians'] / 1e6:.2f} M | {mb(v.get('ply_bytes'))} | "
-                f"{mb(v.get('sog_sh3_bytes'))} | {mb(v.get('sog_sh0_bytes'))} | {mb(v.get('spz_bytes'))} | "
+                f"| {s} | {v['variant']} | {v.get('decimate_method', 'none')} | "
+                f"{v['gaussians'] / 1e6:.2f} M | {mb(v.get('ply_bytes'))} | "
+                f"{mb(v.get('compressed_ply_bytes'))} | {mb(v.get('spz_bytes'))} | "
+                f"{mb(v.get('sog_sh0_bytes'))} | "
                 f"{f(v.get('psnr_sh3'), '{:.1f}')} / {f(v.get('psnr_sh0'), '{:.1f}')} / "
-                f"{f(v.get('psnr_sog_decoded'), '{:.1f}')} | "
+                f"{f(v.get('psnr_sog_sh0_decoded'), '{:.1f}')} | "
                 f"{f(v.get('render_ms_L40S_sh3'), '{:.1f}')} / {f(v.get('render_ms_L4_sh3'), '{:.1f}')} / "
                 f"{f(v.get('render_ms_T4_sh3'), '{:.1f}')} |"
             )

@@ -107,6 +107,9 @@ def export_variants(name: str) -> dict:
     _, timgs, tks, tvms = load_frames(scene, name, "test")
     vdir = od / "phone"
     vdir.mkdir(parents=True, exist_ok=True)
+    done = load_json(od / "phone_variants.json", []) or []
+    if (vdir / "full.ply").exists() and any("psnr_sh3" in r for r in done):
+        return {"scene": name, "variants": done, "reused": True}
     count = export_ply(params, vdir / "full.ply")
     rows = [
         {
@@ -139,52 +142,68 @@ def _splat_transform(args: list[str]) -> tuple[bool, str]:
 
 
 def compress_variants(name: str) -> dict:
-    """CPU job: decimate to Gaussian budgets (adaptive, mass-preserving), then
-    compress each variant to SOG (SH3 and SH0), compressed PLY and SPZ."""
+    """CPU job: decimate to Gaussian budgets, then compress each variant to SPZ,
+    compressed PLY and SOG (SH0). Resumable: outputs already on the volume are
+    measured, not rebuilt.
+
+    Adaptive (mass-preserving) decimation needs WebGPU above about 2M splats; on
+    a CPU-only box the job falls back to plain decimation and records which ran.
+    SOG with full spherical harmonics clusters colours with k-means, which took
+    over an hour per room on 16 CPU cores, so it is left to a WebGPU build step.
+    """
     od = out_dir(name)
     vdir = od / "phone"
     rows = load_json(od / "phone_variants.json", [])
     full = next(r for r in rows if r["variant"] == "full")
+    prev = {r["variant"]: r for r in rows}
     rows = [full]
     for budget in BUDGETS:
         if budget is None or budget >= full["gaussians"]:
             continue
         tag = f"{budget // 1000}k"
         dst = vdir / f"{tag}.ply"
-        t0 = time.time()
-        ok, err = _splat_transform(
-            [str(vdir / "full.ply"), "--decimate-adaptive", str(budget), str(dst)]
-        )
-        row = {"variant": tag, "decimate_seconds": round(time.time() - t0, 1)}
-        if not ok:
-            row["decimate_error"] = err
-            rows.append(row)
+        old = prev.get(tag, {})
+        if dst.exists() and old.get("gaussians") == budget and "decimate_error" not in old:
+            rows.append({k: v for k, v in old.items() if not k.startswith("sog_sh3")})
             continue
-        row.update(gaussians=_ply_count(dst), ply_bytes=dst.stat().st_size)
+        dst.unlink(missing_ok=True)
+        row: dict = {"variant": tag}
+        for method in ("--decimate-adaptive", "--decimate"):
+            t0 = time.time()
+            ok, err = _splat_transform([str(vdir / "full.ply"), method, str(budget), str(dst)])
+            if ok:
+                row.update(decimate_method=method.lstrip("-"))
+                row["decimate_seconds"] = round(time.time() - t0, 1)
+                row.update(gaussians=_ply_count(dst), ply_bytes=dst.stat().st_size)
+                break
+            row[f"{method.lstrip('-')}_error"] = err
         rows.append(row)
+        save_json(od / "phone_variants.json", rows)
     for r in rows:
         src = vdir / f"{r['variant']}.ply"
         if not src.exists():
             continue
-        # Fast formats first; SOG with full spherical harmonics clusters colours on
-        # the CPU (no WebGPU here), so it runs last with fewer iterations.
         outs = {
             "spz": (vdir / f"{r['variant']}.spz", []),
             "compressed_ply": (vdir / f"{r['variant']}.compressed.ply", []),
             "sog_sh0": (vdir / f"{r['variant']}_sh0.sog", ["-H", "0"]),
-            "sog_sh3": (vdir / f"{r['variant']}.sog", ["-i", "3", "--max-workers", "16"]),
         }
         for key, (dst, actions) in outs.items():
+            if dst.exists() and dst.stat().st_size > 0:
+                r[f"{key}_bytes"] = dst.stat().st_size
+                continue
             t0 = time.time()
             ok, err = _splat_transform([str(src), *actions, str(dst)])
-            save_json(od / "phone_variants.json", rows)  # keep partial results
             if not ok:
                 r[f"{key}_error"] = err
                 continue
             r[f"{key}_bytes"] = dst.stat().st_size
             r[f"{key}_seconds"] = round(time.time() - t0, 1)
+            save_json(od / "phone_variants.json", rows)  # keep partial results
         # Decode the SOG back to PLY so the GPU job can measure what compression costs.
-        _splat_transform([str(outs["sog_sh3"][0]), str(vdir / f"{r['variant']}_sog_decoded.ply")])
+        dec = vdir / f"{r['variant']}_sog_decoded.ply"
+        if outs["sog_sh0"][0].exists() and not dec.exists():
+            _splat_transform([str(outs["sog_sh0"][0]), str(dec)])
     save_json(od / "phone_variants.json", rows)
     return {"scene": name, "variants": rows}
 
@@ -254,8 +273,8 @@ def measure(name: str, gpu: str) -> dict:
         r[f"render_ms_{gpu}_sh3"] = time_render(p, vms, ks, 3)
         r[f"render_ms_{gpu}_sh0"] = time_render(p, vms, ks, 0)
         dec = vdir / f"{r['variant']}_sog_decoded.ply"
-        if dec.exists() and "psnr_sog_decoded" not in r:
-            r["psnr_sog_decoded"] = psnr_on_test(read_ply_params(dec), timgs, tks, tvms, 3)
+        if dec.exists() and "psnr_sog_sh0_decoded" not in r:
+            r["psnr_sog_sh0_decoded"] = psnr_on_test(read_ply_params(dec), timgs, tks, tvms, 0)
     save_json(od / "phone_variants.json", rows)
 
     # Server-rendered stream from the full splat.
