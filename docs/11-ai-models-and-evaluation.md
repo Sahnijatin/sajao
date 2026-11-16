@@ -25,6 +25,10 @@ Every model and dataset is listed in the third-party register (`docs/24-third-pa
 
 The twin risk spike (`services/spikes/twin-risk/`, report in `eval/twin-risk/`) compares candidates on public datasets and picks on quality, speed and cost. Every model, library and dataset it uses is listed in the third-party register.
 
+## Object detection for the twin
+
+The twin finds objects on the server with an open-vocabulary detector, prompted with a pinned list of general and Indian home object names (diwan, puja unit, jhoola, almirah, shoe rack, gas stove, floor seating and others). YOLOE is the default. The detector sits behind a swappable interface, and Grounding DINO and OWLv2 (both Apache-2.0) are benchmarked on the same Indian-object test set, so the twin can switch within a day if the legal review declines YOLOE. A fine-tuned Indian-home detector is trained only if the default misses the recall bar on that test set.
+
 ## Render bake-off
 
 Real rooms run through Gemini 3 Pro Image, Gemini 3.1 Flash Image, Seedream, FLUX.2 and Qwen-Image-Edit with the same guide and product references, scored blind on excitement, product fidelity and structure. The winner becomes the primary; the cheaper runner-up becomes the fallback in the gateway. The bake-off reruns whenever a candidate model changes.
