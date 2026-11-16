@@ -26,6 +26,8 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   let onArKeyframe = EventDispatcher()
   /// Records the capture package's native files while a capture id is set.
   private var recorder: CaptureRecorder?
+  /// Records the scan video while a capture id is set.
+  private var video: ScanVideoWriter?
   private var captureId = ""
 
   var lite = false
@@ -114,6 +116,7 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   }
 
   deinit {
+    video?.cancel()
     displayLink?.invalidate()
     sceneView.session.pause()
   }
@@ -124,9 +127,14 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   func setCaptureId(_ id: String) {
     guard id != captureId else { return }
     captureId = id
+    video?.cancel()
     recorder = id.isEmpty
       ? nil
       : CaptureRecorder(dir: CaptureRecorder.folder(id)) { [weak self] payload in self?.onArKeyframe(payload) }
+    // The recorder creates the folder the video is written into.
+    video = id.isEmpty
+      ? nil
+      : ScanVideoWriter(url: CaptureRecorder.folder(id).appendingPathComponent("scan.mp4"))
   }
 
   /// Delete keyframe candidates the app's recorder dropped.
@@ -138,15 +146,27 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   /// the chosen keyframes; resolves with the files' uris.
   func finishCapture(_ chosen: [String], completion: @escaping ([String: Any?]) -> Void) {
     guard let recorder else {
-      completion(["planes": nil, "sceneMesh": nil, "depth": nil])
+      completion(["planes": nil, "sceneMesh": nil, "depth": nil, "video": nil])
       return
     }
     let anchors = sceneView.session.currentFrame?.anchors ?? []
-    recorder.finish(
-      planes: anchors.compactMap { $0 as? ARPlaneAnchor },
-      meshes: anchors.compactMap { $0 as? ARMeshAnchor },
-      chosen: chosen,
-      completion: completion)
+    let finishFiles: (String?) -> Void = { videoUri in
+      recorder.finish(
+        planes: anchors.compactMap { $0 as? ARPlaneAnchor },
+        meshes: anchors.compactMap { $0 as? ARMeshAnchor },
+        chosen: chosen
+      ) { files in
+        var result = files
+        result.updateValue(videoUri, forKey: "video")
+        completion(result)
+      }
+    }
+    // The video is closed first, then the rest of the package is written.
+    if let video {
+      video.finish(completion: finishFiles)
+    } else {
+      finishFiles(nil)
+    }
   }
 
   func setActive(_ active: Bool) {
@@ -238,6 +258,8 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
 
   func session(_ session: ARSession, didUpdate frame: ARFrame) {
     let now = frame.timestamp
+    // The scan video: every frame from the first to Done, whatever tracking says.
+    video?.append(frame)
     featureCount = frame.rawFeaturePoints?.points.count ?? 0
     if let estimate = frame.lightEstimate {
       ambientIntensity = Double(estimate.ambientIntensity)
@@ -347,6 +369,7 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
       "surfaceHits": "planes \(surfacePlaneHits) points \(surfacePointHits)",
       "placedBy": ["floor", "plane", "points", "size"].map { "\($0) \(placedCounts[$0] ?? 0)" }.joined(separator: " "),
       "detectorError": detector.loadError ?? "",
+      "video": video?.status ?? "off",
     ])
   }
 
