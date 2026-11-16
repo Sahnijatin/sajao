@@ -45,4 +45,4 @@ A recent iPhone, an older iPhone, a mid-range Android with ARCore, and a budget 
 
 ## Release flow
 
-Internal builds on the device matrix, then the Play closed test (a personal developer account needs at least 12 opted-in testers for 14 continuous days before production access) and TestFlight, then store submission. Phased rollouts, EAS Update for over-the-air fixes with instant rollback.
+Internal builds on the device matrix, then the Play closed test (a personal developer account needs at least 12 opted-in testers for 14 continuous days before production access) and TestFlight, then store submission. The closed track opens at least three weeks before submission and takes updated builds, so the 14 days end before the request. Phased rollouts, EAS Update for over-the-air fixes with instant rollback.

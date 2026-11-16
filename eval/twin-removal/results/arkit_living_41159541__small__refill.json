@@ -1,0 +1,35 @@
+{
+  "scene": "arkit_living_41159541",
+  "kind": "small",
+  "object": "chair armchair",
+  "models": {
+    "lama": {
+      "train_frames_used": 174,
+      "refill_seconds": 206.0,
+      "fill_agreement_psnr": 23.06,
+      "ghost_detector_score": 0.428,
+      "known_truth": {
+        "holes": 18,
+        "psnr_in_hole": 18.11,
+        "lpips_on_hole_box": 0.2199
+      }
+    },
+    "qwen": {
+      "train_frames_used": 174,
+      "refill_seconds": 201.0,
+      "fill_agreement_psnr": 16.91,
+      "ghost_detector_score": 0.273,
+      "known_truth": {
+        "holes": 18,
+        "psnr_in_hole": 8.28,
+        "lpips_on_hole_box": 0.5704
+      }
+    },
+    "lama_all": {
+      "train_frames_used": 240,
+      "refill_seconds": 193.6,
+      "fill_agreement_psnr": 21.79,
+      "ghost_detector_score": 0.495
+    }
+  }
+}
