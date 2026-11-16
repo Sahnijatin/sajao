@@ -28,6 +28,12 @@ RULES: list[tuple[str, re.Pattern[str]]] = [
 # Repository paths that hold agent configuration are allowed as references.
 PATHS = re.compile(r"\.claude/[\w./-]*|\bCLAUDE\.md\b")
 
+# The third-party register must name every vendor the product depends on, including model
+# vendors, so legal can review them. Its rows for product dependencies (hosted models and
+# libraries) are exempt from the AI tool rule; coding tools never appear as such rows.
+REGISTER = "docs/24-third-party-register.md"
+DEPENDENCY_ROW = re.compile(r"^\|[^|]*\|\s*(Hosted model|Library)\s*\|")
+
 
 def main() -> int:
     findings = 0
@@ -37,6 +43,12 @@ def main() -> int:
         for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
             scrubbed = PATHS.sub("", line)
             for rule, pattern in RULES:
+                if (
+                    rule == "no AI tool mentions"
+                    and str(path.relative_to(ROOT)) == REGISTER
+                    and DEPENDENCY_ROW.match(line)
+                ):
+                    continue
                 if pattern.search(scrubbed):
                     findings += 1
                     print(f"{path.relative_to(ROOT)}:{lineno}: {rule}: {line.strip()}")

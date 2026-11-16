@@ -32,6 +32,6 @@ Costs are whole micro-rupees (1 rupee = 1,000,000).
 
 ## Not here yet
 
-- **Real providers.** Only `FakeProvider` (in `sajao_gateway.testing`) exists. No provider keys are used anywhere.
+- **More real providers.** `ClaudeProvider` (`sajao_gateway.claude`, text and vision through the Anthropic API) is the first; it reads `ANTHROPIC_API_KEY` from the environment and computes each call's cost from token usage. `daily_cap_micro_inr()` sizes a global daily cap to a monthly budget. Image models are still wired per job.
 - **Shared state.** The ledger, cache and breaker are in-memory, which suits tests and a single worker. Running services need ledger and cache implementations backed by the database, behind the same `SpendLedger` and `ResponseCache` protocols.
 - **Per-device caps and batch pricing** for offline catalog work.

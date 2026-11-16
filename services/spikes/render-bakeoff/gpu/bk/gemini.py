@@ -35,12 +35,17 @@ class GeminiImageProvider:
         creds = service_account.Credentials.from_service_account_info(
             info, scopes=["https://www.googleapis.com/auth/cloud-platform"]
         )
-        self._client = genai.Client(
-            vertexai=True,
-            project=info["project_id"],
-            location=os.environ.get("GCP_LOCATION", "global"),
-            credentials=creds,
-        )
+
+        def client(location: str):
+            return genai.Client(
+                vertexai=True, project=info["project_id"], location=location, credentials=creds
+            )
+
+        self._client = client(os.environ.get("GCP_LOCATION", "global"))
+        # Image models are served from "global"; a regional endpoint is used only if a
+        # model is not found there.
+        region = os.environ.get("GCP_REGION")
+        self._regional = client(region) if region else None
 
     def estimate_cost_micro_inr(self, request) -> int:
         return EST_MICRO_INR
@@ -56,9 +61,16 @@ class GeminiImageProvider:
         cfg = types.GenerateContentConfig(
             response_modalities=["IMAGE"], seed=int(request.payload["seed"])
         )
-        resp = await self._client.aio.models.generate_content(
-            model=self.model, contents=parts, config=cfg
-        )
+        try:
+            resp = await self._client.aio.models.generate_content(
+                model=self.model, contents=parts, config=cfg
+            )
+        except Exception as exc:
+            if self._regional is None or "NOT_FOUND" not in str(exc):
+                raise
+            resp = await self._regional.aio.models.generate_content(
+                model=self.model, contents=parts, config=cfg
+            )
         out = []
         for c in resp.candidates or []:
             for p in (c.content.parts if c.content else []) or []:

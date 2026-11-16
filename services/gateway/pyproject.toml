@@ -3,7 +3,9 @@ name = "sajao-gateway"
 version = "0.0.0"
 description = "Sajao model gateway: the one path every model call goes through"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "anthropic>=1.0",
+]
 
 [build-system]
 requires = ["hatchling"]

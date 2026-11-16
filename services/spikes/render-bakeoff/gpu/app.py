@@ -61,6 +61,7 @@ def _base(py: str = "3.11"):
                 "MAX_JOBS": "8",
                 "CUDA_HOME": "/usr/local/cuda",
                 "CPATH": "/usr/local/cuda/include",
+                "FORCE_CUDA": "1",
             }
         )
     )
@@ -181,6 +182,100 @@ gen_image = (
     .add_local_dir(HERE / "bk", "/root/bk")
 )
 
+hf_secret = modal.Secret.from_name("huggingface", required_keys=["HF_TOKEN"])
+gcp_secret = modal.Secret.from_name("gcp", required_keys=["GCP_SA_KEY"])
+
+TRELLIS_DEPS = {  # pinned commits of TRELLIS.2's CUDA extensions
+    "FlexGEMM": "6dd94a859c26",
+    "CuMesh": "12289e1062f0",
+}
+trellis_image = (
+    _base()
+    .pip_install("xformers==0.0.29.post3", index_url=CU124)
+    .pip_install(
+        "numpy==1.26.4",
+        "transformers==4.57.1",
+        "huggingface_hub==0.35.3",
+        "imageio==2.37.0",
+        "imageio-ffmpeg==0.6.0",
+        "tqdm==4.67.1",
+        "easydict==1.13",
+        "opencv-python-headless==4.10.0.84",
+        "trimesh==4.6.8",
+        "scipy==1.15.2",
+        "pillow==11.2.1",
+        "kornia==0.8.1",
+        "timm==1.0.15",
+        "zstandard==0.23.0",
+        "lpips==0.1.4",
+        "pandas==2.2.3",
+        "git+https://github.com/EasternJournalist/utils3d.git@9a4eb15e4021b67b12c460c7057d642626897ec8",
+    )
+    .run_commands(
+        f"git clone https://github.com/microsoft/TRELLIS.2 /opt/trellis2 && cd /opt/trellis2 && git checkout {TRELLIS2_REF}",
+        f"pip install --no-build-isolation 'git+https://github.com/NVlabs/nvdiffrast@{NVDIFFRAST_REF}'",
+        "git clone -b renderutils https://github.com/JeffreyXiang/nvdiffrec.git /tmp/nvdiffrec && pip install --no-build-isolation /tmp/nvdiffrec",
+        f"git clone --recursive https://github.com/JeffreyXiang/FlexGEMM /tmp/FlexGEMM && cd /tmp/FlexGEMM && git checkout {TRELLIS_DEPS['FlexGEMM']} && git submodule update --init --recursive && pip install --no-build-isolation .",
+        f"git clone --recursive https://github.com/JeffreyXiang/CuMesh /tmp/CuMesh && cd /tmp/CuMesh && git checkout {TRELLIS_DEPS['CuMesh']} && git submodule update --init --recursive && pip install --no-build-isolation .",
+        "cp -r /opt/trellis2/o-voxel /tmp/o-voxel && pip install --no-build-isolation /tmp/o-voxel",
+    )
+    .env(
+        {
+            "HF_HOME": "/bk/hf",
+            "PYTHONUNBUFFERED": "1",
+            "PYTHONPATH": "/root:/opt/trellis2",
+            "ATTN_BACKEND": "xformers",
+            "SPARSE_ATTN_BACKEND": "xformers",
+            "OPENCV_IO_ENABLE_OPENEXR": "1",
+        }
+    )
+    .add_local_dir(SRC, "/root/bakeoff")
+    .add_local_dir(HERE / "bk", "/root/bk")
+)
+
+SAM3D_REF = "f91db411c50e"
+sam3d_image = (
+    modal.Image.from_registry("nvidia/cuda:12.1.1-cudnn8-devel-ubuntu22.04", add_python="3.11")
+    .apt_install(
+        "git",
+        "libgl1",
+        "libglib2.0-0",
+        "build-essential",
+        "clang",
+        "ninja-build",
+        "libegl1",
+        "libxi6",
+        "libxrender1",
+        "libxkbcommon0",
+        "libsm6",
+        "libx11-6",
+        "libxxf86vm1",
+        "libxfixes3",
+    )
+    .pip_install(
+        "torch==2.5.1", "torchvision==0.20.1", index_url="https://download.pytorch.org/whl/cu121"
+    )
+    .env(
+        {
+            "TORCH_CUDA_ARCH_LIST": "8.0;8.6;8.9;9.0",
+            "MAX_JOBS": "8",
+            "CUDA_HOME": "/usr/local/cuda",
+            "CPATH": "/usr/local/cuda/include",
+            "FORCE_CUDA": "1",
+        }
+    )
+    .run_commands(
+        f"git clone https://github.com/facebookresearch/sam-3d-objects /opt/sam3d && cd /opt/sam3d && git checkout {SAM3D_REF}",
+        "cd /opt/sam3d && PIP_EXTRA_INDEX_URL='https://pypi.ngc.nvidia.com https://download.pytorch.org/whl/cu121' pip install -e '.[dev]'",
+        "cd /opt/sam3d && PIP_EXTRA_INDEX_URL='https://pypi.ngc.nvidia.com https://download.pytorch.org/whl/cu121' pip install --no-build-isolation -e '.[p3d]'",
+        "cd /opt/sam3d && PIP_FIND_LINKS='https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.5.1_cu121.html' pip install -e '.[inference]'",
+        "cd /opt/sam3d && bash ./patching/hydra || true",
+    )
+    .env({"HF_HOME": "/bk/hf", "PYTHONUNBUFFERED": "1", "PYTHONPATH": "/root"})
+    .add_local_dir(SRC, "/root/bakeoff")
+    .add_local_dir(HERE / "bk", "/root/bk")
+)
+
 app = modal.App("sajao-render-bakeoff")
 VOLS = {"/bk": bk_vol}
 TWIN_VOLS = {"/bk": bk_vol, "/vol": twin_vol}
@@ -234,6 +329,65 @@ def triposg(lids: list[str]) -> list[dict]:
             out.append({"id": lid, "error": repr(e)[:400]})
         bk_vol.commit()
     return out
+
+
+@app.function(
+    image=trellis_image,
+    gpu="H100",
+    volumes=VOLS,
+    timeout=3600,
+    max_containers=2,
+    secrets=[hf_secret],
+)
+def trellis2(lids: list[str]) -> list[dict]:
+    from bk.assets import run_trellis2
+
+    out = []
+    for lid in lids:
+        try:
+            out.append(run_trellis2(lid))
+        except Exception:
+            import traceback
+
+            out.append({"id": lid, "error": traceback.format_exc()[-1200:]})
+        bk_vol.commit()
+    return out
+
+
+@app.function(
+    image=sam3d_image, gpu="H100", volumes=VOLS, timeout=3600, max_containers=2, secrets=[hf_secret]
+)
+def sam3d(lids: list[str]) -> list[dict]:
+    from bk.assets import run_sam3d
+
+    out = []
+    for lid in lids:
+        try:
+            out.append(run_sam3d(lid))
+        except Exception:
+            import traceback
+
+            out.append({"id": lid, "error": traceback.format_exc()[-1200:]})
+        bk_vol.commit()
+    return out
+
+
+@app.function(
+    image=gen_image,
+    gpu="L4",
+    volumes=TWIN_VOLS,
+    timeout=3600,
+    max_containers=MAX_GPUS,
+    secrets=[gcp_secret, hf_secret],
+)
+def generate_gemini(room: str, design_id: str, arms: list[str]) -> dict:
+    """Arm B with Gemini on Vertex AI (through the gateway). The GPU runs the item checks."""
+    from bk.run import generate_arms
+
+    bk_vol.reload()
+    r = generate_arms(room, design_id, "gemini", arms)
+    bk_vol.commit()
+    return r
 
 
 @app.function(image=asset_image, gpu="L4", volumes=VOLS, timeout=3600, max_containers=MAX_GPUS)
@@ -294,7 +448,10 @@ def compose(room: str, design_id: str, planted: str = "") -> dict:
     volumes=TWIN_VOLS,
     timeout=3600,
     max_containers=MAX_GPUS,
-    secrets=[modal.Secret.from_dict({"PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True"})],
+    secrets=[
+        modal.Secret.from_dict({"PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True"}),
+        hf_secret,
+    ],
 )
 def generate(room: str, design_id: str, model: str, arms: list[str]) -> dict:
     from bk.run import generate_arms

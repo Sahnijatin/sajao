@@ -80,6 +80,16 @@ def main(stage: str, model: str = "triposg", only: str = "") -> None:
                 "failed or skipped of",
                 len(res),
             )
+        elif stage in ("trellis2", "sam3d"):
+            lids = only.split(",") if only else [x["id"] for x in listings()]
+            fn = A.trellis2 if stage == "trellis2" else A.sam3d
+            res = batched_map(fn, [lids[i : i + 5] for i in range(0, len(lids), 5)], batch=2)
+            (OUT / f"assets_{stage}.json").write_text(json.dumps(res, indent=1, default=str))
+            print(
+                sum(1 for r in res if "error" in r or "skipped" in r),
+                "failed or skipped of",
+                len(res),
+            )
         elif stage == "gate":
             items = listings()
             rng = random.Random(7)
@@ -136,6 +146,13 @@ def main(stage: str, model: str = "triposg", only: str = "") -> None:
                     [p[1] for p in pj],
                     [p[2] for p in pj],
                     [["C1", "C2"]] * len(pj),
+                )
+            elif stage == "generate" and gen == "gemini":
+                res = stream(
+                    A.generate_gemini,
+                    [j[0] for j in jobs],
+                    [j[1] for j in jobs],
+                    [["B"]] * len(jobs),
                 )
             elif stage == "generate":
                 res = stream(

@@ -228,9 +228,12 @@ def run_trellis2(lid: str, seed: int = 42) -> dict:
     out = BK / "assets" / "trellis2" / lid
     out.mkdir(parents=True, exist_ok=True)
     if _trellis is None:
+        from huggingface_hub import snapshot_download
         from trellis2.pipelines import Trellis2ImageTo3DPipeline
 
-        _trellis = Trellis2ImageTo3DPipeline.from_pretrained(TRELLIS2[0], revision=TRELLIS2[1])
+        # The loader takes no revision; pin by loading a snapshot at the pinned commit.
+        local = snapshot_download(TRELLIS2[0], revision=TRELLIS2[1])
+        _trellis = Trellis2ImageTo3DPipeline.from_pretrained(local)
         _trellis.cuda()
     import o_voxel
 
@@ -258,6 +261,49 @@ def run_trellis2(lid: str, seed: int = 42) -> dict:
     meta = {
         "id": lid,
         "model": "trellis2",
+        "input_view": views["input"],
+        "seconds": round(dt, 1),
+        "textured": True,
+    }
+    (out / "meta.json").write_text(json.dumps(meta))
+    return meta
+
+
+SAM3D = ("facebook/sam-3d-objects", None)
+_sam3d = None
+
+
+def run_sam3d(lid: str, seed: int = 42) -> dict:
+    """SAM 3D Objects (SAM License, gated). Mesh with vertex colours from the 'glb' output."""
+    global _sam3d
+    import sys
+
+    import numpy as np
+
+    sys.path.insert(0, "/opt/sam3d/notebook")
+    sys.path.insert(0, "/opt/sam3d")
+    views = json.loads((BK / "cutouts" / lid / "views.json").read_text())
+    if views["input"] is None:
+        return {"id": lid, "skipped": "no clean view"}
+    out = BK / "assets" / "sam3d" / lid
+    out.mkdir(parents=True, exist_ok=True)
+    if _sam3d is None:
+        from huggingface_hub import snapshot_download
+        from inference import Inference
+
+        root = Path(snapshot_download(SAM3D[0]))
+        _sam3d = Inference(str(root / "checkpoints" / "pipeline.yaml"), compile=False)
+    rgba = load_rgba(lid, views["input"])
+    t0 = time.time()
+    res = _sam3d(rgba[..., :3], (rgba[..., 3] > 127).astype(np.uint8), seed=seed)
+    dt = time.time() - t0
+    glb = res.get("glb")
+    if glb is None:
+        return {"id": lid, "error": "no mesh output"}
+    glb.export(out / "raw.glb")
+    meta = {
+        "id": lid,
+        "model": "sam3d",
         "input_view": views["input"],
         "seconds": round(dt, 1),
         "textured": True,
