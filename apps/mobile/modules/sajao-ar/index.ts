@@ -172,6 +172,7 @@ export interface SajaoArViewProps {
 
 interface NativeArModule {
   getCapabilities(): ArCapabilities;
+  benchmarkDepth?(runs: number): Promise<Record<string, unknown>>;
 }
 
 const NativeModule = requireOptionalNativeModule<NativeArModule>("SajaoAr");
@@ -187,6 +188,20 @@ export function getArCapabilities(): ArCapabilities {
 }
 
 type ArViewComponent = ComponentType<SajaoArViewProps & RefAttributes<SajaoArViewRef>>;
+
+/**
+ * Times Depth Anything V2 Small on this phone (CPU and GPU, two small
+ * inputs). Measurement only, Android builds with the benchmark models;
+ * resolves with null elsewhere.
+ */
+export async function benchmarkDepth(runs = 20): Promise<Record<string, unknown> | null> {
+  if (!NativeModule?.benchmarkDepth) return null;
+  try {
+    return await NativeModule.benchmarkDepth(runs);
+  } catch (error) {
+    return { error: String(error) };
+  }
+}
 
 let cachedView: ArViewComponent | null = null;
 

@@ -45,6 +45,23 @@ class SajaoArModule : Module() {
       liveViews.mapNotNull { it.get() }.forEach { it.hostResumed() }
     }
 
+    // Measures on-device depth speed (Depth Anything V2 Small, LiteRT, CPU
+    // and GPU). Measurement only; runs on its own thread, can take a minute.
+    AsyncFunction("benchmarkDepth") { runs: Int, promise: Promise ->
+      val context = appContext.reactContext
+      if (context == null) {
+        promise.resolve(mapOf("error" to "no context"))
+        return@AsyncFunction
+      }
+      Thread {
+        try {
+          promise.resolve(DepthBenchmark.run(context, runs.coerceIn(5, 100)))
+        } catch (error: Throwable) {
+          promise.resolve(mapOf("error" to "${error.javaClass.simpleName}: ${error.message}"))
+        }
+      }.start()
+    }
+
     View(SajaoArView::class) {
       Events("onArStatus", "onArPose", "onArDetections", "onArSurfaces", "onArKeyframe")
 

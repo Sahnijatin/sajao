@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCameraPermission } from "react-native-vision-camera";
-import { getArCapabilities, getArView } from "../../modules/sajao-ar";
+import { benchmarkDepth, getArCapabilities, getArView } from "../../modules/sajao-ar";
 import { shownLabels } from "@/capture/ar/labels";
 import { mappedSectors } from "@/capture/coverage";
 import { DebugOverlay } from "@/capture/debug-overlay";
@@ -160,6 +160,17 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
   const mapped = useMemo(() => mappedSectors(state.coverage), [state.coverage]);
   const percent = Math.round(mappedShare(state) * 100);
   const [showDebug, setShowDebug] = useState(false);
+  // On-device depth speed, for the decision on a depth model (debug only).
+  const [benchmarkRunning, setBenchmarkRunning] = useState(false);
+  const [benchmarkResult, setBenchmarkResult] = useState<string | null>(null);
+  const runDepthBenchmark = useCallback(async () => {
+    setBenchmarkRunning(true);
+    const result = await benchmarkDepth(20);
+    setBenchmarkResult(
+      result ? JSON.stringify(result, null, 1) : t("capture.debug.benchmarkUnavailable"),
+    );
+    setBenchmarkRunning(false);
+  }, [t]);
   const taps = useRef<number[]>([]);
   // Hidden debug overlay: three taps on the camera within a second.
   const onCameraTap = useCallback(() => {
@@ -348,6 +359,24 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
         >
           <View style={{ flex: 1 }}>
             {showDebug ? <DebugOverlay debug={debug} state={state} /> : null}
+            {showDebug ? (
+              <View style={{ marginTop: spacing.sm, gap: spacing.sm, alignItems: "flex-start" }}>
+                <Button
+                  label={t(
+                    benchmarkRunning ? "capture.debug.benchmarkRunning" : "capture.debug.benchmark",
+                  )}
+                  size="small"
+                  variant="outline"
+                  disabled={benchmarkRunning}
+                  onPress={() => void runDepthBenchmark()}
+                />
+                {benchmarkResult ? (
+                  <Text variant="caption" tone="onDark" testID="depth-benchmark">
+                    {benchmarkResult}
+                  </Text>
+                ) : null}
+              </View>
+            ) : null}
           </View>
           <MiniMap mapped={mapped} yaw={state.pose.yaw} />
         </View>
