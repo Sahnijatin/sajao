@@ -381,8 +381,9 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   /// Typical heights of the large objects the scan names, in metres: only for placing labels. Same as Android.
   private static let typicalHeight: [String: Float] = [
     "couch": 0.85, "bed": 0.6, "dining table": 0.76, "refrigerator": 1.7, "tv": 0.6,
+    "chair": 0.9, "microwave": 0.3,
   ]
-  private static let standsOnFloor: Set<String> = ["couch", "bed", "dining table", "refrigerator"]
+  private static let standsOnFloor: Set<String> = ["couch", "bed", "dining table", "refrigerator", "chair"]
 
   /// Distance along a ray to where it meets the floor, or nil when it points up or meets it out of range.
   private static func floorRange(_ ray: Ray, floorY: Float) -> Float? {

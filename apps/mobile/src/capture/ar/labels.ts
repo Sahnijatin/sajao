@@ -20,12 +20,21 @@ export interface Vec3 {
 }
 
 /**
- * Large objects tracked during the scan, from the detector's COCO classes.
+ * Objects labelled during the scan, from the detector's COCO classes.
  * COCO has no wardrobe or almirah class; the server twin finds those.
  */
-export const LABEL_KINDS = ["sofa", "bed", "table", "fridge", "tv"] as const;
+export const LABEL_KINDS = ["sofa", "bed", "table", "fridge", "tv", "chair", "microwave"] as const;
 
 export type LabelKind = (typeof LABEL_KINDS)[number];
+
+/** Large objects: capture guidance (step back, walk around it) works from these only. */
+export const LARGE_KINDS: ReadonlySet<LabelKind> = new Set([
+  "sofa",
+  "bed",
+  "table",
+  "fridge",
+  "tv",
+]);
 
 const FROM_COCO: Record<string, LabelKind> = {
   couch: "sofa",
@@ -33,6 +42,8 @@ const FROM_COCO: Record<string, LabelKind> = {
   "dining table": "table",
   refrigerator: "fridge",
   tv: "tv",
+  chair: "chair",
+  microwave: "microwave",
 };
 
 /** The label kind for a detector class, or null for classes we do not track (small objects, people). */
@@ -47,6 +58,8 @@ const MERGE_RADIUS: Record<LabelKind, number> = {
   table: 0.8,
   fridge: 0.6,
   tv: 0.5,
+  chair: 0.4,
+  microwave: 0.3,
 };
 
 export function mergeRadius(kind: LabelKind): number {
@@ -56,7 +69,7 @@ export function mergeRadius(kind: LabelKind): number {
 /** A pinned label is shown only when its sightings average at least this confidence. */
 export const SHOW_MIN_SCORE = 0.6;
 /** At most this many labels are shown at once: decoration, not a list. */
-export const MAX_SHOWN = 5;
+export const MAX_SHOWN = 8;
 
 /**
  * Sightings below this confidence are ignored. Low enough that capture
@@ -102,7 +115,7 @@ export interface Detection {
 /** Objects that hang flat on a wall: a label on the wall is right for these. */
 const ON_WALL_KINDS: ReadonlySet<LabelKind> = new Set(["tv"]);
 /** Objects that stand on the floor and rise well above it. */
-const FLOOR_KINDS: ReadonlySet<LabelKind> = new Set(["fridge", "sofa", "table", "bed"]);
+const FLOOR_KINDS: ReadonlySet<LabelKind> = new Set(["fridge", "sofa", "table", "bed", "chair"]);
 
 export type RejectReason = "onWall" | "bareFloor" | "ceiling" | "tooFar";
 
@@ -312,6 +325,6 @@ export function shownLabels(state: LabelState): ShownLabel[] {
 /** Every pinned large object, confident or not: what capture guidance works from. */
 export function trackedObjects(state: LabelState): ShownLabel[] {
   return state.labels
-    .filter((label) => label.pinned)
+    .filter((label) => label.pinned && LARGE_KINDS.has(label.kind))
     .map((label) => ({ id: label.id, kind: label.kind, ...label.position }));
 }

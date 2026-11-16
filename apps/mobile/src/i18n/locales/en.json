@@ -105,7 +105,9 @@
       "sofa": "Sofa",
       "table": "Table",
       "bed": "Bed",
-      "tv": "TV"
+      "tv": "TV",
+      "chair": "Chair",
+      "microwave": "Microwave"
     },
     "hints": {
       "doorway": "Finish this space first, then scan the next one",

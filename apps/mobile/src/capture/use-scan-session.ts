@@ -16,6 +16,7 @@ import {
 import {
   type Detection,
   EMPTY_LABELS,
+  LARGE_KINDS,
   labelKindOf,
   type LabelState,
   MIN_SCORE,
@@ -238,9 +239,11 @@ export function useScanSession(active: boolean) {
   const onArDetections = useCallback((detections: Detection[]) => {
     const now = Date.now();
     setLabels((current) => updateLabels(current, detections, now));
-    const cutOff = detections.some(
-      (d) => d.score >= MIN_SCORE && labelKindOf(d.detectorClass) && d.box && isCutOff(d.box),
-    );
+    const cutOff = detections.some((d) => {
+      // Only large objects ask you to step back.
+      const kind = labelKindOf(d.detectorClass);
+      return d.score >= MIN_SCORE && kind && LARGE_KINDS.has(kind) && d.box && isCutOff(d.box);
+    });
     if (cutOff) setStepBackUntil(now + STEP_BACK_MS);
   }, []);
   const hint: Hint = currentHint({
