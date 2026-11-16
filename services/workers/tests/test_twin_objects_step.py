@@ -41,12 +41,17 @@ def sofa_mask(x: float) -> np.ndarray:
 class FakeGpu:
     """Stands in for the Modal GPU function: finds the sofa and writes its masks."""
 
-    def __init__(self, store: LocalArtifactStore, masks: dict[str, np.ndarray]) -> None:
+    def __init__(
+        self, store: LocalArtifactStore, masks: dict[str, np.ndarray], label: str = "sofa"
+    ) -> None:
         self.store, self.masks, self.calls = store, masks, []  # type: ignore[var-annotated]
+        self.label = label
+        self.vocabulary: list[str] = []
 
     async def __call__(self, model: str, payload: Mapping[str, Any]) -> Mapping[str, Any]:
         self.calls.append(model)
         if "images" in payload:
+            self.vocabulary = list(payload["vocabulary"])
             frames = []
             for image in payload["images"]:
                 ys, xs = np.nonzero(self.masks[image["image"]])
@@ -54,7 +59,7 @@ class FakeGpu:
                 frames.append(
                     {
                         "image": image["image"],
-                        "detections": [{"label": "sofa", "score": 0.9, "box": box}],
+                        "detections": [{"label": self.label, "score": 0.9, "box": box}],
                     }
                 )
             return {"output": {"frames": frames}, "gpu_seconds": 1.0}
@@ -135,3 +140,20 @@ async def test_frames_without_depth_stop_with_a_clear_reason(tmp_path: Path) -> 
     with pytest.raises(StepFailedError, match="no depth"):
         await runner.run(objects_step(*gateways(gpu)), {"frames": manifest}, {})
     assert gpu.calls == []  # checked before any GPU call
+
+
+async def test_doors_and_windows_are_found_in_the_same_pass_and_kept_out_of_objects(
+    tmp_path: Path,
+) -> None:
+    runner, gpu, manifest = setup(tmp_path)
+    gpu.label = "window"
+
+    result = await runner.run(objects_step(*gateways(gpu)), {"frames": manifest}, {})
+
+    assert {"door", "window"} <= set(gpu.vocabulary)
+    assert json.loads(runner.store.read_blob(result.outputs["objects"])) == []
+    openings = json.loads(runner.store.read_blob(result.outputs["openings"]))
+    assert [o["kind"] for o in openings] == ["window"] * 4
+    assert {o["keyframe_id"] for o in openings} == {"kf0", "kf1", "kf2", "kf3"}
+    assert runner.store.has_blob(openings[0]["mask"])
+    assert result.meta["opening_masks"] == 4

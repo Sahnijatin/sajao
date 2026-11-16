@@ -16,6 +16,7 @@ AI decides taste and appearance; geometry and code decide fit. Every model outpu
 | Taste and product embeddings | Open image-text embedding model (SigLIP 2 class) | Permissive, to confirm | Must |
 | Upload safety classifier | Off-the-shelf classifier | To confirm | Must |
 | Image to 3D for hero products | TRELLIS.2, SAM 3D Objects | MIT; SAM license | Next |
+| Live object labels during the scan (on device) | EfficientDet-Lite0 on COCO classes, run with MediaPipe Tasks | Apache 2.0 (model and MediaPipe) | Must |
 | Floor plan reading, design chat | Vision and language models | Provider terms | Next |
 | Taste ranker, compatibility model | Small models trained by us | Ours | Later |
 

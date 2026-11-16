@@ -188,6 +188,40 @@
           }
         }
       }
+    ],
+    "built_ins": [
+      {
+        "id": "b1",
+        "category": "radiator",
+        "label": "Radiator",
+        "box": {
+          "center": {
+            "x_m": 1.0,
+            "y_m": 0.08,
+            "z_m": 0.45
+          },
+          "yaw_deg": 0,
+          "width": {
+            "value_m": 1.2,
+            "source": "estimated",
+            "error_band_m": 0.06
+          },
+          "depth": {
+            "value_m": 0.1,
+            "source": "estimated",
+            "error_band_m": 0.05
+          },
+          "height": {
+            "value_m": 0.6,
+            "source": "estimated",
+            "error_band_m": 0.05
+          }
+        },
+        "detection": {
+          "source": "server_segmentation",
+          "confidence": 0.8
+        }
+      }
     ]
   },
   "objects": [
@@ -242,7 +276,8 @@
           "fits_box": true
         }
       ],
-      "state": "keep"
+      "state": "keep",
+      "object_type": "furniture"
     },
     {
       "id": "almirah-1",
@@ -277,7 +312,8 @@
       },
       "views": [],
       "catalog_matches": [],
-      "state": "keep"
+      "state": "keep",
+      "object_type": "furniture"
     }
   ],
   "keyframes": [
@@ -346,5 +382,19 @@
       "gaussians": 250000,
       "bytes": 3021338
     }
-  ]
+  ],
+  "inventory": {
+    "listed_by": ["gemini-3-flash-preview", "claude-opus-5-5"],
+    "items_listed": 14,
+    "unplaced": [
+      {
+        "name": "wall clock",
+        "type": "wall_item",
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "tried": ["wall clock", "clock"],
+        "reason": "not_detected"
+      }
+    ]
+  }
 }

@@ -1,27 +1,42 @@
 import { Button, GlassSurface, Text, useTheme } from "@sajao/ui";
 import { MeshEffect } from "@sajao/ui/effects";
 import { Icon, type IconName } from "@sajao/ui/icons";
+import { useKeepAwake } from "expo-keep-awake";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCameraPermission } from "react-native-vision-camera";
+import { getArCapabilities, getArView } from "../../modules/sajao-ar";
+import { shownLabels } from "@/capture/ar/labels";
 import { mappedSectors } from "@/capture/coverage";
 import { DebugOverlay } from "@/capture/debug-overlay";
 import type { GuardrailId, GuardrailStatus } from "@/capture/guardrails";
 import { toScreen } from "@/capture/mesh-tracker";
 import { MiniMap } from "@/capture/mini-map";
+import { imuReading } from "@/capture/package/imu";
+import type { LocalCapture } from "@/capture/package/native-capture";
+import type { CaptureDeviceInfo } from "@/capture/package/upload-capture";
+import { useCaptureRecorder } from "@/capture/package/use-capture-recorder";
+import type { RawMotion } from "@/capture/pose";
+import { ProgressRing } from "@/capture/progress-ring";
+import { ScanHint } from "@/capture/scan-hint";
 import { ScanCamera } from "@/capture/scan-camera";
-import { canFinish, mappedShare } from "@/capture/scan-session";
+import { canFinish, isSimple, mappedShare, shouldShowSlowDown } from "@/capture/scan-session";
 import { useScanSession } from "@/capture/use-scan-session";
 
 export interface CaptureScreenProps {
   onClose: () => void;
   onDone: () => void;
   onUsePhotos: () => void;
+  /** The finished scan, ready to upload; called before onDone. */
+  onCaptured?: (capture: LocalCapture, device: CaptureDeviceInfo) => void;
 }
 
 const CHIPS: readonly GuardrailId[] = ["light", "motion", "level"];
+
+/** Keeps the screen on while the scan screen is open, on iOS and Android. */
+export const SCAN_KEEP_AWAKE_TAG = "sajao-scan";
 
 function StatusChip({ id, status }: { id: GuardrailId; status: GuardrailStatus }) {
   const { t } = useTranslation();
@@ -95,21 +110,82 @@ function RoundButton({
  * been mapped, guardrail chips, and a soft pause with a fix when a
  * guardrail fails. There is no room-type picker.
  */
-export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenProps) {
+export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: CaptureScreenProps) {
+  // A scan is hands-on but touch-free: without this the screen dims and locks mid-scan.
+  useKeepAwake(SCAN_KEEP_AWAKE_TAG);
   const { t } = useTranslation();
-  const { tokens } = useTheme();
+  const { tokens, tier, reducedMotion } = useTheme();
   const { spacing, radius } = tokens;
   const insets = useSafeAreaInsets();
   const window = useWindowDimensions();
   const permission = useCameraPermission();
   const [torch, setTorch] = useState(false);
-  const { state, debug, onFrame, onExposure, onDiagnostics, scanAnyway } = useScanSession(
-    permission.hasPermission,
+  // AR-anchored scan where the phone supports it; otherwise the 2D scan.
+  const capabilities = useMemo(() => getArCapabilities(), []);
+  // The capture package: video, keyframes with poses, depth, planes, detections, sensor log.
+  const capture = useCaptureRecorder({
+    tracking: capabilities.platform === "ios" ? "arkit" : "arcore",
+    lidar: capabilities.lidar,
+    depth: false,
+  });
+  const captureSensor = capture.onSensor;
+  // Motion sensor readings go into the package's sensor log in every mode.
+  const onImu = useCallback(
+    (reading: RawMotion) => {
+      const line = imuReading(reading);
+      if (line) captureSensor(line);
+    },
+    [captureSensor],
+  );
+  const {
+    state,
+    debug,
+    labels,
+    hint,
+    onFrame,
+    onExposure,
+    onDiagnostics,
+    onArStatus,
+    onArPose,
+    onArDetections,
+    onArSurfaces,
+    scanAnyway,
+  } = useScanSession(permission.hasPermission, onImu);
+  const ArView = useMemo(() => getArView(), []);
+  // The native error when the AR session could not start; the 2D scan takes over.
+  const [arStartError, setArStartError] = useState<string | null>(null);
+  const arMode = capabilities.arSupported && ArView !== null && arStartError === null;
+  const [finishing, setFinishing] = useState(false);
+  const finishScan = useCallback(async () => {
+    setFinishing(true);
+    if (arMode) {
+      const local = await capture.finish();
+      onCaptured?.(local, {
+        platform: capabilities.platform === "ios" ? "ios" : "android",
+        tier: tier === "low" ? "low" : "standard",
+        has_ar: true,
+      });
+    }
+    onDone();
+  }, [arMode, capabilities.platform, capture, onCaptured, onDone, tier]);
+  const labelProps = useMemo(
+    () =>
+      shownLabels(labels).map((label) => ({
+        id: label.id,
+        text: t(`capture.labels.${label.kind}`),
+        x: label.x,
+        y: label.y,
+        z: label.z,
+      })),
+    [labels, t],
   );
   const aspect = state.frame?.aspect ?? 9 / 16;
   const points = useMemo(() => toScreen(state.mesh, window, aspect), [state.mesh, window, aspect]);
   const mapped = useMemo(() => mappedSectors(state.coverage), [state.coverage]);
-  const percent = Math.round(mappedShare(state) * 100);
+  const share = mappedShare(state);
+  const percent = Math.round(share * 100);
+  // The simple scan shows one progress ring instead of the map of directions.
+  const simple = arMode && isSimple(state);
   const [showDebug, setShowDebug] = useState(false);
   const taps = useRef<number[]>([]);
   // Hidden debug overlay: three taps on the camera within a second.
@@ -124,6 +200,10 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
   const reason = state.pause.reason;
   // Glare has no chip of its own until it is a problem.
   const chips = state.guardrails.glare === "warn" ? [...CHIPS, "glare" as const] : CHIPS;
+  // AR scan: frames rejected for turning fast or blur also ask you to slow down.
+  const slowDown = shouldShowSlowDown(state);
+  const chipStatus = (id: GuardrailId): GuardrailStatus =>
+    id === "motion" && slowDown ? "warn" : state.guardrails[id];
 
   if (!permission.hasPermission) {
     return (
@@ -153,21 +233,84 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
   return (
     <View style={{ flex: 1, backgroundColor: "#000000" }}>
       {/* The camera keeps running while paused, so the scan can see the fix and resume. */}
-      <ScanCamera
-        style={StyleSheet.absoluteFill}
-        active
-        torch={torch}
-        onAnalysed={onFrame}
-        onExposure={onExposure}
-        onDiagnostics={onDiagnostics}
-      />
-      <MeshEffect
-        style={StyleSheet.absoluteFill}
-        width={window.width}
-        height={window.height}
-        points={points}
-        triangles={state.mesh.triangles}
-      />
+      {arMode && ArView ? (
+        <ArView
+          ref={capture.viewRef}
+          captureId={capture.captureId}
+          onArKeyframe={({ nativeEvent }) => capture.onKeyframe(nativeEvent)}
+          style={StyleSheet.absoluteFill}
+          active
+          torch={torch}
+          lite={tier === "low"}
+          reducedMotion={reducedMotion}
+          labels={labelProps}
+          onArStatus={({ nativeEvent }) => {
+            // A session that cannot start falls back to the 2D scan.
+            if ("error" in nativeEvent) setArStartError(String(nativeEvent.error) || "unknown");
+            else onArStatus(nativeEvent);
+          }}
+          onArPose={({ nativeEvent }) => {
+            onArPose(nativeEvent);
+            capture.onSensor({
+              source: "ar_pose",
+              x: nativeEvent.x,
+              y: nativeEvent.y,
+              z: nativeEvent.z,
+              yaw: nativeEvent.yaw,
+              pitch: nativeEvent.pitch,
+              tracking: nativeEvent.tracking,
+            });
+          }}
+          onArSurfaces={({ nativeEvent }) =>
+            onArSurfaces({
+              sharpness: nativeEvent.sharpness,
+              hits: nativeEvent.hits ?? [],
+              floorY: nativeEvent.floorY ?? null,
+            })
+          }
+          onArDetections={({ nativeEvent }) => {
+            const detections = nativeEvent.detections ?? [];
+            // Every detection goes into the package; the server decides what it means.
+            capture.onDetections(
+              detections.map((detection) => ({
+                detectorClass: detection.detectorClass,
+                score: detection.score,
+                world: detection.world ?? null,
+              })),
+            );
+            onArDetections(
+              detections.map((detection) => ({
+                detectorClass: detection.detectorClass,
+                score: detection.score,
+                world: detection.world ?? null,
+                surface: detection.surface,
+                gap: detection.gap ?? null,
+                range: detection.range ?? null,
+                placedBy: detection.placedBy,
+                box: detection.box ?? null,
+              })),
+            );
+          }}
+        />
+      ) : (
+        <>
+          <ScanCamera
+            style={StyleSheet.absoluteFill}
+            active
+            torch={torch}
+            onAnalysed={onFrame}
+            onExposure={onExposure}
+            onDiagnostics={onDiagnostics}
+          />
+          <MeshEffect
+            style={StyleSheet.absoluteFill}
+            width={window.width}
+            height={window.height}
+            points={points}
+            triangles={state.mesh.triangles}
+          />
+        </>
+      )}
       <Pressable
         testID="scan-camera-area"
         accessible={false}
@@ -220,7 +363,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
           }}
         >
           {chips.map((id) => (
-            <StatusChip key={id} id={id} status={state.guardrails[id]} />
+            <StatusChip key={id} id={id} status={chipStatus(id)} />
           ))}
         </View>
         <View
@@ -231,10 +374,17 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
           }}
         >
           <View style={{ flex: 1 }}>
-            {showDebug ? <DebugOverlay debug={debug} state={state} /> : null}
+            {showDebug ? (
+              <DebugOverlay debug={debug} state={state} arStartError={arStartError} />
+            ) : null}
           </View>
-          <MiniMap mapped={mapped} yaw={state.pose.yaw} />
+          {simple ? (
+            <ProgressRing progress={share} ready={canFinish(state)} />
+          ) : (
+            <MiniMap mapped={mapped} yaw={state.pose.yaw} />
+          )}
         </View>
+        <ScanHint hint={hint} />
       </View>
 
       <GlassSurface
@@ -293,9 +443,9 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
               <Button
                 label={t("capture.done")}
                 style={{ flex: 1 }}
-                disabled={!canFinish(state)}
+                disabled={!canFinish(state) || finishing}
                 haptic="roomVerified"
-                onPress={onDone}
+                onPress={() => void finishScan()}
               />
             </View>
           </>

@@ -11,7 +11,8 @@ The Sajao API: a stateless FastAPI modular monolith behind a versioned `/v1`. Pr
 | Request context | `middleware/request_context.py` | `X-Request-ID` on every response and one JSON log line per request. Query strings, headers and bodies are never logged. |
 | Minimum app version | `middleware/app_version.py` | Apps sending an `X-App-Version` below the minimum get `426` with code `app_update_required`. |
 | Auth | `auth.py`, `middleware/auth.py`, `v1/me.py` | Bearer tokens from the auth service are verified against its public keys. No token means anonymous; a bad token is always `401`. Endpoints that need a caller use the `current_user` dependency. Guests have a real user id. |
-| Uploads | `storage.py`, `v1/uploads.py` | Resumable multipart uploads of capture media straight to object storage through short-lived signed URLs. See below. |
+| Uploads | `storage.py`, `v1/uploads.py` | Resumable multipart uploads of capture media (photos, video, and the capture package's data files: sensor log, planes, depth, scene mesh) straight to object storage through short-lived signed URLs. See below. |
+| Captures | `captures.py`, `v1/captures.py` | `POST /v1/captures` registers a finished scan whose files are already uploaded: the body is validated as a `Capture`, every storage key must belong to the caller, and the row is stored for the twin worker. The capture id comes from the phone, so repeating the call returns the stored capture (`200` instead of `201`). `GET /v1/captures/{id}` returns the caller's own capture. |
 | Idempotency | `middleware/idempotency.py`, `idempotency.py` | Every write needs an `Idempotency-Key`. See below. |
 | OpenAPI | `openapi.py`, `openapi.json` | The exported document the typed client in `packages/api-client` is generated from. |
 

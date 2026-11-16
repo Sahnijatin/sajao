@@ -36,6 +36,7 @@ Every model, library and dataset used to build, train or evaluate Sajao is liste
 | @expo/ui 58.0.28 | Library (npm) | App and service code in apps/mobile, packages/ui | https://github.com/expo/expo | MIT | No | Existing |
 | @react-native-async-storage/async-storage 2.2.0 | Library (npm) | App and service code in apps/mobile | https://github.com/react-native-async-storage/async-storage | MIT | No | Existing |
 | @shopify/react-native-skia 2.14.0 | Library (npm) | App and service code in apps/mobile, packages/ui | https://github.com/Shopify/react-native-skia | MIT | No | Existing |
+| @supabase/supabase-js 2.119.0 | Library (npm) | Guest session for API calls in apps/mobile | https://github.com/supabase/supabase-js | MIT | No | New |
 | @testing-library/react-native 14.1.0 | Library (npm) | Build and test tooling in apps/mobile, packages/ui | https://www.github.com/callstack/react-native-testing-library | MIT | No | Existing |
 | @types/jest 30.0.0 | Library (npm) | Build and test tooling in apps/mobile, packages/ui | https://github.com/DefinitelyTyped/DefinitelyTyped | MIT | No | Existing |
 | @types/node 22.20.5 | Library (npm) | Build and test tooling in packages/schemas | https://github.com/DefinitelyTyped/DefinitelyTyped | MIT | No | Existing |
