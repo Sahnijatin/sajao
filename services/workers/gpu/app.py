@@ -1221,7 +1221,7 @@ async def _build_twin(
         {
             "twin_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"twin/{capture['id']}")),
             "version": 1,
-            "created_at": "2026-11-16T00:00:00Z",
+            "created_at": capture.get("created_at", "2026-11-16T00:00:00Z"),
         },
     )
     vol.commit()
@@ -1368,6 +1368,206 @@ def edit_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
         }
 
     return asyncio.run(run())
+
+
+def _capture_file(root: Path, key: str) -> bytes:
+    """A file of an uploaded capture folder, by its storage key (or the key's file name)."""
+    for path in (root / key, root / Path(key).name):
+        if path.is_file():
+            return path.read_bytes()
+    raise FileNotFoundError(f"{key} is not in the capture folder")
+
+
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=8, memory=16384, timeout=7200
+)
+def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
+    """An uploaded capture to its twin, and the twin's accuracy against the tape sheet."""
+    import asyncio
+    import json
+
+    from sajao_gateway import ModelGateway
+    from sajao_schemas.generated.v1 import Capture
+    from sajao_workers.golden import accuracy_report, markdown, read_sheet
+    from sajao_workers.models import depth_chain
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.capture_frames import frames_manifest
+    from sajao_workers.twin.depth_step import depth_step
+
+    vol.reload()
+    root = Path("/work/golden") / folder
+    capture = json.loads((root / "capture.json").read_text())
+    Capture.model_validate(capture)
+    package = capture["package"]
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    runner = StepRunner(store, max_attempts=1)
+    ledger = _ledger()
+    images = {
+        k["id"]: store.put_blob(_capture_file(root, k["image"])) for k in package["keyframes"]
+    }
+    depth = _capture_file(root, package["depth"]) if package.get("depth") else None
+    manifest = frames_manifest(package, images, depth, store)
+
+    async def run() -> dict[str, Any]:
+        nonlocal manifest
+        depth_meta: dict[str, Any] = {"model": "lidar"}
+        if manifest["depth_source"] != "lidar":  # phones without LiDAR: depth from images
+            estimated = await runner.run(
+                depth_step(ModelGateway(depth_chain(volume_invoke("twin_depth")), ledger=ledger)),
+                {"frames": store.put_blob(json.dumps(manifest).encode())},
+                {},
+            )
+            manifest = json.loads(store.read_blob(estimated.outputs["frames"]))
+            depth_meta = dict(estimated.meta)
+        built = await _build_twin(store, runner, ledger, capture, manifest)
+        twin = json.loads(store.read_blob(built["twin"].outputs["twin"]))
+        report = accuracy_report(twin, read_sheet(sheet))
+        charged = sum(built[k].cost_micro_inr for k in ("objects", "splat", "phone"))
+        return {
+            "twin": twin,
+            "report": report,
+            "markdown": markdown(report),
+            "run": {
+                "depth": depth_meta,
+                "objects": dict(built["objects"].meta),
+                "splat": dict(built["splat"].meta),
+                "twin": dict(built["twin"].meta),
+                "charged_micro_inr": charged,
+            },
+        }
+
+    return asyncio.run(run())
+
+
+def _quaternion_xyzw(r: Any) -> list[float]:
+    """Unit quaternion (x, y, z, w) of a rotation matrix, the capture package's order."""
+    import numpy as np
+
+    def part(a: float, b: float, c: float, sign: float) -> float:
+        return float(np.copysign(np.sqrt(max(0.0, 1 + a - b - c)) / 2, sign))
+
+    w = float(np.sqrt(max(0.0, 1 + np.trace(r))) / 2)
+    return [
+        part(r[0, 0], r[1, 1], r[2, 2], r[2, 1] - r[1, 2]),
+        part(r[1, 1], r[0, 0], r[2, 2], r[0, 2] - r[2, 0]),
+        part(r[2, 2], r[0, 0], r[1, 1], r[1, 0] - r[0, 1]),
+        w,
+    ]
+
+
+@app.function(image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, timeout=1800)
+def golden_fixture_cpu(scene: str, keyframes: int) -> str:
+    """An ARKitScenes room written as an uploaded capture folder (capture.json, keyframe
+    JPEGs, SJDEPTH1 depth), to test the golden-room command before real rooms exist."""
+    import json
+    import struct
+    import uuid
+
+    import numpy as np
+    from PIL import Image
+
+    from sajao_schemas.generated.v1 import Capture
+
+    cams = json.loads(Path(f"/vol/scenes/{scene}/cameras.json").read_text())
+    turn = _y_up(cams["up"])  # into an AR world, y up, as a phone delivers it
+    picks = np.linspace(0, len(cams["frames"]) - 1, keyframes).round().astype(int)
+    root = Path(f"/work/golden-fixtures/{scene}")
+    (root / "keyframes").mkdir(parents=True, exist_ok=True)
+    depth_parts = [b"SJDEPTH1", struct.pack("<I", len(picks))]
+    frames, media = [], []
+    capture_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"golden-fixture/{scene}"))
+    for n, i in enumerate(picks, start=1):
+        f = cams["frames"][int(i)]
+        base = Path(f"/vol/scenes/{scene}")
+        key = f"keyframes/k{n}.jpg"
+        (root / key).write_bytes((base / f["file"]).read_bytes())
+        c2w = np.asarray(f["c2w"], dtype=np.float64)
+        rotation = turn @ c2w[:3, :3] @ np.diag([1.0, -1.0, -1.0])  # OpenCV to AR camera axes
+        position = turn @ c2w[:3, 3]
+        q = _quaternion_xyzw(rotation)
+        k = f["K"]
+        frames.append(
+            {
+                "id": f"k{n}",
+                "image": key,
+                "captured_at_ms": 250 * n,
+                "sharpness": 1.0,
+                "pose": {
+                    "position": {"x_m": position[0], "y_m": position[1], "z_m": position[2]},
+                    "rotation": q,
+                },
+                "intrinsics": {"fx": k[0][0], "fy": k[1][1], "cx": k[0][2], "cy": k[1][2],
+                               "width_px": f["w"], "height_px": f["h"]},
+            }
+        )  # fmt: skip
+        media.append(
+            {"id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"{capture_id}/{n}")), "kind": "photo",
+             "origin": "camera", "storage_key": key, "width_px": f["w"], "height_px": f["h"],
+             "has_ar_pose": True}
+        )  # fmt: skip
+        depth = np.asarray(Image.open(base / f["depth"]), dtype=np.uint16)
+        ident = f"k{n}".encode()
+        depth_parts += [
+            struct.pack("<H", len(ident)),
+            ident,
+            struct.pack("<II", depth.shape[1], depth.shape[0]),
+            depth.astype("<u2").tobytes(),
+            np.where(depth > 0, 255, 0).astype(np.uint8).tobytes(),
+        ]
+    (root / "depth.sjdepth").write_bytes(b"".join(depth_parts))
+    (root / "sensor.jsonl").write_text("")
+    capture = {
+        "schema_version": "1.0",
+        "id": capture_id,
+        "user_id": str(uuid.uuid5(uuid.NAMESPACE_URL, "golden-fixture/user")),
+        "created_at": "2026-11-16T00:00:00Z",
+        "media": media[:40],
+        "device": {"platform": "ios", "tier": "standard", "has_ar": True},
+        # ARKitScenes has no compass reading: a declared test heading, not a measurement.
+        "compass": {"mean_heading_deg": 0.0, "sample_count": 1},
+        "package": {
+            "ar": {"tracking": "arkit", "lidar": True, "depth": True},
+            "keyframes": frames,
+            "depth": "depth.sjdepth",
+            "detections": [],
+            "sensor_log": "sensor.jsonl",
+        },
+    }
+    Capture.model_validate(capture)
+    (root / "capture.json").write_text(json.dumps(capture, indent=1))
+    vol.commit()
+    return str(root)
+
+
+@app.local_entrypoint()
+def golden_fixture(scene: str = "arkit_living_47331265", keyframes: int = 120) -> None:
+    print(golden_fixture_cpu.remote(scene, keyframes))
+
+
+@app.local_entrypoint()
+def golden_room(capture: str, tape: str, out: str = "") -> None:
+    """One golden room: `--capture` is the uploaded capture folder (capture.json plus the
+    files its storage keys name), `--tape` the measurement sheet (eval/golden). Writes the
+    twin, the report as JSON and Markdown, and run details to `--out`."""
+    import json
+    import re
+
+    from sajao_workers.golden import read_sheet
+
+    sheet = json.loads(Path(tape).read_text())
+    room = read_sheet(sheet).room or Path(capture).name  # a bad sheet stops here, before any GPU
+    slug = re.sub(r"[^a-z0-9]+", "-", room.lower()).strip("-") or "room"
+    with vol.batch_upload(force=True) as batch:
+        batch.put_directory(capture, f"golden/{slug}")
+    result = golden_room_cpu.remote(slug, sheet)
+    target = Path(out or f"golden-runs/{slug}")
+    target.mkdir(parents=True, exist_ok=True)
+    (target / "twin.json").write_text(json.dumps(result["twin"], indent=1) + "\n")
+    (target / "report.json").write_text(json.dumps(result["report"], indent=1) + "\n")
+    (target / "report.md").write_text(result["markdown"])
+    (target / "run.json").write_text(json.dumps(result["run"], indent=1) + "\n")
+    print(result["markdown"])
+    print(f"Written to {target}")
 
 
 @app.local_entrypoint()
