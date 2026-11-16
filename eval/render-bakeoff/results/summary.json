@@ -73,7 +73,290 @@
    }
   },
   "trellis2": {},
-  "sam3d": {}
+  "sam3d": {},
+  "parametric": {
+   "counts": {
+    "sofa": {
+     "listings": 18,
+     "unverifiable": 15,
+     "verifiable": 3
+    },
+    "bed": {
+     "listings": 15,
+     "unverifiable": 11,
+     "implausible_listing_dims": 1,
+     "verifiable": 3
+    },
+    "almirah": {
+     "listings": 15,
+     "verifiable": 4,
+     "unverifiable": 7,
+     "implausible_listing_dims": 4
+    },
+    "table": {
+     "listings": 18,
+     "verifiable": 6,
+     "unverifiable": 8,
+     "no_asset": 4
+    },
+    "chair": {
+     "listings": 19,
+     "unverifiable": 13,
+     "verifiable": 5,
+     "no_clean_photo": 1
+    },
+    "lamp": {
+     "listings": 14,
+     "no_clean_photo": 6,
+     "implausible_listing_dims": 1,
+     "unverifiable": 7
+    },
+    "tv_unit": {
+     "listings": 6,
+     "unverifiable": 3,
+     "verifiable": 3
+    },
+    "shelf": {
+     "listings": 6,
+     "unverifiable": 3,
+     "verifiable": 3
+    }
+   },
+   "verifiable_skus": 27,
+   "thresholds": {
+    "iou": 0.675,
+    "de": 6.0,
+    "emb": 0.45
+   },
+   "wrong_sku_pass_rate": 0.0,
+   "pass_rate_calibration_half": 0.2857142857142857,
+   "pass_rate_held_out_half": 0.15384615384615385,
+   "pass_rate_all_verifiable": 0.2222222222222222,
+   "by_category": {
+    "almirah": 0.0,
+    "bed": 0.3333333333333333,
+    "chair": 0.0,
+    "shelf": 0.0,
+    "sofa": 1.0,
+    "table": 0.16666666666666666,
+    "tv_unit": 0.3333333333333333
+   },
+   "median_view": {
+    "iou": 0.7825544616207065,
+    "de": 3.5599754862129926,
+    "emb": 0.4311809539794922
+   }
+  }
+ },
+ "tiers": {
+  "by_category": {
+   "sofa": {
+    "triposg": {
+     "pass_rate_verifiable": 1.0,
+     "verifiable": 3,
+     "unverifiable": 15,
+     "no_clean_photo": 0,
+     "skus_built": 18,
+     "skus": 18,
+     "median_seconds": 23.549999999999997,
+     "median_inr": 1.2125894999999998
+    },
+    "parametric": {
+     "pass_rate_verifiable": 1.0,
+     "verifiable": 3,
+     "unverifiable": 15,
+     "no_clean_photo": 0,
+     "skus_built": 18,
+     "skus": 18,
+     "median_seconds": 2.7249999999999996,
+     "median_inr": 1.476173194
+    }
+   },
+   "bed": {
+    "triposg": {
+     "pass_rate_verifiable": 0.6666666666666666,
+     "verifiable": 3,
+     "unverifiable": 11,
+     "no_clean_photo": 0,
+     "skus_built": 15,
+     "skus": 15,
+     "median_seconds": 27.9,
+     "median_inr": 1.4365709999999998
+    },
+    "parametric": {
+     "pass_rate_verifiable": 0.3333333333333333,
+     "verifiable": 3,
+     "unverifiable": 11,
+     "no_clean_photo": 0,
+     "skus_built": 15,
+     "skus": 15,
+     "median_seconds": 2.77,
+     "median_inr": 1.477973216
+    }
+   },
+   "almirah": {
+    "triposg": {
+     "pass_rate_verifiable": 0.0,
+     "verifiable": 4,
+     "unverifiable": 7,
+     "no_clean_photo": 0,
+     "skus_built": 15,
+     "skus": 15,
+     "median_seconds": 20.7,
+     "median_inr": 1.0658429999999999
+    },
+    "parametric": {
+     "pass_rate_verifiable": 0.0,
+     "verifiable": 4,
+     "unverifiable": 7,
+     "no_clean_photo": 0,
+     "skus_built": 15,
+     "skus": 15,
+     "median_seconds": 2.67,
+     "median_inr": 1.479739912
+    }
+   },
+   "table": {
+    "triposg": {
+     "pass_rate_verifiable": 0.4,
+     "verifiable": 10,
+     "unverifiable": 8,
+     "no_clean_photo": 0,
+     "skus_built": 18,
+     "skus": 18,
+     "median_seconds": 36.75,
+     "median_inr": 1.8922575
+    },
+    "parametric": {
+     "pass_rate_verifiable": 0.16666666666666666,
+     "verifiable": 6,
+     "unverifiable": 8,
+     "no_clean_photo": 0,
+     "skus_built": 14,
+     "skus": 18,
+     "median_seconds": 2.7300000000000004,
+     "median_inr": 1.475023238
+    }
+   },
+   "chair": {
+    "triposg": {
+     "pass_rate_verifiable": 0.6,
+     "verifiable": 5,
+     "unverifiable": 13,
+     "no_clean_photo": 1,
+     "skus_built": 18,
+     "skus": 19,
+     "median_seconds": 37.5,
+     "median_inr": 1.930875
+    },
+    "parametric": {
+     "pass_rate_verifiable": 0.0,
+     "verifiable": 5,
+     "unverifiable": 13,
+     "no_clean_photo": 1,
+     "skus_built": 19,
+     "skus": 19,
+     "median_seconds": 2.71,
+     "median_inr": 1.472273216
+    }
+   },
+   "lamp": {
+    "triposg": {
+     "pass_rate_verifiable": null,
+     "verifiable": 0,
+     "unverifiable": 7,
+     "no_clean_photo": 6,
+     "skus_built": 8,
+     "skus": 14,
+     "median_seconds": 12.25,
+     "median_inr": 0.6307524999999999
+    },
+    "parametric": {
+     "pass_rate_verifiable": null,
+     "verifiable": 0,
+     "unverifiable": 7,
+     "no_clean_photo": 6,
+     "skus_built": 0,
+     "skus": 14,
+     "median_seconds": null,
+     "median_inr": null
+    }
+   },
+   "tv_unit": {
+    "triposg": {
+     "pass_rate_verifiable": 0.6666666666666666,
+     "verifiable": 3,
+     "unverifiable": 3,
+     "no_clean_photo": 0,
+     "skus_built": 6,
+     "skus": 6,
+     "median_seconds": 18.5,
+     "median_inr": 0.9525649999999999
+    },
+    "parametric": {
+     "pass_rate_verifiable": 0.3333333333333333,
+     "verifiable": 3,
+     "unverifiable": 3,
+     "no_clean_photo": 0,
+     "skus_built": 6,
+     "skus": 6,
+     "median_seconds": 2.715,
+     "median_inr": 1.365773238
+    }
+   },
+   "shelf": {
+    "triposg": {
+     "pass_rate_verifiable": 0.3333333333333333,
+     "verifiable": 3,
+     "unverifiable": 3,
+     "no_clean_photo": 0,
+     "skus_built": 6,
+     "skus": 6,
+     "median_seconds": 21.6,
+     "median_inr": 1.1121839999999998
+    },
+    "parametric": {
+     "pass_rate_verifiable": 0.0,
+     "verifiable": 3,
+     "unverifiable": 3,
+     "no_clean_photo": 0,
+     "skus_built": 6,
+     "skus": 6,
+     "median_seconds": 2.75,
+     "median_inr": 1.362923238
+    }
+   }
+  },
+  "best_default_tier": {
+   "sofa": "triposg",
+   "bed": "triposg",
+   "almirah": "triposg",
+   "table": "triposg",
+   "chair": "triposg",
+   "lamp": "triposg",
+   "tv_unit": "triposg",
+   "shelf": "triposg"
+  }
+ },
+ "verifiability": {
+  "IKEA India": {
+   "listings": 69,
+   "photos": 349,
+   "verifiable_studio_only": 9,
+   "verifiable_with_room_shots": 9,
+   "no_clean_photo": 5,
+   "share_studio_only": 0.13043478260869565,
+   "share_with_room_shots": 0.13043478260869565
+  },
+  "Wooden Street": {
+   "listings": 30,
+   "photos": 164,
+   "verifiable_studio_only": 22,
+   "verifiable_with_room_shots": 22,
+   "no_clean_photo": 2,
+   "share_studio_only": 0.7333333333333333,
+   "share_with_room_shots": 0.7333333333333333
+  }
  },
  "checks": {
   "qwen": {},

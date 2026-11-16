@@ -311,7 +311,9 @@ def verifiability_by_retailer() -> dict:
 
 def main() -> None:
     summary = {
-        "gate": {m: gate_table(m) for m in ("triposg", "trellis2", "sam3d")},
+        "gate": {m: gate_table(m) for m in ("triposg", "trellis2", "sam3d", "parametric")},
+        "tiers": tier_comparison(),
+        "verifiability": verifiability_by_retailer(),
         "checks": {g: checks_table(g) for g in ("qwen", "flux2k", "gemini")},
         "planted": planted_table(),
     }

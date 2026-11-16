@@ -1,0 +1,5395 @@
+[
+ {
+  "id": "ikea_10615526",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s39620339",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s49482832",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s69615336",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s39270312",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_20619072",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s69449691",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_40551226",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   0,
+   1
+  ],
+  "input_view": 0,
+  "pairs": [
+   {
+    "asset": "ikea_40551226",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      1.0000000201075914,
+      1.0000000454130649
+     ],
+     "size_m": [
+      2.25,
+      0.83,
+      1.05
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7995875377476614,
+      "de": 2.6427726213128735,
+      "emb": 0.4668333828449249,
+      "az": 15.0,
+      "el": 0.0,
+      "fov": 20.0,
+      "view": 1,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s49482832",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000125483464,
+      1.0000000201075914,
+      1.0000000125483464
+     ],
+     "size_m": [
+      2.28,
+      0.83,
+      0.95
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8091841932901536,
+      "de": 4.1796713256175515,
+      "emb": 0.17910310626029968,
+      "az": 190.0,
+      "el": 27.5,
+      "fov": 45.0,
+      "view": 1,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_50646413",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000366797828,
+      1.0000000125483464,
+      1.0000000223517422
+     ],
+     "size_m": [
+      0.78,
+      0.76,
+      0.64
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.47527435101793686,
+      "de": 6.614048903678252,
+      "emb": 0.36190786957740784,
+      "az": 230.0,
+      "el": 47.5,
+      "fov": 20.0,
+      "view": 1,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   1
+  ]
+ },
+ {
+  "id": "ikea_50646413",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ws_henry-l-shape-right-arm-corner-sofa-indigo-blue",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   1,
+   3,
+   4
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_henry-l-shape-right-arm-corner-sofa-indigo-blue",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999847744306,
+      0.9999999993941079,
+      0.9999999422015599
+     ],
+     "size_m": [
+      2.7560000000000002,
+      0.787,
+      0.825
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7769803945520064,
+      "de": 5.364605187810427,
+      "emb": 0.6372137665748596,
+      "az": 352.5,
+      "el": 7.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.8005961638154484,
+      "de": 4.509450273029444,
+      "emb": 0.6325765252113342,
+      "az": 30.0,
+      "el": 10.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s39620339",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      1.0000000125483464,
+      0.99999995097936
+     ],
+     "size_m": [
+      2.5,
+      0.95,
+      1.07
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7983077022070652,
+      "de": 18.11239471780688,
+      "emb": 0.634412407875061,
+      "az": 0.0,
+      "el": -7.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.7543274653067229,
+      "de": 20.492547201008733,
+      "emb": 0.43192094564437866,
+      "az": 187.5,
+      "el": 12.5,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s69615336",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999844931008,
+      1.0000000264909539,
+      1.0000000025363678
+     ],
+     "size_m": [
+      2.46,
+      0.9,
+      0.94
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7988115725557684,
+      "de": 41.09331693299836,
+      "emb": 0.6489275693893433,
+      "az": 0.0,
+      "el": -5.0,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.7749666440097677,
+      "de": 40.14066558372409,
+      "emb": 0.28303560614585876,
+      "az": 192.5,
+      "el": 12.5,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   3,
+   4
+  ]
+ },
+ {
+  "id": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   1,
+   3
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.999999968085703,
+      1.0000000430478009,
+      0.9999999740609424
+     ],
+     "size_m": [
+      1.524,
+      0.8640000000000001,
+      0.8640000000000001
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7499959154998611,
+      "de": 2.1008900965432327,
+      "emb": 0.6363123655319214,
+      "az": 330.0,
+      "el": 10.0,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_40551226",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      1.0000000201075914,
+      1.0000000454130649
+     ],
+     "size_m": [
+      2.25,
+      0.83,
+      1.05
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7045247494685697,
+      "de": 12.378706555050574,
+      "emb": 0.5458015203475952,
+      "az": 315.0,
+      "el": 7.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s39620339",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      1.0000000125483464,
+      0.99999995097936
+     ],
+     "size_m": [
+      2.5,
+      0.95,
+      1.07
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7169630904570664,
+      "de": 11.217742639448854,
+      "emb": 0.6499138474464417,
+      "az": 345.0,
+      "el": 10.0,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   3
+  ]
+ },
+ {
+  "id": "ikea_60458755",
+  "model": "parametric",
+  "category": "bed",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s39581837",
+  "model": "parametric",
+  "category": "bed",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_30504631",
+  "model": "parametric",
+  "category": "bed",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_40573681",
+  "model": "parametric",
+  "category": "bed",
+  "clean_views": [
+   0,
+   1,
+   5
+  ],
+  "input_view": 0,
+  "pairs": [
+   {
+    "asset": "ikea_40573681",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9733333333333333,
+      0.9999999952076668,
+      1.008526182890107
+     ],
+     "size_m": [
+      1.46,
+      1.99,
+      2.07
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.5282721688454874,
+      "de": 6.992122637103757,
+      "emb": 0.6843744516372681,
+      "az": 110.0,
+      "el": 2.5,
+      "fov": 45.0,
+      "view": 1,
+      "is_input": false
+     },
+     {
+      "iou": 0.5447969976117366,
+      "de": 4.5123471355752045,
+      "emb": 0.2495422214269638,
+      "az": 127.5,
+      "el": -7.5,
+      "fov": 45.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_adolph-bed-honey-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000150184933,
+      0.9999999705049188,
+      1.0024061266459259
+     ],
+     "size_m": [
+      1.905,
+      1.067,
+      2.083
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.3343054902224313,
+      "de": 35.21303868200889,
+      "emb": 0.42599064111709595,
+      "az": 267.5,
+      "el": 32.5,
+      "fov": 20.0,
+      "view": 1,
+      "is_input": false
+     },
+     {
+      "iou": 0.37210771776741386,
+      "de": 36.08339057228226,
+      "emb": 0.11649483442306519,
+      "az": 180.0,
+      "el": 45.0,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_30504631",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000201075914,
+      0.9999999833661459,
+      1.0097561210482555
+     ],
+     "size_m": [
+      1.66,
+      0.86,
+      2.07
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.30110024732450363,
+      "de": 2.185468745086988,
+      "emb": 0.501286506652832,
+      "az": 0.0,
+      "el": 30.0,
+      "fov": 45.0,
+      "view": 1,
+      "is_input": false
+     },
+     {
+      "iou": 0.45736708372197743,
+      "de": 5.415564553811389,
+      "emb": 0.10009051114320755,
+      "az": 0.0,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   1,
+   5
+  ]
+ },
+ {
+  "id": "ikea_s69200643",
+  "model": "parametric",
+  "category": "bed",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s89198465",
+  "model": "parametric",
+  "category": "bed",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s29308527",
+  "model": "parametric",
+  "category": "bed",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_50579055",
+  "model": "parametric",
+  "category": "bed",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ws_lotus-premium-ash-wood-bed-with-brass-inlay-queen-size-teak-",
+  "model": "parametric",
+  "category": "bed",
+  "clean_views": [
+   1
+  ],
+  "input_view": 1,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_30437241",
+  "model": "parametric",
+  "category": "almirah",
+  "clean_views": [
+   0,
+   2
+  ],
+  "input_view": 0,
+  "pairs": [
+   {
+    "asset": "ikea_30437241",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000366797828,
+      1.000000005418604,
+      0.9683098274519047
+     ],
+     "size_m": [
+      1.17,
+      1.76,
+      0.55
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9854312784545343,
+      "de": 4.388026068404668,
+      "emb": 0.18120849132537842,
+      "az": 182.5,
+      "el": -5.0,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s89500966",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      0.9999999582886002,
+      0.9734513657727962
+     ],
+     "size_m": [
+      1.5,
+      2.012,
+      0.66
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9330217499787004,
+      "de": 1.987629767521247,
+      "emb": 0.1773102581501007,
+      "az": 227.5,
+      "el": -7.5,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_40456917",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000444509234,
+      0.9999999952076668,
+      0.9683098274519047
+     ],
+     "size_m": [
+      1.18,
+      1.99,
+      0.55
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.92924197497447,
+      "de": 1.7201336525895292,
+      "emb": 0.12364036589860916,
+      "az": 0.0,
+      "el": 30.0,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   2
+  ]
+ },
+ {
+  "id": "ikea_s39551722",
+  "model": "parametric",
+  "category": "almirah",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_40456917",
+  "model": "parametric",
+  "category": "almirah",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s89500966",
+  "model": "parametric",
+  "category": "almirah",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s99502371",
+  "model": "parametric",
+  "category": "almirah",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s79561309",
+  "model": "parametric",
+  "category": "almirah",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s89432369",
+  "model": "parametric",
+  "category": "almirah",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s09432306",
+  "model": "parametric",
+  "category": "almirah",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ws_emboss-1-door-multi-utility-wardrobe-honey-finish",
+  "model": "parametric",
+  "category": "almirah",
+  "clean_views": [
+   1,
+   4,
+   5
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_emboss-1-door-multi-utility-wardrobe-honey-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999727034191,
+      1.0000000020856736,
+      0.9490662354353162
+     ],
+     "size_m": [
+      0.5589999999999999,
+      1.829,
+      0.5589999999999999
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9604196471149261,
+      "de": 1.411809038976734,
+      "emb": 0.37513041496276855,
+      "az": 330.0,
+      "el": 0.0,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.9894429409715709,
+      "de": 9.581502630281241,
+      "emb": 0.12808111310005188,
+      "az": 180.0,
+      "el": 0.0,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_cambrey-1-door-with-3-drawers-wardrobe-walnut-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999727034191,
+      1.0000000020856736,
+      0.9490662354353162
+     ],
+     "size_m": [
+      0.5589999999999999,
+      1.829,
+      0.5589999999999999
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9330363999385655,
+      "de": 16.81073913757633,
+      "emb": 0.2965892553329468,
+      "az": 210.0,
+      "el": 0.0,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.9535472063731295,
+      "de": 18.221497923829435,
+      "emb": 0.2921174168586731,
+      "az": 0.0,
+      "el": 2.5,
+      "fov": 45.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_citroen-1-door-multi-utility-wardrobe-walnut-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999727034191,
+      1.0000000020856736,
+      0.9490662354353162
+     ],
+     "size_m": [
+      0.5589999999999999,
+      1.829,
+      0.5589999999999999
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9604196471149261,
+      "de": 18.29495065285225,
+      "emb": 0.3977089524269104,
+      "az": 330.0,
+      "el": 0.0,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.9894429409715709,
+      "de": 19.60942653510474,
+      "emb": 0.18128380179405212,
+      "az": 180.0,
+      "el": 0.0,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   4,
+   5
+  ]
+ },
+ {
+  "id": "ws_citroen-1-door-multi-utility-wardrobe-walnut-finish",
+  "model": "parametric",
+  "category": "almirah",
+  "clean_views": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_citroen-1-door-multi-utility-wardrobe-walnut-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999727034191,
+      1.0000000020856736,
+      0.9490662354353162
+     ],
+     "size_m": [
+      0.5589999999999999,
+      1.829,
+      0.5589999999999999
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.972081494205388,
+      "de": 3.3589419556789757,
+      "emb": 0.3794648349285126,
+      "az": 60.0,
+      "el": 0.0,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.9803042270746809,
+      "de": 5.633366404360917,
+      "emb": 0.307586133480072,
+      "az": 5.0,
+      "el": 10.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.944800669082799,
+      "de": 4.162133954460037,
+      "emb": 0.3823840022087097,
+      "az": 330.0,
+      "el": 0.0,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s89432369",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999957425255,
+      0.9999999738719372,
+      0.9768637568056936
+     ],
+     "size_m": [
+      2.24,
+      0.73,
+      0.76
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9203779257032424,
+      "de": 12.086460119864038,
+      "emb": 0.1572713553905487,
+      "az": 90.0,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.8403351955307262,
+      "de": 12.939704572353705,
+      "emb": 0.2064332813024521,
+      "az": 92.5,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.8781898096782453,
+      "de": 13.056412304022194,
+      "emb": 0.11152730137109756,
+      "az": 92.5,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_charles-2-door-multi-utility-wardrobe-walnut-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000276502956,
+      1.0000000020856736,
+      0.9490662354353162
+     ],
+     "size_m": [
+      0.914,
+      1.829,
+      0.5589999999999999
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9634076865769753,
+      "de": 1.877059730453143,
+      "emb": 0.44437846541404724,
+      "az": 77.5,
+      "el": 7.5,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.9539976148790946,
+      "de": 2.008412874733349,
+      "emb": 0.3580147624015808,
+      "az": 92.5,
+      "el": 15.0,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.9406959998280421,
+      "de": 3.4165613793823715,
+      "emb": 0.3415883183479309,
+      "az": 285.0,
+      "el": 0.0,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   2,
+   3,
+   4
+  ]
+ },
+ {
+  "id": "ws_holden-1-door-multi-utility-wardrobe-walnut-finish",
+  "model": "parametric",
+  "category": "almirah",
+  "clean_views": [
+   1,
+   5
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_holden-1-door-multi-utility-wardrobe-walnut-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999727034191,
+      1.0000000020856736,
+      0.9490662354353162
+     ],
+     "size_m": [
+      0.5589999999999999,
+      1.829,
+      0.5589999999999999
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9717220858762461,
+      "de": 2.260927773521422,
+      "emb": 0.3538075089454651,
+      "az": 60.0,
+      "el": 0.0,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s79561309",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      1.0000000661601516,
+      0.9734513657727962
+     ],
+     "size_m": [
+      1.5,
+      2.364,
+      0.66
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9581187254474028,
+      "de": 37.063081734019285,
+      "emb": 0.33715784549713135,
+      "az": 77.5,
+      "el": 7.5,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s09432306",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      1.0000000661601516,
+      0.9734513657727962
+     ],
+     "size_m": [
+      1.5,
+      2.364,
+      0.66
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9581187254474028,
+      "de": 35.92298778346185,
+      "emb": 0.2681134045124054,
+      "az": 77.5,
+      "el": 7.5,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   5
+  ]
+ },
+ {
+  "id": "ws_cambrey-1-door-with-3-drawers-wardrobe-walnut-finish",
+  "model": "parametric",
+  "category": "almirah",
+  "clean_views": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_cambrey-1-door-with-3-drawers-wardrobe-walnut-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999727034191,
+      1.0000000020856736,
+      0.9490662354353162
+     ],
+     "size_m": [
+      0.5589999999999999,
+      1.829,
+      0.5589999999999999
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9561752988047809,
+      "de": 1.5032066601836886,
+      "emb": 0.5120784640312195,
+      "az": 0.0,
+      "el": 2.5,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.9484456097169458,
+      "de": 3.191905819175291,
+      "emb": 0.4400366544723511,
+      "az": 0.0,
+      "el": 2.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.8503192990272518,
+      "de": 2.122634407086585,
+      "emb": 0.25028175115585327,
+      "az": 190.0,
+      "el": 52.5,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_citroen-1-door-multi-utility-wardrobe-walnut-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999727034191,
+      1.0000000020856736,
+      0.9490662354353162
+     ],
+     "size_m": [
+      0.5589999999999999,
+      1.829,
+      0.5589999999999999
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9712337523971873,
+      "de": 3.15095499011871,
+      "emb": 0.3645673394203186,
+      "az": -7.5,
+      "el": 0.0,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.9914632519674537,
+      "de": 4.331706516305731,
+      "emb": 0.21195341646671295,
+      "az": 0.0,
+      "el": 2.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.852603739849512,
+      "de": 1.4185951260262366,
+      "emb": 0.2831874489784241,
+      "az": 315.0,
+      "el": 0.0,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s09432306",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      1.0000000661601516,
+      0.9734513657727962
+     ],
+     "size_m": [
+      1.5,
+      2.364,
+      0.66
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9442586692645936,
+      "de": 31.19315124543547,
+      "emb": 0.21328476071357727,
+      "az": 277.5,
+      "el": 12.5,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.9501923786433353,
+      "de": 32.942236367186396,
+      "emb": 0.15609166026115417,
+      "az": 277.5,
+      "el": 12.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.8859035902677642,
+      "de": 33.64874571692482,
+      "emb": 0.19727113842964172,
+      "az": 122.5,
+      "el": 2.5,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   2,
+   3,
+   4
+  ]
+ },
+ {
+  "id": "ws_adolph-wardrobe-honey-finish",
+  "model": "parametric",
+  "category": "almirah",
+  "clean_views": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_adolph-wardrobe-honey-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000276502956,
+      1.0000000020856736,
+      0.9490662354353162
+     ],
+     "size_m": [
+      0.914,
+      1.829,
+      0.5589999999999999
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.962964815741204,
+      "de": 3.6506943830577168,
+      "emb": 0.6113685369491577,
+      "az": 0.0,
+      "el": 10.0,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.9295456161558701,
+      "de": 2.7780968399159143,
+      "emb": 0.3357010781764984,
+      "az": 0.0,
+      "el": 45.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.9623894910344138,
+      "de": 7.671763945484283,
+      "emb": 0.39590007066726685,
+      "az": 0.0,
+      "el": 10.0,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.42744336034397223,
+      "de": 5.644100410226844,
+      "emb": 0.33617103099823,
+      "az": 0.0,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s79561309",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      1.0000000661601516,
+      0.9734513657727962
+     ],
+     "size_m": [
+      1.5,
+      2.364,
+      0.66
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9459548907017922,
+      "de": 29.589014058034756,
+      "emb": 0.21370011568069458,
+      "az": 60.0,
+      "el": 10.0,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.9563737982161473,
+      "de": 33.98209664161033,
+      "emb": 0.10446855425834656,
+      "az": 135.0,
+      "el": 5.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.9436438369732085,
+      "de": 35.48597494032134,
+      "emb": 0.09951363503932953,
+      "az": 60.0,
+      "el": 10.0,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.4923838041921625,
+      "de": 30.054819535784564,
+      "emb": 0.17694903910160065,
+      "az": -2.5,
+      "el": 52.5,
+      "fov": 45.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s99502371",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      0.9999999582886002,
+      0.9734513657727962
+     ],
+     "size_m": [
+      1.5,
+      2.012,
+      0.66
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.885242962166039,
+      "de": 28.90061922445419,
+      "emb": 0.15504637360572815,
+      "az": 60.0,
+      "el": 0.0,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.9486077045159429,
+      "de": 33.609761739614946,
+      "emb": 0.19605082273483276,
+      "az": 300.0,
+      "el": 5.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.9005708769535475,
+      "de": 35.57835504986543,
+      "emb": 0.146687313914299,
+      "az": 62.5,
+      "el": 0.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.5012963157844385,
+      "de": 28.38690544008198,
+      "emb": 0.30341047048568726,
+      "az": -10.0,
+      "el": 47.5,
+      "fov": 45.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "ws_charles-2-door-multi-utility-wardrobe-walnut-finish",
+  "model": "parametric",
+  "category": "almirah",
+  "clean_views": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_charles-2-door-multi-utility-wardrobe-walnut-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000276502956,
+      1.0000000020856736,
+      0.9490662354353162
+     ],
+     "size_m": [
+      0.914,
+      1.829,
+      0.5589999999999999
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9825712233660522,
+      "de": 0.2688549834478873,
+      "emb": 0.4457768201828003,
+      "az": 0.0,
+      "el": 10.0,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.9860097606321171,
+      "de": 1.2169572830683486,
+      "emb": 0.6501449346542358,
+      "az": 332.5,
+      "el": 5.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.9799961684600402,
+      "de": 3.8750219165144406,
+      "emb": 0.39326274394989014,
+      "az": -7.5,
+      "el": 5.0,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.931236517987614,
+      "de": 2.3637291314713007,
+      "emb": 0.17905330657958984,
+      "az": -2.5,
+      "el": 45.0,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s89500966",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      0.9999999582886002,
+      0.9734513657727962
+     ],
+     "size_m": [
+      1.5,
+      2.012,
+      0.66
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8835769096061388,
+      "de": 34.46456884628668,
+      "emb": 0.37751591205596924,
+      "az": 62.5,
+      "el": 7.5,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.9660268832087601,
+      "de": 34.11395877108139,
+      "emb": 0.20831367373466492,
+      "az": 115.0,
+      "el": 2.5,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.8827686088520363,
+      "de": 33.1901526703254,
+      "emb": 0.19129127264022827,
+      "az": 297.5,
+      "el": 7.5,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.9570201791180138,
+      "de": 32.89301523813324,
+      "emb": 0.22660669684410095,
+      "az": 300.0,
+      "el": 5.0,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_adolph-wardrobe-honey-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000276502956,
+      1.0000000020856736,
+      0.9490662354353162
+     ],
+     "size_m": [
+      0.914,
+      1.829,
+      0.5589999999999999
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9363508003744071,
+      "de": 15.276378239070302,
+      "emb": 0.6573401689529419,
+      "az": 0.0,
+      "el": 10.0,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.9453048084886937,
+      "de": 14.083059727565953,
+      "emb": 0.7220048308372498,
+      "az": 327.5,
+      "el": 5.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.9294993688180119,
+      "de": 19.248028912357796,
+      "emb": 0.36427193880081177,
+      "az": 0.0,
+      "el": 10.0,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.9372418910027578,
+      "de": 16.7701181315194,
+      "emb": 0.3248080611228943,
+      "az": -2.5,
+      "el": 47.5,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "ikea_20352987",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   0,
+   2
+  ],
+  "input_view": 0,
+  "pairs": [
+   {
+    "asset": "ikea_20352987",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000264909539,
+      0.9999999602635717,
+      0.9999999783255843
+     ],
+     "size_m": [
+      0.9,
+      0.45,
+      0.55
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.6937961440218342,
+      "de": 4.162695720938409,
+      "emb": 0.6833717823028564,
+      "az": 267.5,
+      "el": 27.5,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_00586553",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999705049188,
+      0.9999999341211865,
+      0.9999999705049188
+     ],
+     "size_m": [
+      0.97,
+      0.38,
+      0.97
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.6723529463277084,
+      "de": 21.982892631172692,
+      "emb": 0.3727595806121826,
+      "az": 267.5,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_50497583",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.000000005418604,
+      0.9999999318804106,
+      1.000000005418604
+     ],
+     "size_m": [
+      0.88,
+      0.35,
+      0.88
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7639613653249421,
+      "de": 3.4441609188425963,
+      "emb": 0.238507479429245,
+      "az": 272.5,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   2
+  ]
+ },
+ {
+  "id": "ikea_20500407",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_10604349",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_10500356",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_00411997",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_30651392",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_00586553",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_80576319",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_50497583",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ws_adolph-bedside-table-honey-finish",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   1,
+   3,
+   4
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_adolph-bedside-table-honey-finish",
+    "missing": true
+   },
+   {
+    "asset": "ikea_10604349",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ],
+     "size_m": [
+      0.5,
+      0.5,
+      0.5
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8662212774572325,
+      "de": 22.507027465724924,
+      "emb": 0.37415143847465515,
+      "az": 270.0,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.7530684338094993,
+      "de": 18.737176864485054,
+      "emb": 0.21545591950416565,
+      "az": 330.0,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_ferguson-bedside-table-walnut-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000276502956,
+      0.9999999553699233,
+      0.9999999825874075
+     ],
+     "size_m": [
+      0.457,
+      0.406,
+      0.35600000000000004
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8409321273083569,
+      "de": 10.985912503273346,
+      "emb": 0.36850255727767944,
+      "az": 0.0,
+      "el": 45.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.7760813619716915,
+      "de": 8.728080991639123,
+      "emb": 0.24632836878299713,
+      "az": 355.0,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   3,
+   4
+  ]
+ },
+ {
+  "id": "ws_morse-bedside-table-honey-finish",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_morse-bedside-table-honey-finish",
+    "missing": true
+   },
+   {
+    "asset": "ws_ferguson-bedside-table-walnut-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000276502956,
+      0.9999999553699233,
+      0.9999999825874075
+     ],
+     "size_m": [
+      0.457,
+      0.406,
+      0.35600000000000004
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8059323511016784,
+      "de": 16.683625709144888,
+      "emb": 0.15467888116836548,
+      "az": 170.0,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.7824902620160954,
+      "de": 17.35298767492117,
+      "emb": 0.21512138843536377,
+      "az": 0.0,
+      "el": 45.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.7943556729259714,
+      "de": 14.984667084480847,
+      "emb": 0.0954236090183258,
+      "az": 170.0,
+      "el": 52.5,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.5263181378746189,
+      "de": 15.349846065730372,
+      "emb": 0.11580702662467957,
+      "az": 315.0,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_allan-bedside-honey-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.000000028774657,
+      1.0000000793306962,
+      0.9999999825874075
+     ],
+     "size_m": [
+      0.406,
+      0.5589999999999999,
+      0.35600000000000004
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7272553644584929,
+      "de": 24.972676894275597,
+      "emb": 0.10271412134170532,
+      "az": 180.0,
+      "el": 52.5,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.7358560465731675,
+      "de": 25.634858934688133,
+      "emb": 0.12849824130535126,
+      "az": 180.0,
+      "el": 52.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.6395723009096207,
+      "de": 25.991704366157325,
+      "emb": 0.0724056214094162,
+      "az": 332.5,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.4827564856665222,
+      "de": 25.41281793191824,
+      "emb": 0.07009435445070267,
+      "az": 307.5,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "ws_ferguson-bedside-table-walnut-finish",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   1,
+   3,
+   4
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_ferguson-bedside-table-walnut-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000276502956,
+      0.9999999553699233,
+      0.9999999825874075
+     ],
+     "size_m": [
+      0.457,
+      0.406,
+      0.35600000000000004
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.525635846025199,
+      "de": 4.970349624222054,
+      "emb": 0.5021079778671265,
+      "az": 0.0,
+      "el": 30.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.795972894482091,
+      "de": 4.923743343718223,
+      "emb": 0.29323482513427734,
+      "az": 350.0,
+      "el": 37.5,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_swirl-bedside-table",
+    "missing": true
+   },
+   {
+    "asset": "ws_bryson-bedside-table-walnut-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.000000028774657,
+      0.9999999624373369,
+      0.9999999825874075
+     ],
+     "size_m": [
+      0.406,
+      0.457,
+      0.35600000000000004
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.504967114950427,
+      "de": 6.4084391858287955,
+      "emb": 0.3080730438232422,
+      "az": 180.0,
+      "el": 37.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.7284365982434254,
+      "de": 4.590148843057205,
+      "emb": 0.23646226525306702,
+      "az": 165.0,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   3,
+   4
+  ]
+ },
+ {
+  "id": "ws_allan-bedside-honey-finish",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   2,
+   3
+  ],
+  "input_view": 2,
+  "pairs": [
+   {
+    "asset": "ws_allan-bedside-honey-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.000000028774657,
+      1.0000000793306962,
+      0.9999999825874075
+     ],
+     "size_m": [
+      0.406,
+      0.5589999999999999,
+      0.35600000000000004
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.5832095884599067,
+      "de": 23.442432482141626,
+      "emb": 0.5344766974449158,
+      "az": 180.0,
+      "el": 42.5,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_10604349",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ],
+     "size_m": [
+      0.5,
+      0.5,
+      0.5
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7402800928894018,
+      "de": 19.32820331078559,
+      "emb": 0.5541146397590637,
+      "az": 267.5,
+      "el": 25.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_orwell-round-coffee-table-honey-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.999999968085703,
+      0.9999999740609424,
+      0.999999968085703
+     ],
+     "size_m": [
+      0.762,
+      0.43200000000000005,
+      0.762
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.48174539453142423,
+      "de": 8.295068633840486,
+      "emb": 0.1752490997314453,
+      "az": 305.0,
+      "el": 42.5,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   3
+  ]
+ },
+ {
+  "id": "ws_denzel-bedside-table-walnut-finish",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   1,
+   2
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_denzel-bedside-table-walnut-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000276502956,
+      0.9999999624373369,
+      1.000000028774657
+     ],
+     "size_m": [
+      0.457,
+      0.457,
+      0.406
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7935770789877602,
+      "de": 5.899602576373199,
+      "emb": 0.3389093279838562,
+      "az": 172.5,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_50497583",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.000000005418604,
+      0.9999999318804106,
+      1.000000005418604
+     ],
+     "size_m": [
+      0.88,
+      0.35,
+      0.88
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8410500490677134,
+      "de": 7.99574977392798,
+      "emb": 0.03648453950881958,
+      "az": 347.5,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_swirl-bedside-table",
+    "missing": true
+   }
+  ],
+  "held_out_views": [
+   2
+  ]
+ },
+ {
+  "id": "ws_florian-bedside-table-honey-finish",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   1,
+   2,
+   3
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_florian-bedside-table-honey-finish",
+    "missing": true
+   },
+   {
+    "asset": "ikea_10604349",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ],
+     "size_m": [
+      0.5,
+      0.5,
+      0.5
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8210620127707917,
+      "de": 21.327204847391208,
+      "emb": 0.14907057583332062,
+      "az": 267.5,
+      "el": 52.5,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.7931345409952841,
+      "de": 21.016534453095147,
+      "emb": 0.14042043685913086,
+      "az": 270.0,
+      "el": 52.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_20500407",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.999999985098839,
+      0.9999999602635717,
+      1.0
+     ],
+     "size_m": [
+      0.8,
+      0.45,
+      0.5
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7527710694160629,
+      "de": 10.87427068325526,
+      "emb": 0.20129641890525818,
+      "az": 180.0,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.709044908285895,
+      "de": 13.434588702641896,
+      "emb": 0.10572066903114319,
+      "az": 270.0,
+      "el": 27.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   2,
+   3
+  ]
+ },
+ {
+  "id": "ws_bryson-bedside-table-walnut-finish",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   2,
+   3,
+   4
+  ],
+  "input_view": 2,
+  "pairs": [
+   {
+    "asset": "ws_bryson-bedside-table-walnut-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.000000028774657,
+      0.9999999624373369,
+      0.9999999825874075
+     ],
+     "size_m": [
+      0.406,
+      0.457,
+      0.35600000000000004
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.5306977097414645,
+      "de": 2.3930516462228995,
+      "emb": 0.3470613360404968,
+      "az": 0.0,
+      "el": 45.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.5376874171284806,
+      "de": 2.987088630522976,
+      "emb": 0.23196381330490112,
+      "az": 350.0,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_adolph-bedside-table-honey-finish",
+    "missing": true
+   },
+   {
+    "asset": "ws_florian-bedside-table-honey-finish",
+    "missing": true
+   }
+  ],
+  "held_out_views": [
+   3,
+   4
+  ]
+ },
+ {
+  "id": "ws_swirl-bedside-table",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   1,
+   2,
+   3
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_swirl-bedside-table",
+    "missing": true
+   },
+   {
+    "asset": "ws_adolph-bedside-table-honey-finish",
+    "missing": true
+   },
+   {
+    "asset": "ws_allan-bedside-honey-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.000000028774657,
+      1.0000000793306962,
+      0.9999999825874075
+     ],
+     "size_m": [
+      0.406,
+      0.5589999999999999,
+      0.35600000000000004
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7463619584674315,
+      "de": 19.93757856848865,
+      "emb": 0.16730357706546783,
+      "az": 180.0,
+      "el": 52.5,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.7550773485437732,
+      "de": 20.259335183695796,
+      "emb": 0.19310852885246277,
+      "az": 180.0,
+      "el": 52.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   2,
+   3
+  ]
+ },
+ {
+  "id": "ws_orwell-round-coffee-table-honey-finish",
+  "model": "parametric",
+  "category": "table",
+  "clean_views": [
+   2,
+   3,
+   4
+  ],
+  "input_view": 2,
+  "pairs": [
+   {
+    "asset": "ws_orwell-round-coffee-table-honey-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.999999968085703,
+      0.9999999740609424,
+      0.999999968085703
+     ],
+     "size_m": [
+      0.762,
+      0.43200000000000005,
+      0.762
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.6721561161351737,
+      "de": 4.748086782087767,
+      "emb": 0.5342534184455872,
+      "az": 305.0,
+      "el": 30.0,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.7376592799987274,
+      "de": 4.68848234169641,
+      "emb": 0.5584101676940918,
+      "az": 305.0,
+      "el": 30.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_ferguson-bedside-table-walnut-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000276502956,
+      0.9999999553699233,
+      0.9999999825874075
+     ],
+     "size_m": [
+      0.457,
+      0.406,
+      0.35600000000000004
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.6969447537887958,
+      "de": 13.694812416942325,
+      "emb": 0.2963259816169739,
+      "az": 322.5,
+      "el": 47.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.7511086027573974,
+      "de": 13.625200379860036,
+      "emb": 0.29801201820373535,
+      "az": 325.0,
+      "el": 50.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_20352987",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000264909539,
+      0.9999999602635717,
+      0.9999999783255843
+     ],
+     "size_m": [
+      0.9,
+      0.45,
+      0.55
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.6474708863010046,
+      "de": 19.443671127298206,
+      "emb": 0.26773586869239807,
+      "az": 30.0,
+      "el": 30.0,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.6909303626837581,
+      "de": 19.505060954142053,
+      "emb": 0.2356509268283844,
+      "az": 30.0,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   3,
+   4
+  ]
+ },
+ {
+  "id": "ikea_70533491",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_80581919",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   0,
+   1
+  ],
+  "input_view": 0,
+  "pairs": [
+   {
+    "asset": "ikea_80581919",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      0.9999999018276536,
+      1.0000000075688438
+     ],
+     "size_m": [
+      0.75,
+      0.68,
+      0.63
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7208627511831794,
+      "de": 7.361390836400187,
+      "emb": 0.15245677530765533,
+      "az": 310.0,
+      "el": 40.0,
+      "fov": 45.0,
+      "view": 1,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_90581914",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999833661459,
+      0.9999999018276536,
+      0.9999999970565608
+     ],
+     "size_m": [
+      0.86,
+      0.68,
+      0.81
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.720753797169452,
+      "de": 16.01688793600311,
+      "emb": 0.20290237665176392,
+      "az": 315.0,
+      "el": 30.0,
+      "fov": 20.0,
+      "view": 1,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_30492317",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999705049188,
+      1.00000000944232,
+      0.999999985098839
+     ],
+     "size_m": [
+      0.97,
+      1.01,
+      0.8
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7846513265273466,
+      "de": 29.210334679401427,
+      "emb": 0.23636427521705627,
+      "az": 230.0,
+      "el": 35.0,
+      "fov": 20.0,
+      "view": 1,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   1
+  ]
+ },
+ {
+  "id": "ikea_s19625328",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_10535544",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_30492317",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s39626280",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_90581914",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   0,
+   1
+  ],
+  "input_view": 0,
+  "pairs": [
+   {
+    "asset": "ikea_90581914",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999833661459,
+      0.9999999018276536,
+      0.9999999970565608
+     ],
+     "size_m": [
+      0.86,
+      0.68,
+      0.81
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.6638766684065319,
+      "de": 5.660663823632884,
+      "emb": 0.3690589666366577,
+      "az": 240.0,
+      "el": 25.0,
+      "fov": 20.0,
+      "view": 1,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_30575812",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999970565608,
+      0.9999999462718724,
+      0.9999999728383905
+     ],
+     "size_m": [
+      0.81,
+      0.71,
+      0.79
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.6150367156208277,
+      "de": 30.95443588348728,
+      "emb": 0.060458794236183167,
+      "az": 237.5,
+      "el": 42.5,
+      "fov": 45.0,
+      "view": 1,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s19625328",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.000000008722631,
+      1.0,
+      0.9999999894815335
+     ],
+     "size_m": [
+      0.82,
+      1.0,
+      0.68
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.6262537297336161,
+      "de": 30.59188478509293,
+      "emb": 0.34906041622161865,
+      "az": 230.0,
+      "el": 30.0,
+      "fov": 20.0,
+      "view": 1,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   1
+  ]
+ },
+ {
+  "id": "ikea_70535895",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s99628653",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ws_udaya-sheesham-wood-arm-chair-green-stripe-teak-finish",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [],
+  "input_view": null,
+  "pairs": [],
+  "skipped": "no clean view"
+ },
+ {
+  "id": "ws_kelvin-arm-chair-with-cane-cream-robins",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   5
+  ],
+  "input_view": 5,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ws_danon-lounge-chair-blue-stripe",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   1
+  ],
+  "input_view": 1,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ws_thrace-lounge-chair-salmon-pink",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   1
+  ],
+  "input_view": 1,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ws_crisper-lounge-chair-cotton-grey-robins",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   4,
+   5
+  ],
+  "input_view": 4,
+  "pairs": [
+   {
+    "asset": "ws_crisper-lounge-chair-cotton-grey-robins",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.999999968085703,
+      0.9999999993941079,
+      0.9999999765489928
+     ],
+     "size_m": [
+      0.762,
+      0.787,
+      0.61
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7943190032742271,
+      "de": 0.4744238752198438,
+      "emb": 0.2986814081668854,
+      "az": 352.5,
+      "el": 27.5,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_30492317",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999705049188,
+      1.00000000944232,
+      0.999999985098839
+     ],
+     "size_m": [
+      0.97,
+      1.01,
+      0.8
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7301131287028,
+      "de": 2.7631026398166827,
+      "emb": 0.35481348633766174,
+      "az": 345.0,
+      "el": 20.0,
+      "fov": 45.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s19625328",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.000000008722631,
+      1.0,
+      0.9999999894815335
+     ],
+     "size_m": [
+      0.82,
+      1.0,
+      0.68
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7739782676895873,
+      "de": 16.688258302224273,
+      "emb": 0.45643454790115356,
+      "az": 0.0,
+      "el": 5.0,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   5
+  ]
+ },
+ {
+  "id": "ws_adire-lounge-chair-cream-robins",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   1,
+   2,
+   3
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_adire-lounge-chair-cream-robins",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.999999968085703,
+      1.00000008222872,
+      1.0000000155279403
+     ],
+     "size_m": [
+      0.762,
+      1.067,
+      0.737
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7414125458488394,
+      "de": 2.7231247253347575,
+      "emb": 0.2527165710926056,
+      "az": 220.0,
+      "el": 7.5,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.8618691830032553,
+      "de": 1.8212699822229772,
+      "emb": 0.21506765484809875,
+      "az": 0.0,
+      "el": 30.0,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s39626280",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.99999995097936,
+      1.0,
+      0.99999995097936
+     ],
+     "size_m": [
+      1.07,
+      1.0,
+      1.07
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.749843782545303,
+      "de": 5.303948160971013,
+      "emb": 0.4649610221385956,
+      "az": 330.0,
+      "el": 30.0,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.7801846168486666,
+      "de": 4.943697388787148,
+      "emb": 0.19462653994560242,
+      "az": 5.0,
+      "el": 47.5,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_30492317",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999705049188,
+      1.00000000944232,
+      0.999999985098839
+     ],
+     "size_m": [
+      0.97,
+      1.01,
+      0.8
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.773575,
+      "de": 16.440928512072038,
+      "emb": 0.4271170496940613,
+      "az": 352.5,
+      "el": 32.5,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.8134732305482157,
+      "de": 16.584395309220092,
+      "emb": 0.2235977053642273,
+      "az": 10.0,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   2,
+   3
+  ]
+ },
+ {
+  "id": "ws_crisper-lounge-chair-bubble-robins",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   4
+  ],
+  "input_view": 4,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_20321321",
+  "model": "parametric",
+  "category": "lamp",
+  "clean_views": [],
+  "input_view": null,
+  "pairs": [],
+  "skipped": "no clean view"
+ },
+ {
+  "id": "ikea_60563577",
+  "model": "parametric",
+  "category": "lamp",
+  "clean_views": [],
+  "input_view": null,
+  "pairs": [],
+  "skipped": "no clean view"
+ },
+ {
+  "id": "ikea_60459712",
+  "model": "parametric",
+  "category": "lamp",
+  "clean_views": [],
+  "input_view": null,
+  "pairs": [],
+  "skipped": "no clean view"
+ },
+ {
+  "id": "ikea_20405047",
+  "model": "parametric",
+  "category": "lamp",
+  "clean_views": [
+   0,
+   5
+  ],
+  "input_view": 0,
+  "pairs": [
+   {
+    "asset": "ikea_20405047",
+    "missing": true
+   },
+   {
+    "asset": "ikea_20321321",
+    "missing": true
+   },
+   {
+    "asset": "ikea_60459712",
+    "missing": true
+   }
+  ],
+  "held_out_views": [
+   5
+  ]
+ },
+ {
+  "id": "ikea_50314814",
+  "model": "parametric",
+  "category": "lamp",
+  "clean_views": [],
+  "input_view": null,
+  "pairs": [],
+  "skipped": "no clean view"
+ },
+ {
+  "id": "ikea_10478124",
+  "model": "parametric",
+  "category": "lamp",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_60602041",
+  "model": "parametric",
+  "category": "lamp",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ws_adolph-bed-honey-finish",
+  "model": "parametric",
+  "category": "bed",
+  "clean_views": [
+   1,
+   3,
+   4
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_adolph-bed-honey-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000150184933,
+      0.9999999705049188,
+      1.0024061266459259
+     ],
+     "size_m": [
+      1.905,
+      1.067,
+      2.083
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9375722343930586,
+      "de": 3.0973981622947995,
+      "emb": 0.3588920831680298,
+      "az": 2.5,
+      "el": 7.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.7466018779959288,
+      "de": 7.313178968470377,
+      "emb": 0.5903197526931763,
+      "az": 322.5,
+      "el": 7.5,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_30504631",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000201075914,
+      0.9999999833661459,
+      1.0097561210482555
+     ],
+     "size_m": [
+      1.66,
+      0.86,
+      2.07
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8349419967725238,
+      "de": 23.487425633126005,
+      "emb": 0.4878883361816406,
+      "az": 0.0,
+      "el": 20.0,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.6814216740374082,
+      "de": 18.76447910067009,
+      "emb": 0.5215058922767639,
+      "az": 295.0,
+      "el": 22.5,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999697246258,
+      0.9999999917549771,
+      1.009350192429101
+     ],
+     "size_m": [
+      1.575,
+      1.041,
+      2.1590000000000003
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8759437010418144,
+      "de": 14.639087104036468,
+      "emb": 0.0780053585767746,
+      "az": 165.0,
+      "el": 0.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.7251891320263565,
+      "de": 9.471421658382425,
+      "emb": 0.470527321100235,
+      "az": 315.0,
+      "el": 10.0,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   3,
+   4
+  ]
+ },
+ {
+  "id": "ws_adolph-queen-size-bed-walnut-finish",
+  "model": "parametric",
+  "category": "bed",
+  "clean_views": [
+   1,
+   3,
+   4
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_adolph-queen-size-bed-walnut-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.999999985098839,
+      0.9999999705049188,
+      1.0024061266459259
+     ],
+     "size_m": [
+      1.6,
+      1.067,
+      2.083
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8102342547052755,
+      "de": 3.054162782304349,
+      "emb": 0.25643157958984375,
+      "az": 2.5,
+      "el": 7.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.6217181487701694,
+      "de": 7.226202683171602,
+      "emb": 0.5208402276039124,
+      "az": 270.0,
+      "el": 20.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_20518271",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0204081899521011,
+      1.6923077543811709,
+      1.1199999237060598
+     ],
+     "size_m": [
+      0.4,
+      0.88,
+      0.392
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.549876143999288,
+      "de": 21.414296546498054,
+      "emb": 0.04476078227162361,
+      "az": 35.0,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.3854330504519764,
+      "de": 17.50066581655604,
+      "emb": 0.09969960153102875,
+      "az": 50.0,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_lotus-premium-ash-wood-bed-with-brass-inlay-queen-size-teak-",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000020856736,
+      0.999999968085703,
+      1.009132393724649
+     ],
+     "size_m": [
+      1.829,
+      1.016,
+      2.21
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8572534473026369,
+      "de": 5.116525838634353,
+      "emb": 0.261863648891449,
+      "az": 0.0,
+      "el": 10.0,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.6493062818099421,
+      "de": 3.380912902519009,
+      "emb": 0.3972933888435364,
+      "az": 105.0,
+      "el": 10.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   3,
+   4
+  ]
+ },
+ {
+  "id": "ws_walken-queen-size-bed-honey-finish",
+  "model": "parametric",
+  "category": "bed",
+  "clean_views": [
+   1,
+   5
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_walken-queen-size-bed-honey-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.999999985098839,
+      1.000000000569018,
+      1.0022421438940574
+     ],
+     "size_m": [
+      1.6,
+      0.838,
+      2.235
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8398757924699185,
+      "de": 3.5599754862129926,
+      "emb": 0.5178152322769165,
+      "az": 327.5,
+      "el": 2.5,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_adolph-bed-honey-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000150184933,
+      0.9999999705049188,
+      1.0024061266459259
+     ],
+     "size_m": [
+      1.905,
+      1.067,
+      2.083
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7833577157846946,
+      "de": 9.092083094755129,
+      "emb": 0.4310779571533203,
+      "az": 230.0,
+      "el": 10.0,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_adolph-queen-size-bed-walnut-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.999999985098839,
+      0.9999999705049188,
+      1.0024061266459259
+     ],
+     "size_m": [
+      1.6,
+      1.067,
+      2.083
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.713987090253371,
+      "de": 9.144473604605556,
+      "emb": 0.3958146274089813,
+      "az": 227.5,
+      "el": 15.0,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   5
+  ]
+ },
+ {
+  "id": "ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish",
+  "model": "parametric",
+  "category": "bed",
+  "clean_views": [
+   5
+  ],
+  "input_view": 5,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ws_knot-floor-lamp",
+  "model": "parametric",
+  "category": "lamp",
+  "clean_views": [],
+  "input_view": null,
+  "pairs": [],
+  "skipped": "no clean view"
+ },
+ {
+  "id": "ikea_s69510607",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s59536306",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s39585821",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s99613524",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s49395019",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s79627659",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_30638777",
+  "model": "parametric",
+  "category": "sofa",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_30437811",
+  "model": "parametric",
+  "category": "lamp",
+  "clean_views": [],
+  "input_view": null,
+  "pairs": [],
+  "skipped": "no clean view"
+ },
+ {
+  "id": "ikea_20568223",
+  "model": "parametric",
+  "category": "lamp",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_80573580",
+  "model": "parametric",
+  "category": "lamp",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_60404913",
+  "model": "parametric",
+  "category": "lamp",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_70524458",
+  "model": "parametric",
+  "category": "lamp",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_00594614",
+  "model": "parametric",
+  "category": "lamp",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_30575812",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_00582036",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   0,
+   1,
+   3
+  ],
+  "input_view": 0,
+  "pairs": [
+   {
+    "asset": "ikea_00582036",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000034553416,
+      0.9999999462718724,
+      1.0000000223517422
+     ],
+     "size_m": [
+      0.69,
+      0.71,
+      0.64
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.32820539294133844,
+      "de": 5.575320556997611,
+      "emb": 0.3028388023376465,
+      "az": 232.5,
+      "el": 27.5,
+      "fov": 20.0,
+      "view": 1,
+      "is_input": false
+     },
+     {
+      "iou": 0.2937528481702364,
+      "de": 17.474479411657256,
+      "emb": 0.27103346586227417,
+      "az": 312.5,
+      "el": 10.0,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_thrace-lounge-chair-salmon-pink",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000146970358,
+      0.999999968085703,
+      0.9999999727034191
+     ],
+     "size_m": [
+      0.584,
+      0.762,
+      0.5589999999999999
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.3344830662186673,
+      "de": 30.282558786043918,
+      "emb": 0.19328999519348145,
+      "az": 317.5,
+      "el": -5.0,
+      "fov": 20.0,
+      "view": 1,
+      "is_input": false
+     },
+     {
+      "iou": 0.2800808519398851,
+      "de": 10.429693244915644,
+      "emb": 0.22105637192726135,
+      "az": 225.0,
+      "el": 20.0,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_30492317",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999705049188,
+      1.00000000944232,
+      0.999999985098839
+     ],
+     "size_m": [
+      0.97,
+      1.01,
+      0.8
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.3355717029984131,
+      "de": 27.433694003799992,
+      "emb": 0.26085641980171204,
+      "az": 307.5,
+      "el": -7.5,
+      "fov": 45.0,
+      "view": 1,
+      "is_input": false
+     },
+     {
+      "iou": 0.2588430361090641,
+      "de": 5.12196646758188,
+      "emb": 0.2349105179309845,
+      "az": 300.0,
+      "el": 20.0,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   1,
+   3
+  ]
+ },
+ {
+  "id": "ikea_00598216",
+  "model": "parametric",
+  "category": "chair",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_30503655",
+  "model": "parametric",
+  "category": "bed",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_20518271",
+  "model": "parametric",
+  "category": "bed",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_40453768",
+  "model": "parametric",
+  "category": "almirah",
+  "clean_views": [
+   0,
+   2
+  ],
+  "input_view": 0,
+  "pairs": [
+   {
+    "asset": "ikea_40453768",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000366797828,
+      1.000000005418604,
+      0.9683098274519047
+     ],
+     "size_m": [
+      1.17,
+      1.76,
+      0.55
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.981343879343167,
+      "de": 1.6362124173268424,
+      "emb": 0.13951897621154785,
+      "az": 170.0,
+      "el": 0.0,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s39551722",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      1.0000000661601516,
+      0.9734513657727962
+     ],
+     "size_m": [
+      2.0,
+      2.364,
+      0.66
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9335919279208504,
+      "de": 10.689504978080546,
+      "emb": 0.1053350642323494,
+      "az": 232.5,
+      "el": 7.5,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s09432306",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0,
+      1.0000000661601516,
+      0.9734513657727962
+     ],
+     "size_m": [
+      1.5,
+      2.364,
+      0.66
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9655050566589497,
+      "de": 27.000216051905955,
+      "emb": 0.08732634037733078,
+      "az": 0.0,
+      "el": 27.5,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   2
+  ]
+ },
+ {
+  "id": "ikea_50409893",
+  "model": "parametric",
+  "category": "tv_unit",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_50483878",
+  "model": "parametric",
+  "category": "tv_unit",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_80498939",
+  "model": "parametric",
+  "category": "tv_unit",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ws_melvina-tv-unit-honey-finish",
+  "model": "parametric",
+  "category": "tv_unit",
+  "clean_views": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_melvina-tv-unit-honey-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999871125094,
+      0.999999968085703,
+      0.9311926829555046
+     ],
+     "size_m": [
+      1.702,
+      0.508,
+      0.406
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.921368942464235,
+      "de": 4.055071060209728,
+      "emb": 0.6265904903411865,
+      "az": 0.0,
+      "el": 10.0,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.9035608742721714,
+      "de": 2.556683585980973,
+      "emb": 0.46369123458862305,
+      "az": 340.0,
+      "el": 22.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.7490638912639679,
+      "de": 2.605108276101961,
+      "emb": 0.5092916488647461,
+      "az": 350.0,
+      "el": 32.5,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_50409893",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000264909539,
+      1.000000053981568,
+      0.9318181868673355
+     ],
+     "size_m": [
+      1.8,
+      0.53,
+      0.41
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.7622666026383436,
+      "de": 33.25522094387696,
+      "emb": 0.48252856731414795,
+      "az": 0.0,
+      "el": 15.0,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.8062741795404901,
+      "de": 31.879048779104057,
+      "emb": 0.35438692569732666,
+      "az": 345.0,
+      "el": 30.0,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.7197292342405867,
+      "de": 31.876027604709048,
+      "emb": 0.39365077018737793,
+      "az": 352.5,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_80498939",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999602635717,
+      1.0000000430478009,
+      1.0000000170298988
+     ],
+     "size_m": [
+      1.2,
+      0.36,
+      0.35
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8769271575876132,
+      "de": 20.243126715087257,
+      "emb": 0.49384018778800964,
+      "az": 180.0,
+      "el": 20.0,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.8811990046872288,
+      "de": 20.620303378907796,
+      "emb": 0.3157156705856323,
+      "az": 345.0,
+      "el": 27.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.7246487119437939,
+      "de": 20.485452066333547,
+      "emb": 0.36839428544044495,
+      "az": 352.5,
+      "el": 30.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   2,
+   3,
+   4
+  ]
+ },
+ {
+  "id": "ws_radiant-tv-unit-frosty-white-finish",
+  "model": "parametric",
+  "category": "tv_unit",
+  "clean_views": [
+   1,
+   5
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_radiant-tv-unit-frosty-white-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000148644892,
+      1.0000000276502956,
+      0.9999999765489928
+     ],
+     "size_m": [
+      1.219,
+      0.457,
+      0.305
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.3956641341367566,
+      "de": 0.6541036151993281,
+      "emb": 0.16609199345111847,
+      "az": 347.5,
+      "el": 2.5,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_80498939",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999602635717,
+      1.0000000430478009,
+      1.0000000170298988
+     ],
+     "size_m": [
+      1.2,
+      0.36,
+      0.35
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.4745396714231521,
+      "de": 23.117321230821002,
+      "emb": 0.3608383536338806,
+      "az": 180.0,
+      "el": 30.0,
+      "fov": 45.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_melvina-tv-unit-honey-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999871125094,
+      0.999999968085703,
+      0.9311926829555046
+     ],
+     "size_m": [
+      1.702,
+      0.508,
+      0.406
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.487946453368883,
+      "de": 30.33878748190483,
+      "emb": 0.5088139772415161,
+      "az": -7.5,
+      "el": 27.5,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   5
+  ]
+ },
+ {
+  "id": "ws_harvey-tv-unit-frosty-white",
+  "model": "parametric",
+  "category": "tv_unit",
+  "clean_views": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_harvey-tv-unit-frosty-white",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.999999968085703,
+      0.999999968085703,
+      0.9383983793411032
+     ],
+     "size_m": [
+      1.524,
+      0.508,
+      0.457
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9365110246433204,
+      "de": 3.230535707227568,
+      "emb": 0.7163176536560059,
+      "az": 330.0,
+      "el": 10.0,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.8851508975271959,
+      "de": 9.452204154252781,
+      "emb": 0.35583484172821045,
+      "az": 5.0,
+      "el": -7.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.85096050075545,
+      "de": 5.261366274791145,
+      "emb": 0.5263449549674988,
+      "az": 330.0,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.7691784578260392,
+      "de": 9.336073586292272,
+      "emb": 0.5887669324874878,
+      "az": 30.0,
+      "el": 27.5,
+      "fov": 45.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_50483878",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000264909539,
+      1.0000000596046483,
+      1.0000000170298988
+     ],
+     "size_m": [
+      0.9,
+      0.4,
+      0.35
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8767572075291875,
+      "de": 11.225000659212554,
+      "emb": 0.4845130443572998,
+      "az": 347.5,
+      "el": 42.5,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.7680214381420277,
+      "de": 6.242711984275304,
+      "emb": 0.5082886815071106,
+      "az": 0.0,
+      "el": 20.0,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.8494998979383548,
+      "de": 17.06853036382342,
+      "emb": 0.45042863488197327,
+      "az": 332.5,
+      "el": 52.5,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.7115349900716048,
+      "de": 13.536512144522124,
+      "emb": 0.3800443410873413,
+      "az": 15.0,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_50409893",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000264909539,
+      1.000000053981568,
+      0.9318181868673355
+     ],
+     "size_m": [
+      1.8,
+      0.53,
+      0.41
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9068371061550693,
+      "de": 10.493944710463825,
+      "emb": 0.6862830519676208,
+      "az": 315.0,
+      "el": 10.0,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.9124040591356307,
+      "de": 7.013547414004071,
+      "emb": 0.5092732906341553,
+      "az": 0.0,
+      "el": 10.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.8855589276681841,
+      "de": 16.271478838645116,
+      "emb": 0.5166431665420532,
+      "az": 315.0,
+      "el": 25.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.8021405773799525,
+      "de": 13.650377820518285,
+      "emb": 0.5506661534309387,
+      "az": 27.5,
+      "el": 30.0,
+      "fov": 45.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "ikea_00522047",
+  "model": "parametric",
+  "category": "shelf",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s69528344",
+  "model": "parametric",
+  "category": "shelf",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_90520355",
+  "model": "parametric",
+  "category": "shelf",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ws_juniper-book-shelf-honey",
+  "model": "parametric",
+  "category": "shelf",
+  "clean_views": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_juniper-book-shelf-honey",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999740609424,
+      0.9999999644551779,
+      0.9999999906298375
+     ],
+     "size_m": [
+      0.43200000000000005,
+      1.422,
+      0.22899999999999998
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.5860170155018529,
+      "de": 0.4201872531955846,
+      "emb": 0.37856525182724,
+      "az": 242.5,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.4571518678861206,
+      "de": 2.0463410946468206,
+      "emb": 0.5091177225112915,
+      "az": 242.5,
+      "el": 45.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.503115747920485,
+      "de": 1.039337970758021,
+      "emb": 0.3342389762401581,
+      "az": 245.0,
+      "el": 52.5,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.7317001469867712,
+      "de": 0.4862944193444649,
+      "emb": 0.4311809539794922,
+      "az": 287.5,
+      "el": 45.0,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_00522047",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000223517422,
+      1.0000000223517422,
+      0.9999999602635717
+     ],
+     "size_m": [
+      0.24,
+      0.02,
+      0.24
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.333327599848636,
+      "de": 32.70931854463435,
+      "emb": 0.06863325834274292,
+      "az": 135.0,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.24451260593595972,
+      "de": 32.49304827239866,
+      "emb": 0.062157534062862396,
+      "az": 135.0,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.26465383171555745,
+      "de": 31.676736729338934,
+      "emb": 0.09158247709274292,
+      "az": 135.0,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.32638481633523486,
+      "de": 33.34337124296245,
+      "emb": 0.11563382297754288,
+      "az": 135.0,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_90520355",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999602635717,
+      1.0000000170298988,
+      1.0
+     ],
+     "size_m": [
+      0.6,
+      1.4,
+      0.375
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.6607942595570951,
+      "de": 14.244004720433685,
+      "emb": 0.1423516869544983,
+      "az": 250.0,
+      "el": -7.5,
+      "fov": 45.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.5243696146323413,
+      "de": 12.820891022187405,
+      "emb": 0.34049421548843384,
+      "az": 285.0,
+      "el": -7.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.5456642692359887,
+      "de": 13.049842217696757,
+      "emb": 0.2527439296245575,
+      "az": 282.5,
+      "el": -5.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.7418402097585968,
+      "de": 15.33573586147549,
+      "emb": 0.27732616662979126,
+      "az": 272.5,
+      "el": -2.5,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "ws_greta-book-shelf-honey-finish",
+  "model": "parametric",
+  "category": "shelf",
+  "clean_views": [
+   4,
+   5
+  ],
+  "input_view": 4,
+  "pairs": [
+   {
+    "asset": "ws_greta-book-shelf-honey-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999961699828,
+      1.0000000276502956,
+      1.000000028774657
+     ],
+     "size_m": [
+      1.245,
+      0.914,
+      0.406
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.469513540007352,
+      "de": 5.807634818110328,
+      "emb": 0.7612336874008179,
+      "az": 0.0,
+      "el": 20.0,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ws_javier-bookshelf-honey-finish",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000276502956,
+      1.0000000020856736,
+      0.999999968085703
+     ],
+     "size_m": [
+      0.914,
+      1.829,
+      0.381
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.29329294586606924,
+      "de": 7.822012017737332,
+      "emb": 0.4415053129196167,
+      "az": 15.0,
+      "el": 45.0,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_90520355",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999602635717,
+      1.0000000170298988,
+      1.0
+     ],
+     "size_m": [
+      0.6,
+      1.4,
+      0.375
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.2672882587349464,
+      "de": 22.579719653904256,
+      "emb": 0.48381394147872925,
+      "az": 342.5,
+      "el": 45.0,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   5
+  ]
+ },
+ {
+  "id": "ws_javier-bookshelf-honey-finish",
+  "model": "parametric",
+  "category": "shelf",
+  "clean_views": [
+   2,
+   3,
+   4,
+   5
+  ],
+  "input_view": 2,
+  "pairs": [
+   {
+    "asset": "ws_javier-bookshelf-honey-finish",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      1.0000000276502956,
+      1.0000000020856736,
+      0.999999968085703
+     ],
+     "size_m": [
+      0.914,
+      1.829,
+      0.381
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.9306101292490846,
+      "de": 1.9441355074952698,
+      "emb": 0.6274536848068237,
+      "az": 30.0,
+      "el": 10.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.7825544616207065,
+      "de": 0.40803724085993925,
+      "emb": 0.38701122999191284,
+      "az": 15.0,
+      "el": 45.0,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.9303880418733513,
+      "de": 1.7347451900242123,
+      "emb": 0.6529337167739868,
+      "az": 332.5,
+      "el": 10.0,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_s69528344",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.999999985098839,
+      1.00000000944232,
+      0.9090909550669459
+     ],
+     "size_m": [
+      0.8,
+      2.02,
+      0.3
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8807851697194015,
+      "de": 33.59085848986532,
+      "emb": 0.08570949733257294,
+      "az": 0.0,
+      "el": 45.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.7623359261059796,
+      "de": 34.96388107623221,
+      "emb": 0.25486597418785095,
+      "az": 10.0,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.8870690063652015,
+      "de": 35.98536240783862,
+      "emb": 0.09892978519201279,
+      "az": 0.0,
+      "el": 45.0,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   },
+   {
+    "asset": "ikea_90520355",
+    "true": false,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.9999999602635717,
+      1.0000000170298988,
+      1.0
+     ],
+     "size_m": [
+      0.6,
+      1.4,
+      0.375
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8992175856929955,
+      "de": 14.325161697184708,
+      "emb": 0.5884003043174744,
+      "az": 330.0,
+      "el": 7.5,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     },
+     {
+      "iou": 0.7598110129582321,
+      "de": 16.09333527366882,
+      "emb": 0.47160804271698,
+      "az": 15.0,
+      "el": 45.0,
+      "fov": 45.0,
+      "view": 4,
+      "is_input": false
+     },
+     {
+      "iou": 0.9036632944315898,
+      "de": 12.45123560190045,
+      "emb": 0.6296637058258057,
+      "az": 330.0,
+      "el": 7.5,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "held_out_views": [
+   3,
+   4,
+   5
+  ]
+ }
+]
