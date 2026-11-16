@@ -1,0 +1,248 @@
+{
+ "room": "arkit_living_41159541",
+ "hero_frame": 208,
+ "hero_why": {
+  "weighted_inside": 0.609,
+  "behind": 0,
+  "screen_area": 3.058
+ },
+ "clear": {
+  "zone": [
+   4,
+   5,
+   6,
+   12,
+   14,
+   15,
+   16,
+   17,
+   18,
+   21,
+   37
+  ]
+ },
+ "designs": [
+  {
+   "id": "41159541_best_value",
+   "slot": "best_value",
+   "variant": "original",
+   "items": [
+    {
+     "id": "rug",
+     "listing": "ikea_10629161",
+     "tier": "rug",
+     "position": [
+      0.3,
+      -0.9
+     ],
+     "rotation_deg": 270,
+     "z": 0.0
+    },
+    {
+     "id": "floor_lamp",
+     "listing": "ikea_10478124",
+     "tier": "mesh",
+     "position": [
+      1.65,
+      0.5
+     ],
+     "rotation_deg": 270.0,
+     "z": 0.0
+    },
+    {
+     "id": "wall_art",
+     "listing": "ikea_10623357",
+     "tier": "art",
+     "position": [
+      1.93,
+      -0.9
+     ],
+     "rotation_deg": 270.0,
+     "z": 1.15
+    }
+   ]
+  },
+  {
+   "id": "41159541_best_match",
+   "slot": "best_match",
+   "variant": "zone",
+   "items": [
+    {
+     "id": "sofa",
+     "listing": "ikea_s39270312",
+     "tier": "mesh",
+     "position": [
+      1.475,
+      -0.9
+     ],
+     "rotation_deg": 270.0,
+     "z": 0.0
+    },
+    {
+     "id": "coffee_table",
+     "listing": "ikea_10500356",
+     "tier": "mesh",
+     "position": [
+      0.26,
+      -0.9
+     ],
+     "rotation_deg": 270.0,
+     "z": 0.0
+    },
+    {
+     "id": "armchair",
+     "listing": "ikea_00582036",
+     "tier": "mesh",
+     "position": [
+      0.26,
+      -2.37
+     ],
+     "rotation_deg": 180.0,
+     "z": 0.0
+    },
+    {
+     "id": "rug",
+     "listing": "ikea_20623074",
+     "tier": "rug",
+     "position": [
+      0.36,
+      -0.9
+     ],
+     "rotation_deg": 270,
+     "z": 0.0
+    },
+    {
+     "id": "floor_lamp",
+     "listing": "ikea_10478124",
+     "tier": "mesh",
+     "position": [
+      1.65,
+      0.42
+     ],
+     "rotation_deg": 270.0,
+     "z": 0.0
+    },
+    {
+     "id": "wall_art",
+     "listing": "ikea_40623474",
+     "tier": "art",
+     "position": [
+      1.93,
+      -0.9
+     ],
+     "rotation_deg": 270.0,
+     "z": 1.08
+    }
+   ]
+  },
+  {
+   "id": "41159541_bold",
+   "slot": "bold",
+   "variant": "zone",
+   "items": [
+    {
+     "id": "sofa",
+     "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+     "tier": "mesh",
+     "position": [
+      1.488,
+      -0.9
+     ],
+     "rotation_deg": 270.0,
+     "z": 0.0
+    },
+    {
+     "id": "coffee_table",
+     "listing": "ikea_30651392",
+     "tier": "mesh",
+     "position": [
+      0.186,
+      -0.9
+     ],
+     "rotation_deg": 270.0,
+     "z": 0.0
+    },
+    {
+     "id": "armchair",
+     "listing": "ikea_90581914",
+     "tier": "mesh",
+     "position": [
+      0.286,
+      -2.455
+     ],
+     "rotation_deg": 180.0,
+     "z": 0.0
+    },
+    {
+     "id": "rug",
+     "listing": "ikea_50597318",
+     "tier": "rug",
+     "position": [
+      0.386,
+      -0.9
+     ],
+     "rotation_deg": 270,
+     "z": 0.0
+    },
+    {
+     "id": "floor_lamp",
+     "listing": "ws_knot-floor-lamp",
+     "tier": "mesh",
+     "position": [
+      1.65,
+      0.162
+     ],
+     "rotation_deg": 270.0,
+     "z": 0.0
+    },
+    {
+     "id": "wall_art",
+     "listing": "ikea_10623357",
+     "tier": "art",
+     "position": [
+      1.93,
+      -0.9
+     ],
+     "rotation_deg": 270.0,
+     "z": 1.16
+    }
+   ]
+  }
+ ],
+ "similar": {
+  "ikea_10478124": "ikea_00594614",
+  "ikea_s39270312": "ikea_s39620339",
+  "ikea_10500356": "ikea_00411997",
+  "ikea_00582036": "ikea_30492317",
+  "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s": "ws_henry-l-shape-right-arm-corner-sofa-indigo-blue",
+  "ikea_30651392": "ws_adolph-bedside-table-honey-finish",
+  "ikea_90581914": "ikea_80581919",
+  "ws_knot-floor-lamp": "ikea_20321321"
+ },
+ "planted_plant": {
+  "listing": "ikea_90630330",
+  "tier": "billboard",
+  "position": [
+   0.35,
+   0.0
+  ],
+  "rotation_deg": 0.0,
+  "scale": 1.0
+ },
+ "config": {
+  "kind": "living",
+  "back": [
+   1.95,
+   -0.9
+  ],
+  "front_deg": 180,
+  "side": -1,
+  "max_len": 2.3,
+  "zone": [
+   -0.6,
+   2.1,
+   -2.6,
+   0.3
+  ]
+ }
+}

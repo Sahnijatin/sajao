@@ -1,0 +1,990 @@
+[
+ {
+  "schema_version": "1.0",
+  "id": "a34ca700-ce9f-5ff9-8c07-f75fe3d3ea4c",
+  "space_profile_id": "d99957a8-25ee-599e-b730-70e3c2f4e469",
+  "brief_id": "d4098bab-fe3c-5dbb-9b97-2c43d287ea46",
+  "created_at": "2026-11-16T00:00:00Z",
+  "slot": "best_value",
+  "archetype": "refresh",
+  "items": [
+   {
+    "id": "rug",
+    "product": {
+     "schema_version": "1.0",
+     "id": "2661cb9e-7104-5133-9b83-8a52b500867d",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_10629161",
+     "title": "STOENSE Rug, low pile",
+     "group": "decor",
+     "category": "rug",
+     "dimensions": {
+      "width": {
+       "value_m": 3.0,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 2.0,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.4,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 1499000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/stoense-rug-low-pile-pale-green__1492281_pe1004363_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/stoense-rug-low-pile-pale-green__1468834_pe996297_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/stoense-rug-low-pile-pale-green__1468835_pe996296_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/stoense-rug-low-pile-pale-green-10629161/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 1499000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -4.2,
+     "y_m": -1.55
+    },
+    "rotation_deg": 180,
+    "placed_by": "user"
+   },
+   {
+    "id": "floor_lamp",
+    "product": {
+     "schema_version": "1.0",
+     "id": "363e5aaf-15fc-5d8d-b35e-c145e2fb63c1",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_10478124",
+     "title": "PILSKOTT LED floor lamp",
+     "group": "lighting",
+     "category": "lamp",
+     "dimensions": {
+      "width": {
+       "value_m": 0.3,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.12,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 1.12,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 1099000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/pilskott-led-floor-lamp-smart-black__1077629_pe856958_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/pilskott-led-floor-lamp-smart-black__1077628_pe856959_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/pilskott-led-floor-lamp-smart-black__1077627_pe856960_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/pilskott-led-floor-lamp-smart-black-10478124/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 1099000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -2.55,
+     "y_m": -2.9
+    },
+    "rotation_deg": 180.0,
+    "placed_by": "user"
+   },
+   {
+    "id": "wall_art",
+    "product": {
+     "schema_version": "1.0",
+     "id": "c59531f1-33e5-5bc1-b552-456abce7ed1e",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_10623357",
+     "title": "BILD Poster",
+     "group": "decor",
+     "category": "art",
+     "dimensions": {
+      "width": {
+       "value_m": 0.4,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.4,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.5,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 39900
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/bild-poster-nordic-flowers__1484197_pe1001492_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/bild-poster-nordic-flowers__1512706_pe1010479_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/bild-poster-nordic-flowers-10623357/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 39900
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -4.2,
+     "y_m": -3.18
+    },
+    "rotation_deg": 180.0,
+    "placed_by": "user"
+   }
+  ],
+  "materials": {},
+  "lighting": {
+   "layers": [
+    "ambient",
+    "accent"
+   ]
+  },
+  "total_cost": {
+   "currency": "INR",
+   "amount_minor": 2637900
+  },
+  "relaxations": [],
+  "check_report": {
+   "passed": true,
+   "checked_at": "2026-11-16T00:00:00Z",
+   "budget_ok": true,
+   "stock_ok": true,
+   "rules": [
+    {
+     "rule": "hand_placed_for_render_bakeoff",
+     "kind": "soft",
+     "passed": true,
+     "detail": "Placed by rule for the render bake-off; not run through the solver."
+    }
+   ]
+  },
+  "explanations": [
+   "Render bake-off fixture: placed by explicit rules, not by the design engine."
+  ]
+ },
+ {
+  "schema_version": "1.0",
+  "id": "85550056-de55-50fe-a50a-151895d2b12a",
+  "space_profile_id": "d99957a8-25ee-599e-b730-70e3c2f4e469",
+  "brief_id": "d4098bab-fe3c-5dbb-9b97-2c43d287ea46",
+  "created_at": "2026-11-16T00:00:00Z",
+  "slot": "best_match",
+  "archetype": "conversation_set",
+  "items": [
+   {
+    "id": "sofa",
+    "product": {
+     "schema_version": "1.0",
+     "id": "cc7a92b9-b7b0-558b-8c35-62e5467dbb16",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_s39620339",
+     "title": "UPP\u00c5KRA 3-seat modular sofa",
+     "group": "furniture",
+     "category": "sofa",
+     "dimensions": {
+      "width": {
+       "value_m": 2.5,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 1.07,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.95,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 9800000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/uppakra-3-seat-modular-sofa-johanneshov-dark-grey__1578120_pe1033786_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/uppakra-3-seat-modular-sofa-johanneshov-dark-grey__1516207_pe1011801_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/uppakra-3-seat-modular-sofa-johanneshov-dark-grey__1516206_pe1011796_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/uppakra-3-seat-modular-sofa-johanneshov-dark-grey-s39620339/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 9800000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -4.2,
+     "y_m": -2.635
+    },
+    "rotation_deg": 180.0,
+    "placed_by": "user"
+   },
+   {
+    "id": "coffee_table",
+    "product": {
+     "schema_version": "1.0",
+     "id": "9c2ef092-6f9d-5868-92d4-73dc625bf7b8",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_10500356",
+     "title": "BORGEBY Coffee table",
+     "group": "furniture",
+     "category": "table",
+     "dimensions": {
+      "width": {
+       "value_m": 0.7,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.7,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.42,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 999000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/borgeby-coffee-table-black__0983032_pe815898_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/borgeby-coffee-table-black__0987517_pe817555_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/borgeby-coffee-table-black__1270686_pe929376_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/borgeby-coffee-table-black-10500356/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 999000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -4.2,
+     "y_m": -1.33
+    },
+    "rotation_deg": 180.0,
+    "placed_by": "user"
+   },
+   {
+    "id": "armchair",
+    "product": {
+     "schema_version": "1.0",
+     "id": "384e530f-2467-53bc-8935-97799bc5ef93",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_00582036",
+     "title": "SK\u00c5LBODA Armchair",
+     "group": "furniture",
+     "category": "chair",
+     "dimensions": {
+      "width": {
+       "value_m": 0.69,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.64,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.71,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 699000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/skalboda-armchair-white__1322491_pe942188_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/skalboda-armchair-white__1322490_pe942189_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/skalboda-armchair-white__1322489_pe942187_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/skalboda-armchair-white-00582036/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 699000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -5.67,
+     "y_m": -1.33
+    },
+    "rotation_deg": 90.0,
+    "placed_by": "user"
+   },
+   {
+    "id": "rug",
+    "product": {
+     "schema_version": "1.0",
+     "id": "710d2bb4-c570-527d-8eac-06f7718208ff",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_20623074",
+     "title": "J\u00c4RNV\u00c4G Rug, low pile",
+     "group": "decor",
+     "category": "rug",
+     "dimensions": {
+      "width": {
+       "value_m": 1.5,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.8,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.4,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 399000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/jaernvaeg-rug-low-pile-ornament-pattern-pink-beige__1444032_pe987295_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/jaernvaeg-rug-low-pile-ornament-pattern-pink-beige__1489218_pe1003694_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/jaernvaeg-rug-low-pile-ornament-pattern-pink-beige__1489248_pe1003719_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/jaernvaeg-rug-low-pile-ornament-pattern-pink-beige-20623074/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 399000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -4.2,
+     "y_m": -1.43
+    },
+    "rotation_deg": 180,
+    "placed_by": "user"
+   },
+   {
+    "id": "floor_lamp",
+    "product": {
+     "schema_version": "1.0",
+     "id": "363e5aaf-15fc-5d8d-b35e-c145e2fb63c1",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_10478124",
+     "title": "PILSKOTT LED floor lamp",
+     "group": "lighting",
+     "category": "lamp",
+     "dimensions": {
+      "width": {
+       "value_m": 0.3,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.12,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 1.12,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 1099000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/pilskott-led-floor-lamp-smart-black__1077629_pe856958_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/pilskott-led-floor-lamp-smart-black__1077628_pe856959_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/pilskott-led-floor-lamp-smart-black__1077627_pe856960_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/pilskott-led-floor-lamp-smart-black-10478124/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 1099000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -2.65,
+     "y_m": -2.9
+    },
+    "rotation_deg": 180.0,
+    "placed_by": "user"
+   },
+   {
+    "id": "wall_art",
+    "product": {
+     "schema_version": "1.0",
+     "id": "79b9ebbe-3c83-5f8d-8552-dfdb793e3a67",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_40623474",
+     "title": "BLODFL\u00c4DER Picture",
+     "group": "decor",
+     "category": "art",
+     "dimensions": {
+      "width": {
+       "value_m": 0.5,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.5,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.7,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 399000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/blodflaeder-picture-bold-florals__1514000_pe1010769_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/blodflaeder-picture-bold-florals__1513991_pe1010763_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/blodflaeder-picture-bold-florals__1514126_pe1010856_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/blodflaeder-picture-bold-florals-40623474/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 399000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -4.2,
+     "y_m": -3.18
+    },
+    "rotation_deg": 180.0,
+    "placed_by": "user"
+   }
+  ],
+  "materials": {},
+  "lighting": {
+   "layers": [
+    "ambient",
+    "accent"
+   ]
+  },
+  "total_cost": {
+   "currency": "INR",
+   "amount_minor": 13395000
+  },
+  "relaxations": [],
+  "check_report": {
+   "passed": true,
+   "checked_at": "2026-11-16T00:00:00Z",
+   "budget_ok": true,
+   "stock_ok": true,
+   "rules": [
+    {
+     "rule": "hand_placed_for_render_bakeoff",
+     "kind": "soft",
+     "passed": true,
+     "detail": "Placed by rule for the render bake-off; not run through the solver."
+    }
+   ]
+  },
+  "explanations": [
+   "Render bake-off fixture: placed by explicit rules, not by the design engine."
+  ]
+ },
+ {
+  "schema_version": "1.0",
+  "id": "5669591c-1bb4-5649-9dfb-b6ff628d97c6",
+  "space_profile_id": "d99957a8-25ee-599e-b730-70e3c2f4e469",
+  "brief_id": "d4098bab-fe3c-5dbb-9b97-2c43d287ea46",
+  "created_at": "2026-11-16T00:00:00Z",
+  "slot": "bold",
+  "archetype": "statement",
+  "items": [
+   {
+    "id": "sofa",
+    "product": {
+     "schema_version": "1.0",
+     "id": "8150dc15-627e-5ba7-b8a8-82971b0fcb06",
+     "source": "eval-only:wooden-street",
+     "sku": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+     "title": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+     "group": "furniture",
+     "category": "sofa",
+     "dimensions": {
+      "width": {
+       "value_m": 1.524,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.864,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.864,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 7799900
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://images.woodenstreet.de/image/cache/data/kairav+sofa/sage+green/54-810x702.jpg",
+      "https://images.woodenstreet.de/image/cache/data/kairav+sofa/sage+green/55-810x702.jpg",
+      "https://images.woodenstreet.de/image/cache/data/kairav+sofa/sage+green/53-810x702.jpg"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "Wooden Street",
+       "url": "https://www.woodenstreet.com/product/kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-sage-green",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 7799900
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -4.2,
+     "y_m": -2.738
+    },
+    "rotation_deg": 180.0,
+    "placed_by": "user"
+   },
+   {
+    "id": "coffee_table",
+    "product": {
+     "schema_version": "1.0",
+     "id": "d7983ad1-8193-50c3-b11e-28d78e6fbb58",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_30651392",
+     "title": "KRAGSTA Coffee table",
+     "group": "furniture",
+     "category": "table",
+     "dimensions": {
+      "width": {
+       "value_m": 0.9,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.9,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.48,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 1299000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/kragsta-coffee-table-brown-mango-wood__1580018_pe1034732_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/kragsta-coffee-table-brown-mango-wood__1580017_pe1034733_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/kragsta-coffee-table-brown-mango-wood__1591038_pe1039247_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/kragsta-coffee-table-brown-mango-wood-30651392/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 1299000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -4.2,
+     "y_m": -1.436
+    },
+    "rotation_deg": 180.0,
+    "placed_by": "user"
+   },
+   {
+    "id": "armchair",
+    "product": {
+     "schema_version": "1.0",
+     "id": "a4b6fce6-de13-5aaf-91e3-33a1df733e42",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_90581914",
+     "title": "SOTEN\u00c4S Armchair",
+     "group": "furniture",
+     "category": "chair",
+     "dimensions": {
+      "width": {
+       "value_m": 0.86,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.81,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.68,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 2199000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/sotenaes-armchair-hakebo-red__1322509_pe942197_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/sotenaes-armchair-hakebo-red__1322508_pe942198_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/sotenaes-armchair-hakebo-red__1322506_pe942196_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/sotenaes-armchair-hakebo-red-90581914/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 2199000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -5.755,
+     "y_m": -1.536
+    },
+    "rotation_deg": 90.0,
+    "placed_by": "user"
+   },
+   {
+    "id": "rug",
+    "product": {
+     "schema_version": "1.0",
+     "id": "717b591e-b7b0-5e9a-b2df-2574dcd41b10",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_50597318",
+     "title": "ELSYSTEM Rug, low pile",
+     "group": "decor",
+     "category": "rug",
+     "dimensions": {
+      "width": {
+       "value_m": 1.95,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 1.33,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.4,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 599000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/elsystem-rug-low-pile-multicolour__1390072_pe965350_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/elsystem-rug-low-pile-multicolour__1390073_pe965349_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/elsystem-rug-low-pile-multicolour__1406957_pe971317_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/elsystem-rug-low-pile-multicolour-50597318/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 599000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -4.2,
+     "y_m": -1.636
+    },
+    "rotation_deg": 180,
+    "placed_by": "user"
+   },
+   {
+    "id": "floor_lamp",
+    "product": {
+     "schema_version": "1.0",
+     "id": "4a7f298d-2d3b-59b5-b057-6189e23f0919",
+     "source": "eval-only:wooden-street",
+     "sku": "ws_knot-floor-lamp",
+     "title": "Knot Floor Lamp",
+     "group": "lighting",
+     "category": "lamp",
+     "dimensions": {
+      "width": {
+       "value_m": 0.4,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.4,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 1.3,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 1399900
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://images.woodenstreet.de/image/cache/data/Orange+Tree+2026/OT0174C/1-810x702.jpg",
+      "https://images.woodenstreet.de/image/cache/data/Orange+Tree+2026/OT0174C/9-810x702.jpg",
+      "https://images.woodenstreet.de/image/cache/data/Orange+Tree+2026/OT0174C/2-810x702.jpg"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "Wooden Street",
+       "url": "https://www.woodenstreet.com/product/knot-floor-lamp",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 1399900
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -3.138,
+     "y_m": -2.9
+    },
+    "rotation_deg": 180.0,
+    "placed_by": "user"
+   },
+   {
+    "id": "wall_art",
+    "product": {
+     "schema_version": "1.0",
+     "id": "c59531f1-33e5-5bc1-b552-456abce7ed1e",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_10623357",
+     "title": "BILD Poster",
+     "group": "decor",
+     "category": "art",
+     "dimensions": {
+      "width": {
+       "value_m": 0.4,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.4,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.5,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 39900
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/bild-poster-nordic-flowers__1484197_pe1001492_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/bild-poster-nordic-flowers__1512706_pe1010479_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/bild-poster-nordic-flowers-10623357/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 39900
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -4.2,
+     "y_m": -3.18
+    },
+    "rotation_deg": 180.0,
+    "placed_by": "user"
+   }
+  ],
+  "materials": {},
+  "lighting": {
+   "layers": [
+    "ambient",
+    "accent"
+   ]
+  },
+  "total_cost": {
+   "currency": "INR",
+   "amount_minor": 13336700
+  },
+  "relaxations": [],
+  "check_report": {
+   "passed": true,
+   "checked_at": "2026-11-16T00:00:00Z",
+   "budget_ok": true,
+   "stock_ok": true,
+   "rules": [
+    {
+     "rule": "hand_placed_for_render_bakeoff",
+     "kind": "soft",
+     "passed": true,
+     "detail": "Placed by rule for the render bake-off; not run through the solver."
+    }
+   ]
+  },
+  "explanations": [
+   "Render bake-off fixture: placed by explicit rules, not by the design engine."
+  ]
+ }
+]

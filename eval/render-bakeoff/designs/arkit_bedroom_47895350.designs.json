@@ -1,0 +1,874 @@
+[
+ {
+  "schema_version": "1.0",
+  "id": "a97780d3-8238-5b6a-8de4-fbe36285792d",
+  "space_profile_id": "83d410b3-9f4f-528a-a3c2-2509952239c3",
+  "brief_id": "911efed3-5479-536c-aa61-09e292e12cf3",
+  "created_at": "2026-11-16T00:00:00Z",
+  "slot": "best_value",
+  "archetype": "refresh",
+  "items": [
+   {
+    "id": "rug",
+    "product": {
+     "schema_version": "1.0",
+     "id": "9a44191d-5843-5632-a1c5-29da38b96460",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_70638723",
+     "title": "V\u00c4XELFEL Rug, low pile",
+     "group": "decor",
+     "category": "rug",
+     "dimensions": {
+      "width": {
+       "value_m": 3.0,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 2.0,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.4,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 1099000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/vaexelfel-rug-low-pile-off-white__1512549_pe1010430_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/vaexelfel-rug-low-pile-off-white__1390070_pe965348_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/vaexelfel-rug-low-pile-off-white__1522780_pe1013738_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/vaexelfel-rug-low-pile-off-white-70638723/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 1099000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -0.95,
+     "y_m": 0.85
+    },
+    "rotation_deg": 0,
+    "placed_by": "user"
+   },
+   {
+    "id": "floor_lamp",
+    "product": {
+     "schema_version": "1.0",
+     "id": "363e5aaf-15fc-5d8d-b35e-c145e2fb63c1",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_10478124",
+     "title": "PILSKOTT LED floor lamp",
+     "group": "lighting",
+     "category": "lamp",
+     "dimensions": {
+      "width": {
+       "value_m": 0.3,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.12,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 1.12,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 1099000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/pilskott-led-floor-lamp-smart-black__1077629_pe856958_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/pilskott-led-floor-lamp-smart-black__1077628_pe856959_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/pilskott-led-floor-lamp-smart-black__1077627_pe856960_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/pilskott-led-floor-lamp-smart-black-10478124/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 1099000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": 0.2,
+     "y_m": 2.15
+    },
+    "rotation_deg": 0.0,
+    "placed_by": "user"
+   },
+   {
+    "id": "wall_art",
+    "product": {
+     "schema_version": "1.0",
+     "id": "c59531f1-33e5-5bc1-b552-456abce7ed1e",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_10623357",
+     "title": "BILD Poster",
+     "group": "decor",
+     "category": "art",
+     "dimensions": {
+      "width": {
+       "value_m": 0.4,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.4,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.5,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 39900
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/bild-poster-nordic-flowers__1484197_pe1001492_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/bild-poster-nordic-flowers__1512706_pe1010479_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/bild-poster-nordic-flowers-10623357/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 39900
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -0.95,
+     "y_m": 2.43
+    },
+    "rotation_deg": 0.0,
+    "placed_by": "user"
+   }
+  ],
+  "materials": {},
+  "lighting": {
+   "layers": [
+    "ambient",
+    "accent"
+   ]
+  },
+  "total_cost": {
+   "currency": "INR",
+   "amount_minor": 2237900
+  },
+  "relaxations": [],
+  "check_report": {
+   "passed": true,
+   "checked_at": "2026-11-16T00:00:00Z",
+   "budget_ok": true,
+   "stock_ok": true,
+   "rules": [
+    {
+     "rule": "hand_placed_for_render_bakeoff",
+     "kind": "soft",
+     "passed": true,
+     "detail": "Placed by rule for the render bake-off; not run through the solver."
+    }
+   ]
+  },
+  "explanations": [
+   "Render bake-off fixture: placed by explicit rules, not by the design engine."
+  ]
+ },
+ {
+  "schema_version": "1.0",
+  "id": "e0ec0870-07e9-56a5-a07d-092c4f8a34b8",
+  "space_profile_id": "83d410b3-9f4f-528a-a3c2-2509952239c3",
+  "brief_id": "911efed3-5479-536c-aa61-09e292e12cf3",
+  "created_at": "2026-11-16T00:00:00Z",
+  "slot": "best_match",
+  "archetype": "bed_centred",
+  "items": [
+   {
+    "id": "bed",
+    "product": {
+     "schema_version": "1.0",
+     "id": "da5a0c6c-1a61-5137-8f2c-390ad975ecac",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_s89198465",
+     "title": "NESTTUN Bed frame",
+     "group": "furniture",
+     "category": "bed",
+     "dimensions": {
+      "width": {
+       "value_m": 2.07,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 1.66,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.95,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 1599000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/nesttun-bed-frame-white-luroey__0637599_pe698415_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/nesttun-bed-frame-white-luroey__1101970_pe866787_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/nesttun-bed-frame-white-luroey__1273465_pe930077_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/nesttun-bed-frame-white-luroey-s89198465/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 1599000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -0.95,
+     "y_m": 1.385
+    },
+    "rotation_deg": 0.0,
+    "placed_by": "user"
+   },
+   {
+    "id": "nightstand",
+    "product": {
+     "schema_version": "1.0",
+     "id": "ba63dafb-dee5-5107-a1d9-9214ee4b33b1",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_00411997",
+     "title": "GLADOM Tray table",
+     "group": "furniture",
+     "category": "table",
+     "dimensions": {
+      "width": {
+       "value_m": 0.45,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.45,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.53,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 129000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/gladom-tray-table-black__0567223_pe664991_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/gladom-tray-table-black__0837078_pe664995_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/gladom-tray-table-black__0837072_pe664992_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/gladom-tray-table-black-00411997/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 129000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -2.055,
+     "y_m": 2.175
+    },
+    "rotation_deg": 0.0,
+    "placed_by": "user"
+   },
+   {
+    "id": "table_lamp",
+    "product": {
+     "schema_version": "1.0",
+     "id": "7ceed269-6153-5403-8f64-4f1bcb5a481c",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_00594614",
+     "title": "LAMPAN LED portable lamp",
+     "group": "lighting",
+     "category": "lamp",
+     "dimensions": {
+      "width": {
+       "value_m": 0.15,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.15,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.24,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 119000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/lampan-led-portable-lamp-battery-operated-adjustable-colour-outdoor-white__1382314_pe962254_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/lampan-led-portable-lamp-battery-operated-adjustable-colour-outdoor-white__1383623_pe962629_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/lampan-led-portable-lamp-battery-operated-adjustable-colour-outdoor-white__1419120_pe976875_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/lampan-led-portable-lamp-battery-operated-adjustable-colour-outdoor-white-00594614/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 119000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -2.055,
+     "y_m": 2.175
+    },
+    "rotation_deg": 0.0,
+    "placed_by": "user"
+   },
+   {
+    "id": "rug",
+    "product": {
+     "schema_version": "1.0",
+     "id": "f485909f-d7f4-54cb-97ee-cd7bc3385dda",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_40623233",
+     "title": "LOKALT\u00c5G Rug, low pile",
+     "group": "decor",
+     "category": "rug",
+     "dimensions": {
+      "width": {
+       "value_m": 1.5,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.8,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.4,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 199000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/lokaltag-rug-low-pile-beige-grey__1514370_pe1010942_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/lokaltag-rug-low-pile-beige-grey__1517956_pe1012544_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/lokaltag-rug-low-pile-beige-grey__1514747_pe1011947_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/lokaltag-rug-low-pile-beige-grey-40623233/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 199000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -0.95,
+     "y_m": 0.794
+    },
+    "rotation_deg": 0,
+    "placed_by": "user"
+   },
+   {
+    "id": "wall_art",
+    "product": {
+     "schema_version": "1.0",
+     "id": "79b9ebbe-3c83-5f8d-8552-dfdb793e3a67",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_40623474",
+     "title": "BLODFL\u00c4DER Picture",
+     "group": "decor",
+     "category": "art",
+     "dimensions": {
+      "width": {
+       "value_m": 0.5,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.5,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.7,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 399000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/blodflaeder-picture-bold-florals__1514000_pe1010769_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/blodflaeder-picture-bold-florals__1513991_pe1010763_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/blodflaeder-picture-bold-florals__1514126_pe1010856_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/blodflaeder-picture-bold-florals-40623474/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 399000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -0.95,
+     "y_m": 2.43
+    },
+    "rotation_deg": 0.0,
+    "placed_by": "user"
+   }
+  ],
+  "materials": {},
+  "lighting": {
+   "layers": [
+    "ambient",
+    "accent"
+   ]
+  },
+  "total_cost": {
+   "currency": "INR",
+   "amount_minor": 2445000
+  },
+  "relaxations": [],
+  "check_report": {
+   "passed": true,
+   "checked_at": "2026-11-16T00:00:00Z",
+   "budget_ok": true,
+   "stock_ok": true,
+   "rules": [
+    {
+     "rule": "hand_placed_for_render_bakeoff",
+     "kind": "soft",
+     "passed": true,
+     "detail": "Placed by rule for the render bake-off; not run through the solver."
+    }
+   ]
+  },
+  "explanations": [
+   "Render bake-off fixture: placed by explicit rules, not by the design engine."
+  ]
+ },
+ {
+  "schema_version": "1.0",
+  "id": "3fc4125e-68b0-5a11-8365-de07cc146a1d",
+  "space_profile_id": "83d410b3-9f4f-528a-a3c2-2509952239c3",
+  "brief_id": "911efed3-5479-536c-aa61-09e292e12cf3",
+  "created_at": "2026-11-16T00:00:00Z",
+  "slot": "bold",
+  "archetype": "statement",
+  "items": [
+   {
+    "id": "bed",
+    "product": {
+     "schema_version": "1.0",
+     "id": "18deb412-200e-5b71-ac66-754cd0a6a2f5",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_s29308527",
+     "title": "NODELAND Bed frame",
+     "group": "furniture",
+     "category": "bed",
+     "dimensions": {
+      "width": {
+       "value_m": 2.046,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 1.653,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.68,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 1099000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/nodeland-bed-frame-medium-brown__0752420_pe747436_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/nodeland-bed-frame-medium-brown__0752413_pe747432_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/nodeland-bed-frame-medium-brown__0752414_pe747434_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/nodeland-bed-frame-medium-brown-s29308527/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 1099000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -0.95,
+     "y_m": 1.397
+    },
+    "rotation_deg": 0.0,
+    "placed_by": "user"
+   },
+   {
+    "id": "nightstand",
+    "product": {
+     "schema_version": "1.0",
+     "id": "b34e0706-dcfa-5d1e-924f-f6fcc951ea9d",
+     "source": "eval-only:wooden-street",
+     "sku": "ws_adolph-bedside-table-honey-finish",
+     "title": "Adolph Bedside Table (Honey Finish)",
+     "group": "furniture",
+     "category": "table",
+     "dimensions": {
+      "width": {
+       "value_m": 0.406,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.406,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.432,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 1499900
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://images.woodenstreet.de/image/cache/data/bedside-tables/adolph-bedside-table/revised/honey/updated/new-logo/new+-3D/6-810x702.jpg",
+      "https://images.woodenstreet.de/image/cache/data/bedside-tables/adolph-bedside-table/revised/honey/updated/new-logo/new+-3D/4-810x702.jpg",
+      "https://images.woodenstreet.de/image/cache/data/bedside-tables/adolph-bedside-table/revised/honey/updated/new-logo/new+-3D/7-810x702.jpg"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "Wooden Street",
+       "url": "https://www.woodenstreet.com/product/adolph-bedside-table-honey-finish",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 1499900
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -2.03,
+     "y_m": 2.197
+    },
+    "rotation_deg": 0.0,
+    "placed_by": "user"
+   },
+   {
+    "id": "table_lamp",
+    "product": {
+     "schema_version": "1.0",
+     "id": "6e7c3076-b5b9-5061-86d2-835603b602ba",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_60602041",
+     "title": "GREJSIMOJS LED decoration lighting, floor",
+     "group": "lighting",
+     "category": "lamp",
+     "dimensions": {
+      "width": {
+       "value_m": 0.38,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.38,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.75,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 299000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/grejsimojs-led-decoration-lighting-floor-giraffe-yellow-battery-operated__1453074_pe991272_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/grejsimojs-led-decoration-lighting-floor-giraffe-yellow-battery-operated__1474831_pe998268_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/grejsimojs-led-decoration-lighting-floor-giraffe-yellow-battery-operated__1474830_pe998267_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/grejsimojs-led-decoration-lighting-floor-giraffe-yellow-battery-operated-60602041/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 299000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -2.03,
+     "y_m": 2.197
+    },
+    "rotation_deg": 0.0,
+    "placed_by": "user"
+   },
+   {
+    "id": "rug",
+    "product": {
+     "schema_version": "1.0",
+     "id": "7ab1cf1e-74bb-50ab-a892-847919ad2c21",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_20625780",
+     "title": "\u00c4LSKEGRAS Rug, low pile",
+     "group": "decor",
+     "category": "rug",
+     "dimensions": {
+      "width": {
+       "value_m": 2.3,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 1.6,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.4,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 1899000
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/aelskegras-rug-low-pile-grey-beige-leaf-pattern__1465572_pe995104_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/aelskegras-rug-low-pile-grey-beige-leaf-pattern__1514614_pe1010983_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/aelskegras-rug-low-pile-grey-beige-leaf-pattern__1492310_pe1004375_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/aelskegras-rug-low-pile-grey-beige-leaf-pattern-20625780/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 1899000
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -0.95,
+     "y_m": 0.813
+    },
+    "rotation_deg": 0,
+    "placed_by": "user"
+   },
+   {
+    "id": "wall_art",
+    "product": {
+     "schema_version": "1.0",
+     "id": "c59531f1-33e5-5bc1-b552-456abce7ed1e",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_10623357",
+     "title": "BILD Poster",
+     "group": "decor",
+     "category": "art",
+     "dimensions": {
+      "width": {
+       "value_m": 0.4,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "depth": {
+       "value_m": 0.4,
+       "source": "estimated",
+       "error_band_m": 0.02
+      },
+      "height": {
+       "value_m": 0.5,
+       "source": "estimated",
+       "error_band_m": 0.02
+      }
+     },
+     "price": {
+      "currency": "INR",
+      "amount_minor": 39900
+     },
+     "in_stock": true,
+     "checked_at": "2026-11-16T00:00:00Z",
+     "images": [
+      "https://www.ikea.com/in/en/images/products/bild-poster-nordic-flowers__1484197_pe1001492_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/bild-poster-nordic-flowers__1512706_pe1010479_s5.jpg?f=xxl"
+     ],
+     "image_use_permitted": true,
+     "routes": [
+      {
+       "kind": "buy",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/bild-poster-nordic-flowers-10623357/",
+       "price": {
+        "currency": "INR",
+        "amount_minor": 39900
+       }
+      }
+     ]
+    },
+    "position": {
+     "x_m": -0.95,
+     "y_m": 2.43
+    },
+    "rotation_deg": 0.0,
+    "placed_by": "user"
+   }
+  ],
+  "materials": {},
+  "lighting": {
+   "layers": [
+    "ambient",
+    "accent"
+   ]
+  },
+  "total_cost": {
+   "currency": "INR",
+   "amount_minor": 4836800
+  },
+  "relaxations": [],
+  "check_report": {
+   "passed": true,
+   "checked_at": "2026-11-16T00:00:00Z",
+   "budget_ok": true,
+   "stock_ok": true,
+   "rules": [
+    {
+     "rule": "hand_placed_for_render_bakeoff",
+     "kind": "soft",
+     "passed": true,
+     "detail": "Placed by rule for the render bake-off; not run through the solver."
+    }
+   ]
+  },
+  "explanations": [
+   "Render bake-off fixture: placed by explicit rules, not by the design engine."
+  ]
+ }
+]

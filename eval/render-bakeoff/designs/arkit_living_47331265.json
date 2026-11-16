@@ -1,0 +1,256 @@
+{
+ "room": "arkit_living_47331265",
+ "hero_frame": 211,
+ "hero_why": {
+  "weighted_inside": 0.865,
+  "behind": 0,
+  "screen_area": 1.382
+ },
+ "clear": {
+  "zone": [
+   13,
+   16,
+   17,
+   22,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   32,
+   36,
+   37,
+   39,
+   40,
+   41,
+   42,
+   46
+  ]
+ },
+ "designs": [
+  {
+   "id": "47331265_best_value",
+   "slot": "best_value",
+   "variant": "original",
+   "items": [
+    {
+     "id": "rug",
+     "listing": "ikea_10629161",
+     "tier": "rug",
+     "position": [
+      0.1,
+      -1.25
+     ],
+     "rotation_deg": 180,
+     "z": 0.0
+    },
+    {
+     "id": "floor_lamp",
+     "listing": "ikea_10478124",
+     "tier": "mesh",
+     "position": [
+      -1.3,
+      -2.6
+     ],
+     "rotation_deg": 180.0,
+     "z": 0.0
+    },
+    {
+     "id": "wall_art",
+     "listing": "ikea_10623357",
+     "tier": "art",
+     "position": [
+      0.1,
+      -2.88
+     ],
+     "rotation_deg": 180.0,
+     "z": 1.15
+    }
+   ]
+  },
+  {
+   "id": "47331265_best_match",
+   "slot": "best_match",
+   "variant": "zone",
+   "items": [
+    {
+     "id": "sofa",
+     "listing": "ikea_s39270312",
+     "tier": "mesh",
+     "position": [
+      0.1,
+      -2.425
+     ],
+     "rotation_deg": 180.0,
+     "z": 0.0
+    },
+    {
+     "id": "coffee_table",
+     "listing": "ikea_10500356",
+     "tier": "mesh",
+     "position": [
+      0.1,
+      -1.21
+     ],
+     "rotation_deg": 180.0,
+     "z": 0.0
+    },
+    {
+     "id": "armchair",
+     "listing": "ikea_00582036",
+     "tier": "mesh",
+     "position": [
+      1.57,
+      -1.21
+     ],
+     "rotation_deg": 270.0,
+     "z": 0.0
+    },
+    {
+     "id": "rug",
+     "listing": "ikea_20623074",
+     "tier": "rug",
+     "position": [
+      0.1,
+      -1.31
+     ],
+     "rotation_deg": 180,
+     "z": 0.0
+    },
+    {
+     "id": "floor_lamp",
+     "listing": "ikea_10478124",
+     "tier": "mesh",
+     "position": [
+      -1.22,
+      -2.6
+     ],
+     "rotation_deg": 180.0,
+     "z": 0.0
+    },
+    {
+     "id": "wall_art",
+     "listing": "ikea_40623474",
+     "tier": "art",
+     "position": [
+      0.1,
+      -2.88
+     ],
+     "rotation_deg": 180.0,
+     "z": 1.08
+    }
+   ]
+  },
+  {
+   "id": "47331265_bold",
+   "slot": "bold",
+   "variant": "zone",
+   "items": [
+    {
+     "id": "sofa",
+     "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+     "tier": "mesh",
+     "position": [
+      0.1,
+      -2.438
+     ],
+     "rotation_deg": 180.0,
+     "z": 0.0
+    },
+    {
+     "id": "coffee_table",
+     "listing": "ikea_30651392",
+     "tier": "mesh",
+     "position": [
+      0.1,
+      -1.136
+     ],
+     "rotation_deg": 180.0,
+     "z": 0.0
+    },
+    {
+     "id": "armchair",
+     "listing": "ikea_90581914",
+     "tier": "mesh",
+     "position": [
+      1.655,
+      -1.236
+     ],
+     "rotation_deg": 270.0,
+     "z": 0.0
+    },
+    {
+     "id": "rug",
+     "listing": "ikea_50597318",
+     "tier": "rug",
+     "position": [
+      0.1,
+      -1.336
+     ],
+     "rotation_deg": 180,
+     "z": 0.0
+    },
+    {
+     "id": "floor_lamp",
+     "listing": "ws_knot-floor-lamp",
+     "tier": "mesh",
+     "position": [
+      -0.962,
+      -2.6
+     ],
+     "rotation_deg": 180.0,
+     "z": 0.0
+    },
+    {
+     "id": "wall_art",
+     "listing": "ikea_10623357",
+     "tier": "art",
+     "position": [
+      0.1,
+      -2.88
+     ],
+     "rotation_deg": 180.0,
+     "z": 1.16
+    }
+   ]
+  }
+ ],
+ "similar": {
+  "ikea_10478124": "ikea_00594614",
+  "ikea_s39270312": "ikea_s39620339",
+  "ikea_10500356": "ikea_00411997",
+  "ikea_00582036": "ikea_30492317",
+  "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s": "ws_henry-l-shape-right-arm-corner-sofa-indigo-blue",
+  "ikea_30651392": "ws_adolph-bedside-table-honey-finish",
+  "ikea_90581914": "ikea_80581919",
+  "ws_knot-floor-lamp": "ikea_20321321"
+ },
+ "planted_plant": {
+  "listing": "ikea_90630330",
+  "tier": "billboard",
+  "position": [
+   -0.8,
+   -1.3
+  ],
+  "rotation_deg": 0.0,
+  "scale": 1.0
+ },
+ "config": {
+  "kind": "living",
+  "back": [
+   0.1,
+   -2.9
+  ],
+  "front_deg": 90,
+  "side": 1,
+  "max_len": 2.3,
+  "zone": [
+   -1.4,
+   1.6,
+   -3.1,
+   -0.3
+  ]
+ }
+}

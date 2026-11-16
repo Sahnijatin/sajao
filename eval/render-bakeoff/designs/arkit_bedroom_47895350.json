@@ -1,0 +1,222 @@
+{
+ "room": "arkit_bedroom_47895350",
+ "hero_frame": 205,
+ "hero_why": {
+  "weighted_inside": 0.763,
+  "behind": 0,
+  "screen_area": 1.72
+ },
+ "clear": {
+  "zone": [
+   25,
+   27,
+   28,
+   29,
+   31,
+   32,
+   33,
+   34
+  ]
+ },
+ "designs": [
+  {
+   "id": "47895350_best_value",
+   "slot": "best_value",
+   "variant": "original",
+   "items": [
+    {
+     "id": "rug",
+     "listing": "ikea_70638723",
+     "tier": "rug",
+     "position": [
+      -0.95,
+      0.85
+     ],
+     "rotation_deg": 0,
+     "z": 0.0
+    },
+    {
+     "id": "floor_lamp",
+     "listing": "ikea_10478124",
+     "tier": "mesh",
+     "position": [
+      0.2,
+      2.15
+     ],
+     "rotation_deg": 0.0,
+     "z": 0.0
+    },
+    {
+     "id": "wall_art",
+     "listing": "ikea_10623357",
+     "tier": "art",
+     "position": [
+      -0.95,
+      2.43
+     ],
+     "rotation_deg": 0.0,
+     "z": 1.3
+    }
+   ]
+  },
+  {
+   "id": "47895350_best_match",
+   "slot": "best_match",
+   "variant": "zone",
+   "items": [
+    {
+     "id": "bed",
+     "listing": "ikea_s89198465",
+     "tier": "mesh",
+     "position": [
+      -0.95,
+      1.385
+     ],
+     "rotation_deg": 0.0,
+     "z": 0.0
+    },
+    {
+     "id": "nightstand",
+     "listing": "ikea_00411997",
+     "tier": "mesh",
+     "position": [
+      -2.055,
+      2.175
+     ],
+     "rotation_deg": 0.0,
+     "z": 0.0
+    },
+    {
+     "id": "table_lamp",
+     "listing": "ikea_00594614",
+     "tier": "mesh",
+     "position": [
+      -2.055,
+      2.175
+     ],
+     "rotation_deg": 0.0,
+     "z": 0.53
+    },
+    {
+     "id": "rug",
+     "listing": "ikea_40623233",
+     "tier": "rug",
+     "position": [
+      -0.95,
+      0.794
+     ],
+     "rotation_deg": 0,
+     "z": 0.0
+    },
+    {
+     "id": "wall_art",
+     "listing": "ikea_40623474",
+     "tier": "art",
+     "position": [
+      -0.95,
+      2.43
+     ],
+     "rotation_deg": 0.0,
+     "z": 1.3
+    }
+   ]
+  },
+  {
+   "id": "47895350_bold",
+   "slot": "bold",
+   "variant": "zone",
+   "items": [
+    {
+     "id": "bed",
+     "listing": "ikea_s29308527",
+     "tier": "mesh",
+     "position": [
+      -0.95,
+      1.397
+     ],
+     "rotation_deg": 0.0,
+     "z": 0.0
+    },
+    {
+     "id": "nightstand",
+     "listing": "ws_adolph-bedside-table-honey-finish",
+     "tier": "mesh",
+     "position": [
+      -2.03,
+      2.197
+     ],
+     "rotation_deg": 0.0,
+     "z": 0.0
+    },
+    {
+     "id": "table_lamp",
+     "listing": "ikea_60602041",
+     "tier": "mesh",
+     "position": [
+      -2.03,
+      2.197
+     ],
+     "rotation_deg": 0.0,
+     "z": 0.432
+    },
+    {
+     "id": "rug",
+     "listing": "ikea_20625780",
+     "tier": "rug",
+     "position": [
+      -0.95,
+      0.813
+     ],
+     "rotation_deg": 0,
+     "z": 0.0
+    },
+    {
+     "id": "wall_art",
+     "listing": "ikea_10623357",
+     "tier": "art",
+     "position": [
+      -0.95,
+      2.43
+     ],
+     "rotation_deg": 0.0,
+     "z": 1.3
+    }
+   ]
+  }
+ ],
+ "similar": {
+  "ikea_10478124": "ikea_00594614",
+  "ikea_s89198465": "ikea_s39581837",
+  "ikea_00411997": "ikea_80576319",
+  "ikea_00594614": "ikea_10478124",
+  "ikea_s29308527": "ws_walken-queen-size-bed-honey-finish",
+  "ws_adolph-bedside-table-honey-finish": "ikea_30651392",
+  "ikea_60602041": "ws_knot-floor-lamp"
+ },
+ "planted_plant": {
+  "listing": "ikea_90630330",
+  "tier": "billboard",
+  "position": [
+   -1.85,
+   0.85
+  ],
+  "rotation_deg": 0.0,
+  "scale": 1.0
+ },
+ "config": {
+  "kind": "bedroom",
+  "back": [
+   -0.95,
+   2.45
+  ],
+  "front_deg": 270,
+  "side": -1,
+  "max_len": 2.2,
+  "zone": [
+   -2.0,
+   0.2,
+   -0.2,
+   2.6
+  ]
+ }
+}

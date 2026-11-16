@@ -1,0 +1,6676 @@
+[
+ {
+  "id": "ikea_10615526",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.19,
+    "margin": 0.1,
+    "largest_part": 1.0,
+    "bg_bright": 0.952,
+    "bg_std": 0.066
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.183,
+    "margin": 0.009,
+    "largest_part": 1.0,
+    "bg_bright": 0.65,
+    "bg_std": 0.195
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.766,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.007
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.651,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.008
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.809,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.005
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s39620339",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.216,
+    "margin": 0.1,
+    "largest_part": 1.0,
+    "bg_bright": 0.946,
+    "bg_std": 0.097
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.732,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.569,
+    "bg_std": 0.312
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.321,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.379,
+    "bg_std": 0.218
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.109,
+    "margin": 0.104,
+    "largest_part": 1.0,
+    "bg_bright": 0.497,
+    "bg_std": 0.238
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "empty",
+    "area": 0.0
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,fills_frame,busy_background",
+    "area": 0.997,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.337,
+    "bg_std": 0.09
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s49482832",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.227,
+    "margin": 0.1,
+    "largest_part": 1.0,
+    "bg_bright": 0.953,
+    "bg_std": 0.079
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.262,
+    "margin": 0.0,
+    "largest_part": 0.999,
+    "bg_bright": 0.396,
+    "bg_std": 0.198
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.301,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.633,
+    "bg_std": 0.214
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.627,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.708,
+    "bg_std": 0.224
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.641,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.841,
+    "bg_std": 0.11
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.028,
+    "margin": 0.02,
+    "largest_part": 0.563,
+    "bg_bright": 0.998,
+    "bg_std": 0.024
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s69615336",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.204,
+    "margin": 0.1,
+    "largest_part": 1.0,
+    "bg_bright": 0.952,
+    "bg_std": 0.065
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.222,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.618,
+    "bg_std": 0.257
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.213,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.672,
+    "bg_std": 0.261
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.433,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.588,
+    "bg_std": 0.229
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.748,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.605,
+    "bg_std": 0.224
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.145,
+    "margin": 0.131,
+    "largest_part": 1.0,
+    "bg_bright": 0.36,
+    "bg_std": 0.178
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s39270312",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.208,
+    "margin": 0.1,
+    "largest_part": 1.0,
+    "bg_bright": 0.941,
+    "bg_std": 0.1
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.251,
+    "margin": 0.039,
+    "largest_part": 1.0,
+    "bg_bright": 0.744,
+    "bg_std": 0.18
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.316,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.748,
+    "bg_std": 0.269
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.777,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.971,
+    "bg_std": 0.011
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.26,
+    "margin": 0.0,
+    "largest_part": 0.932,
+    "bg_bright": 0.408,
+    "bg_std": 0.202
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.586,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.813,
+    "bg_std": 0.101
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_20619072",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.258,
+    "margin": 0.1,
+    "largest_part": 1.0,
+    "bg_bright": 0.954,
+    "bg_std": 0.072
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.208,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.523,
+    "bg_std": 0.223
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.658,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.588,
+    "bg_std": 0.272
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.676,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.552,
+    "bg_std": 0.209
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "empty",
+    "area": 0.0
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.032,
+    "margin": 0.022,
+    "largest_part": 0.59,
+    "bg_bright": 0.997,
+    "bg_std": 0.03
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s69449691",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.234,
+    "margin": 0.1,
+    "largest_part": 1.0,
+    "bg_bright": 0.944,
+    "bg_std": 0.084
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.224,
+    "margin": 0.075,
+    "largest_part": 1.0,
+    "bg_bright": 0.491,
+    "bg_std": 0.236
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "empty",
+    "area": 0.0
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.334,
+    "margin": 0.0,
+    "largest_part": 0.947,
+    "bg_bright": 0.41,
+    "bg_std": 0.179
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.035,
+    "margin": 0.02,
+    "largest_part": 0.546,
+    "bg_bright": 0.996,
+    "bg_std": 0.033
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_40551226",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.274,
+    "margin": 0.08,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.005
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.21,
+    "margin": 0.071,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.005
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.247,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.472,
+    "bg_std": 0.255
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.236,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.537,
+    "bg_std": 0.264
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.201,
+    "margin": 0.0,
+    "largest_part": 0.994,
+    "bg_bright": 0.555,
+    "bg_std": 0.237
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "empty",
+    "area": 0.0
+   }
+  ],
+  "clean": [
+   0,
+   1
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_50646413",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.184,
+    "margin": 0.104,
+    "largest_part": 1.0,
+    "bg_bright": 0.993,
+    "bg_std": 0.008
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.621,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.911,
+    "bg_std": 0.173
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.383,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.679,
+    "bg_std": 0.198
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.24,
+    "margin": 0.017,
+    "largest_part": 1.0,
+    "bg_bright": 0.495,
+    "bg_std": 0.206
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ws_henry-l-shape-right-arm-corner-sofa-indigo-blue",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.212,
+    "margin": 0.03,
+    "largest_part": 1.0,
+    "bg_bright": 0.653,
+    "bg_std": 0.183
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.136,
+    "margin": 0.015,
+    "largest_part": 0.995,
+    "bg_bright": 0.972,
+    "bg_std": 0.1
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.212,
+    "margin": 0.03,
+    "largest_part": 1.0,
+    "bg_bright": 0.653,
+    "bg_std": 0.182
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.212,
+    "margin": 0.026,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.024
+   },
+   {
+    "index": 4,
+    "clean": true,
+    "reason": "",
+    "area": 0.257,
+    "margin": 0.026,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.023
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.772,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.185,
+    "bg_std": 0.152
+   }
+  ],
+  "clean": [
+   1,
+   3,
+   4
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.34,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.549,
+    "bg_std": 0.275
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.306,
+    "margin": 0.078,
+    "largest_part": 1.0,
+    "bg_bright": 0.995,
+    "bg_std": 0.047
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.38,
+    "margin": 0.031,
+    "largest_part": 1.0,
+    "bg_bright": 0.579,
+    "bg_std": 0.252
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.336,
+    "margin": 0.072,
+    "largest_part": 0.999,
+    "bg_bright": 0.977,
+    "bg_std": 0.127
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "too_small,several_parts,busy_background",
+    "area": 0.012,
+    "margin": 0.042,
+    "largest_part": 0.183,
+    "bg_bright": 0.254,
+    "bg_std": 0.134
+   }
+  ],
+  "clean": [
+   1,
+   3
+  ],
+  "input": 1
+ },
+ {
+  "id": "ikea_60458755",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.176,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.005
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.138,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.421,
+    "bg_std": 0.195
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.291,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.639,
+    "bg_std": 0.252
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.232,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.862,
+    "bg_std": 0.052
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.046,
+    "margin": 0.02,
+    "largest_part": 0.807,
+    "bg_bright": 0.997,
+    "bg_std": 0.035
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s39581837",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.3,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.002
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.196,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.474,
+    "bg_std": 0.162
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.327,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.59,
+    "bg_std": 0.274
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.53,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.869,
+    "bg_std": 0.073
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,several_parts",
+    "area": 0.495,
+    "margin": 0.0,
+    "largest_part": 0.743,
+    "bg_bright": 0.848,
+    "bg_std": 0.174
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.036,
+    "margin": 0.02,
+    "largest_part": 0.734,
+    "bg_bright": 0.998,
+    "bg_std": 0.026
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_30504631",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.257,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.002
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.158,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.443,
+    "bg_std": 0.181
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "too_small,busy_background",
+    "area": 0.023,
+    "margin": 0.065,
+    "largest_part": 1.0,
+    "bg_bright": 0.717,
+    "bg_std": 0.159
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.31,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.594,
+    "bg_std": 0.285
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.218,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.609,
+    "bg_std": 0.167
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.155,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.562,
+    "bg_std": 0.201
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_40573681",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.244,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.003
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.243,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.002
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.155,
+    "margin": 0.099,
+    "largest_part": 0.999,
+    "bg_bright": 0.689,
+    "bg_std": 0.252
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.111,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.699,
+    "bg_std": 0.247
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.26,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.503,
+    "bg_std": 0.202
+   },
+   {
+    "index": 5,
+    "clean": true,
+    "reason": "",
+    "area": 0.207,
+    "margin": 0.019,
+    "largest_part": 1.0,
+    "bg_bright": 0.859,
+    "bg_std": 0.12
+   }
+  ],
+  "clean": [
+   0,
+   1,
+   5
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s69200643",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.365,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.013
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.259,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.497,
+    "bg_std": 0.236
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,several_parts",
+    "area": 0.495,
+    "margin": 0.0,
+    "largest_part": 0.743,
+    "bg_bright": 0.848,
+    "bg_std": 0.174
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.286,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.573,
+    "bg_std": 0.215
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.524,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.709,
+    "bg_std": 0.242
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.477,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.601,
+    "bg_std": 0.201
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s89198465",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.246,
+    "margin": 0.02,
+    "largest_part": 0.981,
+    "bg_bright": 1.0,
+    "bg_std": 0.005
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.169,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.422,
+    "bg_std": 0.164
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,several_parts",
+    "area": 0.495,
+    "margin": 0.0,
+    "largest_part": 0.743,
+    "bg_bright": 0.848,
+    "bg_std": 0.174
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.203,
+    "margin": 0.075,
+    "largest_part": 0.977,
+    "bg_bright": 0.533,
+    "bg_std": 0.221
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.348,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.596,
+    "bg_std": 0.282
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.256,
+    "margin": 0.0,
+    "largest_part": 0.919,
+    "bg_bright": 0.669,
+    "bg_std": 0.167
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s29308527",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.295,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.008
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.246,
+    "margin": 0.008,
+    "largest_part": 1.0,
+    "bg_bright": 0.578,
+    "bg_std": 0.235
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.392,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.764,
+    "bg_std": 0.225
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.244,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.513,
+    "bg_std": 0.272
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "empty",
+    "area": 0.0
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_50579055",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.189,
+    "margin": 0.072,
+    "largest_part": 1.0,
+    "bg_bright": 0.997,
+    "bg_std": 0.003
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.186,
+    "margin": 0.054,
+    "largest_part": 0.999,
+    "bg_bright": 0.64,
+    "bg_std": 0.211
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.323,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.654,
+    "bg_std": 0.274
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.406,
+    "margin": 0.0,
+    "largest_part": 0.937,
+    "bg_bright": 0.688,
+    "bg_std": 0.165
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.406,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.647,
+    "bg_std": 0.236
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.179,
+    "margin": 0.0,
+    "largest_part": 0.995,
+    "bg_bright": 0.899,
+    "bg_std": 0.053
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ws_lotus-premium-ash-wood-bed-with-brass-inlay-queen-size-teak-",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.234,
+    "margin": 0.026,
+    "largest_part": 0.975,
+    "bg_bright": 0.595,
+    "bg_std": 0.238
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.233,
+    "margin": 0.069,
+    "largest_part": 1.0,
+    "bg_bright": 0.993,
+    "bg_std": 0.06
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.672,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.486,
+    "bg_std": 0.261
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.68,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.439,
+    "bg_std": 0.298
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.24,
+    "margin": 0.009,
+    "largest_part": 0.997,
+    "bg_bright": 0.52,
+    "bg_std": 0.227
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.251,
+    "margin": 0.016,
+    "largest_part": 0.927,
+    "bg_bright": 0.448,
+    "bg_std": 0.234
+   }
+  ],
+  "clean": [
+   1
+  ],
+  "input": 1
+ },
+ {
+  "id": "ikea_30437241",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.526,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.005
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "too_small",
+    "area": 0.004,
+    "margin": 0.454,
+    "largest_part": 1.0,
+    "bg_bright": 0.956,
+    "bg_std": 0.052
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.506,
+    "margin": 0.061,
+    "largest_part": 1.0,
+    "bg_bright": 0.809,
+    "bg_std": 0.106
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "several_parts",
+    "area": 0.071,
+    "margin": 0.034,
+    "largest_part": 0.719,
+    "bg_bright": 0.993,
+    "bg_std": 0.042
+   }
+  ],
+  "clean": [
+   0,
+   2
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s39551722",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.658,
+    "margin": 0.022,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.013
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.383,
+    "margin": 0.097,
+    "largest_part": 1.0,
+    "bg_bright": 0.581,
+    "bg_std": 0.183
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.312,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.476,
+    "bg_std": 0.227
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_40456917",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.429,
+    "margin": 0.022,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.003
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.388,
+    "margin": 0.03,
+    "largest_part": 1.0,
+    "bg_bright": 0.563,
+    "bg_std": 0.185
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.343,
+    "margin": 0.019,
+    "largest_part": 0.994,
+    "bg_bright": 0.665,
+    "bg_std": 0.155
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.437,
+    "margin": 0.005,
+    "largest_part": 1.0,
+    "bg_bright": 0.546,
+    "bg_std": 0.206
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.461,
+    "margin": 0.005,
+    "largest_part": 1.0,
+    "bg_bright": 0.551,
+    "bg_std": 0.205
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.096,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.672,
+    "bg_std": 0.214
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s89500966",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.613,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.007
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.36,
+    "margin": 0.049,
+    "largest_part": 1.0,
+    "bg_bright": 0.456,
+    "bg_std": 0.236
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.216,
+    "margin": 0.047,
+    "largest_part": 1.0,
+    "bg_bright": 0.479,
+    "bg_std": 0.24
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s99502371",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.489,
+    "margin": 0.069,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.004
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.337,
+    "margin": 0.139,
+    "largest_part": 1.0,
+    "bg_bright": 0.444,
+    "bg_std": 0.223
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.406,
+    "margin": 0.042,
+    "largest_part": 0.999,
+    "bg_bright": 0.424,
+    "bg_std": 0.232
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.292,
+    "margin": 0.139,
+    "largest_part": 1.0,
+    "bg_bright": 0.419,
+    "bg_std": 0.216
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.412,
+    "margin": 0.046,
+    "largest_part": 1.0,
+    "bg_bright": 0.418,
+    "bg_std": 0.232
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s79561309",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.464,
+    "margin": 0.045,
+    "largest_part": 1.0,
+    "bg_bright": 0.993,
+    "bg_std": 0.031
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "too_small,busy_background",
+    "area": 0.023,
+    "margin": 0.05,
+    "largest_part": 1.0,
+    "bg_bright": 0.439,
+    "bg_std": 0.222
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.2,
+    "margin": 0.045,
+    "largest_part": 1.0,
+    "bg_bright": 0.414,
+    "bg_std": 0.215
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s89432369",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.538,
+    "margin": 0.058,
+    "largest_part": 1.0,
+    "bg_bright": 0.997,
+    "bg_std": 0.048
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "empty",
+    "area": 0.0
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "too_small,busy_background",
+    "area": 0.007,
+    "margin": 0.183,
+    "largest_part": 1.0,
+    "bg_bright": 0.367,
+    "bg_std": 0.212
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.821,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.959,
+    "bg_std": 0.026
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s09432306",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.441,
+    "margin": 0.051,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.005
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,too_small,busy_background",
+    "area": 0.039,
+    "margin": 0.0,
+    "largest_part": 0.997,
+    "bg_bright": 0.461,
+    "bg_std": 0.253
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.398,
+    "margin": 0.0,
+    "largest_part": 0.947,
+    "bg_bright": 0.314,
+    "bg_std": 0.203
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ws_emboss-1-door-multi-utility-wardrobe-honey-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "touches_border,several_parts,busy_background",
+    "area": 0.332,
+    "margin": 0.0,
+    "largest_part": 0.784,
+    "bg_bright": 0.708,
+    "bg_std": 0.223
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.171,
+    "margin": 0.118,
+    "largest_part": 1.0,
+    "bg_bright": 0.969,
+    "bg_std": 0.103
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "several_parts,busy_background",
+    "area": 0.248,
+    "margin": 0.014,
+    "largest_part": 0.841,
+    "bg_bright": 0.743,
+    "bg_std": 0.208
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,several_parts,busy_background",
+    "area": 0.25,
+    "margin": 0.007,
+    "largest_part": 0.841,
+    "bg_bright": 0.729,
+    "bg_std": 0.212
+   },
+   {
+    "index": 4,
+    "clean": true,
+    "reason": "",
+    "area": 0.199,
+    "margin": 0.094,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.029
+   },
+   {
+    "index": 5,
+    "clean": true,
+    "reason": "",
+    "area": 0.178,
+    "margin": 0.083,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.026
+   }
+  ],
+  "clean": [
+   1,
+   4,
+   5
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_citroen-1-door-multi-utility-wardrobe-walnut-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "touches_border,several_parts,busy_background",
+    "area": 0.421,
+    "margin": 0.0,
+    "largest_part": 0.662,
+    "bg_bright": 0.582,
+    "bg_std": 0.144
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.14,
+    "margin": 0.165,
+    "largest_part": 0.996,
+    "bg_bright": 0.975,
+    "bg_std": 0.092
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.237,
+    "margin": 0.06,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.022
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.223,
+    "margin": 0.046,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.027
+   },
+   {
+    "index": 4,
+    "clean": true,
+    "reason": "",
+    "area": 0.25,
+    "margin": 0.048,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.029
+   }
+  ],
+  "clean": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_holden-1-door-multi-utility-wardrobe-walnut-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.249,
+    "margin": 0.038,
+    "largest_part": 1.0,
+    "bg_bright": 0.685,
+    "bg_std": 0.2
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.141,
+    "margin": 0.131,
+    "largest_part": 0.993,
+    "bg_bright": 0.976,
+    "bg_std": 0.089
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.213,
+    "margin": 0.047,
+    "largest_part": 0.886,
+    "bg_bright": 0.737,
+    "bg_std": 0.18
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.243,
+    "margin": 0.044,
+    "largest_part": 1.0,
+    "bg_bright": 0.675,
+    "bg_std": 0.205
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.212,
+    "margin": 0.048,
+    "largest_part": 0.889,
+    "bg_bright": 0.736,
+    "bg_std": 0.18
+   },
+   {
+    "index": 5,
+    "clean": true,
+    "reason": "",
+    "area": 0.236,
+    "margin": 0.064,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.022
+   }
+  ],
+  "clean": [
+   1,
+   5
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_cambrey-1-door-with-3-drawers-wardrobe-walnut-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.256,
+    "margin": 0.044,
+    "largest_part": 1.0,
+    "bg_bright": 0.775,
+    "bg_std": 0.194
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.192,
+    "margin": 0.098,
+    "largest_part": 0.998,
+    "bg_bright": 0.999,
+    "bg_std": 0.022
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.173,
+    "margin": 0.08,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.026
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.164,
+    "margin": 0.095,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.02
+   },
+   {
+    "index": 4,
+    "clean": true,
+    "reason": "",
+    "area": 0.248,
+    "margin": 0.088,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.025
+   }
+  ],
+  "clean": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_adolph-wardrobe-honey-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.404,
+    "margin": 0.0,
+    "largest_part": 0.907,
+    "bg_bright": 0.641,
+    "bg_std": 0.175
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.303,
+    "margin": 0.074,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.029
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.282,
+    "margin": 0.08,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.029
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.321,
+    "margin": 0.081,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.029
+   },
+   {
+    "index": 4,
+    "clean": true,
+    "reason": "",
+    "area": 0.286,
+    "margin": 0.078,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.024
+   },
+   {
+    "index": 5,
+    "clean": true,
+    "reason": "",
+    "area": 0.184,
+    "margin": 0.12,
+    "largest_part": 0.928,
+    "bg_bright": 0.986,
+    "bg_std": 0.098
+   }
+  ],
+  "clean": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_charles-2-door-multi-utility-wardrobe-walnut-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.352,
+    "margin": 0.05,
+    "largest_part": 1.0,
+    "bg_bright": 0.581,
+    "bg_std": 0.17
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.205,
+    "margin": 0.157,
+    "largest_part": 1.0,
+    "bg_bright": 0.972,
+    "bg_std": 0.098
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.252,
+    "margin": 0.1,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.026
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.261,
+    "margin": 0.105,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.027
+   },
+   {
+    "index": 4,
+    "clean": true,
+    "reason": "",
+    "area": 0.236,
+    "margin": 0.11,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.023
+   },
+   {
+    "index": 5,
+    "clean": true,
+    "reason": "",
+    "area": 0.253,
+    "margin": 0.115,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.023
+   }
+  ],
+  "clean": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "input": 1
+ },
+ {
+  "id": "ikea_20352987",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.251,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.008
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.117,
+    "margin": 0.095,
+    "largest_part": 1.0,
+    "bg_bright": 0.755,
+    "bg_std": 0.199
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.565,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.943,
+    "bg_std": 0.072
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.035,
+    "margin": 0.022,
+    "largest_part": 0.703,
+    "bg_bright": 0.997,
+    "bg_std": 0.027
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.464,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.75,
+    "bg_std": 0.165
+   }
+  ],
+  "clean": [
+   0,
+   2
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_20500407",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.319,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.012
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.134,
+    "margin": 0.088,
+    "largest_part": 1.0,
+    "bg_bright": 0.754,
+    "bg_std": 0.202
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.799,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.957,
+    "bg_std": 0.013
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_10604349",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.227,
+    "margin": 0.067,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.006
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.251,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.518,
+    "bg_std": 0.267
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.215,
+    "margin": 0.075,
+    "largest_part": 0.987,
+    "bg_bright": 0.523,
+    "bg_std": 0.229
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.256,
+    "margin": 0.0,
+    "largest_part": 0.998,
+    "bg_bright": 0.673,
+    "bg_std": 0.219
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.184,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.62,
+    "bg_std": 0.086
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "several_parts",
+    "area": 0.091,
+    "margin": 0.021,
+    "largest_part": 0.447,
+    "bg_bright": 0.993,
+    "bg_std": 0.054
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_10500356",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.516,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.011
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.305,
+    "margin": 0.0,
+    "largest_part": 0.873,
+    "bg_bright": 0.551,
+    "bg_std": 0.294
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.185,
+    "margin": 0.077,
+    "largest_part": 1.0,
+    "bg_bright": 0.546,
+    "bg_std": 0.241
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.193,
+    "margin": 0.031,
+    "largest_part": 0.996,
+    "bg_bright": 0.681,
+    "bg_std": 0.215
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "empty",
+    "area": 0.0
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "several_parts",
+    "area": 0.064,
+    "margin": 0.021,
+    "largest_part": 0.839,
+    "bg_bright": 0.997,
+    "bg_std": 0.029
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_00411997",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.187,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.01
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.641,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.883,
+    "bg_std": 0.057
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.285,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.605,
+    "bg_std": 0.2
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.035,
+    "margin": 0.019,
+    "largest_part": 0.816,
+    "bg_bright": 0.998,
+    "bg_std": 0.024
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_30651392",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.257,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.013
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.457,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.805,
+    "bg_std": 0.056
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.143,
+    "margin": 0.029,
+    "largest_part": 1.0,
+    "bg_bright": 0.461,
+    "bg_std": 0.233
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.101,
+    "margin": 0.056,
+    "largest_part": 1.0,
+    "bg_bright": 0.413,
+    "bg_std": 0.254
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "several_parts,busy_background",
+    "area": 0.082,
+    "margin": 0.153,
+    "largest_part": 0.713,
+    "bg_bright": 0.298,
+    "bg_std": 0.241
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_00586553",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.297,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.01
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.234,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.457,
+    "bg_std": 0.323
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.036,
+    "margin": 0.024,
+    "largest_part": 0.737,
+    "bg_bright": 0.997,
+    "bg_std": 0.035
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_80576319",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.282,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.013
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,several_parts,busy_background",
+    "area": 0.344,
+    "margin": 0.0,
+    "largest_part": 0.809,
+    "bg_bright": 0.74,
+    "bg_std": 0.198
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.096,
+    "margin": 0.135,
+    "largest_part": 1.0,
+    "bg_bright": 0.614,
+    "bg_std": 0.306
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.108,
+    "margin": 0.041,
+    "largest_part": 1.0,
+    "bg_bright": 0.609,
+    "bg_std": 0.256
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.526,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.906,
+    "bg_std": 0.009
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.054,
+    "margin": 0.023,
+    "largest_part": 0.708,
+    "bg_bright": 0.995,
+    "bg_std": 0.039
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_50497583",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.41,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.009
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "too_small,busy_background",
+    "area": 0.048,
+    "margin": 0.151,
+    "largest_part": 0.997,
+    "bg_bright": 0.528,
+    "bg_std": 0.186
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.739,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.822,
+    "bg_std": 0.132
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.776,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.735,
+    "bg_std": 0.132
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.777,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.731,
+    "bg_std": 0.132
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.228,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.55,
+    "bg_std": 0.239
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ws_adolph-bedside-table-honey-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.244,
+    "margin": 0.063,
+    "largest_part": 0.998,
+    "bg_bright": 0.529,
+    "bg_std": 0.296
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.257,
+    "margin": 0.195,
+    "largest_part": 1.0,
+    "bg_bright": 0.995,
+    "bg_std": 0.047
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.201,
+    "margin": 0.066,
+    "largest_part": 1.0,
+    "bg_bright": 0.453,
+    "bg_std": 0.246
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.231,
+    "margin": 0.204,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.024
+   },
+   {
+    "index": 4,
+    "clean": true,
+    "reason": "",
+    "area": 0.306,
+    "margin": 0.108,
+    "largest_part": 1.0,
+    "bg_bright": 0.983,
+    "bg_std": 0.111
+   }
+  ],
+  "clean": [
+   1,
+   3,
+   4
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_morse-bedside-table-honey-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.361,
+    "margin": 0.028,
+    "largest_part": 1.0,
+    "bg_bright": 0.472,
+    "bg_std": 0.28
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.09,
+    "margin": 0.251,
+    "largest_part": 1.0,
+    "bg_bright": 0.994,
+    "bg_std": 0.059
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.197,
+    "margin": 0.201,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.02
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.24,
+    "margin": 0.178,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.021
+   },
+   {
+    "index": 4,
+    "clean": true,
+    "reason": "",
+    "area": 0.347,
+    "margin": 0.125,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.024
+   },
+   {
+    "index": 5,
+    "clean": true,
+    "reason": "",
+    "area": 0.133,
+    "margin": 0.142,
+    "largest_part": 0.985,
+    "bg_bright": 0.996,
+    "bg_std": 0.047
+   }
+  ],
+  "clean": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_ferguson-bedside-table-walnut-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.267,
+    "margin": 0.016,
+    "largest_part": 1.0,
+    "bg_bright": 0.442,
+    "bg_std": 0.275
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.263,
+    "margin": 0.204,
+    "largest_part": 1.0,
+    "bg_bright": 0.995,
+    "bg_std": 0.049
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.198,
+    "margin": 0.038,
+    "largest_part": 1.0,
+    "bg_bright": 0.455,
+    "bg_std": 0.241
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.223,
+    "margin": 0.221,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.025
+   },
+   {
+    "index": 4,
+    "clean": true,
+    "reason": "",
+    "area": 0.275,
+    "margin": 0.09,
+    "largest_part": 0.996,
+    "bg_bright": 0.985,
+    "bg_std": 0.102
+   }
+  ],
+  "clean": [
+   1,
+   3,
+   4
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_allan-bedside-honey-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.167,
+    "margin": 0.024,
+    "largest_part": 1.0,
+    "bg_bright": 0.473,
+    "bg_std": 0.206
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "too_small",
+    "area": 0.036,
+    "margin": 0.296,
+    "largest_part": 1.0,
+    "bg_bright": 0.994,
+    "bg_std": 0.059
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.185,
+    "margin": 0.131,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.023
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.179,
+    "margin": 0.128,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.024
+   }
+  ],
+  "clean": [
+   2,
+   3
+  ],
+  "input": 2
+ },
+ {
+  "id": "ws_denzel-bedside-table-walnut-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.33,
+    "margin": 0.0,
+    "largest_part": 0.873,
+    "bg_bright": 0.521,
+    "bg_std": 0.278
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.078,
+    "margin": 0.248,
+    "largest_part": 1.0,
+    "bg_bright": 0.994,
+    "bg_std": 0.058
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.267,
+    "margin": 0.161,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.022
+   }
+  ],
+  "clean": [
+   1,
+   2
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_florian-bedside-table-honey-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.428,
+    "margin": 0.04,
+    "largest_part": 1.0,
+    "bg_bright": 0.553,
+    "bg_std": 0.219
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.084,
+    "margin": 0.219,
+    "largest_part": 0.998,
+    "bg_bright": 0.994,
+    "bg_std": 0.057
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.253,
+    "margin": 0.172,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.021
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.229,
+    "margin": 0.192,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.022
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.204,
+    "margin": 0.009,
+    "largest_part": 1.0,
+    "bg_bright": 0.498,
+    "bg_std": 0.348
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.657,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.629,
+    "bg_std": 0.085
+   }
+  ],
+  "clean": [
+   1,
+   2,
+   3
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_bryson-bedside-table-walnut-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.364,
+    "margin": 0.026,
+    "largest_part": 1.0,
+    "bg_bright": 0.459,
+    "bg_std": 0.168
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "too_small",
+    "area": 0.037,
+    "margin": 0.362,
+    "largest_part": 1.0,
+    "bg_bright": 0.994,
+    "bg_std": 0.059
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.219,
+    "margin": 0.155,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.022
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.176,
+    "margin": 0.168,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.024
+   },
+   {
+    "index": 4,
+    "clean": true,
+    "reason": "",
+    "area": 0.256,
+    "margin": 0.158,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.023
+   }
+  ],
+  "clean": [
+   2,
+   3,
+   4
+  ],
+  "input": 2
+ },
+ {
+  "id": "ws_swirl-bedside-table",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.461,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.443,
+    "bg_std": 0.279
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.084,
+    "margin": 0.197,
+    "largest_part": 1.0,
+    "bg_bright": 0.994,
+    "bg_std": 0.059
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.184,
+    "margin": 0.234,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.02
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.12,
+    "margin": 0.259,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.019
+   }
+  ],
+  "clean": [
+   1,
+   2,
+   3
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_orwell-round-coffee-table-honey-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.35,
+    "margin": 0.063,
+    "largest_part": 0.998,
+    "bg_bright": 0.552,
+    "bg_std": 0.243
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.361,
+    "margin": 0.063,
+    "largest_part": 0.999,
+    "bg_bright": 0.567,
+    "bg_std": 0.208
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.3,
+    "margin": 0.152,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.023
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.256,
+    "margin": 0.111,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.021
+   },
+   {
+    "index": 4,
+    "clean": true,
+    "reason": "",
+    "area": 0.263,
+    "margin": 0.119,
+    "largest_part": 1.0,
+    "bg_bright": 0.996,
+    "bg_std": 0.037
+   }
+  ],
+  "clean": [
+   2,
+   3,
+   4
+  ],
+  "input": 2
+ },
+ {
+  "id": "ikea_70533491",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.472,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.015
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.146,
+    "margin": 0.06,
+    "largest_part": 1.0,
+    "bg_bright": 0.587,
+    "bg_std": 0.249
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.196,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.617,
+    "bg_std": 0.179
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.353,
+    "margin": 0.0,
+    "largest_part": 0.999,
+    "bg_bright": 0.695,
+    "bg_std": 0.147
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.05,
+    "margin": 0.019,
+    "largest_part": 0.706,
+    "bg_bright": 0.996,
+    "bg_std": 0.034
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_80581919",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.527,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.018
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.421,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.014
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.861,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.978,
+    "bg_std": 0.011
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.523,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.911,
+    "bg_std": 0.107
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.692,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.968,
+    "bg_std": 0.015
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.048,
+    "margin": 0.02,
+    "largest_part": 0.609,
+    "bg_bright": 0.996,
+    "bg_std": 0.033
+   }
+  ],
+  "clean": [
+   0,
+   1
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s19625328",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.403,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.014
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.803,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.953,
+    "bg_std": 0.017
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.572,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.899,
+    "bg_std": 0.057
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.19,
+    "margin": 0.036,
+    "largest_part": 1.0,
+    "bg_bright": 0.681,
+    "bg_std": 0.201
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.058,
+    "margin": 0.023,
+    "largest_part": 0.743,
+    "bg_bright": 0.994,
+    "bg_std": 0.041
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_10535544",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.37,
+    "margin": 0.081,
+    "largest_part": 1.0,
+    "bg_bright": 0.996,
+    "bg_std": 0.012
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.124,
+    "margin": 0.092,
+    "largest_part": 1.0,
+    "bg_bright": 0.684,
+    "bg_std": 0.243
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.147,
+    "margin": 0.096,
+    "largest_part": 1.0,
+    "bg_bright": 0.638,
+    "bg_std": 0.239
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.706,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.963,
+    "bg_std": 0.016
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.039,
+    "margin": 0.019,
+    "largest_part": 0.644,
+    "bg_bright": 0.997,
+    "bg_std": 0.031
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_30492317",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.527,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.013
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.17,
+    "margin": 0.108,
+    "largest_part": 1.0,
+    "bg_bright": 0.698,
+    "bg_std": 0.212
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.415,
+    "margin": 0.013,
+    "largest_part": 1.0,
+    "bg_bright": 0.601,
+    "bg_std": 0.232
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.774,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.897,
+    "bg_std": 0.031
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.809,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.903,
+    "bg_std": 0.046
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.041,
+    "margin": 0.02,
+    "largest_part": 0.638,
+    "bg_bright": 0.996,
+    "bg_std": 0.034
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s39626280",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.562,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.008
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.674,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.482,
+    "bg_std": 0.302
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.255,
+    "margin": 0.0,
+    "largest_part": 0.999,
+    "bg_bright": 0.452,
+    "bg_std": 0.219
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_90581914",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.443,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.02
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.319,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.018
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.159,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.586,
+    "bg_std": 0.368
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.855,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.93,
+    "bg_std": 0.022
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.041,
+    "margin": 0.02,
+    "largest_part": 0.531,
+    "bg_bright": 0.997,
+    "bg_std": 0.03
+   }
+  ],
+  "clean": [
+   0,
+   1
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_70535895",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.391,
+    "margin": 0.022,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.009
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.151,
+    "margin": 0.065,
+    "largest_part": 1.0,
+    "bg_bright": 0.664,
+    "bg_std": 0.228
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.186,
+    "margin": 0.04,
+    "largest_part": 1.0,
+    "bg_bright": 0.569,
+    "bg_std": 0.228
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.839,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.871,
+    "bg_std": 0.109
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.055,
+    "margin": 0.022,
+    "largest_part": 0.787,
+    "bg_bright": 0.997,
+    "bg_std": 0.026
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s99628653",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.569,
+    "margin": 0.022,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.015
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.177,
+    "margin": 0.027,
+    "largest_part": 1.0,
+    "bg_bright": 0.552,
+    "bg_std": 0.274
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.694,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.523,
+    "bg_std": 0.211
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.604,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.517,
+    "bg_std": 0.248
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,several_parts,busy_background",
+    "area": 0.301,
+    "margin": 0.0,
+    "largest_part": 0.499,
+    "bg_bright": 0.314,
+    "bg_std": 0.229
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.032,
+    "margin": 0.022,
+    "largest_part": 0.551,
+    "bg_bright": 0.997,
+    "bg_std": 0.032
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ws_udaya-sheesham-wood-arm-chair-green-stripe-teak-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "several_parts,busy_background",
+    "area": 0.254,
+    "margin": 0.052,
+    "largest_part": 0.702,
+    "bg_bright": 0.703,
+    "bg_std": 0.127
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "too_small",
+    "area": 0.05,
+    "margin": 0.179,
+    "largest_part": 1.0,
+    "bg_bright": 0.974,
+    "bg_std": 0.093
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.214,
+    "margin": 0.043,
+    "largest_part": 1.0,
+    "bg_bright": 0.58,
+    "bg_std": 0.152
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.243,
+    "margin": 0.044,
+    "largest_part": 1.0,
+    "bg_bright": 0.73,
+    "bg_std": 0.122
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.364,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.536,
+    "bg_std": 0.216
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.248,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.694,
+    "bg_std": 0.202
+   }
+  ],
+  "clean": [],
+  "input": null
+ },
+ {
+  "id": "ws_kelvin-arm-chair-with-cane-cream-robins",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "touches_border,several_parts,busy_background",
+    "area": 0.366,
+    "margin": 0.0,
+    "largest_part": 0.725,
+    "bg_bright": 0.623,
+    "bg_std": 0.152
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,several_parts,busy_background",
+    "area": 0.306,
+    "margin": 0.0,
+    "largest_part": 0.423,
+    "bg_bright": 0.844,
+    "bg_std": 0.212
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,fills_frame,busy_background",
+    "area": 1.0,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.0,
+    "bg_std": 0.0
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "several_parts,busy_background",
+    "area": 0.319,
+    "margin": 0.031,
+    "largest_part": 0.418,
+    "bg_bright": 0.77,
+    "bg_std": 0.25
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,fills_frame,busy_background",
+    "area": 1.0,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.0,
+    "bg_std": 0.0
+   },
+   {
+    "index": 5,
+    "clean": true,
+    "reason": "",
+    "area": 0.188,
+    "margin": 0.11,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.023
+   }
+  ],
+  "clean": [
+   5
+  ],
+  "input": 5
+ },
+ {
+  "id": "ws_danon-lounge-chair-blue-stripe",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.275,
+    "margin": 0.088,
+    "largest_part": 1.0,
+    "bg_bright": 0.506,
+    "bg_std": 0.199
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.248,
+    "margin": 0.131,
+    "largest_part": 1.0,
+    "bg_bright": 0.996,
+    "bg_std": 0.045
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.358,
+    "margin": 0.024,
+    "largest_part": 1.0,
+    "bg_bright": 0.517,
+    "bg_std": 0.156
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.363,
+    "margin": 0.03,
+    "largest_part": 1.0,
+    "bg_bright": 0.522,
+    "bg_std": 0.161
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.251,
+    "margin": 0.03,
+    "largest_part": 1.0,
+    "bg_bright": 0.532,
+    "bg_std": 0.15
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.708,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.522,
+    "bg_std": 0.106
+   }
+  ],
+  "clean": [
+   1
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_thrace-lounge-chair-salmon-pink",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.293,
+    "margin": 0.093,
+    "largest_part": 1.0,
+    "bg_bright": 0.503,
+    "bg_std": 0.21
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.244,
+    "margin": 0.111,
+    "largest_part": 1.0,
+    "bg_bright": 0.995,
+    "bg_std": 0.047
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.229,
+    "margin": 0.074,
+    "largest_part": 0.86,
+    "bg_bright": 0.197,
+    "bg_std": 0.175
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.323,
+    "margin": 0.047,
+    "largest_part": 1.0,
+    "bg_bright": 0.604,
+    "bg_std": 0.137
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.297,
+    "margin": 0.046,
+    "largest_part": 1.0,
+    "bg_bright": 0.56,
+    "bg_std": 0.189
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.272,
+    "margin": 0.051,
+    "largest_part": 1.0,
+    "bg_bright": 0.703,
+    "bg_std": 0.149
+   }
+  ],
+  "clean": [
+   1
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_crisper-lounge-chair-cotton-grey-robins",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "touches_border,several_parts,busy_background",
+    "area": 0.253,
+    "margin": 0.0,
+    "largest_part": 0.825,
+    "bg_bright": 0.657,
+    "bg_std": 0.247
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "too_small",
+    "area": 0.049,
+    "margin": 0.141,
+    "largest_part": 0.999,
+    "bg_bright": 0.978,
+    "bg_std": 0.088
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.26,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.737,
+    "bg_std": 0.241
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.317,
+    "margin": 0.0,
+    "largest_part": 0.866,
+    "bg_bright": 0.605,
+    "bg_std": 0.228
+   },
+   {
+    "index": 4,
+    "clean": true,
+    "reason": "",
+    "area": 0.235,
+    "margin": 0.103,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.024
+   },
+   {
+    "index": 5,
+    "clean": true,
+    "reason": "",
+    "area": 0.207,
+    "margin": 0.145,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.022
+   }
+  ],
+  "clean": [
+   4,
+   5
+  ],
+  "input": 4
+ },
+ {
+  "id": "ws_adire-lounge-chair-cream-robins",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.27,
+    "margin": 0.053,
+    "largest_part": 1.0,
+    "bg_bright": 0.287,
+    "bg_std": 0.209
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.069,
+    "margin": 0.189,
+    "largest_part": 0.998,
+    "bg_bright": 0.977,
+    "bg_std": 0.083
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.221,
+    "margin": 0.141,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.024
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.269,
+    "margin": 0.097,
+    "largest_part": 1.0,
+    "bg_bright": 0.996,
+    "bg_std": 0.04
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,fills_frame,busy_background",
+    "area": 1.0,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.0,
+    "bg_std": 0.0
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,fills_frame,busy_background",
+    "area": 1.0,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.0,
+    "bg_std": 0.0
+   }
+  ],
+  "clean": [
+   1,
+   2,
+   3
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_crisper-lounge-chair-bubble-robins",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "touches_border,several_parts,busy_background",
+    "area": 0.253,
+    "margin": 0.0,
+    "largest_part": 0.827,
+    "bg_bright": 0.658,
+    "bg_std": 0.246
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "too_small",
+    "area": 0.049,
+    "margin": 0.141,
+    "largest_part": 1.0,
+    "bg_bright": 0.978,
+    "bg_std": 0.089
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.26,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.737,
+    "bg_std": 0.241
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.317,
+    "margin": 0.0,
+    "largest_part": 0.871,
+    "bg_bright": 0.604,
+    "bg_std": 0.228
+   },
+   {
+    "index": 4,
+    "clean": true,
+    "reason": "",
+    "area": 0.235,
+    "margin": 0.103,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.024
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,fills_frame,busy_background",
+    "area": 1.0,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.0,
+    "bg_std": 0.0
+   }
+  ],
+  "clean": [
+   4
+  ],
+  "input": 4
+ },
+ {
+  "id": "ikea_20321321",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "too_small",
+    "area": 0.058,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.005
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.486,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.89,
+    "bg_std": 0.015
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.517,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.705,
+    "bg_std": 0.112
+   }
+  ],
+  "clean": [],
+  "input": null
+ },
+ {
+  "id": "ikea_60563577",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "too_small",
+    "area": 0.032,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.003
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.271,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.47,
+    "bg_std": 0.181
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "too_small,busy_background",
+    "area": 0.016,
+    "margin": 0.138,
+    "largest_part": 1.0,
+    "bg_bright": 0.427,
+    "bg_std": 0.209
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.445,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.911,
+    "bg_std": 0.027
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.414,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.93,
+    "bg_std": 0.03
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.536,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.555,
+    "bg_std": 0.127
+   }
+  ],
+  "clean": [],
+  "input": null
+ },
+ {
+  "id": "ikea_60459712",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "too_small",
+    "area": 0.022,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.014
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.219,
+    "margin": 0.0,
+    "largest_part": 0.953,
+    "bg_bright": 0.347,
+    "bg_std": 0.173
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "several_parts,busy_background",
+    "area": 0.193,
+    "margin": 0.02,
+    "largest_part": 0.79,
+    "bg_bright": 0.527,
+    "bg_std": 0.196
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.093,
+    "margin": 0.058,
+    "largest_part": 0.851,
+    "bg_bright": 0.57,
+    "bg_std": 0.217
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.277,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.927,
+    "bg_std": 0.045
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.247,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.693,
+    "bg_std": 0.237
+   }
+  ],
+  "clean": [],
+  "input": null
+ },
+ {
+  "id": "ikea_20405047",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.09,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.006
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,several_parts,busy_background",
+    "area": 0.333,
+    "margin": 0.0,
+    "largest_part": 0.808,
+    "bg_bright": 0.459,
+    "bg_std": 0.14
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,several_parts,busy_background",
+    "area": 0.159,
+    "margin": 0.0,
+    "largest_part": 0.512,
+    "bg_bright": 0.573,
+    "bg_std": 0.153
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.301,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.839,
+    "bg_std": 0.17
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.534,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.915,
+    "bg_std": 0.077
+   },
+   {
+    "index": 5,
+    "clean": true,
+    "reason": "",
+    "area": 0.708,
+    "margin": 0.019,
+    "largest_part": 1.0,
+    "bg_bright": 0.949,
+    "bg_std": 0.045
+   }
+  ],
+  "clean": [
+   0,
+   5
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_50314814",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "too_small",
+    "area": 0.044,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.004
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.347,
+    "margin": 0.0,
+    "largest_part": 0.878,
+    "bg_bright": 0.401,
+    "bg_std": 0.168
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.631,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.878,
+    "bg_std": 0.015
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.378,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.722,
+    "bg_std": 0.112
+   }
+  ],
+  "clean": [],
+  "input": null
+ },
+ {
+  "id": "ikea_10478124",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.064,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.004
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.232,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.391,
+    "bg_std": 0.177
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.075,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.526,
+    "bg_std": 0.251
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.402,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.648,
+    "bg_std": 0.133
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_60602041",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.14,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.009
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.455,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.392,
+    "bg_std": 0.155
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.5,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.331,
+    "bg_std": 0.121
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.178,
+    "margin": 0.0,
+    "largest_part": 0.866,
+    "bg_bright": 0.275,
+    "bg_std": 0.164
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.06,
+    "margin": 0.082,
+    "largest_part": 1.0,
+    "bg_bright": 0.377,
+    "bg_std": 0.181
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.024,
+    "margin": 0.021,
+    "largest_part": 0.526,
+    "bg_bright": 0.998,
+    "bg_std": 0.023
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ws_adolph-bed-honey-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.285,
+    "margin": 0.011,
+    "largest_part": 1.0,
+    "bg_bright": 0.644,
+    "bg_std": 0.216
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.252,
+    "margin": 0.047,
+    "largest_part": 1.0,
+    "bg_bright": 0.994,
+    "bg_std": 0.056
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.314,
+    "margin": 0.08,
+    "largest_part": 0.983,
+    "bg_bright": 0.678,
+    "bg_std": 0.173
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.329,
+    "margin": 0.106,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.026
+   },
+   {
+    "index": 4,
+    "clean": true,
+    "reason": "",
+    "area": 0.276,
+    "margin": 0.06,
+    "largest_part": 0.999,
+    "bg_bright": 0.985,
+    "bg_std": 0.104
+   }
+  ],
+  "clean": [
+   1,
+   3,
+   4
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_adolph-queen-size-bed-walnut-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.289,
+    "margin": 0.011,
+    "largest_part": 1.0,
+    "bg_bright": 0.647,
+    "bg_std": 0.214
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.26,
+    "margin": 0.059,
+    "largest_part": 1.0,
+    "bg_bright": 0.994,
+    "bg_std": 0.056
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.317,
+    "margin": 0.08,
+    "largest_part": 0.96,
+    "bg_bright": 0.678,
+    "bg_std": 0.172
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.344,
+    "margin": 0.098,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.026
+   },
+   {
+    "index": 4,
+    "clean": true,
+    "reason": "",
+    "area": 0.239,
+    "margin": 0.056,
+    "largest_part": 1.0,
+    "bg_bright": 0.986,
+    "bg_std": 0.101
+   }
+  ],
+  "clean": [
+   1,
+   3,
+   4
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_walken-queen-size-bed-honey-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.248,
+    "margin": 0.007,
+    "largest_part": 0.985,
+    "bg_bright": 0.431,
+    "bg_std": 0.244
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.268,
+    "margin": 0.047,
+    "largest_part": 1.0,
+    "bg_bright": 0.994,
+    "bg_std": 0.056
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.314,
+    "margin": 0.07,
+    "largest_part": 1.0,
+    "bg_bright": 0.422,
+    "bg_std": 0.199
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.322,
+    "margin": 0.006,
+    "largest_part": 0.988,
+    "bg_bright": 0.437,
+    "bg_std": 0.228
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.296,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.498,
+    "bg_std": 0.245
+   },
+   {
+    "index": 5,
+    "clean": true,
+    "reason": "",
+    "area": 0.267,
+    "margin": 0.032,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.025
+   }
+  ],
+  "clean": [
+   1,
+   5
+  ],
+  "input": 1
+ },
+ {
+  "id": "ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.21,
+    "margin": 0.023,
+    "largest_part": 1.0,
+    "bg_bright": 0.675,
+    "bg_std": 0.241
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.25,
+    "margin": 0.121,
+    "largest_part": 1.0,
+    "bg_bright": 0.722,
+    "bg_std": 0.216
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.427,
+    "margin": 0.012,
+    "largest_part": 0.949,
+    "bg_bright": 0.668,
+    "bg_std": 0.224
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.414,
+    "margin": 0.007,
+    "largest_part": 0.991,
+    "bg_bright": 0.612,
+    "bg_std": 0.231
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.393,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.7,
+    "bg_std": 0.21
+   },
+   {
+    "index": 5,
+    "clean": true,
+    "reason": "",
+    "area": 0.36,
+    "margin": 0.102,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.025
+   }
+  ],
+  "clean": [
+   5
+  ],
+  "input": 5
+ },
+ {
+  "id": "ws_knot-floor-lamp",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "touches_border,too_small,several_parts,busy_background",
+    "area": 0.06,
+    "margin": 0.0,
+    "largest_part": 0.591,
+    "bg_bright": 0.576,
+    "bg_std": 0.346
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "several_parts",
+    "area": 0.065,
+    "margin": 0.02,
+    "largest_part": 0.495,
+    "bg_bright": 0.968,
+    "bg_std": 0.031
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,several_parts,busy_background",
+    "area": 0.061,
+    "margin": 0.0,
+    "largest_part": 0.608,
+    "bg_bright": 0.228,
+    "bg_std": 0.192
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "several_parts,busy_background",
+    "area": 0.156,
+    "margin": 0.011,
+    "largest_part": 0.821,
+    "bg_bright": 0.607,
+    "bg_std": 0.291
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,too_small,busy_background",
+    "area": 0.027,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.381,
+    "bg_std": 0.124
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,too_small,busy_background",
+    "area": 0.036,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.485,
+    "bg_std": 0.134
+   }
+  ],
+  "clean": [],
+  "input": null
+ },
+ {
+  "id": "ikea_s69510607",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.112,
+    "margin": 0.1,
+    "largest_part": 1.0,
+    "bg_bright": 0.961,
+    "bg_std": 0.029
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "too_small,busy_background",
+    "area": 0.057,
+    "margin": 0.067,
+    "largest_part": 0.993,
+    "bg_bright": 0.593,
+    "bg_std": 0.278
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.517,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.641,
+    "bg_std": 0.226
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.284,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.543,
+    "bg_std": 0.36
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,several_parts,busy_background",
+    "area": 0.16,
+    "margin": 0.0,
+    "largest_part": 0.85,
+    "bg_bright": 0.262,
+    "bg_std": 0.163
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.615,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.784,
+    "bg_std": 0.137
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s59536306",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.197,
+    "margin": 0.1,
+    "largest_part": 1.0,
+    "bg_bright": 0.948,
+    "bg_std": 0.059
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.158,
+    "margin": 0.03,
+    "largest_part": 1.0,
+    "bg_bright": 0.554,
+    "bg_std": 0.239
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.029,
+    "margin": 0.022,
+    "largest_part": 0.54,
+    "bg_bright": 0.997,
+    "bg_std": 0.03
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s39585821",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.299,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.017
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.766,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.728,
+    "bg_std": 0.137
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "too_small",
+    "area": 0.018,
+    "margin": 0.215,
+    "largest_part": 0.927,
+    "bg_bright": 0.762,
+    "bg_std": 0.118
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.726,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.358,
+    "bg_std": 0.135
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s99613524",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.332,
+    "margin": 0.125,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.007
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.062,
+    "margin": 0.183,
+    "largest_part": 1.0,
+    "bg_bright": 0.527,
+    "bg_std": 0.249
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.047,
+    "margin": 0.023,
+    "largest_part": 0.679,
+    "bg_bright": 0.996,
+    "bg_std": 0.036
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s49395019",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.191,
+    "margin": 0.1,
+    "largest_part": 1.0,
+    "bg_bright": 0.947,
+    "bg_std": 0.069
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.232,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.798,
+    "bg_std": 0.128
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.353,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.727,
+    "bg_std": 0.246
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.771,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.857,
+    "bg_std": 0.184
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "too_small,busy_background",
+    "area": 0.041,
+    "margin": 0.145,
+    "largest_part": 1.0,
+    "bg_bright": 0.557,
+    "bg_std": 0.215
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "too_small,busy_background",
+    "area": 0.012,
+    "margin": 0.08,
+    "largest_part": 1.0,
+    "bg_bright": 0.531,
+    "bg_std": 0.217
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_s79627659",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.28,
+    "margin": 0.1,
+    "largest_part": 1.0,
+    "bg_bright": 0.935,
+    "bg_std": 0.088
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.186,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.611,
+    "bg_std": 0.275
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.677,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.576,
+    "bg_std": 0.23
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.171,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.703,
+    "bg_std": 0.142
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,fills_frame,busy_background",
+    "area": 1.0,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.0,
+    "bg_std": 0.0
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.037,
+    "margin": 0.022,
+    "largest_part": 0.543,
+    "bg_bright": 0.996,
+    "bg_std": 0.034
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_30638777",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.275,
+    "margin": 0.1,
+    "largest_part": 1.0,
+    "bg_bright": 0.934,
+    "bg_std": 0.098
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.649,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.577,
+    "bg_std": 0.222
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.352,
+    "margin": 0.0,
+    "largest_part": 0.992,
+    "bg_bright": 0.578,
+    "bg_std": 0.192
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.827,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.998,
+    "bg_std": 0.025
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.63,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.014
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.745,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.016
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_30437811",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "too_small",
+    "area": 0.042,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.01
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "too_small",
+    "area": 0.002,
+    "margin": 0.319,
+    "largest_part": 1.0,
+    "bg_bright": 0.896,
+    "bg_std": 0.039
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.286,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.415,
+    "bg_std": 0.197
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.298,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.649,
+    "bg_std": 0.124
+   }
+  ],
+  "clean": [],
+  "input": null
+ },
+ {
+  "id": "ikea_20568223",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.528,
+    "margin": 0.019,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.009
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.145,
+    "margin": 0.094,
+    "largest_part": 1.0,
+    "bg_bright": 0.557,
+    "bg_std": 0.227
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.35,
+    "margin": 0.0,
+    "largest_part": 0.989,
+    "bg_bright": 0.443,
+    "bg_std": 0.178
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.725,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.83,
+    "bg_std": 0.062
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.442,
+    "margin": 0.049,
+    "largest_part": 1.0,
+    "bg_bright": 0.514,
+    "bg_std": 0.225
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.238,
+    "margin": 0.0,
+    "largest_part": 0.98,
+    "bg_bright": 0.478,
+    "bg_std": 0.36
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_80573580",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.358,
+    "margin": 0.019,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.006
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.256,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.573,
+    "bg_std": 0.21
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.12,
+    "margin": 0.037,
+    "largest_part": 1.0,
+    "bg_bright": 0.697,
+    "bg_std": 0.134
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.544,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.888,
+    "bg_std": 0.172
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_60404913",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.062,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.006
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "too_small,several_parts,busy_background",
+    "area": 0.057,
+    "margin": 0.079,
+    "largest_part": 0.54,
+    "bg_bright": 0.564,
+    "bg_std": 0.189
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.093,
+    "margin": 0.036,
+    "largest_part": 1.0,
+    "bg_bright": 0.495,
+    "bg_std": 0.244
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.222,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.554,
+    "bg_std": 0.178
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.35,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.502,
+    "bg_std": 0.214
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.16,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.937,
+    "bg_std": 0.042
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_70524458",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.132,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.01
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.165,
+    "margin": 0.0,
+    "largest_part": 0.896,
+    "bg_bright": 0.479,
+    "bg_std": 0.162
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "several_parts,busy_background",
+    "area": 0.082,
+    "margin": 0.145,
+    "largest_part": 0.613,
+    "bg_bright": 0.37,
+    "bg_std": 0.159
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.442,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.79,
+    "bg_std": 0.093
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_00594614",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.32,
+    "margin": 0.022,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.005
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "several_parts,busy_background",
+    "area": 0.188,
+    "margin": 0.068,
+    "largest_part": 0.664,
+    "bg_bright": 0.393,
+    "bg_std": 0.167
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "too_small,several_parts,busy_background",
+    "area": 0.023,
+    "margin": 0.174,
+    "largest_part": 0.696,
+    "bg_bright": 0.249,
+    "bg_std": 0.18
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "several_parts",
+    "area": 0.09,
+    "margin": 0.205,
+    "largest_part": 0.241,
+    "bg_bright": 0.844,
+    "bg_std": 0.091
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,too_small",
+    "area": 0.059,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.882,
+    "bg_std": 0.076
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.741,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.946,
+    "bg_std": 0.017
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_30575812",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.501,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.006
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.121,
+    "margin": 0.017,
+    "largest_part": 1.0,
+    "bg_bright": 0.609,
+    "bg_std": 0.282
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.255,
+    "margin": 0.054,
+    "largest_part": 1.0,
+    "bg_bright": 0.471,
+    "bg_std": 0.287
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.628,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.486,
+    "bg_std": 0.252
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "empty",
+    "area": 0.0
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.028,
+    "margin": 0.022,
+    "largest_part": 0.397,
+    "bg_bright": 0.997,
+    "bg_std": 0.029
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_00582036",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.188,
+    "margin": 0.019,
+    "largest_part": 0.992,
+    "bg_bright": 0.999,
+    "bg_std": 0.008
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.202,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.005
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.261,
+    "margin": 0.0,
+    "largest_part": 0.998,
+    "bg_bright": 0.939,
+    "bg_std": 0.033
+   },
+   {
+    "index": 3,
+    "clean": true,
+    "reason": "",
+    "area": 0.133,
+    "margin": 0.022,
+    "largest_part": 0.934,
+    "bg_bright": 0.993,
+    "bg_std": 0.046
+   }
+  ],
+  "clean": [
+   0,
+   1,
+   3
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_00598216",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.298,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.008
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "too_small,busy_background",
+    "area": 0.058,
+    "margin": 0.145,
+    "largest_part": 0.995,
+    "bg_bright": 0.571,
+    "bg_std": 0.224
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "too_small,busy_background",
+    "area": 0.056,
+    "margin": 0.062,
+    "largest_part": 0.998,
+    "bg_bright": 0.421,
+    "bg_std": 0.231
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.126,
+    "margin": 0.019,
+    "largest_part": 1.0,
+    "bg_bright": 0.641,
+    "bg_std": 0.211
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.572,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.62,
+    "bg_std": 0.085
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.044,
+    "margin": 0.022,
+    "largest_part": 0.742,
+    "bg_bright": 0.996,
+    "bg_std": 0.031
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_30503655",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.322,
+    "margin": 0.019,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.002
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.3,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.67,
+    "bg_std": 0.201
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.225,
+    "margin": 0.0,
+    "largest_part": 0.999,
+    "bg_bright": 0.672,
+    "bg_std": 0.167
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.317,
+    "margin": 0.05,
+    "largest_part": 0.994,
+    "bg_bright": 0.633,
+    "bg_std": 0.202
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.38,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.627,
+    "bg_std": 0.242
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.299,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.615,
+    "bg_std": 0.151
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_20518271",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.196,
+    "margin": 0.019,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.001
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.171,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.526,
+    "bg_std": 0.205
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.275,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.611,
+    "bg_std": 0.252
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.323,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.486,
+    "bg_std": 0.137
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.155,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.562,
+    "bg_std": 0.201
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "too_small,several_parts",
+    "area": 0.043,
+    "margin": 0.022,
+    "largest_part": 0.741,
+    "bg_bright": 0.996,
+    "bg_std": 0.038
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_40453768",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.532,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.968,
+    "bg_std": 0.123
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.18,
+    "margin": 0.101,
+    "largest_part": 1.0,
+    "bg_bright": 0.488,
+    "bg_std": 0.139
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.441,
+    "margin": 0.065,
+    "largest_part": 1.0,
+    "bg_bright": 0.779,
+    "bg_std": 0.098
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.898,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.016
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "several_parts",
+    "area": 0.062,
+    "margin": 0.02,
+    "largest_part": 0.673,
+    "bg_bright": 0.994,
+    "bg_std": 0.045
+   }
+  ],
+  "clean": [
+   0,
+   2
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_10629161",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.628,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.007
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,too_small,busy_background",
+    "area": 0.053,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.528,
+    "bg_std": 0.246
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.184,
+    "margin": 0.041,
+    "largest_part": 1.0,
+    "bg_bright": 0.519,
+    "bg_std": 0.198
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.699,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.539,
+    "bg_std": 0.113
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_70638723",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.597,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.003
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,too_small,several_parts,busy_background",
+    "area": 0.05,
+    "margin": 0.0,
+    "largest_part": 0.507,
+    "bg_bright": 0.693,
+    "bg_std": 0.183
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.607,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.007
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "too_small,busy_background",
+    "area": 0.039,
+    "margin": 0.125,
+    "largest_part": 1.0,
+    "bg_bright": 0.554,
+    "bg_std": 0.247
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.567,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.529,
+    "bg_std": 0.183
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.818,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.734,
+    "bg_std": 0.143
+   }
+  ],
+  "clean": [
+   0,
+   2
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_20623074",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.48,
+    "margin": 0.019,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.012
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.363,
+    "margin": 0.019,
+    "largest_part": 0.957,
+    "bg_bright": 0.683,
+    "bg_std": 0.225
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.786,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.708,
+    "bg_std": 0.153
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.34,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.685,
+    "bg_std": 0.14
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.262,
+    "margin": 0.019,
+    "largest_part": 1.0,
+    "bg_bright": 0.656,
+    "bg_std": 0.231
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_40623233",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.485,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.013
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.619,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.63,
+    "bg_std": 0.296
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.227,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.59,
+    "bg_std": 0.167
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "too_small,busy_background",
+    "area": 0.015,
+    "margin": 0.022,
+    "largest_part": 1.0,
+    "bg_bright": 0.696,
+    "bg_std": 0.146
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.25,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.419,
+    "bg_std": 0.208
+   },
+   {
+    "index": 5,
+    "clean": true,
+    "reason": "",
+    "area": 0.341,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.004
+   }
+  ],
+  "clean": [
+   0,
+   5
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_50597318",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.623,
+    "margin": 0.019,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.007
+   },
+   {
+    "index": 1,
+    "clean": true,
+    "reason": "",
+    "area": 0.621,
+    "margin": 0.021,
+    "largest_part": 1.0,
+    "bg_bright": 0.999,
+    "bg_std": 0.007
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.594,
+    "margin": 0.019,
+    "largest_part": 1.0,
+    "bg_bright": 0.747,
+    "bg_std": 0.289
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "too_small,busy_background",
+    "area": 0.033,
+    "margin": 0.274,
+    "largest_part": 1.0,
+    "bg_bright": 0.509,
+    "bg_std": 0.363
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.462,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.61,
+    "bg_std": 0.233
+   },
+   {
+    "index": 5,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.842,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.631,
+    "bg_std": 0.151
+   }
+  ],
+  "clean": [
+   0,
+   1
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_20625780",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.635,
+    "margin": 0.022,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.003
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "empty",
+    "area": 0.0
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.203,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.607,
+    "bg_std": 0.217
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_10623357",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.275,
+    "margin": 0.099,
+    "largest_part": 1.0,
+    "bg_bright": 0.965,
+    "bg_std": 0.031
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border,several_parts,busy_background",
+    "area": 0.065,
+    "margin": 0.0,
+    "largest_part": 0.502,
+    "bg_bright": 0.663,
+    "bg_std": 0.214
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_20623470",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.611,
+    "margin": 0.019,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.004
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.423,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.842,
+    "bg_std": 0.122
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,busy_background",
+    "area": 0.173,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.493,
+    "bg_std": 0.244
+   }
+  ],
+  "clean": [
+   0
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_40623474",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.547,
+    "margin": 0.019,
+    "largest_part": 1.0,
+    "bg_bright": 0.79,
+    "bg_std": 0.365
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.752,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.79,
+    "bg_std": 0.178
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "touches_border,too_small,busy_background",
+    "area": 0.021,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.603,
+    "bg_std": 0.191
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,too_small,several_parts,busy_background",
+    "area": 0.021,
+    "margin": 0.0,
+    "largest_part": 0.701,
+    "bg_bright": 0.382,
+    "bg_std": 0.262
+   },
+   {
+    "index": 4,
+    "clean": false,
+    "reason": "touches_border,several_parts,busy_background",
+    "area": 0.195,
+    "margin": 0.0,
+    "largest_part": 0.506,
+    "bg_bright": 0.478,
+    "bg_std": 0.199
+   }
+  ],
+  "clean": [],
+  "input": null
+ },
+ {
+  "id": "ikea_20465772",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "several_parts",
+    "area": 0.528,
+    "margin": 0.019,
+    "largest_part": 0.506,
+    "bg_bright": 1.0,
+    "bg_std": 0.005
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.25,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.835,
+    "bg_std": 0.111
+   }
+  ],
+  "clean": [],
+  "input": null
+ },
+ {
+  "id": "ikea_20519765",
+  "views": [
+   {
+    "index": 0,
+    "clean": false,
+    "reason": "several_parts",
+    "area": 0.238,
+    "margin": 0.021,
+    "largest_part": 0.362,
+    "bg_bright": 1.0,
+    "bg_std": 0.006
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "several_parts,busy_background",
+    "area": 0.15,
+    "margin": 0.152,
+    "largest_part": 0.646,
+    "bg_bright": 0.591,
+    "bg_std": 0.276
+   },
+   {
+    "index": 2,
+    "clean": false,
+    "reason": "several_parts,busy_background",
+    "area": 0.094,
+    "margin": 0.175,
+    "largest_part": 0.639,
+    "bg_bright": 0.648,
+    "bg_std": 0.126
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,several_parts,busy_background",
+    "area": 0.127,
+    "margin": 0.0,
+    "largest_part": 0.642,
+    "bg_bright": 0.686,
+    "bg_std": 0.258
+   }
+  ],
+  "clean": [],
+  "input": null
+ },
+ {
+  "id": "ikea_90409754",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.083,
+    "margin": 0.02,
+    "largest_part": 1.0,
+    "bg_bright": 1.0,
+    "bg_std": 0.006
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "touches_border",
+    "area": 0.856,
+    "margin": 0.0,
+    "largest_part": 1.0,
+    "bg_bright": 0.925,
+    "bg_std": 0.175
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.111,
+    "margin": 0.083,
+    "largest_part": 1.0,
+    "bg_bright": 0.923,
+    "bg_std": 0.042
+   }
+  ],
+  "clean": [
+   0,
+   2
+  ],
+  "input": 0
+ },
+ {
+  "id": "ikea_90630330",
+  "views": [
+   {
+    "index": 0,
+    "clean": true,
+    "reason": "",
+    "area": 0.087,
+    "margin": 0.021,
+    "largest_part": 0.982,
+    "bg_bright": 0.999,
+    "bg_std": 0.011
+   },
+   {
+    "index": 1,
+    "clean": false,
+    "reason": "busy_background",
+    "area": 0.156,
+    "margin": 0.127,
+    "largest_part": 0.984,
+    "bg_bright": 0.587,
+    "bg_std": 0.182
+   },
+   {
+    "index": 2,
+    "clean": true,
+    "reason": "",
+    "area": 0.196,
+    "margin": 0.036,
+    "largest_part": 0.876,
+    "bg_bright": 0.758,
+    "bg_std": 0.144
+   },
+   {
+    "index": 3,
+    "clean": false,
+    "reason": "touches_border,several_parts",
+    "area": 0.434,
+    "margin": 0.0,
+    "largest_part": 0.821,
+    "bg_bright": 0.961,
+    "bg_std": 0.043
+   }
+  ],
+  "clean": [
+   0,
+   2
+  ],
+  "input": 0
+ }
+]
