@@ -1,0 +1,195 @@
+{
+  "scene": "counter",
+  "detector": "gdino",
+  "instances": 16,
+  "instance_labels": {
+    "1": "bowl",
+    "2": "bowl",
+    "3": "bowl",
+    "4": "bowl",
+    "5": "vase",
+    "6": "table",
+    "7": "potted plant",
+    "8": "refrigerator",
+    "9": "oven",
+    "10": "stove",
+    "11": "sink",
+    "12": "dishwasher",
+    "13": "refrigerator",
+    "14": "table",
+    "15": "bowl",
+    "16": "bowl"
+  },
+  "gaussians": 1294810,
+  "gaussians_assigned_to_objects": 144399,
+  "split_mask_iou_mean": 0.4892438204754516,
+  "split_mask_iou_by_object": {
+    "bowl#1": 0.8561159714074622,
+    "bowl#2": 0.5206090529603133,
+    "table#6": 0.40091401236502455,
+    "stove#10": 0.5779523107881759,
+    "refrigerator#8": 0.1507242953865533,
+    "oven#9": 0.39164848619537473,
+    "refrigerator#13": 0.5267426142252571
+  },
+  "split_seconds": 22.6,
+  "hidden": {
+    "large": {
+      "kind": "large",
+      "id": 6,
+      "label": "table",
+      "box": {
+        "label": "table",
+        "class": "table",
+        "center": [
+          -0.32433320825696305,
+          -2.402457293266184,
+          -0.7872195124613722
+        ],
+        "length": 4.140793994535699,
+        "width": 2.9841432072198666,
+        "height": 0.43860932631736604,
+        "yaw": 1.5501307603945276,
+        "frames": 116
+      },
+      "gaussians_voted": 48357,
+      "gaussians_in_box_extra": 149308,
+      "gaussians_cleared_around": 234783,
+      "split_mask_iou": 0.40091401236502455,
+      "fill_a": {
+        "planes": [],
+        "new_gaussians": 0
+      },
+      "fill_b": {
+        "frames_inpainted": 210,
+        "finetune_steps": 5000,
+        "gaussians": 873267
+      },
+      "views": [
+        {
+          "frame": 136,
+          "alpha_in_hole": {
+            "removed": 0.9915507435798645,
+            "fill_a": 0.9915507435798645,
+            "fill_b": 0.9993551969528198
+          },
+          "detector_score_for_object": {
+            "photo": 0.7021089196205139,
+            "removed": 0.351419597864151,
+            "fill_a": 0.351419597864151,
+            "fill_b": 0.3287409245967865
+          }
+        },
+        {
+          "frame": 160,
+          "alpha_in_hole": {
+            "removed": 0.9920952320098877,
+            "fill_a": 0.9920952320098877,
+            "fill_b": 0.9996132254600525
+          },
+          "detector_score_for_object": {
+            "photo": 0.5516741275787354,
+            "removed": 0.26958680152893066,
+            "fill_a": 0.26958680152893066,
+            "fill_b": 0.2831759452819824
+          }
+        }
+      ],
+      "timings": {
+        "fill_a_seconds": 0.0,
+        "fill_b_seconds": 98.3,
+        "fill_b_inpaint_seconds": 11.9
+      }
+    },
+    "small": {
+      "kind": "wall",
+      "id": 2,
+      "label": "bowl",
+      "box": {
+        "label": "bowl",
+        "class": null,
+        "center": [
+          -0.4792175801189992,
+          -2.1739896473465095,
+          0.1316945931940461
+        ],
+        "length": 0.8859251673016862,
+        "width": 0.849410027515932,
+        "height": 0.28329883595678673,
+        "yaw": 0.008521286770929226,
+        "frames": 194
+      },
+      "gaussians_voted": 6846,
+      "gaussians_in_box_extra": 2117,
+      "gaussians_cleared_around": 4206,
+      "split_mask_iou": 0.5206090529603133,
+      "fill_a": {
+        "planes": [
+          {
+            "kind": "support",
+            "inliers": 8436,
+            "texture_px": [
+              506,
+              512
+            ],
+            "texel": 0.0029777918529422733,
+            "hole_px": 82489,
+            "new_gaussians": 41245
+          },
+          {
+            "kind": "wall",
+            "inliers": 1622,
+            "texture_px": [
+              512,
+              280
+            ],
+            "texel": 0.0034164411760207237,
+            "hole_px": 32338,
+            "new_gaussians": 32338
+          }
+        ],
+        "new_gaussians": 73583
+      },
+      "fill_b": {
+        "frames_inpainted": 210,
+        "finetune_steps": 5000,
+        "gaussians": 1243423
+      },
+      "views": [
+        {
+          "frame": 160,
+          "alpha_in_hole": {
+            "removed": 0.9990905523300171,
+            "fill_a": 0.9996247291564941,
+            "fill_b": 0.9996779561042786
+          },
+          "detector_score_for_object": {
+            "photo": 0.8186675310134888,
+            "removed": 0.3698657751083374,
+            "fill_a": 0.4125199615955353,
+            "fill_b": 0.2872345745563507
+          }
+        },
+        {
+          "frame": 168,
+          "alpha_in_hole": {
+            "removed": 0.9995601177215576,
+            "fill_a": 0.9996955990791321,
+            "fill_b": 0.9996249079704285
+          },
+          "detector_score_for_object": {
+            "photo": 0.8134450912475586,
+            "removed": 0.2853187918663025,
+            "fill_a": 0.18863798677921295,
+            "fill_b": 0.25105756521224976
+          }
+        }
+      ],
+      "timings": {
+        "fill_a_seconds": 1.7,
+        "fill_b_seconds": 131.7,
+        "fill_b_inpaint_seconds": 9.9
+      }
+    }
+  }
+}

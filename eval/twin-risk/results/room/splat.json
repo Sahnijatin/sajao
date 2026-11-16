@@ -1,0 +1,13 @@
+{
+  "scene": "room",
+  "train_views": 272,
+  "test_views": 39,
+  "init_points": 112627,
+  "gaussians": 1627927,
+  "steps": 15000,
+  "train_seconds": 339.2,
+  "scene_scale": 6.422796726226807,
+  "psnr": 31.43456928546612,
+  "ssim": 0.9351400442612476,
+  "views": 39
+}
