@@ -140,8 +140,10 @@ splat_base = (
         }
     )
 )
-splat_image = splat_base.add_local_dir(SRC, "/root/sajao_workers").add_local_file(
-    HERE / "splat_gpu.py", "/root/splat_gpu.py"
+splat_image = (
+    splat_base.add_local_dir(SRC, "/root/sajao_workers")
+    .add_local_file(HERE / "splat_gpu.py", "/root/splat_gpu.py")
+    .add_local_file(HERE / "removal_gpu.py", "/root/removal_gpu.py")
 )
 
 # Phone splats: PlayCanvas splat-transform on CPU, pinned as in the SJ-116 spike.
@@ -433,16 +435,29 @@ def run_model(model: str, task: str, payload: dict[str, Any]) -> dict[str, Any]:
     scaledown_window=60,
 )
 def run_splat(model: str, task: str, payload: dict[str, Any]) -> dict[str, Any]:
-    """Train and split one splat; the time charged includes loading and evaluation."""
+    """Train and split one splat, or remove objects from one (fill B).
+
+    Both share this function, so they share its GPU. The time charged includes
+    loading and evaluation.
+    """
+    import removal_gpu
     import splat_gpu
 
     started = time.time()
     vol.reload()
     splat_gpu.load_cached_kernels()
-    if task != "twin_splat" or not model.startswith("gsplat@"):
-        return {"error": f"unknown splat model {model}"}
     try:
-        output = splat_gpu.train(payload, _store(), steps=int(payload.get("steps", 15000)))
+        if task == "twin_splat" and model.startswith("gsplat@"):
+            output = splat_gpu.train(payload, _store(), steps=int(payload.get("steps", 15000)))
+        elif task == "twin_remove" and model.startswith("big-lama@"):
+            output = removal_gpu.remove(
+                payload,
+                _store(),
+                lama_sha256=model.split("@", 1)[1],
+                steps=int(payload.get("steps", 5000)),
+            )
+        else:
+            return {"error": f"unknown splat task {task} for {model}"}
     except splat_gpu.InputError as error:
         return {"error": str(error)}
     splat_gpu.save_compiled_kernels()
@@ -1007,6 +1022,96 @@ def twin_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
         }
 
     return asyncio.run(run())
+
+
+def _save(path: str, data: bytes) -> None:
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    Path(path).write_bytes(data)
+
+
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=8, memory=16384, timeout=7200
+)
+def removal_smoke_cpu(scene: str, keyframes: int, category: str) -> dict[str, Any]:
+    """Remove the most-seen object of `category` from one ARKitScenes room's twin.
+
+    The objects and splat steps are the twin smoke's, so their stored results are reused.
+    """
+    import asyncio
+    import json
+
+    from sajao_gateway import InMemorySpendLedger, ModelGateway, SpendCaps
+    from sajao_workers.models import detect_chain, removal_chain, segment_chain, splat_chain
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.objects_step import objects_step
+    from sajao_workers.twin.removal_step import removal_step
+    from sajao_workers.twin.splat_step import splat_step
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    frames = store.put_blob(
+        json.dumps(_arkit_manifest(store, scene, keyframes, y_up=True)).encode()
+    )
+    ledger = InMemorySpendLedger(
+        SpendCaps(per_user_daily_micro_inr=10**9, global_daily_micro_inr=10**9)
+    )
+    runner = StepRunner(store, max_attempts=1)
+
+    async def run() -> dict[str, Any]:
+        objects = await runner.run(
+            objects_step(
+                ModelGateway(detect_chain(volume_invoke("twin_detect")), ledger=ledger),
+                ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger),
+            ),
+            {"frames": frames},
+            {},
+        )
+        splat = await runner.run(
+            splat_step(
+                ModelGateway(splat_chain(volume_invoke("twin_splat", run_splat)), ledger=ledger)
+            ),
+            {"frames": frames, "objects": objects.outputs["objects"]},
+            {},
+        )
+        found = json.loads(store.read_blob(objects.outputs["objects"]))
+        picks = [i for i, o in enumerate(found, start=1) if o["category"] == category]
+        if not picks:
+            return {"scene": scene, "error": f"no {category} found"}
+        index = max(picks, key=lambda i: found[i - 1]["frames"])
+        removed = await runner.run(
+            removal_step(
+                ModelGateway(removal_chain(volume_invoke("twin_remove", run_splat)), ledger=ledger)
+            ),
+            {
+                "frames": frames,
+                "objects": objects.outputs["objects"],
+                **{k: splat.outputs[k] for k in ("splat", "labels", "cameras")},
+            },
+            {"object_ids": [f"o{index}"], "preview": True},
+        )
+        preview = f"/work/previews/{scene}_o{index}_{category}.jpg"
+        await asyncio.to_thread(_save, preview, store.read_blob(removed.outputs["preview"]))
+        vol.commit()
+        return {
+            "scene": scene,
+            "object": f"o{index}",
+            "category": category,
+            "box": found[index - 1]["box"],
+            "cached": removed.cached,
+            "removal": dict(removed.meta),
+            "preview": preview,
+            "charged_micro_inr": removed.cost_micro_inr,
+        }
+
+    return asyncio.run(run())
+
+
+@app.local_entrypoint()
+def removal_smoke(
+    scene: str = "arkit_living_47331265", keyframes: int = 120, category: str = "sofa"
+) -> None:
+    import json
+
+    print(json.dumps(removal_smoke_cpu.remote(scene, keyframes, category), indent=1))
 
 
 @app.local_entrypoint()

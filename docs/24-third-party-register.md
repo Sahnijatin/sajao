@@ -10,6 +10,18 @@ Every model, library and dataset used to build, train or evaluate Sajao is liste
 | MediaPipe Tasks Vision 0.10.33 (iOS pod, Android library) | Library | Runs the on-device detector | https://github.com/google-ai-edge/mediapipe | Apache-2.0 | No | SJ-33 AR-anchored scan |
 | ARCore SDK for Android 1.57.0 | Library | AR tracking, planes, depth and hit tests on Android | https://github.com/google-ar/arcore-android-sdk | Apache-2.0 for the SDK; Google APIs Terms of Service for Google Play Services for AR | No | SJ-33 AR-anchored scan |
 | ARKit and SceneKit | Platform SDK | AR tracking, LiDAR scene mesh and rendering on iPhone | https://developer.apple.com/augmented-reality/arkit/ | Apple Developer Program License Agreement | No | SJ-33 AR-anchored scan |
+| YouTube home tour videos (India) | Dataset source | Candidate frames for the Indian-home detector dataset | https://www.youtube.com/t/terms | Per video, recorded in the manifest: Creative Commons BY (reuse allowed) or the YouTube standard license. Flagged for legal: the YouTube terms of service restrict downloading; use is internal training only, never redistributed | Yes (internal only) | SJ-126 YouTube source finder |
+| YouTube Data API v3 | Service API | Records each candidate video's license and availability; optional search backend | https://developers.google.com/youtube/terms/api-services-terms-of-service | YouTube API Services Terms of Service | No | SJ-126 YouTube source finder |
+| yt-dlp 2026.10.26 | Library (Python) | Searches YouTube for candidate videos and downloads kept segments in services/dataset | https://github.com/yt-dlp/yt-dlp | Unlicense | No | SJ-126 YouTube source finder |
+| FFmpeg and ffprobe | Tool | Cuts downloaded segments, checks each clip's length and selects frames, on the founder's Windows PC | https://ffmpeg.org/legal.html | LGPL-2.1-or-later, or GPL-2.0-or-later for builds with GPL parts (common Windows builds are GPL). Run as a separate program, not linked or shipped | No | SJ-128 Windows segment downloader |
+| yt-dlp-ejs 0.8.0 | Library (Python) | Solves YouTube's player challenges for yt-dlp | https://github.com/yt-dlp/ejs | Unlicense AND MIT AND ISC | No | SJ-128 Windows segment downloader |
+| deno 2.9.8 (Python wheel) | Tool | JavaScript runtime yt-dlp needs for YouTube | https://github.com/denoland/deno | MIT | No | SJ-128 Windows segment downloader |
+| mutagen 1.48.1 | Library (Python, through yt-dlp) | Media metadata in yt-dlp; installed only with the dataset tools | https://github.com/quodlibet/mutagen | GPL-2.0-or-later. Flagged for legal: used only by internal tooling, never shipped in the app or services | No | SJ-128 Windows segment downloader |
+| pycryptodomex 3.24.2, websockets 17.4, requests 2.34.2, brotli 1.2.1, certifi | Library (Python, through yt-dlp) | Network and decryption support for yt-dlp | https://pypi.org/project/yt-dlp/ | BSD and public domain; BSD-3-Clause; Apache-2.0; MIT; MPL-2.0 | No | SJ-128 Windows segment downloader |
+| bradautomates/claude-video | Reference code (ideas only, no code copied) | Frame selection ideas reimplemented in services/dataset frames.py: one ffmpeg pass selecting scene changes with showinfo timestamps, interval fallback, and near-duplicate removal by 16x16 thumbnail difference | https://github.com/bradautomates/claude-video | MIT | No | SJ-129 Frame sampling |
+| YuNet face detector (face_detection_yunet_2023mar.onnx) | Model | Finds faces so they are blurred before any frame is stored | https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet | MIT | No | SJ-129 Frame sampling |
+| opencv-python-headless 5.0.0.93 | Library (Python) | Image decoding, blur score, hashing, face blur in services/dataset | https://github.com/opencv/opencv-python | Apache-2.0 | No | SJ-129 Frame sampling |
+| numpy 2.5.5 | Library (Python) | Image arrays in services/dataset | https://github.com/numpy/numpy | BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0 | No | SJ-129 Frame sampling |
 | Android SDK, build tools and NDK | Build tools | Compiling the Android app | https://developer.android.com/studio/terms | Android Software Development Kit License Agreement | No | Existing |
 | Xcode and the iOS SDK | Build tools | Compiling the iOS app (on EAS Build) | https://developer.apple.com/support/terms/ | Xcode and Apple SDKs Agreement | No | Existing |
 | @eslint/js 10.0.1 | Library (npm) | Build and test tooling in root | https://github.com/eslint/eslint | MIT | No | Existing |
@@ -67,11 +79,11 @@ Every model, library and dataset used to build, train or evaluate Sajao is liste
 | boto3 1.44.3 | Library (Python) | Service code in services/api | https://github.com/boto/boto3 | Apache-2.0 | No | Existing |
 | datamodel-code-generator 0.96.0 | Library (Python) | Build and test tooling in root | https://github.com/datamodel-code-generator/datamodel-code-generator | MIT | No | Existing |
 | fastapi 0.163.0 | Library (Python) | Service code in services/api | https://github.com/fastapi/fastapi | MIT | No | Existing |
-| httpx 0.28.1 | Library (Python) | Build and test tooling in root | https://github.com/encode/httpx | BSD-3-Clause | No | Existing |
+| httpx 0.28.1 | Library (Python) | Build and test tooling in root; service code in services/dataset | https://github.com/encode/httpx | BSD-3-Clause | No | Existing |
 | jsonschema 4.26.0 | Library (Python) | Build and test tooling in root | https://github.com/python-jsonschema/jsonschema | MIT | No | Existing |
 | mypy 2.4.1 | Library (Python) | Build and test tooling in root | https://github.com/python/mypy | MIT | No | Existing |
 | psycopg 3.3.9 | Library (Python) | Service code in services/api | https://github.com/psycopg/psycopg | LGPL-3.0-only | No | Existing |
-| pydantic 2.14.3 | Library (Python) | Service code in packages/schemas | https://github.com/pydantic/pydantic | MIT | No | Existing |
+| pydantic 2.14.3 | Library (Python) | Service code in packages/schemas, services/dataset | https://github.com/pydantic/pydantic | MIT | No | Existing |
 | pydantic-settings 2.16.3 | Library (Python) | Service code in services/api | https://github.com/pydantic/pydantic-settings | MIT | No | Existing |
 | pyjwt 2.15.1 | Library (Python) | Service code in services/api | https://github.com/jpadilla/pyjwt | MIT | No | Existing |
 | pytest 9.2.0 | Library (Python) | Build and test tooling in root | https://github.com/pytest-dev/pytest | MIT | No | Existing |
@@ -98,8 +110,8 @@ Every model, library and dataset used to build, train or evaluate Sajao is liste
 | MoGe code (Microsoft), commit 74fbce05, with FlexGEMM | Library | Runs MoGe-3 | https://github.com/microsoft/MoGe | MIT (DINOv2 parts Apache 2.0); FlexGEMM MIT | No | Twin no-LiDAR depth benchmark; twin depth step |
 | utils3d-moge commit 62f09d58 and pipeline commit 1c511390 | Library | Imported by MoGe | https://github.com/EasternJournalist/utils3d-moge | MIT (both) | No | Twin depth step |
 | xformers 0.0.32.post2, einops 0.8.1, omegaconf 2.3.0, e3nn 0.5.8, safetensors 0.6.2 | Library | Imported by Depth Anything 3 | https://github.com/facebookresearch/xformers | BSD 3-clause (xformers, omegaconf); MIT (einops, e3nn); Apache 2.0 (safetensors) | No | Twin depth step |
-| LaMa big-lama | Model | AI inpainting of plane textures and of frames | https://github.com/advimman/lama | Apache 2.0 | No | SJ-116 twin risk spike |
-| simple-lama-inpainting v0.1.0 TorchScript export | Model file | Packaged big-lama weights loaded by the spike | https://github.com/enesmsahin/simple-lama-inpainting | Apache 2.0 | No | SJ-116 twin risk spike |
+| LaMa big-lama | Model | Inpaints keyframes when an object is removed from the twin (fill B), in the twin worker | https://github.com/advimman/lama | Apache 2.0 | No | SJ-116 twin risk spike; twin object removal |
+| simple-lama-inpainting v0.1.0 TorchScript export | Model file | Packaged big-lama weights, pinned by SHA-256 7ba7aa7a, loaded by the twin worker | https://github.com/enesmsahin/simple-lama-inpainting | Apache 2.0 | No | SJ-116 twin risk spike; twin object removal |
 | Qwen-Image `Qwen/Qwen-Image`, revision 75e0b4be | Model | Diffusion inpainting compared with LaMa for object removal (not chosen) | https://huggingface.co/Qwen/Qwen-Image | Apache 2.0 | No | Twin object removal comparison |
 | Qwen-Image Lightning LoRA, 8 steps V2.0, revision d468c534 | Model | Fast sampling for Qwen-Image in the comparison | https://huggingface.co/lightx2v/Qwen-Image-Lightning | Apache 2.0 | No | Twin object removal comparison |
 | diffusers 0.43.0 (Hugging Face) | Library | Runs Qwen-Image inpainting | https://github.com/huggingface/diffusers | Apache 2.0 | No | Twin object removal comparison |

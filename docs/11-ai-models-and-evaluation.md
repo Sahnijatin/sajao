@@ -25,6 +25,10 @@ Every model and dataset is listed in the third-party register (`docs/24-third-pa
 
 The twin risk spike (`services/spikes/twin-risk/`, report in `eval/twin-risk/`) compares candidates on public datasets and picks on quality, speed and cost. Every model, library and dataset it uses is listed in the third-party register.
 
+## Indian-home detector dataset
+
+The on-device detector knows COCO classes, not Indian home objects. `services/dataset` builds a labelled set of real Indian rooms in six stages: find YouTube home tours, screen them with Gemini for room segments, download only kept segments, sample frames without near-duplicates or blur, auto-label behind the model gateway with a hand-checked sample, and version the result on Modal storage. Licenses are recorded per source; the set is for internal training only. Its first use is the Indian-object test set for the twin's detector (below). Property listing photos are added only after the YouTube pilot report.
+
 ## Object detection for the twin
 
 The twin finds objects on the server with an open-vocabulary detector, prompted with a pinned list of general and Indian home object names (diwan, puja unit, jhoola, almirah, shoe rack, gas stove, floor seating and others). YOLOE is the default. The detector sits behind a swappable interface, and Grounding DINO and OWLv2 (both Apache-2.0) are benchmarked on the same Indian-object test set, so the twin can switch within a day if the legal review declines YOLOE. A fine-tuned Indian-home detector is trained only if the default misses the recall bar on that test set.
