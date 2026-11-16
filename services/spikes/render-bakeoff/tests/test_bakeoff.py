@@ -82,3 +82,16 @@ def test_gate_calibration_separates() -> None:
     assert fp <= 0.05 and tp == 0.8
     assert sku_passes(good[0], th) and not sku_passes(wrong[0], th)
     assert not sku_passes([], Thresholds(0, 100, 0))
+
+
+def test_cost_levers_never_cost_more() -> None:
+    from bakeoff.cost import DesignCost, gpu_usd, inr
+
+    c = DesignCost(
+        llm=0.03, compose=gpu_usd("L40S", 20), clear=gpu_usd("L40S", 300), light=gpu_usd("H100", 15)
+    )
+    assert c.per_room_with_levers() < c.per_room_plain()
+    # one shared clearing pass instead of three, one opened design lit instead of three
+    saved = c.per_room_plain() - c.per_room_with_levers()
+    assert abs(saved - (2 * c.clear + 2 * c.light * c.hero_views)) < 1e-9
+    assert inr(1.0) == 95.0
