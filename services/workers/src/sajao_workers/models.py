@@ -84,6 +84,9 @@ def prompts_for(vocabulary: Iterable[str]) -> list[str]:
     return [PROMPTS.get(name, name) for name in vocabulary]
 
 
+# Parts of the room shell found in the same detection pass and kept out of the objects.
+SHELL_VOCABULARY = ("door", "window")
+
 YOLOE = "yoloe-26x-seg@ultralytics-8.4.214"
 GROUNDING_DINO = "IDEA-Research/grounding-dino-base@12bdfa3120f3e7ec7b434d90674b3396eccf88eb"
 OWLV2 = "google/owlv2-base-patch16-ensemble@cfd3195ba4ea9592eec887ded089f4c08eff231d"

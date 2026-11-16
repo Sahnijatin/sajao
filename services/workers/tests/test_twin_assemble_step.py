@@ -12,7 +12,8 @@ from PIL import Image
 
 from sajao_schemas.generated.v1 import SpaceTwin
 from sajao_workers.steps import LocalArtifactStore, StepFailedError, StepRunner
-from sajao_workers.twin.assemble_step import assemble_step, shell_points
+from sajao_workers.twin.assemble_step import _shell_from_frames, assemble_step, shell_points
+from sajao_workers.twin.space import fit_space
 
 W, H, F = 160, 120, 100.0
 K = [[F, 0.0, W / 2], [0.0, F, H / 2], [0.0, 0.0, 1.0]]
@@ -24,13 +25,17 @@ def png(array: np.ndarray) -> bytes:
     return buf.getvalue()
 
 
-def camera(yaw_deg: float) -> list[list[float]]:
-    """OpenCV camera at 1.4 m in a y-up world, turned about y."""
+# The centre of the conftest room (4 x 3 m, turned 30 degrees, floor at y = -1.2), 1.4 m up.
+ROOM_CENTRE = (3.98, 0.2, -1.70)
+
+
+def camera(yaw_deg: float, at: tuple[float, float, float] = (2.0, 1.4, 1.5)) -> list[list[float]]:
+    """OpenCV camera in a y-up world, turned about y."""
     t = np.radians(yaw_deg)
     turn = np.array([[np.cos(t), 0, np.sin(t)], [0, 1, 0], [-np.sin(t), 0, np.cos(t)]])
     c2w = np.eye(4)
     c2w[:3, :3] = turn @ np.diag([1.0, -1.0, -1.0])  # AR camera looks along -z
-    c2w[:3, 3] = [2.0, 1.4, 1.5]
+    c2w[:3, 3] = at
     out: list[list[float]] = c2w.tolist()
     return out
 
@@ -46,7 +51,7 @@ def setup(tmp_path: Path, room: Callable[..., np.ndarray], compass: bool = True)
                 "width": W,
                 "height": H,
                 "intrinsics": K,
-                "c2w": camera(yaw),
+                "c2w": camera(yaw, ROOM_CENTRE),
                 "depth": store.put_blob(png(np.full((H // 2, W // 2), 2000, np.uint16))),
             }
         )
@@ -133,6 +138,47 @@ async def test_the_step_stores_a_valid_twin_with_crops(
     crop = store.read_blob(view["crop"].rsplit("/", 1)[-1])
     assert Image.open(io.BytesIO(crop)).size == (77, 55)  # mask box plus a 10% margin
     assert result.meta["objects"] == 1 and result.meta["extent"] in {"whole_room", "part"}
+    assert all("texture" not in surface for surface in twin["shell"]["surfaces"])  # off for now
+
+
+def test_textures_when_switched_on_cover_the_walls_the_cameras_see(
+    tmp_path: Path, room: Callable[..., np.ndarray]
+) -> None:
+    store, inputs, room = setup(tmp_path, room)
+    manifest = json.loads(store.read_blob(inputs["frames"]))
+    space = fit_space(room(), depth_source="lidar")
+
+    coverage = _shell_from_frames(store, manifest, [], [], space, textures=True)
+
+    for surface in space.shell["surfaces"]:
+        if coverage[surface["id"]] > 0:
+            assert store.has_blob(surface["texture"].rsplit("/", 1)[-1])
+        else:
+            assert "texture" not in surface  # no frame sees it: no guess
+    assert any(coverage[w["id"]] > 0 for w in space.shell["walls"])
+
+
+async def test_door_and_window_masks_become_openings_on_the_walls(
+    tmp_path: Path, room: Callable[..., np.ndarray]
+) -> None:
+    store, inputs, room = setup(tmp_path, room)
+    window = np.zeros((H, W), np.uint8)
+    window[30:70, 40:110] = 255  # straight ahead, mid height: on the wall the camera faces
+    blob = store.put_blob(png(window))
+    # Seen twice from the first keyframe's pose (k1 and a second sighting of the same view).
+    openings = [{"keyframe_id": "k1", "kind": "window", "mask": blob}] * 2
+    inputs["openings"] = store.put_blob(json.dumps(openings).encode())
+    step = assemble_step(points_for_shell=lambda _store, _manifest: room())
+
+    result = await StepRunner(store, max_attempts=1).run(step, inputs, PARAMS)
+
+    twin = json.loads(store.read_blob(result.outputs["twin"]))
+    SpaceTwin.model_validate(twin)
+    walls = {w["id"] for w in twin["shell"]["walls"]}
+    (opening,) = twin["shell"]["openings"]
+    assert opening["kind"] == "window" and opening["wall_id"] in walls
+    assert opening["sill_height"]["value_m"] > 0
+    assert result.meta["openings"] == ["window"]
 
 
 async def test_a_capture_without_a_compass_fails_clearly(
