@@ -1,0 +1,11 @@
+{
+  "object": 25,
+  "label": "chair armchair",
+  "gaussians_removed": 43098,
+  "train_frames": 240,
+  "frames_seeing_hole": 99,
+  "frames_inpainted": 33,
+  "frames_dropped": 66,
+  "known_truth_holes": 18,
+  "mean_hole_fraction": 0.1423
+}

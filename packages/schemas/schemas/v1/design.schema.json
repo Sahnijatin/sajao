@@ -114,6 +114,10 @@
         "minLength": 1
       },
       "description": "Why this works, generated from the solver's own scores."
+    },
+    "twin": {
+      "$ref": "space-twin.schema.json#/$defs/TwinReference",
+      "description": "The twin this design builds on and its edits. The render, plan, 3D view and shopping list read the same twin plus edits."
     }
   },
   "$defs": {
