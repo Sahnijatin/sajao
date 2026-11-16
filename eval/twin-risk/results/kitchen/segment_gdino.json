@@ -1,0 +1,8 @@
+{
+  "frames": 279,
+  "masks": 1313,
+  "detector_seconds": 59.2,
+  "sam_seconds": 30.9,
+  "seconds_per_frame": 0.323,
+  "detector": "gdino"
+}

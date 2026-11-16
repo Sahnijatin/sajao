@@ -1,0 +1,31 @@
+{
+  "scene": "arkit_living_47331265",
+  "model": "mapanything_apache",
+  "objects_seen": {
+    "gt_objects": 10,
+    "predicted_objects": 67,
+    "predicted_annotated_classes": 35,
+    "recall_class_iou25": 0.3,
+    "recall_any_class_iou25": 0.3,
+    "recall_class_iou05": 0.6,
+    "precision_class_iou25": 0.08571428571428572,
+    "median_iou": 0.40515928478513036,
+    "median_center_error_m": 0.2633615798484345,
+    "median_length_error_m": 0.16452609869537815,
+    "median_width_error_m": 0.17519026777607638,
+    "median_height_error_m": 0.17292675302626803,
+    "median_size_error_rel": 0.3144960726628302
+  },
+  "depth": {
+    "frames": 267,
+    "abs_rel": 0.1124,
+    "delta_1_25": 0.8076,
+    "median_scale_ratio": 0.925,
+    "coverage_of_lidar_pixels": 0.915
+  },
+  "predict": {
+    "model": "mapanything_apache",
+    "frames": 270,
+    "seconds": 110.1
+  }
+}

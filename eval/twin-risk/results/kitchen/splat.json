@@ -1,0 +1,13 @@
+{
+  "scene": "kitchen",
+  "train_views": 244,
+  "test_views": 35,
+  "init_points": 241367,
+  "gaussians": 1778579,
+  "steps": 15000,
+  "train_seconds": 415.1,
+  "scene_scale": 4.9544196128845215,
+  "psnr": 31.047391619001115,
+  "ssim": 0.9390380995614188,
+  "views": 35
+}

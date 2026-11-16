@@ -1,0 +1,11 @@
+{
+  "object": 14,
+  "label": "sofa",
+  "gaussians_removed": 60100,
+  "train_frames": 240,
+  "frames_seeing_hole": 105,
+  "frames_inpainted": 35,
+  "frames_dropped": 70,
+  "known_truth_holes": 12,
+  "mean_hole_fraction": 0.2696
+}

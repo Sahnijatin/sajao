@@ -1,75 +1,54 @@
-"""Reader for the capture package's depth file (format SJDEPTH1).
+"""Reader for the capture package's depth file, format SJDEPTH1 (docs/06-room-capture.md).
 
-The phone writes one file with a depth image per keyframe: LiDAR scene depth
-on iPhone, the ARCore depth API on Android. Layout, little endian:
-
-- magic ``SJDEPTH1``, then ``uint32`` entry count;
-- per entry: ``uint16`` id length, the keyframe id in UTF-8 (``k1``, ``k2``,
-  ...), ``uint32`` width, ``uint32`` height, ``uint16`` millimetres per pixel
-  (0 means no reading), ``uint8`` confidence per pixel (0 to 255), row-major.
-
-Each image is aligned to its keyframe as stored (sensor orientation), so its
-intrinsics are the keyframe's scaled by ``width / keyframe width``. Depth is
-a measurement from the phone's sensor, never from a generative model.
+Little endian: magic "SJDEPTH1", uint32 count, then per keyframe: uint16 id
+length, the keyframe id in UTF-8, uint32 width, uint32 height, uint16
+millimetres per pixel (0 means no reading), uint8 confidence per pixel.
 """
 
-from __future__ import annotations
-
 import struct
-import sys
-from array import array
 from dataclasses import dataclass
 
+import numpy as np
+
 MAGIC = b"SJDEPTH1"
-
-
-class DepthFormatError(ValueError):
-    """The file is not a valid SJDEPTH1 depth file."""
+# Confidence is 0 to 255. Only high-confidence readings place points, as in the
+# spike (ARKit's high level; ARCore's confidence scaled the same way).
+HIGH_CONFIDENCE = 200
 
 
 @dataclass(frozen=True)
 class DepthImage:
-    keyframe_id: str
-    width: int
-    height: int
-    millimetres: array[int]  # array("H"), row-major
-    confidence: bytes
+    millimetres: np.ndarray  # (H, W) uint16
+    confidence: np.ndarray  # (H, W) uint8
 
-    def metres_at(self, x: int, y: int) -> float | None:
-        """Depth at a pixel in metres, or None where the phone had no reading."""
-        value = self.millimetres[y * self.width + x]
-        return value / 1000 if value else None
+    def confident_metres(self) -> np.ndarray:
+        metres = self.millimetres.astype(np.float32) / 1000.0
+        result: np.ndarray = np.where(self.confidence >= HIGH_CONFIDENCE, metres, 0.0)
+        return result.astype(np.float32)
 
 
-def read_depth(data: bytes) -> dict[str, DepthImage]:
-    """Parse a depth file into images keyed by keyframe id."""
-    if data[:8] != MAGIC:
-        raise DepthFormatError("not an SJDEPTH1 file")
-    offset = 8
+def read_depth_container(data: bytes) -> dict[str, DepthImage]:
+    """Depth images by keyframe id. Raises ValueError on a malformed file."""
+    if data[: len(MAGIC)] != MAGIC:
+        raise ValueError("not an SJDEPTH1 file")
+    offset = len(MAGIC)
 
-    def take(size: int) -> bytes:
+    def take(n: int) -> bytes:
         nonlocal offset
-        if offset + size > len(data):
-            raise DepthFormatError("depth file is truncated")
-        chunk = data[offset : offset + size]
-        offset += size
+        if offset + n > len(data):
+            raise ValueError("SJDEPTH1 file is truncated")
+        chunk = data[offset : offset + n]
+        offset += n
         return chunk
 
     (count,) = struct.unpack("<I", take(4))
-    images: dict[str, DepthImage] = {}
+    images = {}
     for _ in range(count):
         (id_length,) = struct.unpack("<H", take(2))
-        keyframe_id = take(id_length).decode("utf-8")
+        key = take(id_length).decode("utf-8")
         width, height = struct.unpack("<II", take(8))
         pixels = width * height
-        millimetres: array[int] = array("H")
-        millimetres.frombytes(take(pixels * 2))
-        if sys.byteorder == "big":
-            millimetres.byteswap()
-        confidence = take(pixels)
-        if keyframe_id in images:
-            raise DepthFormatError(f"keyframe {keyframe_id} appears twice")
-        images[keyframe_id] = DepthImage(keyframe_id, width, height, millimetres, confidence)
-    if offset != len(data):
-        raise DepthFormatError("trailing bytes after the last depth image")
+        millimetres = np.frombuffer(take(2 * pixels), dtype="<u2").reshape(height, width)
+        confidence = np.frombuffer(take(pixels), dtype=np.uint8).reshape(height, width)
+        images[key] = DepthImage(millimetres.astype(np.uint16), confidence.copy())
     return images

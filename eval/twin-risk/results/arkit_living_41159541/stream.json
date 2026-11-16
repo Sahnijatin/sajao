@@ -1,0 +1,50 @@
+{
+  "L40S": {
+    "gpu": "L40S",
+    "resolution": [
+      720,
+      1280
+    ],
+    "gaussians": 1912849,
+    "render_ms_per_frame": 4.771496852238973,
+    "max_fps_single_stream": 209.57783919123008,
+    "jpeg_q80_mean_kb": 59.283772786458336,
+    "h264_crf23_mbps": 2.377154,
+    "h264_bytes_for_4s": 1188577,
+    "encode_seconds_cpu": 0.92,
+    "gpu_cost_per_view_minute_usd_30fps": 0.004655072329044341,
+    "gpu_cost_per_still_view_usd": 2.586151293913523e-06
+  },
+  "L4": {
+    "gpu": "L4",
+    "resolution": [
+      720,
+      1280
+    ],
+    "gaussians": 1912849,
+    "render_ms_per_frame": 10.541840394337973,
+    "max_fps_single_stream": 94.86009677561619,
+    "jpeg_q80_mean_kb": 59.283772786458336,
+    "h264_crf23_mbps": 2.377876,
+    "h264_bytes_for_4s": 1188938,
+    "encode_seconds_cpu": 1.27,
+    "gpu_cost_per_view_minute_usd_30fps": 0.004212519421577454,
+    "gpu_cost_per_still_view_usd": 2.34028856754303e-06
+  },
+  "T4": {
+    "gpu": "T4",
+    "resolution": [
+      720,
+      1280
+    ],
+    "gaussians": 1912849,
+    "render_ms_per_frame": 17.61963764826457,
+    "max_fps_single_stream": 56.75485614191925,
+    "jpeg_q80_mean_kb": 59.28382975260417,
+    "h264_crf23_mbps": 2.377876,
+    "h264_bytes_for_4s": 1188938,
+    "encode_seconds_cpu": 1.11,
+    "gpu_cost_per_view_minute_usd_30fps": 0.0052013170337677,
+    "gpu_cost_per_still_view_usd": 2.889620574315389e-06
+  }
+}

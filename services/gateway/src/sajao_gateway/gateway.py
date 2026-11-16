@@ -171,14 +171,24 @@ class ModelGateway:
         validate: Validator,
         record: Callable[..., None],
     ) -> ProviderResult | None:
-        """Call one provider with retries. Returns None when it could not answer."""
-        for attempt in range(1, self._retry.max_attempts + 1):
+        """Call one provider with retries. Returns None when it could not answer.
+
+        A provider may declare `timeout_seconds` (a GPU job that runs for minutes)
+        and `max_attempts` (an expensive job retried by its durable step instead);
+        otherwise the gateway's retry policy applies.
+        """
+        timeout = getattr(provider, "timeout_seconds", None) or self._retry.timeout_seconds
+        attempts = min(
+            self._retry.max_attempts,
+            getattr(provider, "max_attempts", None) or self._retry.max_attempts,
+        )
+        for attempt in range(1, attempts + 1):
             started = self._clock()
             retryable = True
             outcome = "error"
             try:
                 async with self._limits[provider.name]:
-                    async with asyncio.timeout(self._retry.timeout_seconds):
+                    async with asyncio.timeout(timeout):
                         result = await provider.call(request)
                 validate(result)
             except InvalidOutputError as error:
@@ -207,7 +217,7 @@ class ModelGateway:
                 latency_ms=self._elapsed_ms(started),
                 error=message,
             )
-            if not retryable or attempt == self._retry.max_attempts:
+            if not retryable or attempt == attempts:
                 return None
             await self._sleep(self._backoff(attempt))
         return None
