@@ -21,7 +21,14 @@ dev = [
 package = false
 
 [tool.uv.workspace]
-members = ["packages/schemas", "services/api", "services/gateway", "services/workers"]
+members = [
+    "packages/schemas",
+    "services/api",
+    "services/dataset",
+    "services/gateway",
+    "services/workers",
+    "services/spikes/twin-risk",
+]
 
 [tool.ruff]
 line-length = 100
@@ -33,19 +40,32 @@ select = ["E", "F", "I", "B", "UP", "SIM", "RUF", "S", "ASYNC"]
 ignore = ["RUF001", "RUF002", "RUF003"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["sajao_api", "sajao_gateway", "sajao_schemas", "sajao_workers"]
+known-first-party = ["sajao_api", "sajao_dataset", "sajao_gateway", "sajao_schemas", "sajao_workers", "twin_risk"]
 
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**" = ["S101"]
+# One-off GPU jobs: they shell out to curl, unzip, ffmpeg and splat-transform with fixed arguments.
+"services/spikes/twin-risk/gpu/**" = ["S603", "S607", "S108", "E501"]
+"services/spikes/twin-removal/gpu/**" = ["E501"]
+"services/spikes/twin-depth/gpu/**" = ["E501"]
+"services/spikes/twin-noar/gpu/**" = ["E501"]
 
 [tool.mypy]
 python_version = "3.13"
 strict = true
 files = ["packages/schemas/python", "services"]
-exclude = ["/generated/"]
+# GPU jobs import CUDA libraries that only exist in the Modal image.
+exclude = [
+    "/generated/",
+    "services/spikes/twin-risk/gpu/",
+    "services/spikes/twin-removal/gpu/",
+    "services/spikes/twin-depth/gpu/",
+    "services/spikes/twin-noar/gpu/",
+    "services/workers/gpu/",
+]
 
 [[tool.mypy.overrides]]
-module = ["boto3.*", "botocore.*"]
+module = ["boto3.*", "botocore.*", "yt_dlp.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

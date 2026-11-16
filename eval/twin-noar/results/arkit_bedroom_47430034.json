@@ -1,0 +1,126 @@
+{
+ "poses_mapanything_apache": {
+  "model": "mapanything_apache",
+  "seconds": 25.6,
+  "views": 120
+ },
+ "poses_vggt_commercial": {
+  "model": "vggt_commercial",
+  "seconds": 12.2,
+  "views": 120
+ },
+ "scene": "arkit_bedroom_47430034",
+ "score_mapanything_apache": {
+  "ar_poses": null,
+  "ar_translation": {
+   "metrics_seen": null,
+   "pose": {
+    "centre_rmse_cm": 74.4,
+    "rotation_median_deg": 8.13
+   },
+   "scale": 0.6945,
+   "scale_error_pct": 0.0
+  },
+  "method": "mapanything_apache",
+  "model": {
+   "metrics_seen": null,
+   "pose": {
+    "centre_rmse_cm": 85.6,
+    "rotation_median_deg": 8.13
+   },
+   "scale": 1.0,
+   "scale_error_pct": 44.0
+  },
+  "moge3": {
+   "metrics_seen": null,
+   "pose": {
+    "centre_rmse_cm": 78.0,
+    "rotation_median_deg": 8.13
+   },
+   "scale": 0.8648,
+   "scale_error_pct": 24.5
+  },
+  "scene": "arkit_bedroom_47430034",
+  "tape": {
+   "metrics_seen": null,
+   "pose": {
+    "centre_rmse_cm": 78.0,
+    "rotation_median_deg": 8.13
+   },
+   "scale": 0.8648,
+   "scale_error_pct": 24.5
+  },
+  "true_scale": 0.6945,
+  "views": 120
+ },
+ "score_vggt_commercial": {
+  "ar_poses": null,
+  "ar_translation": {
+   "metrics_seen": null,
+   "pose": {
+    "centre_rmse_cm": 23.1,
+    "rotation_median_deg": 3.77
+   },
+   "scale": 2.5732,
+   "scale_error_pct": 0.0
+  },
+  "method": "vggt_commercial",
+  "model": {
+   "metrics_seen": null,
+   "pose": {
+    "centre_rmse_cm": 76.6,
+    "rotation_median_deg": 3.77
+   },
+   "scale": 1.0,
+   "scale_error_pct": -61.1
+  },
+  "moge3": {
+   "metrics_seen": null,
+   "pose": {
+    "centre_rmse_cm": 28.4,
+    "rotation_median_deg": 3.77
+   },
+   "scale": 2.2179,
+   "scale_error_pct": -13.8
+  },
+  "scene": "arkit_bedroom_47430034",
+  "tape": {
+   "metrics_seen": null,
+   "pose": {
+    "centre_rmse_cm": 28.4,
+    "rotation_median_deg": 3.77
+   },
+   "scale": 2.2179,
+   "scale_error_pct": -13.8
+  },
+  "true_scale": 2.5732,
+  "views": 120
+ },
+ "splat_ar": {
+  "gaussians": 4362631,
+  "gpu": "NVIDIA L40S",
+  "poses": "ar",
+  "psnr_heldout": 20.2,
+  "psnr_heldout_raw": 13.67,
+  "scene": "arkit_bedroom_47430034",
+  "train_seconds": 726.4
+ },
+ "splat_mapanything_apache_moge3": {
+  "gaussians": 2719260,
+  "gpu": "NVIDIA L40S",
+  "poses": "mapanything_apache_moge3",
+  "psnr_heldout": 15.82,
+  "psnr_heldout_raw": 11.0,
+  "scene": "arkit_bedroom_47430034",
+  "train_seconds": 473.7
+ },
+ "splat_vggt_commercial_moge3": {
+  "gaussians": 2784531,
+  "gpu": "NVIDIA L40S",
+  "poses": "vggt_commercial_moge3",
+  "psnr_heldout": 18.57,
+  "psnr_heldout_raw": 13.0,
+  "scene": "arkit_bedroom_47430034",
+  "train_seconds": 482.1
+ }
+}

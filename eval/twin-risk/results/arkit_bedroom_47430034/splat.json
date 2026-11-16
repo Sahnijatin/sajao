@@ -1,0 +1,19 @@
+{
+  "scene": "arkit_bedroom_47430034",
+  "train_views": 240,
+  "test_views": 30,
+  "init_points": 293624,
+  "gaussians": 3840845,
+  "steps": 15000,
+  "train_seconds": 608.5,
+  "scene_scale": 2.4635002613067627,
+  "pose_and_exposure_refined": true,
+  "psnr_raw_poses": 15.032934188842773,
+  "ssim_raw_poses": 0.6550460477670034,
+  "psnr": 23.67516949971517,
+  "ssim": 0.8014670153458913,
+  "views": 30,
+  "test_pose_refine_seconds": 132.8,
+  "pose_correction_median_cm": 4.875213146209717,
+  "pose_correction_median_deg": 1.9705063104629517
+}
