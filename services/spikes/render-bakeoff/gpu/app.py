@@ -191,6 +191,8 @@ TRELLIS_DEPS = {  # pinned commits of TRELLIS.2's CUDA extensions
 }
 trellis_image = (
     _base()
+    .apt_install("libeigen3-dev")
+    .env({"CPATH": "/usr/local/cuda/include:/usr/include/eigen3"})
     .pip_install("xformers==0.0.29.post3", index_url=CU124)
     .pip_install(
         "numpy==1.26.4",
@@ -212,7 +214,7 @@ trellis_image = (
         "git+https://github.com/EasternJournalist/utils3d.git@9a4eb15e4021b67b12c460c7057d642626897ec8",
     )
     .run_commands(
-        f"git clone https://github.com/microsoft/TRELLIS.2 /opt/trellis2 && cd /opt/trellis2 && git checkout {TRELLIS2_REF}",
+        f"git clone https://github.com/microsoft/TRELLIS.2 /opt/trellis2 && cd /opt/trellis2 && git checkout {TRELLIS2_REF} && git submodule update --init --recursive",
         f"pip install --no-build-isolation 'git+https://github.com/NVlabs/nvdiffrast@{NVDIFFRAST_REF}'",
         "git clone -b renderutils https://github.com/JeffreyXiang/nvdiffrec.git /tmp/nvdiffrec && pip install --no-build-isolation /tmp/nvdiffrec",
         f"git clone --recursive https://github.com/JeffreyXiang/FlexGEMM /tmp/FlexGEMM && cd /tmp/FlexGEMM && git checkout {TRELLIS_DEPS['FlexGEMM']} && git submodule update --init --recursive && pip install --no-build-isolation .",
