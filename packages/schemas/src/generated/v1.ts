@@ -802,6 +802,38 @@ mount_height: Dimension
 width?: Dimension
 }
 /**
+ * A view the twin is shown from: the pose of a real keyframe, chosen by code for how much of the room it shows, its sharpness and its framing. Never a pose a model made up.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "HeroView".
+ */
+export interface HeroView {
+id: LocalId
+keyframe_id: LocalId
+coverage: UnitScore
+/**
+ * Variance of the Laplacian of the keyframe; higher is sharper.
+ */
+sharpness: number
+orbit: ViewOrbit
+}
+/**
+ * How far the camera may move and turn around a hero view. Viewing limits, not room measurements.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "ViewOrbit".
+ */
+export interface ViewOrbit {
+/**
+ * Largest distance of the camera from the hero pose, in metres.
+ */
+max_offset_m: number
+/**
+ * Largest turn about the vertical axis, either way.
+ */
+max_yaw_deg: number
+}
+/**
  * The open-vocabulary inventory the objects were found from, and what could not be placed.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -1009,6 +1041,19 @@ structure: CheckResult
 grounding: CheckResult
 likeness: CheckResult
 aesthetic: CheckResult
+}
+/**
+ * Where the camera may stand: within radius_m of any anchor. Anchors are the keyframe camera positions along the capture path, in the space frame. A viewing limit, not a room measurement.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "SafeRegion".
+ */
+export interface SafeRegion {
+/**
+ * @minItems 1
+ */
+anchors: [Point3, ...(Point3)[]]
+radius_m: number
 }
 /**
  * Independent scale anchors and whether they agree.
@@ -1223,6 +1268,7 @@ splat?: SplatRef
  * @maxItems 4
  */
 phone_splats?: []|[PhoneSplat]|[PhoneSplat, PhoneSplat]|[PhoneSplat, PhoneSplat, PhoneSplat]|[PhoneSplat, PhoneSplat, PhoneSplat, PhoneSplat]
+viewing?: Viewing
 inventory?: Inventory
 }
 /**
@@ -1266,6 +1312,22 @@ object_type?: ObjectType
 export interface SplatRef {
 key: StorageKey
 format: ("ply" | "spz" | "ksplat")
+}
+/**
+ * Where the twin may be shown from. The room splat only holds up near where the phone stood, so the viewer and the reveal use only the hero views, their orbits, and camera positions inside the safe region.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "Viewing".
+ */
+export interface Viewing {
+/**
+ * Six to ten views when the capture allows, best first.
+ * 
+ * @minItems 1
+ * @maxItems 10
+ */
+hero_views: [HeroView]|[HeroView, HeroView]|[HeroView, HeroView, HeroView]|[HeroView, HeroView, HeroView, HeroView]|[HeroView, HeroView, HeroView, HeroView, HeroView]|[HeroView, HeroView, HeroView, HeroView, HeroView, HeroView]|[HeroView, HeroView, HeroView, HeroView, HeroView, HeroView, HeroView]|[HeroView, HeroView, HeroView, HeroView, HeroView, HeroView, HeroView, HeroView]|[HeroView, HeroView, HeroView, HeroView, HeroView, HeroView, HeroView, HeroView, HeroView]|[HeroView, HeroView, HeroView, HeroView, HeroView, HeroView, HeroView, HeroView, HeroView, HeroView]
+safe_region: SafeRegion
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
