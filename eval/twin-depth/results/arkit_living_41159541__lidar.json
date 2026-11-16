@@ -1,0 +1,19 @@
+{
+  "scene": "arkit_living_41159541",
+  "model": "lidar",
+  "objects_seen": {
+    "gt_objects": 9,
+    "predicted_objects": 58,
+    "predicted_annotated_classes": 35,
+    "recall_class_iou25": 0.6666666666666666,
+    "recall_any_class_iou25": 0.6666666666666666,
+    "recall_class_iou05": 1.0,
+    "precision_class_iou25": 0.17142857142857143,
+    "median_iou": 0.5084089686415265,
+    "median_center_error_m": 0.14899251074154293,
+    "median_length_error_m": 0.17621755095195257,
+    "median_width_error_m": 0.13916960890726005,
+    "median_height_error_m": 0.06456692623697002,
+    "median_size_error_rel": 0.22017562562363188
+  }
+}

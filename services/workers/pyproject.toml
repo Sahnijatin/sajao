@@ -3,7 +3,11 @@ name = "sajao-workers"
 version = "0.0.0"
 description = "Sajao workers: durable pipeline steps"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = ["sajao-gateway", "sajao-schemas", "numpy>=2.1", "pillow>=11.0"]
+
+[tool.uv.sources]
+sajao-gateway = { workspace = true }
+sajao-schemas = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]

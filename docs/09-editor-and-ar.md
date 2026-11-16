@@ -24,4 +24,4 @@ Your photo dissolves into the redesigned room with lamps on, then the three desi
 
 ## Share reel
 
-Before to after from the same angle, 6 to 10 seconds, 9:16, Sajao end card. Built on the server so it works on every phone. The share link opens the web viewer for people without the app.
+Before to after from the same angle, 6 to 10 seconds, 9:16, Sajao end card. Built on the server so it works on every phone. The share link opens the design in the app, or the landing page for people without it; a web viewer comes after launch.

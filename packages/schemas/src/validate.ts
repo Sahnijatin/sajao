@@ -9,6 +9,7 @@ import type { ObjectName } from "./index";
 export interface ObjectTypes {
   Capture: v1.Capture;
   SpaceProfile: v1.SpaceProfile;
+  SpaceTwin: v1.SpaceTwin;
   TasteProfile: v1.TasteProfile;
   Brief: v1.Brief;
   Product: v1.Product;
