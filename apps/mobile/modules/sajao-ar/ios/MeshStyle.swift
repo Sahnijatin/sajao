@@ -45,6 +45,32 @@ enum MeshStyle {
     return material
   }
 
+  /// Grid lines on planes and links between tracked points: fainter than plane edges.
+  static func linkMaterial() -> SCNMaterial {
+    let material = edgeMaterial()
+    material.diffuse.contents = cyan.withAlphaComponent(0.4)
+    material.emission.intensity = 0.55
+    return material
+  }
+
+  /// Line geometry joining `points` by index pairs.
+  static func lineGeometry(_ points: [SCNVector3], indices: [UInt32]) -> SCNGeometry? {
+    guard !points.isEmpty, !indices.isEmpty else { return nil }
+    let geometry = SCNGeometry(
+      sources: [SCNGeometrySource(vertices: points)],
+      elements: [SCNGeometryElement(indices: indices, primitiveType: .line)])
+    geometry.materials = [linkMaterial()]
+    return geometry
+  }
+
+  /// A plane's interior grid, in the plane anchor's local space, so it reads as a mesh.
+  static func planeGrid(_ plane: ARPlaneAnchor) -> SCNGeometry? {
+    let outline = plane.geometry.boundaryVertices.map { SIMD2<Float>($0.x, $0.z) }
+    let ends = SurfaceMesh.gridLines(outline)
+    let points = ends.map { SCNVector3($0.x, 0, $0.y) }
+    return lineGeometry(points, indices: Array(0..<UInt32(points.count)))
+  }
+
   static func dotMaterial() -> SCNMaterial {
     let material = SCNMaterial()
     material.lightingModel = .constant
@@ -146,13 +172,20 @@ enum MeshStyle {
     fillNode.name = "sajao-surface"
     let lineNode = SCNNode(geometry: lines)
     lineNode.name = "sajao-plane-lines"
+    let gridNode = SCNNode(geometry: planeGrid(plane))
+    gridNode.name = "sajao-plane-grid"
     node.addChildNode(fillNode)
     node.addChildNode(lineNode)
+    node.addChildNode(gridNode)
   }
 
   static func updatePlaneNodes(_ node: SCNNode, plane: ARPlaneAnchor) {
     for child in node.childNodes {
-      (child.geometry as? ARSCNPlaneGeometry)?.update(from: plane.geometry)
+      if child.name == "sajao-plane-grid" {
+        child.geometry = planeGrid(plane)
+      } else {
+        (child.geometry as? ARSCNPlaneGeometry)?.update(from: plane.geometry)
+      }
     }
   }
 }

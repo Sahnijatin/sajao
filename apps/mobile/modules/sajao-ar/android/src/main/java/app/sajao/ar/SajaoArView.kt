@@ -23,6 +23,7 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import java.lang.ref.WeakReference
 import java.nio.FloatBuffer
+import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicReference
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -81,6 +82,16 @@ class SajaoArView(context: Context, appContext: AppContext) :
   private var pointBuffer: FloatBuffer = Gl.floats(3)
   private var pointCount = 0
   private val maxPoints = 5000
+  // The surface effect: tracked points joined to their nearest neighbours.
+  // Rebuilt less often than points arrive; only the newest points are joined.
+  private var linkBuffer: FloatBuffer = Gl.floats(3)
+  private var linkVertexCount = 0
+  private var lastLinksAt = 0L
+  private val maxLinkedPoints = 2500
+  private val linkExecutor = Executors.newSingleThreadExecutor()
+  @Volatile private var linksBusy = false
+  // Finished link vertices waiting for the GL thread to upload them.
+  private val pendingLinks = AtomicReference<FloatArray?>(null)
 
   // When each plane last grew, for the brief brighten.
   private val planeArea = HashMap<Plane, Float>()
@@ -184,6 +195,7 @@ class SajaoArView(context: Context, appContext: AppContext) :
     session?.close()
     session = null
     detector.close()
+    linkExecutor.shutdown()
   }
 
   override fun onDetachedFromWindow() {
@@ -338,9 +350,12 @@ class SajaoArView(context: Context, appContext: AppContext) :
       val points = cloud.points
       featureCount = ids.remaining()
       for (i in 0 until ids.remaining()) {
-        if (pointCloud.size >= maxPoints) break
         val confidence = points.get(i * 4 + 3)
         if (confidence < 0.3f) continue
+        // Full: drop the oldest point, so newly mapped areas keep appearing.
+        if (pointCloud.size >= maxPoints && !pointCloud.containsKey(ids.get(i))) {
+          pointCloud.remove(pointCloud.keys.first())
+        }
         pointCloud[ids.get(i)] = floatArrayOf(points.get(i * 4), points.get(i * 4 + 1), points.get(i * 4 + 2))
       }
     }
@@ -349,10 +364,54 @@ class SajaoArView(context: Context, appContext: AppContext) :
     for (p in pointCloud.values) pointBuffer.put(p)
     pointBuffer.position(0)
     pointCount = pointCloud.size
+    val now = SystemClock.uptimeMillis()
+    if (!lite && now - lastLinksAt > 600) {
+      lastLinksAt = now
+      rebuildLinks()
+    }
+  }
+
+  /**
+   * Joins the newest tracked points into a wire mesh over whatever they lie
+   * on. Joining takes a few milliseconds, so it runs off the GL thread; the
+   * result is uploaded on the next drawn frame.
+   */
+  private fun rebuildLinks() {
+    if (linksBusy) return
+    linksBusy = true
+    val points = pointCloud.values.toList().takeLast(maxLinkedPoints)
+    linkExecutor.execute {
+      try {
+        val edges = SurfaceMesh.links(points)
+        val vertices = FloatArray(edges.size * 3)
+        edges.forEachIndexed { k, index ->
+          val p = points[index]
+          vertices[k * 3] = p[0]
+          vertices[k * 3 + 1] = p[1]
+          vertices[k * 3 + 2] = p[2]
+        }
+        pendingLinks.set(vertices)
+      } finally {
+        linksBusy = false
+      }
+    }
   }
 
   private fun drawPoints() {
     if (pointCount == 0) return
+    pendingLinks.getAndSet(null)?.let { vertices ->
+      if (linkBuffer.capacity() < vertices.size) {
+        linkBuffer = Gl.floats(maxOf(vertices.size, maxLinkedPoints * SurfaceMesh.LINKS_PER_POINT * 2 * 3))
+      }
+      linkBuffer.position(0)
+      linkBuffer.put(vertices)
+      linkBuffer.position(0)
+      linkVertexCount = vertices.size / 3
+    }
+    if (!lite && linkVertexCount > 0) {
+      shapes.draw(viewProjection, linkBuffer, linkVertexCount, GLES20.GL_LINES, Palette.glow, true, lineWidth = 3f)
+      shapes.draw(viewProjection, linkBuffer, linkVertexCount, GLES20.GL_LINES, Palette.link, true, lineWidth = 1f)
+    }
     shapes.draw(viewProjection, pointBuffer, pointCount, GLES20.GL_POINTS, Palette.glow, true, pointSize = 9f)
     shapes.draw(viewProjection, pointBuffer, pointCount, GLES20.GL_POINTS, Palette.dot, true, pointSize = 4f)
   }
@@ -400,7 +459,20 @@ class SajaoArView(context: Context, appContext: AppContext) :
       world[i * 3 + 1] = out[1]
       world[i * 3 + 2] = out[2]
     }
-    return PlaneOutline(world, pose.translation, plane.type == Plane.Type.VERTICAL, plane.extentX * plane.extentZ)
+    // Grid lines inside the plane, so it reads as a mesh like the LiDAR one.
+    val local2d = FloatArray(corners * 2) { polygon.get(it) }
+    val grid2d = SurfaceMesh.gridLines(local2d)
+    val grid = FloatArray(grid2d.size / 2 * 3)
+    for (k in 0 until grid2d.size / 2) {
+      local[0] = grid2d[k * 2]
+      local[1] = 0f
+      local[2] = grid2d[k * 2 + 1]
+      val out = pose.transformPoint(local)
+      grid[k * 3] = out[0]
+      grid[k * 3 + 1] = out[1]
+      grid[k * 3 + 2] = out[2]
+    }
+    return PlaneOutline(world, grid, pose.translation, plane.type == Plane.Type.VERTICAL, plane.extentX * plane.extentZ)
   }
 
   private fun drawOutline(plane: Plane, outline: PlaneOutline, now: Long) {
@@ -439,6 +511,10 @@ class SajaoArView(context: Context, appContext: AppContext) :
       shapes.draw(viewProjection, lines, corners * 4, GLES20.GL_LINES, scaled(Palette.glow, boost), true, lineWidth = 6f)
     }
     shapes.draw(viewProjection, lines, corners * 4, GLES20.GL_LINES, scaled(Palette.edge, boost), true, lineWidth = 2f)
+    if (outline.grid.isNotEmpty()) {
+      val grid = outline.gridBuffer()
+      shapes.draw(viewProjection, grid, outline.grid.size / 3, GLES20.GL_LINES, scaled(Palette.link, boost), true, lineWidth = 1f)
+    }
   }
 
   private fun scaled(color: FloatArray, boost: Float) =
@@ -688,7 +764,19 @@ class SajaoArView(context: Context, appContext: AppContext) :
 }
 
 /** A plane's polygon in world space as last tracked, with what drawing it needs. */
-class PlaneOutline(val world: FloatArray, val centre: FloatArray, val vertical: Boolean, val area: Float)
+class PlaneOutline(
+  val world: FloatArray,
+  /** Grid line endpoints inside the plane, x, y, z each. */
+  val grid: FloatArray,
+  val centre: FloatArray,
+  val vertical: Boolean,
+  val area: Float,
+) {
+  private var buffer: FloatBuffer? = null
+
+  /** The grid as a GL buffer, built once per outline. */
+  fun gridBuffer(): FloatBuffer = buffer ?: Gl.floats(grid).also { buffer = it }
+}
 
 /** Detector results with the camera they were captured from, waiting for the next drawn frame. */
 class PendingDetections(val found: List<UprightDetection>, val camera: CaptureCamera)

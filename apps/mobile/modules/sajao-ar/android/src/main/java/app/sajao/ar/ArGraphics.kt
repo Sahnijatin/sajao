@@ -174,4 +174,6 @@ internal object Palette {
   val wallFill = floatArrayOf(0.35f, 0.85f, 1.0f, 0.09f)
   val floorFill = floatArrayOf(0.30f, 0.70f, 1.0f, 0.07f)
   val dot = floatArrayOf(0.85f, 0.98f, 1.0f, 0.95f)
+  /** Grid lines on planes and links between tracked points: fainter than plane edges. */
+  val link = floatArrayOf(0.40f, 0.92f, 1.0f, 0.45f)
 }
