@@ -8,7 +8,7 @@ Builds a labelled set of real Indian rooms for the on-device detector. Every sta
 | 1b. Drop builder and designer promos | `prefilter` | Ready |
 | 2. Screen with Gemini (keep or skip, room timestamps) | | Next |
 | 3. Download kept segments (Windows) | `download` | Ready |
-| 4. Sample frames, drop near-duplicates and blur | | Next |
+| 4. Sample frames, drop near-duplicates and blur, blur faces | `frames` | Ready |
 | 5. Auto-label and hand-check | | Next |
 | 6. Version the dataset on Modal | | Next |
 
@@ -76,3 +76,17 @@ Without screening, each kept video contributes its first 10 minutes (`--head-s 6
 - **"Sign in to confirm you're not a bot"**: add `--cookies-from-browser edge` (or `chrome`, `firefox`) while signed in to YouTube in that browser. Close the browser first if Chrome reports a locked cookie database.
 - **ffmpeg not on PATH**: pass `--ffmpeg "C:\path\to\ffmpeg\bin"`.
 - The command exits with code 1 if any clip failed; the ledger has the error for each.
+
+## 4. Sample frames
+
+```powershell
+uv run python -m sajao_dataset frames
+```
+
+Reads every finished clip in `data\downloads.jsonl` and writes JPEG frames to `data\frames\<video id>\<time in ms>.jpg`, with one line per frame in `data\frames.jsonl` (source time, room type, size, sharpness, faces blurred, checksum, hash).
+
+1. One ffmpeg pass selects the first frame, every scene change (score above 0.20) and one frame every 2 s, scaled to at most 1280 px wide.
+2. In time order, a frame is dropped if it is blurred (variance of the Laplacian below 60 on a 640 px grey copy), nearly identical to the last kept frame (16x16 thumbnails differ by 3 or less on average), or a repeat of any frame kept from the same video (256-bit difference hashes within 12 bits).
+3. Faces are found with YuNet (downloaded once to `data\models`, checksum pinned) and blurred before the frame is written. Unblurred candidates exist only in a temporary folder that is always deleted.
+
+Each finished clip is logged in `data\frames_done.jsonl`, so reruns skip it. Thresholds are pinned in `src/sajao_dataset/frames.py` under `SAMPLER_VERSION`. The selection pass and thumbnail dedup reuse ideas from bradautomates/claude-video (MIT).

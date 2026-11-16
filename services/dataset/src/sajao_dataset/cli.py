@@ -12,8 +12,10 @@ from sajao_dataset.download import (
     Segment,
     download_all,
     plan_head_segments,
+    read_ledger,
     ytdlp_fetch,
 )
+from sajao_dataset.frames import fetch_yunet, sample_all, yunet_faces
 from sajao_dataset.manifest import append_records, read_manifest
 from sajao_dataset.prefilter import decide, read_decisions, write_decisions
 from sajao_dataset.queries import QUERIES, QUERY_SET
@@ -51,7 +53,18 @@ def main(argv: list[str] | None = None) -> int:
     dl_cmd.add_argument("--cookies-from-browser", help="chrome, edge or firefox")
     dl_cmd.add_argument("--ffmpeg", help="Path to ffmpeg if it is not on PATH")
 
+    fr_cmd = commands.add_parser(
+        "frames", help="Sample frames, drop blur and duplicates, blur faces"
+    )
+    fr_cmd.add_argument("--clips", type=Path, default=Path("data/clips"))
+    fr_cmd.add_argument("--ledger", type=Path, default=Path("data/downloads.jsonl"))
+    fr_cmd.add_argument("--frames", type=Path, default=Path("data/frames"))
+    fr_cmd.add_argument("--models", type=Path, default=Path("data/models"))
+    fr_cmd.add_argument("--ffmpeg", default="ffmpeg", help="ffmpeg executable")
+
     args = parser.parse_args(argv)
+    if args.command == "frames":
+        return _frames(args)
     if args.command == "download":
         return _download(args)
     if args.command == "find":
@@ -121,6 +134,25 @@ def _download(args: argparse.Namespace) -> int:
         f"{summary.failed} failed; {summary.bytes / 1e9:.2f} GB this run. Ledger: {args.ledger}"
     )
     return 1 if summary.failed else 0
+
+
+def _frames(args: argparse.Namespace) -> int:
+    faces = yunet_faces(fetch_yunet(args.models))
+    summary = sample_all(
+        read_ledger(args.ledger),
+        clips_dir=args.clips,
+        frames_dir=args.frames,
+        frames_ledger=args.frames.parent / "frames.jsonl",
+        done_ledger=args.frames.parent / "frames_done.jsonl",
+        faces=faces,
+        ffmpeg=args.ffmpeg,
+    )
+    print(
+        f"{summary.clips} clips sampled, {summary.skipped} already done: "
+        f"{summary.kept} of {summary.candidates} candidate frames kept, "
+        f"{summary.faces_blurred} faces blurred; dropped {dict(summary.dropped)}"
+    )
+    return 0
 
 
 def _backend(choice: str) -> Search:
