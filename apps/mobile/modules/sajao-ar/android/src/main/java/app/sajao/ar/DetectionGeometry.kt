@@ -175,10 +175,12 @@ object Placement {
     "dining table" to 0.76f,
     "refrigerator" to 1.7f,
     "tv" to 0.6f,
+    "chair" to 0.9f,
+    "microwave" to 0.3f,
   )
 
   /** Objects that stand on the floor: their footprint can be found from the floor plane. */
-  val STANDS_ON_FLOOR = setOf("couch", "bed", "dining table", "refrigerator")
+  val STANDS_ON_FLOOR = setOf("couch", "bed", "dining table", "refrigerator", "chair")
 
   private const val MIN_RANGE_M = 0.3f
   private const val MAX_RANGE_M = 8f

@@ -27,15 +27,16 @@ function feed(batches: Detection[][], start: LabelState = EMPTY_LABELS): LabelSt
 }
 
 describe("live object labels", () => {
-  it("tracks large objects only; small ones are left to the server twin", () => {
+  it("labels large objects plus chairs and microwaves; the rest is left to the server twin", () => {
     expect(labelKindOf("refrigerator")).toBe("fridge");
     expect(labelKindOf("couch")).toBe("sofa");
     expect(labelKindOf("dining table")).toBe("table");
     expect(labelKindOf("bed")).toBe("bed");
     expect(labelKindOf("tv")).toBe("tv");
     expect(labelKindOf("potted plant")).toBeNull();
-    expect(labelKindOf("chair")).toBeNull();
-    expect(labelKindOf("microwave")).toBeNull();
+    expect(labelKindOf("chair")).toBe("chair");
+    expect(labelKindOf("microwave")).toBe("microwave");
+    expect(labelKindOf("laptop")).toBeNull();
     expect(labelKindOf("person")).toBeNull();
   });
 
@@ -114,14 +115,26 @@ describe("live object labels", () => {
     });
 
     it(`shows at most ${MAX_SHOWN}, the most confident`, () => {
-      const objects = Array.from({ length: 8 }, (_, i) =>
-        seen("couch", at(i * 3, 0, -2), 0.62 + i * 0.04),
+      const objects = Array.from({ length: MAX_SHOWN + 3 }, (_, i) =>
+        seen("couch", at(i * 3, 0, -2), 0.62 + i * 0.03),
       );
       const state = feed([objects, objects, objects]);
       const shown = shownLabels(state);
       expect(shown).toHaveLength(MAX_SHOWN);
       // The three least confident (x = 0, 3, 6) are left out.
-      expect(shown.map((label) => label.x)).toEqual([9, 12, 15, 18, 21]);
+      expect(shown.map((label) => label.x)).toEqual(
+        Array.from({ length: MAX_SHOWN }, (_, i) => (i + 3) * 3),
+      );
+    });
+
+    it("leaves chairs and microwaves out of capture guidance", () => {
+      const state = feed([
+        [seen("chair", at(0, 0, -2)), seen("couch", at(3, 0, -2))],
+        [seen("chair", at(0, 0, -2)), seen("couch", at(3, 0, -2))],
+        [seen("chair", at(0, 0, -2)), seen("couch", at(3, 0, -2))],
+      ]);
+      expect(shownLabels(state).map((label) => label.kind)).toEqual(["chair", "sofa"]);
+      expect(trackedObjects(state).map((label) => label.kind)).toEqual(["sofa"]);
     });
   });
 
