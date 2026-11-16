@@ -10,6 +10,9 @@ Every model, library and dataset used to build, train or evaluate Sajao is liste
 | MediaPipe Tasks Vision 0.10.33 (iOS pod, Android library) | Library | Runs the on-device detector | https://github.com/google-ai-edge/mediapipe | Apache-2.0 | No | SJ-33 AR-anchored scan |
 | ARCore SDK for Android 1.57.0 | Library | AR tracking, planes, depth and hit tests on Android | https://github.com/google-ar/arcore-android-sdk | Apache-2.0 for the SDK; Google APIs Terms of Service for Google Play Services for AR | No | SJ-33 AR-anchored scan |
 | ARKit and SceneKit | Platform SDK | AR tracking, LiDAR scene mesh and rendering on iPhone | https://developer.apple.com/augmented-reality/arkit/ | Apple Developer Program License Agreement | No | SJ-33 AR-anchored scan |
+| YouTube home tour videos (India) | Dataset source | Candidate frames for the Indian-home detector dataset | https://www.youtube.com/t/terms | Per video, recorded in the manifest: Creative Commons BY (reuse allowed) or the YouTube standard license. Flagged for legal: the YouTube terms of service restrict downloading; use is internal training only, never redistributed | Yes (internal only) | SJ-126 YouTube source finder |
+| YouTube Data API v3 | Service API | Optional search backend that also reads each video's license | https://developers.google.com/youtube/terms/api-services-terms-of-service | YouTube API Services Terms of Service | No | SJ-126 YouTube source finder |
+| yt-dlp 2026.10.26 | Library (Python) | Searches YouTube for candidate videos in services/dataset | https://github.com/yt-dlp/yt-dlp | Unlicense | No | SJ-126 YouTube source finder |
 | Android SDK, build tools and NDK | Build tools | Compiling the Android app | https://developer.android.com/studio/terms | Android Software Development Kit License Agreement | No | Existing |
 | Xcode and the iOS SDK | Build tools | Compiling the iOS app (on EAS Build) | https://developer.apple.com/support/terms/ | Xcode and Apple SDKs Agreement | No | Existing |
 | @eslint/js 10.0.1 | Library (npm) | Build and test tooling in root | https://github.com/eslint/eslint | MIT | No | Existing |
@@ -67,11 +70,11 @@ Every model, library and dataset used to build, train or evaluate Sajao is liste
 | boto3 1.44.3 | Library (Python) | Service code in services/api | https://github.com/boto/boto3 | Apache-2.0 | No | Existing |
 | datamodel-code-generator 0.96.0 | Library (Python) | Build and test tooling in root | https://github.com/datamodel-code-generator/datamodel-code-generator | MIT | No | Existing |
 | fastapi 0.163.0 | Library (Python) | Service code in services/api | https://github.com/fastapi/fastapi | MIT | No | Existing |
-| httpx 0.28.1 | Library (Python) | Build and test tooling in root | https://github.com/encode/httpx | BSD-3-Clause | No | Existing |
+| httpx 0.28.1 | Library (Python) | Build and test tooling in root; service code in services/dataset | https://github.com/encode/httpx | BSD-3-Clause | No | Existing |
 | jsonschema 4.26.0 | Library (Python) | Build and test tooling in root | https://github.com/python-jsonschema/jsonschema | MIT | No | Existing |
 | mypy 2.4.1 | Library (Python) | Build and test tooling in root | https://github.com/python/mypy | MIT | No | Existing |
 | psycopg 3.3.9 | Library (Python) | Service code in services/api | https://github.com/psycopg/psycopg | LGPL-3.0-only | No | Existing |
-| pydantic 2.14.3 | Library (Python) | Service code in packages/schemas | https://github.com/pydantic/pydantic | MIT | No | Existing |
+| pydantic 2.14.3 | Library (Python) | Service code in packages/schemas, services/dataset | https://github.com/pydantic/pydantic | MIT | No | Existing |
 | pydantic-settings 2.16.3 | Library (Python) | Service code in services/api | https://github.com/pydantic/pydantic-settings | MIT | No | Existing |
 | pyjwt 2.15.1 | Library (Python) | Service code in services/api | https://github.com/jpadilla/pyjwt | MIT | No | Existing |
 | pytest 9.2.0 | Library (Python) | Build and test tooling in root | https://github.com/pytest-dev/pytest | MIT | No | Existing |
