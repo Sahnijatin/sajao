@@ -238,12 +238,17 @@ def _hf(model: str, kind: str) -> tuple[Any, Any]:
         from transformers import (
             AutoModelForZeroShotObjectDetection,
             AutoProcessor,
+            Owlv2ForObjectDetection,
+            Owlv2Processor,
             Sam2Model,
             Sam2Processor,
         )
 
         name, revision = _split(model)
-        if kind == "detect":
+        if kind == "detect" and name.startswith("google/owlv2"):
+            processor = Owlv2Processor.from_pretrained(name, revision=revision)
+            network = Owlv2ForObjectDetection.from_pretrained(name, revision=revision)
+        elif kind == "detect":
             processor = AutoProcessor.from_pretrained(name, revision=revision)
             network = AutoModelForZeroShotObjectDetection.from_pretrained(name, revision=revision)
         else:
@@ -255,35 +260,57 @@ def _hf(model: str, kind: str) -> tuple[Any, Any]:
 
 
 def detect(model: str, payload: dict[str, Any]) -> dict[str, Any]:
-    """Boxes, labels and scores per frame. Labels outside the vocabulary are dropped."""
+    """Boxes, labels and scores per frame. Labels outside the vocabulary are dropped.
+
+    Detectors are prompted with `prompts` (a description per class, same order as
+    `vocabulary`) and report each detection under its class name. `min_score`
+    overrides the detector's score threshold (benchmarks only).
+    """
     import torch
     import torchvision
     from PIL import Image
 
     vocabulary = list(payload["vocabulary"])
+    prompts = list(payload.get("prompts") or vocabulary)
+    if len(prompts) != len(vocabulary):
+        raise InputError("one prompt per vocabulary entry")
+    by_prompt = {p.lower().strip(): name for p, name in zip(prompts, vocabulary, strict=True)}
     frames = []
     for image in payload["images"]:
         rgb = _rgb(image["image"])
         height, width = rgb.shape[:2]
         pil = Image.fromarray(rgb)
         if model.startswith("yoloe"):
-            found = _yoloe(model, vocabulary).predict(pil, conf=0.25, verbose=False)[0]
+            conf = float(payload.get("min_score", 0.25))
+            found = _yoloe(model, prompts).predict(pil, conf=conf, verbose=False)[0]
             boxes, scores = found.boxes.xyxy.float(), found.boxes.conf.float()
             labels = [vocabulary[int(c)] for c in found.boxes.cls.tolist()]
         elif model.startswith("IDEA-Research/grounding-dino"):
             processor, network = _hf(model, "detect")
-            inputs = processor(images=pil, text=". ".join(vocabulary) + ".", return_tensors="pt")
+            inputs = processor(images=pil, text=". ".join(prompts) + ".", return_tensors="pt")
             with torch.no_grad():
                 out = network(**inputs.to("cuda"))
             result = processor.post_process_grounded_object_detection(
                 out,
                 inputs.input_ids,
-                threshold=0.30,
+                threshold=float(payload.get("min_score", 0.30)),
                 text_threshold=0.25,
                 target_sizes=[(height, width)],
             )[0]
             boxes, scores = result["boxes"].float(), result["scores"].float()
-            labels = [str(x).strip() for x in result["text_labels"]]
+            labels = [by_prompt.get(str(x).lower().strip(), "") for x in result["text_labels"]]
+        elif model.startswith("google/owlv2"):
+            processor, network = _hf(model, "detect")
+            inputs = processor(text=[prompts], images=pil, return_tensors="pt")
+            with torch.no_grad():
+                out = network(**inputs.to("cuda"))
+            # OWLv2 pads the image to a square: boxes are scaled by the longer side.
+            side = max(height, width)
+            result = processor.post_process_object_detection(
+                out, threshold=float(payload.get("min_score", 0.2)), target_sizes=[(side, side)]
+            )[0]
+            boxes, scores = result["boxes"].float(), result["scores"].float()
+            labels = [vocabulary[int(i)] for i in result["labels"].tolist()]
         else:
             raise InputError(f"unknown detector {model}")
         keep = [i for i, label in enumerate(labels) if label in vocabulary]
@@ -691,7 +718,9 @@ def _arkit_manifest(store: Any, scene: str, keyframes: int, y_up: bool = False) 
 @app.function(
     image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=4, memory=8192, timeout=3600
 )
-def objects_smoke_cpu(scene: str, keyframes: int, depth: str = "lidar") -> dict[str, Any]:
+def objects_smoke_cpu(
+    scene: str, keyframes: int, depth: str = "lidar", detectors: str = ""
+) -> dict[str, Any]:
     """Run the objects step on one ARKitScenes room and score it against its boxes.
 
     With `depth` "model", LiDAR is withheld: the depth step estimates depth first
@@ -706,7 +735,7 @@ def objects_smoke_cpu(scene: str, keyframes: int, depth: str = "lidar") -> dict[
     from twin_gpu.objects import gt_boxes, gt_seen
 
     from sajao_gateway import InMemorySpendLedger, ModelGateway, SpendCaps
-    from sajao_workers.models import depth_chain, detect_chain, segment_chain
+    from sajao_workers.models import depth_chain, detect_chain, detector_order, segment_chain
     from sajao_workers.steps import LocalArtifactStore, StepRunner
     from sajao_workers.twin.depth_step import depth_step
     from sajao_workers.twin.objects import decode_depth_mm, depth_at
@@ -714,13 +743,17 @@ def objects_smoke_cpu(scene: str, keyframes: int, depth: str = "lidar") -> dict[
     from twin_risk.geometry import UprightBox
     from twin_risk.metrics import LabelledBox, summarise
 
+    chosen = {"SAJAO_DETECTORS": detectors} if detectors else {}
     store = LocalArtifactStore(Path("/work/artifacts"))
     manifest = _arkit_manifest(store, scene, keyframes)
     up_axis = manifest["up_axis"]
     caps = SpendCaps(per_user_daily_micro_inr=10**9, global_daily_micro_inr=10**9)
     ledger = InMemorySpendLedger(caps)
     step = objects_step(
-        ModelGateway(detect_chain(volume_invoke("twin_detect")), ledger=ledger),
+        ModelGateway(
+            detect_chain(volume_invoke("twin_detect"), order=detector_order(chosen)),
+            ledger=ledger,
+        ),
         ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger),
     )
     runner = StepRunner(store, max_attempts=1)
@@ -758,7 +791,8 @@ def objects_smoke_cpu(scene: str, keyframes: int, depth: str = "lidar") -> dict[
             "frames_scored": len(absrel),
             "charged_micro_inr": estimated.cost_micro_inr,
         }
-    result = asyncio.run(runner.run(step, {"frames": frames}, {}))
+    # The step's key does not name the detector chain: keep other chains' runs apart.
+    result = asyncio.run(runner.run(step, {"frames": frames}, chosen))
     vol.commit()
     objects = json.loads(store.read_blob(result.outputs["objects"]))
     preds = [
@@ -795,13 +829,125 @@ def objects_smoke_cpu(scene: str, keyframes: int, depth: str = "lidar") -> dict[
     }
 
 
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=4, memory=8192, timeout=3600
+)
+def detector_bench_cpu(labels: dict[str, str]) -> dict[str, Any]:
+    """Each detector on the hand-checked Indian-object photos (file -> class).
+
+    Image-level scores: a photo counts as found when the detector reports its class
+    (strict) or a class in the same group (lenient, e.g. almirah reported as
+    wardrobe); the other Indian classes it reports are counted as confusions.
+    """
+    import json
+    import time as clock
+
+    from PIL import Image
+
+    from sajao_workers.models import (
+        _DETECTOR_MODELS,
+        DETECTORS,
+        INDIAN_VOCABULARY,
+        VOCABULARY,
+        prompts_for,
+    )
+    from sajao_workers.steps import LocalArtifactStore
+    from sajao_workers.twin.fusion import GROUPS
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    root = Path("/vol/indian/openverse")
+    images = []
+    for name in sorted(labels):
+        data = (root / name).read_bytes()
+        width, height = Image.open(root / name).size
+        images.append({"image": store.put_blob(data), "width": width, "height": height})
+    vol.commit()
+    payload = {
+        "images": images,
+        "vocabulary": list(VOCABULARY),
+        "prompts": prompts_for(VOCABULARY),
+    }
+    group = {c: GROUPS.get(c, c) for c in VOCABULARY}
+    # Frames of US homes from ARKitScenes, where these classes should not appear.
+    absent = {"almirah", "diwan", "puja unit", "geyser", "air cooler", "jhoola", "floor seating"}
+    scenes = []
+    for scene in ("arkit_living_47331265", "arkit_bedroom_47430034"):
+        scenes += [
+            {"image": f["image"], "width": f["width"], "height": f["height"]}
+            for f in _arkit_manifest(store, scene, 40)["frames"]
+        ]
+    vol.commit()
+    runs = [(d, d, None) for d in DETECTORS] + [("yoloe at 0.10", "yoloe", 0.10)]
+    out: dict[str, Any] = {"photos": len(images), "us_home_frames": len(scenes)}
+    for key, detector, min_score in runs:
+        started = clock.time()
+        extra = {} if min_score is None else {"min_score": min_score}
+        reply = run_model.remote(_DETECTOR_MODELS[detector], "twin_detect", {**payload, **extra})
+        if "error" in reply:
+            out[key] = {"error": reply["error"]}
+            continue
+        per_class: dict[str, dict[str, int]] = {}
+        for name, frame in zip(sorted(labels), reply["output"]["frames"], strict=True):
+            truth = labels[name]
+            found = {d["label"] for d in frame["detections"]}
+            empty = {"photos": 0, "strict": 0, "lenient": 0, "confused": 0}
+            row = per_class.setdefault(truth, empty)
+            row["photos"] += 1
+            row["strict"] += truth in found
+            row["lenient"] += truth in found or any(group[f] == group[truth] for f in found)
+            row["confused"] += any(f != truth and f in INDIAN_VOCABULARY for f in found)
+        n = sum(r["photos"] for r in per_class.values())
+        scene_reply = run_model.remote(
+            _DETECTOR_MODELS[detector],
+            "twin_detect",
+            {**payload, **extra, "images": scenes},
+        )
+        alarms: dict[str, int] = {}
+        for frame in scene_reply.get("output", {}).get("frames", []):
+            for label in {d["label"] for d in frame["detections"]} & absent:
+                alarms[label] = alarms.get(label, 0) + 1
+        fired = sum(
+            1
+            for frame in scene_reply.get("output", {}).get("frames", [])
+            if {d["label"] for d in frame["detections"]} & absent
+        )
+        out[key] = {
+            "strict_recall": round(sum(r["strict"] for r in per_class.values()) / n, 3),
+            "lenient_recall": round(sum(r["lenient"] for r in per_class.values()) / n, 3),
+            "confusion_rate": round(sum(r["confused"] for r in per_class.values()) / n, 3),
+            "false_alarm_frames": round(fired / len(scenes), 3),
+            "false_alarms": alarms,
+            "gpu_seconds": reply["gpu_seconds"] + scene_reply.get("gpu_seconds", 0),
+            "wall_seconds": round(clock.time() - started, 1),
+            "per_class": per_class,
+        }
+        print(json.dumps({key: {k: v for k, v in out[key].items() if k != "per_class"}}))
+    return out
+
+
+@app.local_entrypoint()
+def detector_bench(labels: str = "eval/twin-indian/labels.json") -> None:
+    import json
+
+    result = detector_bench_cpu.remote(json.loads(Path(labels).read_text()))
+    Path("eval/twin-indian/results.json").write_text(json.dumps(result, indent=1) + "\n")
+    summary = {
+        k: {m: n for m, n in v.items() if m != "per_class"} if isinstance(v, dict) else v
+        for k, v in result.items()
+    }
+    print(json.dumps(summary, indent=1))
+
+
 @app.local_entrypoint()
 def objects_smoke(
-    scene: str = "arkit_living_47331265", keyframes: int = 120, depth: str = "lidar"
+    scene: str = "arkit_living_47331265",
+    keyframes: int = 120,
+    depth: str = "lidar",
+    detectors: str = "",
 ) -> None:
     import json
 
-    print(json.dumps(objects_smoke_cpu.remote(scene, keyframes, depth), indent=1))
+    print(json.dumps(objects_smoke_cpu.remote(scene, keyframes, depth, detectors), indent=1))
 
 
 @app.function(
