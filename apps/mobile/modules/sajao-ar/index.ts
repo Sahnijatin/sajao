@@ -135,7 +135,7 @@ export interface ArCaptureFiles {
   planes: string | null;
   sceneMesh: string | null;
   depth: string | null;
-  /** The scan video (Android: ARCore's MP4 with AR data tracks); null when none was recorded. */
+  /** The scan video (Android: ARCore's MP4 with AR data tracks; iOS: H.264 MP4 of the AR camera); null when none was recorded. */
   video?: string | null;
   error?: string;
 }
