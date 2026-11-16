@@ -845,49 +845,49 @@
     "id": "floor_lamp",
     "product": {
      "schema_version": "1.0",
-     "id": "4a7f298d-2d3b-59b5-b057-6189e23f0919",
-     "source": "eval-only:wooden-street",
-     "sku": "ws_knot-floor-lamp",
-     "title": "Knot Floor Lamp",
+     "id": "363e5aaf-15fc-5d8d-b35e-c145e2fb63c1",
+     "source": "eval-only:ikea-india",
+     "sku": "ikea_10478124",
+     "title": "PILSKOTT LED floor lamp",
      "group": "lighting",
      "category": "lamp",
      "dimensions": {
       "width": {
-       "value_m": 0.4,
+       "value_m": 0.3,
        "source": "estimated",
        "error_band_m": 0.02
       },
       "depth": {
-       "value_m": 0.4,
+       "value_m": 0.12,
        "source": "estimated",
        "error_band_m": 0.02
       },
       "height": {
-       "value_m": 1.3,
+       "value_m": 1.12,
        "source": "estimated",
        "error_band_m": 0.02
       }
      },
      "price": {
       "currency": "INR",
-      "amount_minor": 1399900
+      "amount_minor": 1099000
      },
      "in_stock": true,
      "checked_at": "2026-11-16T00:00:00Z",
      "images": [
-      "https://images.woodenstreet.de/image/cache/data/Orange+Tree+2026/OT0174C/1-810x702.jpg",
-      "https://images.woodenstreet.de/image/cache/data/Orange+Tree+2026/OT0174C/9-810x702.jpg",
-      "https://images.woodenstreet.de/image/cache/data/Orange+Tree+2026/OT0174C/2-810x702.jpg"
+      "https://www.ikea.com/in/en/images/products/pilskott-led-floor-lamp-smart-black__1077629_pe856958_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/pilskott-led-floor-lamp-smart-black__1077628_pe856959_s5.jpg?f=xxl",
+      "https://www.ikea.com/in/en/images/products/pilskott-led-floor-lamp-smart-black__1077627_pe856960_s5.jpg?f=xxl"
      ],
      "image_use_permitted": true,
      "routes": [
       {
        "kind": "buy",
-       "retailer": "Wooden Street",
-       "url": "https://www.woodenstreet.com/product/knot-floor-lamp",
+       "retailer": "IKEA India",
+       "url": "https://www.ikea.com/in/en/p/pilskott-led-floor-lamp-smart-black-10478124/",
        "price": {
         "currency": "INR",
-        "amount_minor": 1399900
+        "amount_minor": 1099000
        }
       }
      ]
@@ -966,7 +966,7 @@
   },
   "total_cost": {
    "currency": "INR",
-   "amount_minor": 13336700
+   "amount_minor": 13035800
   },
   "relaxations": [],
   "check_report": {

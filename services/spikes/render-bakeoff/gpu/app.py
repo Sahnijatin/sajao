@@ -28,6 +28,7 @@ GATEWAY_SRC = (
 )
 
 MAX_GPUS = 3
+RENDER_GPUS = 2  # renders run beside a one-GPU gate pipeline
 CU124 = "https://download.pytorch.org/whl/cu124"
 TRIPOSG_REF = "fc5c40990181e2a756c4e0b1c2f4d6b5202faf8c"
 TRELLIS2_REF = "75fbf0183001ed9876c8dbb35de6b68552ee08bd"
@@ -395,7 +396,7 @@ def sam3d(lids: list[str]) -> list[dict]:
     gpu="L4",
     volumes=TWIN_VOLS,
     timeout=3600,
-    max_containers=MAX_GPUS,
+    max_containers=RENDER_GPUS,
     secrets=[gcp_secret, hf_secret],
 )
 def generate_gemini(room: str, design_id: str, arms: list[str]) -> dict:
@@ -473,7 +474,7 @@ def prepare_assets(model: str, lids: list[str]) -> list[dict]:
 
 
 @app.function(
-    image=twin_image, gpu="L40S", volumes=TWIN_VOLS, timeout=3600, max_containers=MAX_GPUS
+    image=twin_image, gpu="L40S", volumes=TWIN_VOLS, timeout=3600, max_containers=RENDER_GPUS
 )
 def compose(room: str, design_id: str, planted: str = "") -> dict:
     """Arm A (splat background) and the C3 base (keyframe background) for one design."""
@@ -499,7 +500,7 @@ def compose(room: str, design_id: str, planted: str = "") -> dict:
     gpu="H100",
     volumes=TWIN_VOLS,
     timeout=3600,
-    max_containers=MAX_GPUS,
+    max_containers=RENDER_GPUS,
     secrets=[
         modal.Secret.from_dict({"PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True"}),
         hf_secret,
@@ -514,7 +515,9 @@ def generate(room: str, design_id: str, model: str, arms: list[str]) -> dict:
     return r
 
 
-@app.function(image=gen_image, gpu="L40S", volumes=TWIN_VOLS, timeout=3600, max_containers=MAX_GPUS)
+@app.function(
+    image=gen_image, gpu="L40S", volumes=TWIN_VOLS, timeout=3600, max_containers=RENDER_GPUS
+)
 def check(room: str, design_id: str, arms: list[str], planted: str = "") -> dict:
     from bk.run import check_arms
 

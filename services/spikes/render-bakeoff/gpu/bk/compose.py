@@ -510,15 +510,13 @@ def blender_render(
     t1 = time.time()
 
     def load(name):
-        import cv2
-
+        """Read a pass with Blender itself (OpenCV's pip build cannot read OpenEXR)."""
         p = next(tmp.glob(f"{name}*.exr"))
-        a = cv2.imread(str(p), cv2.IMREAD_UNCHANGED)
-        if a.ndim == 3 and a.shape[2] == 4:
-            a = cv2.cvtColor(a, cv2.COLOR_BGRA2RGBA)
-        elif a.ndim == 3:
-            a = cv2.cvtColor(a, cv2.COLOR_BGR2RGB)
-        return a
+        im = bpy.data.images.load(str(p))
+        im.colorspace_settings.is_data = True  # raw linear values, no view transform
+        a = np.array(im.pixels[:], dtype=np.float32).reshape(h, w, 4)[::-1].copy()
+        bpy.data.images.remove(im)
+        return a if name in ("Image",) else a[..., :3]
 
     img = load("Image")
     shadow = load("ShadowCatcher")

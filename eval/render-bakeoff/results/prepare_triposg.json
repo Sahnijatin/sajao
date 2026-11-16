@@ -1,0 +1,359 @@
+[
+ {
+  "id": "ikea_00411997",
+  "model": "triposg",
+  "size_m": [
+   0.45,
+   0.53,
+   0.45
+  ],
+  "front_az_deg": 270.0,
+  "input_pose_az_el_fov": [
+   242.5,
+   17.5,
+   20.0
+  ],
+  "input_iou": 0.5529850746268656,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_00582036",
+  "model": "triposg",
+  "size_m": [
+   0.69,
+   0.71,
+   0.64
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   25.0,
+   5.0,
+   20.0
+  ],
+  "input_iou": 0.2713975380159305,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_00594614",
+  "model": "triposg",
+  "size_m": [
+   0.15,
+   0.24,
+   0.15
+  ],
+  "front_az_deg": 270.0,
+  "input_pose_az_el_fov": [
+   300.0,
+   12.5,
+   20.0
+  ],
+  "input_iou": 0.8785192284653168,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_10478124",
+  "model": "triposg",
+  "size_m": [
+   0.3,
+   1.12,
+   0.12
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   -2.5,
+   52.5,
+   20.0
+  ],
+  "input_iou": 0.10463300364393545,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_10500356",
+  "model": "triposg",
+  "size_m": [
+   0.7,
+   0.42,
+   0.7
+  ],
+  "front_az_deg": 270.0,
+  "input_pose_az_el_fov": [
+   252.5,
+   15.0,
+   20.0
+  ],
+  "input_iou": 0.9236299728391116,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_20568223",
+  "model": "triposg",
+  "size_m": [
+   0.22,
+   0.25,
+   0.22
+  ],
+  "front_az_deg": 90.0,
+  "input_pose_az_el_fov": [
+   77.5,
+   -7.5,
+   20.0
+  ],
+  "input_iou": 0.942269356510645,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_30492317",
+  "model": "triposg",
+  "size_m": [
+   0.8,
+   1.01,
+   0.97
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   27.5,
+   5.0,
+   20.0
+  ],
+  "input_iou": 0.9609387558270375,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_30651392",
+  "model": "triposg",
+  "size_m": [
+   0.9,
+   0.48,
+   0.9
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   27.5,
+   15.0,
+   20.0
+  ],
+  "input_iou": 0.7885557797636207,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_60602041",
+  "model": "triposg",
+  "size_m": [
+   0.38,
+   0.75,
+   0.2561939645055808
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   42.5,
+   7.5,
+   20.0
+  ],
+  "input_iou": 0.7773603806661658,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_80576319",
+  "model": "triposg",
+  "size_m": [
+   0.37,
+   0.45,
+   0.28
+  ],
+  "front_az_deg": 180.0,
+  "input_pose_az_el_fov": [
+   207.5,
+   17.5,
+   20.0
+  ],
+  "input_iou": 0.7404726130310066,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_80581919",
+  "model": "triposg",
+  "size_m": [
+   0.63,
+   0.68,
+   0.75
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   27.5,
+   5.0,
+   20.0
+  ],
+  "input_iou": 0.8937714642522635,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_90581914",
+  "model": "triposg",
+  "size_m": [
+   0.81,
+   0.68,
+   0.86
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   22.5,
+   7.5,
+   20.0
+  ],
+  "input_iou": 0.8612684557526232,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_s29308527",
+  "model": "triposg",
+  "size_m": [
+   1.653,
+   0.68,
+   2.046
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   27.5,
+   10.0,
+   20.0
+  ],
+  "input_iou": 0.9266743648960739,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_s39270312",
+  "model": "triposg",
+  "size_m": [
+   2.04,
+   0.78,
+   0.89
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   30.0,
+   10.0,
+   20.0
+  ],
+  "input_iou": 0.970215191677355,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_s39581837",
+  "model": "triposg",
+  "size_m": [
+   1.86,
+   0.66,
+   2.06
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   27.5,
+   12.5,
+   20.0
+  ],
+  "input_iou": 0.9543769603649843,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_s39620339",
+  "model": "triposg",
+  "size_m": [
+   2.5,
+   0.95,
+   1.07
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   27.5,
+   12.5,
+   20.0
+  ],
+  "input_iou": 0.9637334063227042,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_s89198465",
+  "model": "triposg",
+  "size_m": [
+   1.66,
+   0.95,
+   2.07
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   30.0,
+   12.5,
+   20.0
+  ],
+  "input_iou": 0.8558397133083564,
+  "textured_by_model": false
+ },
+ {
+  "id": "ws_adolph-bedside-table-honey-finish",
+  "model": "triposg",
+  "size_m": [
+   0.406,
+   0.43200000000000005,
+   0.406
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   327.5,
+   10.0,
+   20.0
+  ],
+  "input_iou": 0.9591743119266055,
+  "textured_by_model": false
+ },
+ {
+  "id": "ws_henry-l-shape-right-arm-corner-sofa-indigo-blue",
+  "model": "triposg",
+  "size_m": [
+   2.7560000000000002,
+   0.787,
+   0.825
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   322.5,
+   5.0,
+   45.0
+  ],
+  "input_iou": 0.8242823894491854,
+  "textured_by_model": false
+ },
+ {
+  "id": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+  "model": "triposg",
+  "size_m": [
+   1.524,
+   0.8640000000000001,
+   0.8640000000000001
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   330.0,
+   5.0,
+   20.0
+  ],
+  "input_iou": 0.9151304347826087,
+  "textured_by_model": false
+ },
+ {
+  "id": "ws_walken-queen-size-bed-honey-finish",
+  "model": "triposg",
+  "size_m": [
+   1.6,
+   0.838,
+   2.235
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   325.0,
+   5.0,
+   20.0
+  ],
+  "input_iou": 0.9256146903205726,
+  "textured_by_model": false
+ }
+]

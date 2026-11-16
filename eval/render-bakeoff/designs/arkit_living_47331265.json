@@ -2,9 +2,9 @@
  "room": "arkit_living_47331265",
  "hero_frame": 211,
  "hero_why": {
-  "weighted_inside": 0.865,
+  "weighted_inside": 0.863,
   "behind": 0,
-  "screen_area": 1.382
+  "screen_area": 1.364
  },
  "clear": {
   "zone": [
@@ -194,7 +194,7 @@
     },
     {
      "id": "floor_lamp",
-     "listing": "ws_knot-floor-lamp",
+     "listing": "ikea_10478124",
      "tier": "mesh",
      "position": [
       -0.962,
@@ -224,8 +224,7 @@
   "ikea_00582036": "ikea_30492317",
   "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s": "ws_henry-l-shape-right-arm-corner-sofa-indigo-blue",
   "ikea_30651392": "ws_adolph-bedside-table-honey-finish",
-  "ikea_90581914": "ikea_80581919",
-  "ws_knot-floor-lamp": "ikea_20321321"
+  "ikea_90581914": "ikea_80581919"
  },
  "planted_plant": {
   "listing": "ikea_90630330",
