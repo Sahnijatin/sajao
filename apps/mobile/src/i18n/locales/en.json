@@ -61,6 +61,57 @@
     "permissionAllow": "Allow camera",
     "noCamera": "No camera was found on this phone. You can use photos instead."
   },
+  "space": {
+    "found": "We found",
+    "change": "Change",
+    "dragHint": "Drag to adjust",
+    "types": {
+      "living_room": "A living room",
+      "bedroom": "A bedroom",
+      "balcony": "A balcony",
+      "other": "A space"
+    },
+    "typeNames": {
+      "living_room": "Living room",
+      "bedroom": "Bedroom",
+      "balcony": "Balcony",
+      "other": "Something else"
+    },
+    "partOf": "Part of {{space}}",
+    "changeTitle": "What is this space?",
+    "about": "About {{area}}",
+    "windows_one": "{{count}} window",
+    "windows_other": "{{count}} windows",
+    "doors_one": "{{count}} door",
+    "doors_other": "{{count}} doors",
+    "light": {
+      "morning": "morning light",
+      "midday": "midday light",
+      "evening": "evening light",
+      "soft": "soft light"
+    },
+    "estimated": "Estimated ±{{band}}",
+    "verified": "Verified",
+    "redoTitle": "What should we redo?",
+    "redoAll": "All of it",
+    "redoAllBody": "The whole space you scanned",
+    "redoPart": "Just a part",
+    "redoPartBody": "Draw around a corner or wall",
+    "itemsTitle": "Things already here",
+    "actions": {
+      "keep": "Keep",
+      "replace": "Replace",
+      "remove": "Remove"
+    },
+    "verify": "Verify",
+    "verifyTitle": "Add a tape value",
+    "verifyBody": "Measure one wall with a tape. It snaps in and re-fits the whole space.",
+    "wall": "Wall {{number}}",
+    "ceiling": "Ceiling height",
+    "valueLabel": "Length in metres",
+    "apply": "Snap it in",
+    "showIdeas": "Show me ideas"
+  },
   "rooms": {
     "title": "My rooms",
     "emptyTitle": "No rooms yet",
@@ -80,7 +131,8 @@
     "unitsCm": "Centimetres",
     "unitsFtIn": "Feet and inches",
     "unitsExample": "A 3.4 m wall shows as {{length}}",
-    "gallery": "Component gallery"
+    "gallery": "Component gallery",
+    "spacePreview": "Space Profile preview"
   },
   "languages": {
     "en": "English",
@@ -89,5 +141,9 @@
   "length": {
     "cm": "{{value}} cm",
     "ftIn": "{{feet}} ft {{inches}} in"
+  },
+  "area": {
+    "m2": "{{value}} m²",
+    "sqft": "{{value}} sq ft"
   }
 }

@@ -46,6 +46,7 @@ export default function RootLayout() {
         <Stack.Screen name="capture" options={{ presentation: "fullScreenModal" }} />
         <Stack.Protected guard={__DEV__}>
           <Stack.Screen name="gallery" options={{ headerShown: true, title: "Gallery" }} />
+          <Stack.Screen name="space-preview" />
         </Stack.Protected>
       </Stack>
     </ThemeProvider>
