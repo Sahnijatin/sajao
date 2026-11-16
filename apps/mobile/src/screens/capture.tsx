@@ -1,6 +1,7 @@
 import { Button, GlassSurface, Text, useTheme } from "@sajao/ui";
 import { MeshEffect } from "@sajao/ui/effects";
 import { Icon, type IconName } from "@sajao/ui/icons";
+import { useKeepAwake } from "expo-keep-awake";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
@@ -24,6 +25,9 @@ export interface CaptureScreenProps {
 }
 
 const CHIPS: readonly GuardrailId[] = ["light", "motion", "level"];
+
+/** Keeps the screen on while the scan screen is open, on iOS and Android. */
+export const SCAN_KEEP_AWAKE_TAG = "sajao-scan";
 
 function StatusChip({ id, status }: { id: GuardrailId; status: GuardrailStatus }) {
   const { t } = useTranslation();
@@ -98,6 +102,8 @@ function RoundButton({
  * guardrail fails. There is no room-type picker.
  */
 export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenProps) {
+  // A scan is hands-on but touch-free: without this the screen dims and locks mid-scan.
+  useKeepAwake(SCAN_KEEP_AWAKE_TAG);
   const { t } = useTranslation();
   const { tokens, tier, reducedMotion } = useTheme();
   const { spacing, radius } = tokens;

@@ -38,6 +38,9 @@ export function scanDebugLines(debug: ScanDebug, state: ScanState): [string, str
           ["mappedPoints", round(debug.ar.mappedPoints)],
           ["detector", debug.ar.detector ? "1" : "0"],
           ["labels", round(debug.ar.labels)],
+          ["detectionsFound", round(debug.ar.detectionsFound)],
+          ["detectionsPlaced", round(debug.ar.detectionsPlaced)],
+          ["detectorError", debug.ar.detectorError || "-"],
         ] as [string, string][])
       : []),
   ];

@@ -42,7 +42,13 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
 
   private var lastPoseAt: TimeInterval = 0
   private var lastStatusAt: TimeInterval = 0
-  private var lastDetectAt: TimeInterval = 0
+  /// Paces AR frames to the detector: a steady 8 a second while it keeps up.
+  private var pacer = FramePacer()
+  private var detectionsDone = 0
+  /// Detections the detector returned, and how many were placed in the room.
+  private var detectionsFound = 0
+  private var detectionsPlaced = 0
+  private var lastDetectionMs: Double = 0
   private var lastPointsAt: TimeInterval = 0
   private var lastBrightnessAt: TimeInterval = 0
   private var brightness: Double = 128
@@ -138,6 +144,7 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
     // Resuming keeps what was mapped; only the first start resets.
     let options: ARSession.RunOptions = hasRunOnce ? [] : [.resetTracking, .removeExistingAnchors]
     sceneView.session.run(config, options: options)
+    pacer.reset()
     hasRunOnce = true
     running = true
     let link = CADisplayLink(target: DisplayLinkProxy(self), selector: #selector(DisplayLinkProxy.tick))
@@ -195,8 +202,9 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
       lastPointsAt = now
       accumulatePoints(frame)
     }
-    if now - lastDetectAt > 0.33 && detector.isAvailable && !detector.busy {
-      lastDetectAt = now
+    // The detector is fed from the AR session's own frames: ARKit owns the
+    // camera during the scan, so nothing else can supply them.
+    if detector.isAvailable && pacer.shouldSubmit(at: now, busy: detector.busy) {
       runDetector(frame)
     }
   }
@@ -245,6 +253,13 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
       "ambientIntensity": ambientIntensity,
       "detector": detector.isAvailable,
       "labels": labels.count,
+      "frames": pacer.frames,
+      "detectorRuns": detectionsDone,
+      "detectorSkipped": pacer.skippedBusy,
+      "detectorMs": lastDetectionMs,
+      "detectionsFound": detectionsFound,
+      "detectionsPlaced": detectionsPlaced,
+      "detectorError": detector.loadError ?? "",
     ])
   }
 
@@ -276,8 +291,11 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
     let viewport = bounds.size
     guard viewport.width > 0, viewport.height > 0 else { return }
     let toView = frame.displayTransform(for: .portrait, viewportSize: viewport)
-    detector.detect(pixelBuffer: frame.capturedImage) { [weak self] found in
-      guard let self, self.running else { return }
+    detector.detect(pixelBuffer: frame.capturedImage) { [weak self] found, milliseconds in
+      guard let self else { return }
+      self.detectionsDone += 1
+      self.lastDetectionMs = milliseconds
+      guard self.running else { return }
       var payload: [[String: Any]] = []
       for detection in found {
         // Centre of the box in the upright image, back to the sensor image
@@ -290,7 +308,9 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
           "detectorClass": detection.detectorClass,
           "score": Double(detection.score),
         ]
+        self.detectionsFound += 1
         if let world = self.worldPoint(at: point) {
+          self.detectionsPlaced += 1
           entry["world"] = ["x": Double(world.x), "y": Double(world.y), "z": Double(world.z)]
         }
         payload.append(entry)

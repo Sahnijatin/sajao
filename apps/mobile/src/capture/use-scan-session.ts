@@ -2,6 +2,7 @@ import { useTheme } from "@sajao/ui";
 import { DeviceMotion } from "expo-sensors";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Platform } from "react-native";
+import { arCountersOf, type ArFrameCounters, arFrameRates, NO_AR_COUNTERS } from "./ar/ar-debug";
 import { arFrameEvent, type ArStatus, arPoseEvent } from "./ar/ar-events";
 import { type Detection, EMPTY_LABELS, type LabelState, updateLabels } from "./ar/labels";
 import { motionSample } from "./pose";
@@ -13,12 +14,13 @@ const DEBUG_WINDOW_MS = 1000;
 
 /** Numbers for the hidden debug overlay, refreshed about once a second. */
 export interface ScanDebug {
-  /** Frames the frame callback received per second. */
+  /** Camera frames per second: the frame callback's, or the AR session's during the AR scan. */
   cameraFps: number;
-  /** Frames analysed per second. */
+  /** Frames analysed per second: by the 2D scan, or by the detector during the AR scan. */
   analysedFps: number;
   /** Feature points in the latest analysed frame. */
   featurePoints: number;
+  /** Time to analyse one frame: the 2D scan's, or one detector run during the AR scan. */
   analysisMs: number;
   /** Seconds since the screen opened with no frame received; 0 once frames arrive. */
   waitingSeconds: number;
@@ -35,6 +37,12 @@ export interface ArDebug {
   mappedPoints: number;
   detector: boolean;
   labels: number;
+  featurePoints: number;
+  /** Detections returned so far, and how many were placed in the room. */
+  detectionsFound: number;
+  detectionsPlaced: number;
+  /** Why the detector failed to load; empty when it loaded. */
+  detectorError: string;
 }
 
 const EMPTY_DEBUG: ScanDebug = {
@@ -61,6 +69,8 @@ export function useScanSession(active: boolean) {
     last: null as AnalysedFrame | null,
     diagnostics: EMPTY_DEBUG.diagnostics,
     ar: null as ArDebug | null,
+    arCounters: NO_AR_COUNTERS as ArFrameCounters,
+    arWindowStart: NO_AR_COUNTERS as ArFrameCounters,
   });
   const [labels, setLabels] = useState<LabelState>(EMPTY_LABELS);
 
@@ -84,15 +94,31 @@ export function useScanSession(active: boolean) {
       const now = Date.now();
       const seconds = Math.max(0.001, (now - w.startMs) / 1000);
       const seen = w.firstSeen < 0 ? 0 : w.lastSeen - w.firstSeen;
-      setDebug({
-        cameraFps: Math.round(seen / seconds),
-        analysedFps: Math.round(w.analysed / seconds),
-        featurePoints: w.last?.points.length ?? 0,
-        analysisMs: w.last?.analysisMs ?? 0,
-        waitingSeconds: w.last ? 0 : Math.round((now - opened) / 1000),
-        diagnostics: w.diagnostics,
-        ar: w.ar,
-      });
+      const waiting = Math.round((now - opened) / 1000);
+      if (w.ar) {
+        // AR scan: ARKit or ARCore owns the camera, so its counters are the frames.
+        const rates = arFrameRates(w.arWindowStart, w.arCounters, seconds);
+        setDebug({
+          cameraFps: rates.cameraFps,
+          analysedFps: rates.detectorFps,
+          featurePoints: w.ar.featurePoints,
+          analysisMs: rates.detectorMs,
+          waitingSeconds: w.arCounters.frames > 0 ? 0 : waiting,
+          diagnostics: { ...w.diagnostics, dropped: rates.detectorSkipped },
+          ar: w.ar,
+        });
+        w.arWindowStart = w.arCounters;
+      } else {
+        setDebug({
+          cameraFps: Math.round(seen / seconds),
+          analysedFps: Math.round(w.analysed / seconds),
+          featurePoints: w.last?.points.length ?? 0,
+          analysisMs: w.last?.analysisMs ?? 0,
+          waitingSeconds: w.last ? 0 : waiting,
+          diagnostics: w.diagnostics,
+          ar: null,
+        });
+      }
       w.startMs = now;
       w.analysed = 0;
       w.firstSeen = w.lastSeen;
@@ -126,7 +152,16 @@ export function useScanSession(active: boolean) {
   // AR scan: the native view reports status, pose and detections.
   const platform = Platform.OS === "ios" ? "ios" : "android";
   const onArStatus = useCallback(
-    (status: ArStatus & Omit<ArDebug, "tracking">) => {
+    (
+      status: ArStatus &
+        Omit<ArDebug, "tracking" | "detectionsFound" | "detectionsPlaced" | "detectorError"> &
+        Partial<ArFrameCounters> & {
+          detectionsFound?: number;
+          detectionsPlaced?: number;
+          detectorError?: string;
+        },
+    ) => {
+      counters.current.arCounters = arCountersOf(status);
       counters.current.ar = {
         tracking: status.tracking,
         lidar: status.lidar,
@@ -135,6 +170,10 @@ export function useScanSession(active: boolean) {
         mappedPoints: status.mappedPoints,
         detector: status.detector,
         labels: status.labels,
+        featurePoints: status.featurePoints,
+        detectionsFound: status.detectionsFound ?? 0,
+        detectionsPlaced: status.detectionsPlaced ?? 0,
+        detectorError: status.detectorError ?? "",
       };
       dispatch(arFrameEvent(status, platform, Date.now()));
     },

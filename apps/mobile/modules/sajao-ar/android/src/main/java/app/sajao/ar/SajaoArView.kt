@@ -24,6 +24,7 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import java.lang.ref.WeakReference
 import java.nio.FloatBuffer
+import java.util.concurrent.atomic.AtomicReference
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import kotlin.math.asin
@@ -83,12 +84,26 @@ class SajaoArView(context: Context, appContext: AppContext) :
 
   // When each plane last grew, for the brief brighten.
   private val planeArea = HashMap<Plane, Float>()
+  // The last world outline of every plane seen, kept while ARCore stops tracking it.
+  private val planeOutlines = LinkedHashMap<Plane, PlaneOutline>()
   private val planeGrewAt = HashMap<Plane, Long>()
 
   private var lastPoseAt = 0L
   private var lastStatusAt = 0L
   private var lastPointsAt = 0L
-  private var lastDetectAt = 0L
+  // Paces AR frames to the detector: a steady 8 a second while it keeps up.
+  private val pacer = FramePacer()
+  private var lastCameraTimestamp = 0L
+  @Volatile private var detectionsDone = 0
+  // Detections the detector returned, and how many of them were placed in
+  // the room: tells "detector sees nothing" apart from "nothing to hit".
+  private var detectionsFound = 0
+  private var detectionsPlaced = 0
+  @Volatile private var lastDetectionMs = 0.0
+  // Detections waiting for the next drawn frame to be hit-tested. Calling
+  // session.update() anywhere but onDrawFrame takes a camera frame away from
+  // the renderer, so results wait here instead.
+  private val pendingDetections = AtomicReference<List<UprightDetection>?>(null)
   private var brightness = 128.0
   private var pixelIntensity = 1.0
   private var featureCount = 0
@@ -278,11 +293,20 @@ class SajaoArView(context: Context, appContext: AppContext) :
         lastStatusAt = now
         sendStatus(session)
       }
-      if (now - lastDetectAt > 330 && detector.isAvailable && !detector.isBusy &&
-        camera.trackingState == TrackingState.TRACKING
-      ) {
-        lastDetectAt = now
-        runDetector(frame)
+      pendingDetections.getAndSet(null)?.let { found ->
+        if (camera.trackingState == TrackingState.TRACKING) hitTestDetections(frame, found)
+      }
+      // The detector is fed from ARCore's own camera images: ARCore owns the
+      // camera during the scan. Only a new image counts; update() can return
+      // the same one again when the screen draws faster than the camera.
+      val cameraTimestamp = frame.timestamp
+      if (cameraTimestamp != lastCameraTimestamp && detector.isAvailable) {
+        lastCameraTimestamp = cameraTimestamp
+        if (pacer.shouldSubmit(cameraTimestamp / 1e9, detector.isBusy) &&
+          camera.trackingState == TrackingState.TRACKING
+        ) {
+          runDetector(frame)
+        }
       }
     } catch (_: Throwable) {
       // A dropped frame is fine; the next one tries again.
@@ -325,60 +349,80 @@ class SajaoArView(context: Context, appContext: AppContext) :
   }
 
   private fun drawPlanes(session: Session, now: Long) {
-    var count = 0
+    // Refresh the outline of every plane ARCore is tracking. A plane that
+    // ARCore stops tracking keeps its last outline, so mapped surfaces stay
+    // on screen for the whole scan; a plane merged into another is dropped,
+    // because the plane it merged into now covers it.
     for (plane in session.getAllTrackables(Plane::class.java)) {
-      if (plane.trackingState != TrackingState.TRACKING || plane.subsumedBy != null) continue
-      count += 1
-      val polygon = plane.polygon ?: continue
-      val corners = polygon.remaining() / 2
-      if (corners < 3) continue
-      val pose = plane.centerPose
-      val world = FloatArray(corners * 3)
-      val local = FloatArray(3)
-      for (i in 0 until corners) {
-        local[0] = polygon.get(i * 2)
-        local[1] = 0f
-        local[2] = polygon.get(i * 2 + 1)
-        val out = pose.transformPoint(local)
-        world[i * 3] = out[0]
-        world[i * 3 + 1] = out[1]
-        world[i * 3 + 2] = out[2]
+      if (plane.subsumedBy != null) {
+        planeOutlines.remove(plane)
+        continue
       }
-      val centre = pose.translation
-
-      // Brighten briefly when the plane grows: the leading edge of mapping.
-      val area = plane.extentX * plane.extentZ
-      val previous = planeArea[plane] ?: 0f
-      if (area > previous * 1.05f) {
-        planeArea[plane] = area
-        planeGrewAt[plane] = now
-      }
-      val since = (now - (planeGrewAt[plane] ?: 0L)).toFloat()
-      val boost = if (reducedMotion) 1f else 1f + 1.2f * (1f - since / 800f).coerceIn(0f, 1f)
-
-      // Faces: a fan from the centre. Edges: the outline plus spokes, so the
-      // plane reads as a mesh.
-      val triangles = Gl.floats(corners * 9)
-      val lines = Gl.floats(corners * 12)
-      for (i in 0 until corners) {
-        val j = (i + 1) % corners
-        triangles.put(centre[0]).put(centre[1]).put(centre[2])
-        triangles.put(world[i * 3]).put(world[i * 3 + 1]).put(world[i * 3 + 2])
-        triangles.put(world[j * 3]).put(world[j * 3 + 1]).put(world[j * 3 + 2])
-        lines.put(world[i * 3]).put(world[i * 3 + 1]).put(world[i * 3 + 2])
-        lines.put(world[j * 3]).put(world[j * 3 + 1]).put(world[j * 3 + 2])
-        lines.put(centre[0]).put(centre[1]).put(centre[2])
-        lines.put(world[i * 3]).put(world[i * 3 + 1]).put(world[i * 3 + 2])
-      }
-      val vertical = plane.type == Plane.Type.VERTICAL
-      val fill = if (vertical) Palette.wallFill else Palette.floorFill
-      if (!lite) {
-        shapes.draw(viewProjection, triangles, corners * 3, GLES20.GL_TRIANGLES, fill, false)
-        shapes.draw(viewProjection, lines, corners * 4, GLES20.GL_LINES, scaled(Palette.glow, boost), true, lineWidth = 6f)
-      }
-      shapes.draw(viewProjection, lines, corners * 4, GLES20.GL_LINES, scaled(Palette.edge, boost), true, lineWidth = 2f)
+      if (plane.trackingState != TrackingState.TRACKING) continue
+      outlineOf(plane)?.let { planeOutlines[plane] = it }
     }
-    planeCount = count
+    for ((plane, outline) in planeOutlines) {
+      drawOutline(plane, outline, now)
+    }
+    planeCount = planeOutlines.size
+  }
+
+  /** A plane's polygon in world space, or null while it has fewer than three corners. */
+  private fun outlineOf(plane: Plane): PlaneOutline? {
+    val polygon = plane.polygon ?: return null
+    val corners = polygon.remaining() / 2
+    if (corners < 3) return null
+    val pose = plane.centerPose
+    val world = FloatArray(corners * 3)
+    val local = FloatArray(3)
+    for (i in 0 until corners) {
+      local[0] = polygon.get(i * 2)
+      local[1] = 0f
+      local[2] = polygon.get(i * 2 + 1)
+      val out = pose.transformPoint(local)
+      world[i * 3] = out[0]
+      world[i * 3 + 1] = out[1]
+      world[i * 3 + 2] = out[2]
+    }
+    return PlaneOutline(world, pose.translation, plane.type == Plane.Type.VERTICAL, plane.extentX * plane.extentZ)
+  }
+
+  private fun drawOutline(plane: Plane, outline: PlaneOutline, now: Long) {
+    val world = outline.world
+    val corners = world.size / 3
+    val centre = outline.centre
+
+    // Brighten briefly when the plane grows: the leading edge of mapping.
+    val area = outline.area
+    val previous = planeArea[plane] ?: 0f
+    if (area > previous * 1.05f) {
+      planeArea[plane] = area
+      planeGrewAt[plane] = now
+    }
+    val since = (now - (planeGrewAt[plane] ?: 0L)).toFloat()
+    val boost = if (reducedMotion) 1f else 1f + 1.2f * (1f - since / 800f).coerceIn(0f, 1f)
+
+    // Faces: a fan from the centre. Edges: the outline plus spokes, so the
+    // plane reads as a mesh.
+    val triangles = Gl.floats(corners * 9)
+    val lines = Gl.floats(corners * 12)
+    for (i in 0 until corners) {
+      val j = (i + 1) % corners
+      triangles.put(centre[0]).put(centre[1]).put(centre[2])
+      triangles.put(world[i * 3]).put(world[i * 3 + 1]).put(world[i * 3 + 2])
+      triangles.put(world[j * 3]).put(world[j * 3 + 1]).put(world[j * 3 + 2])
+      lines.put(world[i * 3]).put(world[i * 3 + 1]).put(world[i * 3 + 2])
+      lines.put(world[j * 3]).put(world[j * 3 + 1]).put(world[j * 3 + 2])
+      lines.put(centre[0]).put(centre[1]).put(centre[2])
+      lines.put(world[i * 3]).put(world[i * 3 + 1]).put(world[i * 3 + 2])
+    }
+    val vertical = outline.vertical
+    val fill = if (vertical) Palette.wallFill else Palette.floorFill
+    if (!lite) {
+      shapes.draw(viewProjection, triangles, corners * 3, GLES20.GL_TRIANGLES, fill, false)
+      shapes.draw(viewProjection, lines, corners * 4, GLES20.GL_LINES, scaled(Palette.glow, boost), true, lineWidth = 6f)
+    }
+    shapes.draw(viewProjection, lines, corners * 4, GLES20.GL_LINES, scaled(Palette.edge, boost), true, lineWidth = 2f)
   }
 
   private fun scaled(color: FloatArray, boost: Float) =
@@ -447,6 +491,13 @@ class SajaoArView(context: Context, appContext: AppContext) :
         "ambientIntensity" to pixelIntensity * 1000,
         "detector" to detector.isAvailable,
         "labels" to labels.size,
+        "frames" to pacer.frames,
+        "detectorRuns" to detectionsDone,
+        "detectorSkipped" to pacer.skippedBusy,
+        "detectorMs" to lastDetectionMs,
+        "detectionsFound" to detectionsFound,
+        "detectionsPlaced" to detectionsPlaced,
+        "detectorError" to (detector.loadError ?: ""),
       ),
     )
   }
@@ -462,20 +513,16 @@ class SajaoArView(context: Context, appContext: AppContext) :
       return
     }
     brightness = copy.meanBrightness()
-    detector.detect(copy) { found ->
-      // Back on the GL thread to hit-test against the latest frame.
-      surface.queueEvent { hitTestDetections(found) }
+    detector.detect(copy) { found, milliseconds ->
+      detectionsDone += 1
+      lastDetectionMs = milliseconds
+      pendingDetections.set(found)
     }
   }
 
-  private fun hitTestDetections(found: List<UprightDetection>) {
-    val session = session ?: return
+  /** Runs inside onDrawFrame with the frame it just drew. */
+  private fun hitTestDetections(frame: Frame, found: List<UprightDetection>) {
     if (!running) return
-    val frame = try {
-      session.update()
-    } catch (_: Throwable) {
-      return
-    }
     val payload = ArrayList<Map<String, Any>>(found.size)
     for (detection in found) {
       // Upright image point back to the sensor image (turned 90 degrees
@@ -491,7 +538,9 @@ class SajaoArView(context: Context, appContext: AppContext) :
       } catch (_: Throwable) {
         null
       }
+      detectionsFound += 1
       if (hit != null) {
+        detectionsPlaced += 1
         val t = hit.hitPose.translation
         entry["world"] = mapOf("x" to t[0].toDouble(), "y" to t[1].toDouble(), "z" to t[2].toDouble())
       }
@@ -524,3 +573,6 @@ class SajaoArView(context: Context, appContext: AppContext) :
     return chip
   }
 }
+
+/** A plane's polygon in world space as last tracked, with what drawing it needs. */
+class PlaneOutline(val world: FloatArray, val centre: FloatArray, val vertical: Boolean, val area: Float)

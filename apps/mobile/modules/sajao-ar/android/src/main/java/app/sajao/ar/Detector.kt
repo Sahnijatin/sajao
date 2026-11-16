@@ -96,6 +96,11 @@ class YuvCopy(
 class Detector(context: Context) {
   private val executor = Executors.newSingleThreadExecutor()
   private val busy = AtomicBoolean(false)
+
+  /** Why the detector could not load, for the debug overlay; null when it loaded. */
+  var loadError: String? = null
+    private set
+
   private val detector: ObjectDetector? = try {
     val bytes = context.assets.open(MODEL).use { it.readBytes() }
     val buffer = ByteBuffer.allocateDirect(bytes.size).order(ByteOrder.nativeOrder())
@@ -108,17 +113,20 @@ class Detector(context: Context) {
       .setScoreThreshold(0.4f)
       .build()
     ObjectDetector.createFromOptions(context, options)
-  } catch (_: Throwable) {
+  } catch (error: Throwable) {
+    loadError = "${error.javaClass.simpleName}: ${error.message ?: ""}".take(120)
     null
   }
 
   val isAvailable: Boolean get() = detector != null
   val isBusy: Boolean get() = busy.get()
 
-  fun detect(image: YuvCopy, done: (List<UprightDetection>) -> Unit) {
+  /** Calls `done` on the detector thread with what was found and how long it took. */
+  fun detect(image: YuvCopy, done: (List<UprightDetection>, Double) -> Unit) {
     val detector = detector ?: return
     if (!busy.compareAndSet(false, true)) return
     executor.execute {
+      val started = System.nanoTime()
       val found = mutableListOf<UprightDetection>()
       try {
         val bitmap = image.uprightBitmap(INPUT_WIDTH)
@@ -140,7 +148,7 @@ class Detector(context: Context) {
       } finally {
         busy.set(false)
       }
-      done(found)
+      done(found, (System.nanoTime() - started) / 1e6)
     }
   }
 
