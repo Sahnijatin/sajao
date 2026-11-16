@@ -7,14 +7,21 @@ import pytest
 from pydantic import HttpUrl, ValidationError
 
 from sajao_dataset.download import (
+    BudgetExceededError,
     Segment,
     check_clip,
     clip_relpath,
     download_all,
+    is_blocked,
+    looks_like_datacenter,
+    next_session,
     plan_head_segments,
     plan_screened_segments,
     read_ledger,
     redact,
+    run_with_byte_budget,
+    with_endpoint,
+    ytdlp_cli_args,
     ytdlp_options,
 )
 from sajao_dataset.manifest import SourceRecord
@@ -316,3 +323,63 @@ def test_plan_screened_segments_caps_seconds_per_video() -> None:
     ]
     plan = plan_screened_segments(segments, sources, limit_videos=1, max_s_per_video=120)
     assert [(s.start_s, s.end_s) for s in plan] == [(0, 50), (100, 150), (200, 220)]
+
+
+def test_next_session_moves_through_the_sticky_ports_and_wraps() -> None:
+    assert next_session(PROXY) == PROXY.replace(":10001", ":10002")
+    assert next_session("http://u:p@in.example.com:10009") == "http://u:p@in.example.com:10010"
+    assert next_session("http://u:p@in.example.com:10010") == "http://u:p@in.example.com:10001"
+    assert next_session("http://u:p@in.example.com:7000") == "http://u:p@in.example.com:10001"
+    with pytest.raises(ValueError):
+        next_session("http://u:p@in.example.com")
+
+
+def test_with_endpoint_keeps_the_credentials() -> None:
+    assert (
+        with_endpoint("http://u:p%40x@in.example.com:10004", "gate.example.com", 10001)
+        == "http://u:p%40x@gate.example.com:10001"
+    )
+
+
+def test_looks_like_datacenter_by_network_name() -> None:
+    assert looks_like_datacenter("AS15169 Google LLC")
+    assert looks_like_datacenter("AS16509 Amazon.com, Inc.")
+    assert looks_like_datacenter("AS24940 Hetzner Online GmbH")
+    assert not looks_like_datacenter("AS24560 Bharti Airtel Ltd., Telemedia Services")
+    assert not looks_like_datacenter("AS55836 Reliance Jio Infocomm Limited")
+    assert not looks_like_datacenter(None)
+
+
+def test_byte_budget_kills_a_runaway_download() -> None:
+    received = [0]
+
+    def used() -> int:
+        received[0] += 1_000_000  # 1 MB more every time it is checked
+        return received[0]
+
+    with pytest.raises(BudgetExceededError):
+        run_with_byte_budget(["sleep", "30"], budget_bytes=3_000_000, used_bytes=used, poll_s=0.01)
+
+
+def test_byte_budget_returns_exit_code_and_stderr() -> None:
+    code, err = run_with_byte_budget(
+        ["sh", "-c", "echo oops >&2; exit 3"], budget_bytes=10, used_bytes=lambda: 0
+    )
+    assert code == 3 and "oops" in err
+
+
+def test_ytdlp_cli_args_keep_the_proxy_out_of_the_command(tmp_path: Path) -> None:
+    args = ytdlp_cli_args(
+        seg(start=30, end=50), tmp_path / "x", max_height=720, ffmpeg_proxy="http://127.0.0.1:8899"
+    )
+    joined = " ".join(args)
+    assert "*30-50" in joined and "height<=720" in joined
+    assert "ffmpeg_i:-http_proxy http://127.0.0.1:8899" in args
+    assert "--proxy" not in args
+
+
+def test_is_blocked_spots_the_bot_check_and_rate_limits() -> None:
+    assert is_blocked("ERROR: [youtube] x: Sign in to confirm you're not a bot.")
+    assert is_blocked("HTTP Error 429: Too Many Requests")
+    assert is_blocked("Unable to connect to proxy: Tunnel connection failed: 502 Bad Gateway")
+    assert not is_blocked("ERROR: ffmpeg exited with code 187")

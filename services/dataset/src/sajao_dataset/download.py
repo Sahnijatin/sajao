@@ -13,9 +13,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import shutil
+import signal
 import subprocess
+import tempfile
 import time
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
@@ -66,6 +69,10 @@ class ClipRecord(BaseModel):
     max_height: int
     error: str | None
     at: datetime
+    exit_country: str | None = None
+    """Where the proxy left the internet for this clip, when a proxy was used."""
+    proxy_bytes: int | None = None
+    """Bytes the job received while fetching this clip, all through the proxy."""
 
 
 def plan_head_segments(
@@ -264,6 +271,148 @@ class Summary:
 _CREDENTIALS = re.compile(r"(://)[^/@\s:]+:[^/@\s]+@")
 
 
+_BLOCKED = (
+    "Sign in to confirm",
+    "HTTP Error 429",
+    "Too Many Requests",
+    "Unable to connect to proxy",
+    "Tunnel connection failed",
+)
+
+
+def is_blocked(message: str) -> bool:
+    """YouTube's bot check or rate limit, or a dead proxy session: the address is the
+    problem, not the video, so a new session can help."""
+    return any(marker in message for marker in _BLOCKED)
+
+
+def next_session(proxy: str, first_port: int = 10001, last_port: int = 10010) -> str:
+    """The same proxy on the next port, wrapping within the gateway's sticky ports.
+    Every port is its own sticky session, so this asks for a new address."""
+    from urllib.parse import urlsplit
+
+    parts = urlsplit(proxy)
+    if parts.port is None or parts.hostname is None:
+        raise ValueError("the proxy URL needs a host and a port")
+    port = parts.port + 1 if first_port <= parts.port < last_port else first_port
+    return with_endpoint(proxy, parts.hostname, port)
+
+
+def with_endpoint(proxy: str, host: str, port: int) -> str:
+    """The same credentials on another proxy host and port."""
+    from urllib.parse import urlsplit, urlunsplit
+
+    parts = urlsplit(proxy)
+    credentials = parts.netloc.rpartition("@")[0]
+    netloc = f"{credentials}@{host}:{port}" if credentials else f"{host}:{port}"
+    return urlunsplit(parts._replace(netloc=netloc))
+
+
+_DATACENTER_ORGS = (
+    "amazon",
+    "aws",
+    "google",
+    "microsoft",
+    "azure",
+    "digitalocean",
+    "ovh",
+    "hetzner",
+    "linode",
+    "akamai",
+    "vultr",
+    "choopa",
+    "oracle",
+    "alibaba",
+    "tencent",
+    "contabo",
+    "leaseweb",
+    "m247",
+    "datacamp",
+    "cloudflare",
+    "hosting",
+    "data center",
+    "datacenter",
+    "server",
+    "colo",
+)
+
+
+def looks_like_datacenter(org: str | None) -> bool:
+    """A cloud or hosting network by its registered name (ipinfo's `org`). YouTube
+    blocks these, so they are refused as proxy exits."""
+    name = (org or "").lower()
+    return any(word in name for word in _DATACENTER_ORGS)
+
+
+class BudgetExceededError(RuntimeError):
+    """A download was stopped because it received more bytes than it was allowed."""
+
+
+def run_with_byte_budget(
+    args: list[str],
+    *,
+    budget_bytes: int,
+    used_bytes: Callable[[], int],
+    env: dict[str, str] | None = None,
+    timeout_s: float = 900,
+    poll_s: float = 0.25,
+) -> tuple[int, str]:
+    """Run a command in its own process group and kill the whole group (yt-dlp and
+    the ffmpeg it starts) as soon as it has received more than `budget_bytes`.
+    Returns the exit code and the end of stderr."""
+    start = used_bytes()
+    with tempfile.TemporaryFile(mode="w+") as err:
+        process = subprocess.Popen(  # noqa: S603  fixed arguments, no shell
+            args, stdout=subprocess.DEVNULL, stderr=err, env=env, start_new_session=True
+        )
+        deadline = time.monotonic() + timeout_s
+        try:
+            while process.poll() is None:
+                if used_bytes() - start > budget_bytes:
+                    raise BudgetExceededError(
+                        f"stopped after {(used_bytes() - start) / 1e6:.1f} MB "
+                        f"(budget {budget_bytes / 1e6:.1f} MB)"
+                    )
+                if time.monotonic() > deadline:
+                    raise TimeoutError(f"no result after {timeout_s:.0f} s")
+                time.sleep(poll_s)
+        finally:
+            if process.poll() is None:
+                os.killpg(process.pid, signal.SIGKILL)
+                process.wait()
+        err.seek(0)
+        return process.returncode, err.read()[-2000:]
+
+
+def ytdlp_cli_args(
+    segment: Segment, tmp_stem: Path, *, max_height: int, ffmpeg_proxy: str | None
+) -> list[str]:
+    """The yt-dlp command for one range, video only. The proxy for yt-dlp itself
+    comes from the environment, so it never appears in the process list."""
+    h = max_height
+    args = [
+        "yt-dlp",
+        "-f",
+        f"bv*[height<={h}][ext=mp4]/bv*[height<={h}]/b[height<={h}]/bv*/b",
+        "--download-sections",
+        f"*{segment.start_s:g}-{segment.end_s:g}",
+        "--remux-video",
+        "mp4",
+        "-o",
+        f"{tmp_stem}.%(ext)s",
+        "--retries",
+        "5",
+        "--fragment-retries",
+        "5",
+        "--no-playlist",
+        "--no-progress",
+        "-q",
+    ]
+    if ffmpeg_proxy:
+        args += ["--downloader-args", f"ffmpeg_i:-http_proxy {ffmpeg_proxy}"]
+    return [*args, f"https://www.youtube.com/watch?v={segment.video_id}"]
+
+
 def redact(text: str, *secrets: str | None) -> str:
     """Remove proxy URLs and any `user:password@` from error text before it is stored."""
     for secret in secrets:
@@ -291,6 +440,7 @@ def download_all(
     used_bytes: Callable[[], int] | None = None,
     bytes_per_s: float = 0.0,
     secrets: tuple[str | None, ...] = (),
+    exit_country: Callable[[], str | None] | None = None,
     sleep: Callable[[float], None] = time.sleep,
     now: Callable[[], datetime] = lambda: datetime.now(UTC),
 ) -> Summary:
@@ -326,6 +476,7 @@ def download_all(
         target = clips_dir / relpath
         tmp_dir.mkdir(parents=True, exist_ok=True)
         tmp_stem = tmp_dir / relpath.replace("/", "_").removesuffix(".mp4")
+        before = used_bytes() if used_bytes else None
         try:
             produced = fetch(segment, tmp_stem)
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -341,6 +492,12 @@ def download_all(
         finally:
             for leftover in tmp_dir.glob(f"{tmp_stem.name}*"):
                 leftover.unlink(missing_ok=True)
+        record = record.model_copy(
+            update={
+                "exit_country": exit_country() if exit_country else None,
+                "proxy_bytes": used_bytes() - before if used_bytes and before is not None else None,
+            }
+        )
         with ledger_path.open("a", encoding="utf-8", newline="\n") as f:
             f.write(record.model_dump_json() + "\n")
     return summary

@@ -79,8 +79,9 @@ uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/dataset/cloud
 
 - **Room segments only**, from screening: Creative Commons videos first, then the priority category. Unavailable videos are skipped.
 - **720p, video only.**
-- **GB cap per run** (`--max-gb`). The job counts the bytes the container receives while downloading (all of it through the proxy) and starts no segment whose estimate (2.5 Mbps plus 20 percent) would pass the cap.
-- **Proxy.** The Modal secret `dataset-proxy` holds `YTDLP_PROXY_URL` (Decodo, India, sticky session). The URL is never printed or logged, and is redacted from error text before it reaches the ledger. The job checks the exit country first and downloads nothing unless it is India (`--require-country`). ffmpeg cannot open HTTPS through an authenticated proxy, so it goes through a local forwarder (pproxy) inside the container that holds the credentials.
+- **GB cap per run** (`--max-gb`), enforced during each download, not only between them. The job counts the bytes the container receives (all of it through the proxy), starts no segment whose estimate (2.5 Mbps plus 20 percent) would pass the cap, and kills a download (yt-dlp and its ffmpeg) once it receives more than 3 times its estimate, at least 4 MB, or would pass the cap.
+- **Sessions.** India sessions first (in.decodo.com, sticky ports 10001 to 10010). A dead session, bot check or rate limit moves to the next port, at most 3 times; if India keeps failing, the job falls back to the general endpoint on the same ports and accepts any country whose network does not look like a datacenter. Each clip records its exit country and proxy bytes. `--dry-run` only picks a session.
+- **Proxy.** The Modal secret `dataset-proxy` holds `YTDLP_PROXY_URL` (Decodo, India, sticky session). The URL is never printed or logged, and is redacted from error text before it reaches the ledger. ffmpeg cannot open HTTPS through an authenticated proxy, so it goes through a local forwarder (pproxy) inside the container that holds the credentials.
 - **Outputs** on the Modal volume `sajao-dataset`: `clips/`, `frames/`, `downloads.jsonl`, `frames.jsonl`, `frames_done.jsonl`. Reruns skip finished clips and frames. Each run's report is appended to `data/cloud_runs.jsonl` locally; log its proxy GB and spend in Notion Spends.
 
 ## 3. Download kept segments (home PC)
