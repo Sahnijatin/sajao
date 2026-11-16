@@ -50,10 +50,16 @@ SAM_LARGE = "facebook/sam2.1-hiera-large@665f8e2ad61cf5f53d65644ff27c8ee52512461
 SAM_BASE_PLUS = "facebook/sam2.1-hiera-base-plus@b7320756a13354e7530a63935656d35b2f91a290"
 
 GSPLAT = "gsplat@1.5.3"
+# Depth on phones without LiDAR (eval/twin-depth): MoGe-3 (MIT) first, DA3 Metric (Apache 2.0)
+# as the fallback. Code revisions are pinned in gpu/app.py.
+MOGE3 = "Ruicheng/moge-3-vitl@184008f877d7ad1ad4c2cd2182a9bd1f63d0e5be"
+DA3_METRIC = "depth-anything/DA3METRIC-LARGE@4010e39f3634a45bc60553321fb49fb760bd594e"
 
 # Time limits per call (a batch of up to 300 frames), from the spike's timings with headroom.
 DETECT_SECONDS = 300.0
 SEGMENT_SECONDS = 600.0
+# MoGe-3 took 79 s and DA3 8 s per 270-frame room on an L40S in the benchmark.
+DEPTH_SECONDS = 600.0
 # Splat training took 4.5 to 10 minutes per room in the spike; the function stops at an hour.
 SPLAT_SECONDS = 3600.0
 
@@ -88,6 +94,22 @@ def segment_chain(invoke: Invoke) -> list[GpuModelProvider]:
             SEGMENT_SECONDS,
             invoke,
             max_concurrency=MODEL_GPUS,
+        ),
+    ]
+
+
+def depth_chain(invoke: Invoke) -> list[GpuModelProvider]:
+    """Metric depth per keyframe from the image and its AR intrinsics.
+
+    MoGe-3 matched the non-commercial MapAnything checkpoint on object recall
+    and centre error; DA3 Metric is close behind and ten times faster.
+    """
+    return [
+        GpuModelProvider(
+            "moge-3", MOGE3, "L40S", DEPTH_SECONDS, invoke, max_concurrency=MODEL_GPUS
+        ),
+        GpuModelProvider(
+            "da3-metric", DA3_METRIC, "L40S", DEPTH_SECONDS, invoke, max_concurrency=MODEL_GPUS
         ),
     ]
 

@@ -84,6 +84,32 @@ def check_masks(payload: Mapping[str, Any]) -> Validator:
     return validate
 
 
+# Depth: most of each frame covered, and a median distance a room can have.
+MIN_DEPTH_COVERAGE = 0.5
+DEPTH_MEDIAN_RANGE_M = (0.3, 15.0)
+
+
+def check_depths(payload: Mapping[str, Any]) -> Validator:
+    asked: Sequence[Mapping[str, Any]] = payload["frames"]
+
+    def validate(result: ProviderResult) -> None:
+        low, high = DEPTH_MEDIAN_RANGE_M
+        for frame in _frames(result, asked):
+            _require(DIGEST.match(str(frame.get("depth"))) is not None, "depth is a blob digest")
+            coverage = frame.get("coverage")
+            _require(
+                _unit(coverage) and coverage >= MIN_DEPTH_COVERAGE,
+                f"depth covers at least {MIN_DEPTH_COVERAGE:.0%} of the frame",
+            )
+            median = frame.get("median_m")
+            _require(
+                isinstance(median, int | float) and math.isfinite(median) and low <= median <= high,
+                "median depth is plausible for a room",
+            )
+
+    return validate
+
+
 # The spike reached 25.7 to 26.0 dB on held-out views of phone captures with pose
 # refinement and 17 to 18 dB without it. Below this a splat is not shown to anyone.
 MIN_SPLAT_PSNR_DB = 20.0
