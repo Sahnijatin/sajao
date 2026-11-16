@@ -88,6 +88,7 @@
       "labels": "लेबल",
       "detectionsFound": "पहचान",
       "detectionsPlaced": "रखी गई पहचान",
+      "placedBy": "कैसे रखी गई",
       "detectorError": "डिटेक्टर त्रुटि",
       "labelsRejected": "अस्वीकृत लेबल",
       "arTurn": "AR घुमाव डिग्री/से",
@@ -105,7 +106,8 @@
     "hints": {
       "doorway": "पहले यह जगह पूरी करें, फिर अगली स्कैन करें",
       "stepBack": "पीछे हटें ताकि पूरा दिखे",
-      "walkAround": "{{object}} के चारों ओर घूमें"
+      "walkAround": "{{object}} के चारों ओर घूमें",
+      "coverMore": "Done तैयार है। बेहतर नतीजे के लिए थोड़ा और कवर करें"
     }
   },
   "space": {

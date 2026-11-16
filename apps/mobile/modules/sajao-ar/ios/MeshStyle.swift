@@ -53,13 +53,23 @@ enum MeshStyle {
     return material
   }
 
+  /// Grid lines on planes: clearly visible, so found walls and floor read at a glance.
+  static func gridMaterial() -> SCNMaterial {
+    let material = edgeMaterial()
+    material.diffuse.contents = cyan.withAlphaComponent(0.75)
+    material.emission.intensity = 1
+    return material
+  }
+
   /// Line geometry joining `points` by index pairs.
-  static func lineGeometry(_ points: [SCNVector3], indices: [UInt32]) -> SCNGeometry? {
+  static func lineGeometry(_ points: [SCNVector3], indices: [UInt32], material: SCNMaterial = linkMaterial())
+    -> SCNGeometry?
+  {
     guard !points.isEmpty, !indices.isEmpty else { return nil }
     let geometry = SCNGeometry(
       sources: [SCNGeometrySource(vertices: points)],
       elements: [SCNGeometryElement(indices: indices, primitiveType: .line)])
-    geometry.materials = [linkMaterial()]
+    geometry.materials = [material]
     return geometry
   }
 
@@ -68,7 +78,7 @@ enum MeshStyle {
     let outline = plane.geometry.boundaryVertices.map { SIMD2<Float>($0.x, $0.z) }
     let ends = SurfaceMesh.gridLines(outline)
     let points = ends.map { SCNVector3($0.x, 0, $0.y) }
-    return lineGeometry(points, indices: Array(0..<UInt32(points.count)))
+    return lineGeometry(points, indices: Array(0..<UInt32(points.count)), material: gridMaterial())
   }
 
   static func dotMaterial() -> SCNMaterial {
@@ -164,7 +174,8 @@ enum MeshStyle {
     fill.update(from: plane.geometry)
     lines.update(from: plane.geometry)
     let tint: UIColor = plane.alignment == .vertical ? cyan : UIColor(red: 0.30, green: 0.70, blue: 1.0, alpha: 1)
-    fill.materials = [fillMaterial(tint, alpha: lite ? 0.05 : 0.09)]
+    // A soft filled glow, clearly visible on white walls and tiled floors.
+    fill.materials = [fillMaterial(tint, alpha: lite ? 0.14 : 0.2)]
     let edge = edgeMaterial()
     edge.fillMode = .lines
     lines.materials = [edge]

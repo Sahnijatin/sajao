@@ -236,11 +236,15 @@ describe("scan session", () => {
     expect(canFinish(state)).toBe(false);
   });
 
-  it("gives nothing for a pan faster than 30 degrees a second, and asks to slow down", () => {
+  it("gives nothing for a pan faster than 45 degrees a second, and asks to slow down", () => {
     const t = timeline();
-    let state = run(INITIAL_SCAN, [t.motion()]);
+    // Already panning fast when filming starts.
+    let state = run(INITIAL_SCAN, [
+      t.motion({ yawRate: 60, rotationRate: 60 }),
+      t.motion({ yawRate: 60, rotationRate: 60 }),
+    ]);
     for (let step = 0; step < 40; step += 1) {
-      state = run(state, [t.motion({ yawRate: 50, rotationRate: 50 }), t.frame()]);
+      state = run(state, [t.motion({ yawRate: 60, rotationRate: 60 }), t.frame()]);
     }
     expect(mappedShare(state)).toBe(0);
     expect(shouldShowSlowDown(state)).toBe(true);
