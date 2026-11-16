@@ -6,8 +6,183 @@
     "profile": "Profile"
   },
   "home": {
-    "tagline": "Scan your room. See it redone. Buy what fits.",
-    "intro": "Share a few photos or a short video of a room and get three redesigns built from real products that fit."
+    "headline": "Any corner, redone.",
+    "intro": "Scan a whole room, a corner or a balcony. See three ways it could look, built from real products that fit.",
+    "start": "Start scanning",
+    "worksWith": "Works with whole rooms, corners and balconies"
+  },
+  "capture": {
+    "title": "Mapping your space",
+    "close": "Close",
+    "torch": "Torch",
+    "chips": {
+      "light": {
+        "good": "Light good",
+        "warn": "Too dark"
+      },
+      "motion": {
+        "good": "Steady",
+        "warn": "Moving fast"
+      },
+      "level": {
+        "good": "Level",
+        "warn": "Tilted"
+      },
+      "glare": {
+        "good": "No glare",
+        "warn": "Glare"
+      }
+    },
+    "guideTitle": "Cover what you want to change",
+    "guideBody": "A whole room, one corner or the balcony. Tap Done once it's all in.",
+    "usePhotos": "Use photos",
+    "done": "Done",
+    "pausedTitle": "Paused, nothing lost",
+    "fix": {
+      "light": {
+        "title": "A little more light",
+        "body": "Switch on a lamp or open the curtains, then move slowly. We keep everything mapped so far.",
+        "fixed": "I've turned it on"
+      },
+      "motion": {
+        "title": "A little slower",
+        "body": "Pan slowly and hold the phone steady. We keep everything mapped so far.",
+        "fixed": "I'll go slower"
+      },
+      "glare": {
+        "title": "Too much glare",
+        "body": "Point away from mirrors, windows and bare bulbs, or change your angle. We keep everything mapped so far.",
+        "fixed": "I've moved"
+      }
+    },
+    "scanAnyway": "Scan anyway",
+    "permissionTitle": "Sajao needs your camera",
+    "permissionBody": "The camera is used only to scan the space you want redone.",
+    "permissionAllow": "Allow camera",
+    "noCamera": "No camera was found on this phone. You can use photos instead."
+  },
+  "space": {
+    "found": "We found",
+    "change": "Change",
+    "dragHint": "Drag to adjust",
+    "types": {
+      "living_room": "A living room",
+      "bedroom": "A bedroom",
+      "balcony": "A balcony",
+      "other": "A space"
+    },
+    "typeNames": {
+      "living_room": "Living room",
+      "bedroom": "Bedroom",
+      "balcony": "Balcony",
+      "other": "Something else"
+    },
+    "partOf": "Part of {{space}}",
+    "changeTitle": "What is this space?",
+    "about": "About {{area}}",
+    "windows_one": "{{count}} window",
+    "windows_other": "{{count}} windows",
+    "doors_one": "{{count}} door",
+    "doors_other": "{{count}} doors",
+    "light": {
+      "morning": "morning light",
+      "midday": "midday light",
+      "evening": "evening light",
+      "soft": "soft light"
+    },
+    "estimated": "Estimated ±{{band}}",
+    "verified": "Verified",
+    "redoTitle": "What should we redo?",
+    "redoAll": "All of it",
+    "redoAllBody": "The whole space you scanned",
+    "redoPart": "Just a part",
+    "redoPartBody": "Draw around a corner or wall",
+    "itemsTitle": "Things already here",
+    "actions": {
+      "keep": "Keep",
+      "replace": "Replace",
+      "remove": "Remove"
+    },
+    "verify": "Verify",
+    "verifyTitle": "Add a tape value",
+    "verifyBody": "Measure one wall with a tape. It snaps in and re-fits the whole space.",
+    "wall": "Wall {{number}}",
+    "ceiling": "Ceiling height",
+    "valueLabel": "Length in metres",
+    "apply": "Snap it in",
+    "showIdeas": "Show me ideas"
+  },
+  "taste": {
+    "contextTitle": "A little about you",
+    "ageTitle": "Your age",
+    "ageBands": {
+      "18_24": "18 to 24",
+      "25_34": "25 to 34",
+      "35_44": "35 to 44",
+      "45_54": "45 to 54",
+      "55_plus": "55 or more"
+    },
+    "householdTitle": "Who lives here?",
+    "household": {
+      "alone": "Just me",
+      "couple": "A couple",
+      "family_with_kids": "Family with kids",
+      "parents": "Parents",
+      "pets": "Pets"
+    },
+    "tenureTitle": "Is the home yours?",
+    "tenure": {
+      "owned": "Owned",
+      "rented": "Rented"
+    },
+    "continue": "Continue",
+    "back": "Back",
+    "progress": "{{current}} of {{total}}",
+    "question": "Would you live here?",
+    "love": "Love it",
+    "no": "Not for me",
+    "unsure": "Not sure",
+    "soFar": "Your taste so far",
+    "styles": {
+      "modern_indian": "Modern Indian",
+      "warm_luxe": "Warm Luxe",
+      "japandi": "Japandi",
+      "warm_maximalist": "Warm Maximalist",
+      "eclectic_retro": "Eclectic Retro",
+      "minimal_wabi_sabi": "Minimal Wabi-sabi"
+    },
+    "traits": {
+      "warm_tones": "Warm tones",
+      "cool_tones": "Cool tones",
+      "natural_wood": "Natural wood",
+      "low_clutter": "Low clutter",
+      "layered": "Layered",
+      "bold_colour": "Bold colour",
+      "soft_neutrals": "Soft neutrals",
+      "brass": "Brass",
+      "pattern": "Pattern",
+      "handmade": "Handmade",
+      "vintage": "Vintage",
+      "plants": "Plants"
+    },
+    "budgetTitle": "What is your budget?",
+    "flexibility": {
+      "strict": "Keep to it",
+      "stretch_10": "Can stretch 10%"
+    },
+    "mustHavesTitle": "Anything you must have?",
+    "mustHaves": {
+      "sofa": "Sofa",
+      "bed": "Bed",
+      "rug": "Rug",
+      "lighting": "Lighting",
+      "storage": "Storage",
+      "desk": "Desk",
+      "plants": "Plants",
+      "art": "Art"
+    },
+    "vastu": "Consider Vastu",
+    "finish": "Done"
   },
   "rooms": {
     "title": "My rooms",
@@ -28,7 +203,9 @@
     "unitsCm": "Centimetres",
     "unitsFtIn": "Feet and inches",
     "unitsExample": "A 3.4 m wall shows as {{length}}",
-    "gallery": "Component gallery"
+    "gallery": "Component gallery",
+    "spacePreview": "Space Profile preview",
+    "tastePreview": "Taste preview"
   },
   "languages": {
     "en": "English",
@@ -37,5 +214,14 @@
   "length": {
     "cm": "{{value}} cm",
     "ftIn": "{{feet}} ft {{inches}} in"
+  },
+  "area": {
+    "m2": "{{value}} m²",
+    "sqft": "{{value}} sq ft"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "body": "Sajao hit a problem and could not show this screen. Nothing you saved is lost.",
+    "retry": "Try again"
   }
 }

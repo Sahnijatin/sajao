@@ -1,0 +1,13 @@
+{
+  "scene": "frl_apartment_0",
+  "train_views": 140,
+  "test_views": 20,
+  "init_points": 267077,
+  "gaussians": 1213361,
+  "steps": 15000,
+  "train_seconds": 271.2,
+  "scene_scale": 1.2394084930419922,
+  "psnr": 30.93922128677368,
+  "ssim": 0.9785285592079163,
+  "views": 20
+}

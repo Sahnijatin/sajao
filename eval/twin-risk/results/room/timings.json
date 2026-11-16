@@ -1,0 +1,32 @@
+{
+  "prep": {
+    "seconds": 318.85,
+    "gpu": "cpu",
+    "device": "cpu"
+  },
+  "splat_train": {
+    "seconds": 413.98,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "segment_gdino": {
+    "seconds": 71.37,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "segment_yoloe": {
+    "seconds": 30.66,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "split_and_fill": {
+    "seconds": 329.19,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "phone_export": {
+    "seconds": 6.64,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  }
+}

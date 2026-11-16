@@ -13,6 +13,7 @@ members = [
     "sajao-api",
     "sajao-gateway",
     "sajao-schemas",
+    "sajao-twin-risk-spike",
     "sajao-workers",
 ]
 
@@ -1370,6 +1371,11 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [{ name = "pydantic", specifier = ">=2.12" }]
+
+[[package]]
+name = "sajao-twin-risk-spike"
+version = "0.0.0"
+source = { editable = "services/spikes/twin-risk" }
 
 [[package]]
 name = "sajao-workers"

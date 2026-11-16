@@ -19,7 +19,11 @@ AI decides taste and appearance; geometry and code decide fit. Every model outpu
 | Floor plan reading, design chat | Vision and language models | Provider terms | Next |
 | Taste ranker, compatibility model | Small models trained by us | Ours | Later |
 
-Every license is recorded before a model enters the pipeline. Prompts and model versions are pinned in the repo.
+Every model and dataset is listed in the third-party register (`docs/24-third-party-register.md`); the legal team reviews it separately. Prompts and model versions are pinned in the repo.
+
+## Space Twin risk spike
+
+The twin risk spike (`services/spikes/twin-risk/`, report in `eval/twin-risk/`) compares candidates on public datasets and picks on quality, speed and cost. Every model, library and dataset it uses is listed in the third-party register.
 
 ## Render bake-off
 

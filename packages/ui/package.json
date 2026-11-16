@@ -7,7 +7,8 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./gallery": "./src/gallery/GalleryScreen.tsx"
+    "./gallery": "./src/gallery/GalleryScreen.tsx",
+    "./effects": "./src/effects/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -15,6 +16,7 @@
   },
   "devDependencies": {
     "@expo/ui": "~58.0.28",
+    "@shopify/react-native-skia": "2.14.0",
     "@testing-library/react-native": "^14.1.0",
     "@types/jest": "30.0.0",
     "@types/react": "~19.3.0",
@@ -32,6 +34,7 @@
   },
   "peerDependencies": {
     "@expo/ui": "*",
+    "@shopify/react-native-skia": "*",
     "expo-blur": "*",
     "expo-device": "*",
     "expo-haptics": "*",
