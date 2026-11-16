@@ -15,6 +15,8 @@ import type { GuardrailId, GuardrailStatus } from "@/capture/guardrails";
 import { toScreen } from "@/capture/mesh-tracker";
 import { MiniMap } from "@/capture/mini-map";
 import { imuReading } from "@/capture/package/imu";
+import type { LocalCapture } from "@/capture/package/native-capture";
+import type { CaptureDeviceInfo } from "@/capture/package/upload-capture";
 import { useCaptureRecorder } from "@/capture/package/use-capture-recorder";
 import type { RawMotion } from "@/capture/pose";
 import { ProgressRing } from "@/capture/progress-ring";
@@ -27,6 +29,8 @@ export interface CaptureScreenProps {
   onClose: () => void;
   onDone: () => void;
   onUsePhotos: () => void;
+  /** The finished scan, ready to upload; called before onDone. */
+  onCaptured?: (capture: LocalCapture, device: CaptureDeviceInfo) => void;
 }
 
 const CHIPS: readonly GuardrailId[] = ["light", "motion", "level"];
@@ -106,7 +110,7 @@ function RoundButton({
  * been mapped, guardrail chips, and a soft pause with a fix when a
  * guardrail fails. There is no room-type picker.
  */
-export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenProps) {
+export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: CaptureScreenProps) {
   // A scan is hands-on but touch-free: without this the screen dims and locks mid-scan.
   useKeepAwake(SCAN_KEEP_AWAKE_TAG);
   const { t } = useTranslation();
@@ -154,9 +158,16 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
   const [finishing, setFinishing] = useState(false);
   const finishScan = useCallback(async () => {
     setFinishing(true);
-    if (arMode) await capture.finish();
+    if (arMode) {
+      const local = await capture.finish();
+      onCaptured?.(local, {
+        platform: capabilities.platform === "ios" ? "ios" : "android",
+        tier: tier === "low" ? "low" : "standard",
+        has_ar: true,
+      });
+    }
     onDone();
-  }, [arMode, capture, onDone]);
+  }, [arMode, capabilities.platform, capture, onCaptured, onDone, tier]);
   const labelProps = useMemo(
     () =>
       shownLabels(labels).map((label) => ({
