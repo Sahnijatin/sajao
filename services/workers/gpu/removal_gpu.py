@@ -104,8 +104,47 @@ def _psnr(a: np.ndarray, b: np.ndarray) -> float:
     return 99.0 if mse == 0 else 10 * np.log10(255.0**2 / mse)
 
 
+def _quaternion(r: np.ndarray) -> np.ndarray:
+    """(w, x, y, z) of a rotation matrix, gsplat's order."""
+    w = np.sqrt(max(0.0, 1.0 + r[0, 0] + r[1, 1] + r[2, 2])) / 2
+    x = np.copysign(np.sqrt(max(0.0, 1.0 + r[0, 0] - r[1, 1] - r[2, 2])) / 2, r[2, 1] - r[1, 2])
+    y = np.copysign(np.sqrt(max(0.0, 1.0 - r[0, 0] + r[1, 1] - r[2, 2])) / 2, r[0, 2] - r[2, 0])
+    z = np.copysign(np.sqrt(max(0.0, 1.0 - r[0, 0] - r[1, 1] + r[2, 2])) / 2, r[1, 0] - r[0, 1])
+    return np.array([w, x, y, z])
+
+
+def _append_moved(edited, original, piece, matrix: np.ndarray):
+    """`edited` plus the `piece` of `original`, moved by the rigid 4x4 `matrix`."""
+    import torch
+
+    rotation = torch.tensor(matrix[:3, :3], dtype=torch.float32, device="cuda")
+    shift = torch.tensor(matrix[:3, 3], dtype=torch.float32, device="cuda")
+    q = torch.tensor(_quaternion(matrix[:3, :3]), dtype=torch.float32, device="cuda")
+    moved = {k: v.detach()[piece].clone() for k, v in original.items()}
+    moved["means"] = moved["means"] @ rotation.T + shift
+    a = torch.nn.functional.normalize(moved["quats"], dim=-1)
+    w1, x1, y1, z1 = q
+    w2, x2, y2, z2 = a.unbind(-1)
+    moved["quats"] = torch.stack(
+        [
+            w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
+            w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
+            w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2,
+            w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2,
+        ],
+        dim=-1,
+    )
+    return torch.nn.ParameterDict(
+        {k: torch.nn.Parameter(torch.cat([edited[k].detach(), moved[k]], dim=0)) for k in edited}
+    )
+
+
 def remove(payload: dict, store, lama_sha256: str, steps: int = 5000) -> dict:
-    """Take the objects in `payload["remove"]` (1-based labels) out of the splat."""
+    """Take the objects in `payload["remove"]` (1-based labels) out of the splat.
+
+    `payload["moves"]` maps some of them to a rigid 4x4 transform in the splat's world:
+    after the room behind them is filled, their own Gaussians are put back there.
+    """
     import cv2
     import torch
 
@@ -128,11 +167,16 @@ def remove(payload: dict, store, lama_sha256: str, steps: int = 5000) -> dict:
     means = params["means"].detach().cpu().numpy()
     opacity = torch.sigmoid(params["opacities"]).detach().cpu().numpy()
     gone = np.zeros(len(means), bool)
+    parts: dict[int, np.ndarray] = {}
     for index in payload["remove"]:
         if not 1 <= index <= len(objects):
             raise InputError(f"no object {index}")
         box = box_of(objects[index - 1])
-        gone |= removal_set(means, opacity, labels, index, box, c2w[:, :3, 3].mean(0))
+        parts[index] = removal_set(means, opacity, labels, index, box, c2w[:, :3, 3].mean(0))
+        gone |= parts[index]
+    moves = {int(k): np.asarray(v, dtype=np.float64) for k, v in payload.get("moves", {}).items()}
+    if not set(moves) <= set(parts):
+        raise InputError("a moved object must also be taken out")
 
     rgbs = [_decode_rgb(store.read_blob(f["image"])) for f in frames]
     h, w = rgbs[0].shape[:2]
@@ -185,6 +229,14 @@ def remove(payload: dict, store, lama_sha256: str, steps: int = 5000) -> dict:
         img = (rc[0].clamp(0, 1).cpu().numpy() * 255).astype(np.uint8)
         agree.append(_psnr(img[holes[j]], imgs[j].cpu().numpy()[holes[j]]))
 
+    # Moved objects: their own Gaussians, put back rigidly where the user moved them.
+    # Higher-order colour (view-dependent shine) is not rotated with them.
+    moved = 0
+    for index, matrix in moves.items():
+        piece = torch.from_numpy(parts[index]).cuda()
+        edited = _append_moved(edited, params, piece, matrix)
+        moved += int(parts[index].sum())
+
     preview = None
     if payload.get("preview"):
         # Before and after, side by side, where the hole is largest: for people to judge.
@@ -205,6 +257,7 @@ def remove(payload: dict, store, lama_sha256: str, steps: int = 5000) -> dict:
         "splat": store.put_blob(ply.read_bytes()),
         "gaussians": gaussians,
         "gaussians_removed": int(gone.sum()),
+        "gaussians_moved": moved,
         "frames_inpainted": len(inpaint_at),
         "frames_dropped": len(drop),
         "fill_agreement_psnr": round(float(np.mean(agree)), 2) if agree else 0.0,
