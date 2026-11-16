@@ -23,6 +23,10 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   let onArPose = EventDispatcher()
   let onArDetections = EventDispatcher()
   let onArSurfaces = EventDispatcher()
+  let onArKeyframe = EventDispatcher()
+  /// Records the capture package's native files while a capture id is set.
+  private var recorder: CaptureRecorder?
+  private var captureId = ""
 
   var lite = false
   var reducedMotion = false
@@ -110,6 +114,35 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
 
   // MARK: - Props
 
+  /// Start recording a capture package into its own folder; an empty id records nothing.
+  func setCaptureId(_ id: String) {
+    guard id != captureId else { return }
+    captureId = id
+    recorder = id.isEmpty
+      ? nil
+      : CaptureRecorder(dir: CaptureRecorder.folder(id)) { [weak self] payload in self?.onArKeyframe(payload) }
+  }
+
+  /// Delete keyframe candidates the app's recorder dropped.
+  func discardKeyframes(_ uris: [String]) {
+    recorder?.discard(uris)
+  }
+
+  /// End the capture: planes and the LiDAR mesh from the session, depth for
+  /// the chosen keyframes; resolves with the files' uris.
+  func finishCapture(_ chosen: [String], completion: @escaping ([String: Any?]) -> Void) {
+    guard let recorder else {
+      completion(["planes": nil, "sceneMesh": nil, "depth": nil])
+      return
+    }
+    let anchors = sceneView.session.currentFrame?.anchors ?? []
+    recorder.finish(
+      planes: anchors.compactMap { $0 as? ARPlaneAnchor },
+      meshes: anchors.compactMap { $0 as? ARMeshAnchor },
+      chosen: chosen,
+      completion: completion)
+  }
+
   func setActive(_ active: Bool) {
     wantsActive = active
     if active && window != nil {
@@ -153,6 +186,10 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
     config.isLightEstimationEnabled = true
     if lidar {
       config.sceneReconstruction = .meshWithClassification
+    }
+    // LiDAR depth per frame, saved with each keyframe for the twin.
+    if ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth) {
+      config.frameSemantics.insert(.sceneDepth)
     }
     // Resuming keeps what was mapped; only the first start resets.
     let options: ARSession.RunOptions = hasRunOnce ? [] : [.resetTracking, .removeExistingAnchors]
@@ -213,7 +250,12 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
     }
     if now - lastSurfacesAt > 0.25, case .normal = frame.camera.trackingState {
       lastSurfacesAt = now
-      sendSurfaces(frame)
+      let sharpness = Self.sharpness(frame.capturedImage) ?? 0
+      sendSurfaces(frame, sharpness: sharpness)
+      if let recorder {
+        let (yaw, pitch) = Self.yawPitch(frame.camera.transform)
+        recorder.offer(frame, sharpness: sharpness, yaw: yaw, pitch: pitch)
+      }
     }
     if !lidar && now - lastPointsAt > 0.2 {
       lastPointsAt = now
@@ -235,15 +277,21 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
     }
   }
 
-  private func sendPose(_ frame: ARFrame) {
-    let t = frame.camera.transform
+  /// Where the camera points: yaw and pitch in degrees, gravity aligned.
+  static func yawPitch(_ t: simd_float4x4) -> (Double, Double) {
     // The camera looks down its -Z axis. Gravity aligned: +Y is up.
     let forward = SIMD3<Float>(-t.columns.2.x, -t.columns.2.y, -t.columns.2.z)
     let yaw = atan2(-forward.x, -forward.z) * 180 / .pi
     let pitch = asin(max(-1, min(1, forward.y))) * 180 / .pi
+    return (Double(yaw), Double(pitch))
+  }
+
+  private func sendPose(_ frame: ARFrame) {
+    let t = frame.camera.transform
+    let (yaw, pitch) = Self.yawPitch(t)
     onArPose([
-      "yaw": Double(yaw),
-      "pitch": Double(pitch),
+      "yaw": yaw,
+      "pitch": pitch,
       "x": Double(t.columns.3.x),
       "y": Double(t.columns.3.y),
       "z": Double(t.columns.3.z),
@@ -467,7 +515,7 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   /// A 4 by 3 grid of rays from the camera into the planes found so far,
   /// with the frame's sharpness. JavaScript decides whether the sample
   /// counts (slow turn, sharp frame). Same as Android.
-  private func sendSurfaces(_ frame: ARFrame) {
+  private func sendSurfaces(_ frame: ARFrame, sharpness: Double) {
     let camera = CaptureCamera(frame.camera)
     var hits: [[String: Any]] = []
     for point in Self.surfaceGrid {
@@ -489,7 +537,7 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
         "x": Double(c.x), "y": Double(c.y), "z": Double(c.z),
       ])
     }
-    var payload: [String: Any] = ["sharpness": Self.sharpness(frame.capturedImage) ?? 0, "hits": hits]
+    var payload: [String: Any] = ["sharpness": sharpness, "hits": hits]
     if let floorY { payload["floorY"] = Double(floorY) }
     onArSurfaces(payload)
   }

@@ -23,7 +23,21 @@ public final class SajaoArModule: Module {
     }
 
     View(SajaoArView.self) {
-      Events("onArStatus", "onArPose", "onArDetections", "onArSurfaces")
+      Events("onArStatus", "onArPose", "onArDetections", "onArSurfaces", "onArKeyframe")
+
+      Prop("captureId") { (view: SajaoArView, value: String) in
+        view.setCaptureId(value)
+      }
+
+      AsyncFunction("discardKeyframes") { (view: SajaoArView, uris: [String]) in
+        view.discardKeyframes(uris)
+      }
+
+      AsyncFunction("finishCapture") { (view: SajaoArView, chosen: [String], promise: Promise) in
+        view.finishCapture(chosen) { result in
+          promise.resolve(result.mapValues { $0 ?? NSNull() })
+        }
+      }.runOnQueue(.main)
 
       Prop("active") { (view: SajaoArView, value: Bool) in
         view.setActive(value)

@@ -14,6 +14,7 @@ import { DebugOverlay } from "@/capture/debug-overlay";
 import type { GuardrailId, GuardrailStatus } from "@/capture/guardrails";
 import { toScreen } from "@/capture/mesh-tracker";
 import { MiniMap } from "@/capture/mini-map";
+import { useCaptureRecorder } from "@/capture/package/use-capture-recorder";
 import { ScanHint } from "@/capture/scan-hint";
 import { ScanCamera } from "@/capture/scan-camera";
 import { canFinish, mappedShare, shouldShowSlowDown } from "@/capture/scan-session";
@@ -131,6 +132,18 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
   const ArView = useMemo(() => getArView(), []);
   const [arFailed, setArFailed] = useState(false);
   const arMode = capabilities.arSupported && ArView !== null && !arFailed;
+  // The capture package: keyframes with poses, depth, planes, detections, sensor log.
+  const capture = useCaptureRecorder({
+    tracking: capabilities.platform === "ios" ? "arkit" : "arcore",
+    lidar: capabilities.lidar,
+    depth: false,
+  });
+  const [finishing, setFinishing] = useState(false);
+  const finishScan = useCallback(async () => {
+    setFinishing(true);
+    if (arMode) await capture.finish();
+    onDone();
+  }, [arMode, capture, onDone]);
   const labelProps = useMemo(
     () =>
       shownLabels(labels).map((label) => ({
@@ -195,6 +208,9 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
       {/* The camera keeps running while paused, so the scan can see the fix and resume. */}
       {arMode && ArView ? (
         <ArView
+          ref={capture.viewRef}
+          captureId={capture.captureId}
+          onArKeyframe={({ nativeEvent }) => capture.onKeyframe(nativeEvent)}
           style={StyleSheet.absoluteFill}
           active
           torch={torch}
@@ -206,7 +222,18 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
             if ("error" in nativeEvent) setArFailed(true);
             else onArStatus(nativeEvent);
           }}
-          onArPose={({ nativeEvent }) => onArPose(nativeEvent)}
+          onArPose={({ nativeEvent }) => {
+            onArPose(nativeEvent);
+            capture.onSensor({
+              source: "ar_pose",
+              x: nativeEvent.x,
+              y: nativeEvent.y,
+              z: nativeEvent.z,
+              yaw: nativeEvent.yaw,
+              pitch: nativeEvent.pitch,
+              tracking: nativeEvent.tracking,
+            });
+          }}
           onArSurfaces={({ nativeEvent }) =>
             onArSurfaces({
               sharpness: nativeEvent.sharpness,
@@ -214,9 +241,18 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
               floorY: nativeEvent.floorY ?? null,
             })
           }
-          onArDetections={({ nativeEvent }) =>
+          onArDetections={({ nativeEvent }) => {
+            const detections = nativeEvent.detections ?? [];
+            // Every detection goes into the package; the server decides what it means.
+            capture.onDetections(
+              detections.map((detection) => ({
+                detectorClass: detection.detectorClass,
+                score: detection.score,
+                world: detection.world ?? null,
+              })),
+            );
             onArDetections(
-              (nativeEvent.detections ?? []).map((detection) => ({
+              detections.map((detection) => ({
                 detectorClass: detection.detectorClass,
                 score: detection.score,
                 world: detection.world ?? null,
@@ -225,8 +261,8 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
                 range: detection.range ?? null,
                 box: detection.box ?? null,
               })),
-            )
-          }
+            );
+          }}
         />
       ) : (
         <>
@@ -373,9 +409,9 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
               <Button
                 label={t("capture.done")}
                 style={{ flex: 1 }}
-                disabled={!canFinish(state)}
+                disabled={!canFinish(state) || finishing}
                 haptic="roomVerified"
-                onPress={onDone}
+                onPress={() => void finishScan()}
               />
             </View>
           </>

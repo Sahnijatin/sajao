@@ -12,6 +12,19 @@ You scan whatever you want redone: a whole room, a corner, a balcony or any area
 
 Works on any Android or iPhone. Translucent glass guides over the camera (level line, "step back", "include a corner", "turn on lights"), a coverage ring, and sharpness and blur checks running on the device without AI. Gallery upload is allowed. ARKit or ARCore poses are attached when the phone has them, but never required. Compass headings are averaged during capture for Vastu. Uploads are compressed on the phone and resumable in the background.
 
+## Capture package
+
+An AR scan records one package for the twin (schema: `Capture.package`). The phone captures; the server understands.
+
+- **Keyframes.** Up to 120 full-resolution JPEGs, the sharpest per direction (30 degree yaw sectors, three pitch bands). The native view saves a candidate only when it is clearly sharper than the best for its direction; the app's recorder decides which are kept and the rest are deleted at once. Images are stored in sensor orientation.
+- **Pose and intrinsics per keyframe.** ARKit or ARCore camera pose in the AR world frame (metres, gravity aligned, y up): position and a unit quaternion (x, y, z, w), with the camera's +X right, +Y up and -Z forward relative to the stored image. Intrinsics (fx, fy, cx, cy) are in the stored image's pixels.
+- **Depth** where the phone has it (LiDAR scene depth; the ARCore depth API): one file, format SJDEPTH1, little endian: magic `SJDEPTH1`, `uint32` count, then per keyframe `uint16` id length, the keyframe id (`k1`, `k2`, ...), `uint32` width, `uint32` height, `uint16` millimetres per pixel (0 means no reading), `uint8` confidence per pixel (0 to 255). Each depth image is aligned to its keyframe; scale the keyframe's intrinsics by the width ratio. Reader: `sajao_workers.capture_depth`.
+- **Planes** as JSON (`sajao-planes-1`): type, ARKit class where available, a column-major 4 by 4 transform, extent and the polygon in the plane's x and z.
+- **LiDAR scene mesh** as binary PLY in the AR world frame with ARKit's surface class per face.
+- **Live detections** with world points, and a **sensor log** of AR poses (JSON lines, at most five a second).
+
+The package works without AR (keyframes and video, no poses). Depth, planes and mesh are measurements from the phone's sensors; nothing in the package is set by a generative model, and tape still decides fit. Keyframes follow the same upload safety path as photos.
+
 ## Server pipeline
 
 1. **Frame selection.** Best 8 to 20 frames by sharpness and coverage.
