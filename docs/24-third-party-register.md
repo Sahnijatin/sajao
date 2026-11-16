@@ -87,6 +87,7 @@ Every model, library and dataset used to build, train or evaluate Sajao is liste
 | Ultralytics CLIP | Library | Text tokenizer for YOLOE class prompts | https://github.com/ultralytics/CLIP | AGPL-3.0 | No | SJ-116 twin risk spike |
 | MobileCLIP2 text encoder (Apple) | Model | Text embeddings for YOLOE class prompts (downloaded by Ultralytics) | https://huggingface.co/apple/MobileCLIP2-B | Apple ML Research Model Terms of Use (apple-amlr); code MIT | No | SJ-116 twin risk spike |
 | SAM 2.1 Hiera Large (Meta) | Model | Object masks from detector boxes | https://huggingface.co/facebook/sam2.1-hiera-large | Apache 2.0 | No | SJ-116 twin risk spike |
+| SAM 2.1 Hiera Base Plus (Meta), revision b7320756 | Model | Fallback object masks from detector boxes in the twin worker | https://huggingface.co/facebook/sam2.1-hiera-base-plus | Apache 2.0 | No | Twin worker v1 |
 | MapAnything (Meta), code at commit 3d10cf7a | Library | Metric multi-view geometry | https://github.com/facebookresearch/map-anything | Apache 2.0 | No | SJ-116 twin risk spike |
 | MapAnything checkpoint `facebook/map-anything` | Model | Metric depth without LiDAR from images, intrinsics and AR poses | https://huggingface.co/facebook/map-anything | CC BY-NC 4.0 (an Apache 2.0 checkpoint, `facebook/map-anything-apache`, also exists) | No | SJ-116 twin risk spike |
 | LaMa big-lama | Model | AI inpainting of plane textures and of frames | https://github.com/advimman/lama | Apache 2.0 | No | SJ-116 twin risk spike |
