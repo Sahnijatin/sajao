@@ -270,3 +270,20 @@ def test_boxes_seen_far_less_than_the_best_of_their_label_are_dropped() -> None:
 
     assert sorted(o["frames"] for o in kept) == [12, 20]
     assert stats == {"merged": 0, "capped": 1}
+
+
+def test_a_merged_group_takes_the_name_most_of_its_views_gave() -> None:
+    from sajao_workers.twin.inventory import dedupe
+
+    items = merge_inventories({"m": [item("sofa", "furniture"), item("armchair", "furniture", 2)]})
+    objects = [
+        obj("sofa", 0.0, frames=20),  # the sofa
+        obj("armchair", 0.0, frames=8),  # the best armchair, on the sofa: kept as listed
+        obj("sofa", 3.0, frames=9),  # an armchair the detector also called a sofa
+        obj("armchair", 3.02, frames=7),
+        obj("armchair", 3.04, frames=6),
+    ]
+
+    kept, _ = dedupe(objects, items)
+
+    assert sorted(o["category"] for o in kept) == ["armchair", "armchair", "sofa"]

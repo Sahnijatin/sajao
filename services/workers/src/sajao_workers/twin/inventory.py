@@ -289,7 +289,7 @@ def dedupe(
     """
     from sajao_workers.twin.geometry import box_overlap
 
-    ranked = sorted(objects, key=_support, reverse=True)
+    ranked: list[dict[str, Any]] = [dict(o) for o in sorted(objects, key=_support, reverse=True)]
     boxes = [_upright(o) for o in ranked]
     kept: list[int] = []
     merged = 0
@@ -308,11 +308,21 @@ def dedupe(
     for i, o in enumerate(ranked):
         first.setdefault(o["category"], i)
     protected = set(first.values())
+    votes: dict[int, dict[str, float]] = {}
     for i in range(len(boxes)):
-        if i not in protected and any(same_thing(i, k) for k in kept):
+        into = None if i in protected else next((k for k in kept if same_thing(i, k)), None)
+        if into is not None:
             merged += 1
+            tally = votes.setdefault(into, {ranked[into]["category"]: _support(ranked[into])})
+            name = ranked[i]["category"]
+            tally[name] = tally.get(name, 0.0) + _support(ranked[i])
             continue
         kept.append(i)
+    # A merged group takes the name most of its views gave; protected boxes keep theirs.
+    for k, tally in votes.items():
+        name = max(tally, key=lambda n: tally[n])
+        if k not in protected and name != ranked[k]["category"]:
+            ranked[k]["category"], ranked[k]["label"] = name, name.capitalize()
     big = 10**9
     limit = {str(i["name"]): int(i["count"]) + (big if slack is None else slack) for i in items}
     best: dict[str, float] = {}
