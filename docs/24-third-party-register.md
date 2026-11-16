@@ -90,6 +90,12 @@ Every model, library and dataset used to build, train or evaluate Sajao is liste
 | SAM 2.1 Hiera Base Plus (Meta), revision b7320756 | Model | Fallback object masks from detector boxes in the twin worker | https://huggingface.co/facebook/sam2.1-hiera-base-plus | Apache 2.0 | No | Twin worker v1 |
 | MapAnything (Meta), code at commit 3d10cf7a | Library | Metric multi-view geometry | https://github.com/facebookresearch/map-anything | Apache 2.0 | No | SJ-116 twin risk spike |
 | MapAnything checkpoint `facebook/map-anything` | Model | Metric depth without LiDAR from images, intrinsics and AR poses | https://huggingface.co/facebook/map-anything | CC BY-NC 4.0 (an Apache 2.0 checkpoint, `facebook/map-anything-apache`, also exists) | No | SJ-116 twin risk spike |
+| MapAnything checkpoint `facebook/map-anything-apache`, revision 00f9c245 | Model | No-LiDAR depth benchmark (not chosen) | https://huggingface.co/facebook/map-anything-apache | Apache 2.0 | No | Twin no-LiDAR depth benchmark |
+| Depth Anything 3 Metric Large `depth-anything/DA3METRIC-LARGE`, revision 4010e39f | Model | Metric depth from one image; fallback for phones without LiDAR | https://huggingface.co/depth-anything/DA3METRIC-LARGE | Apache 2.0 | No | Twin no-LiDAR depth benchmark |
+| Depth Anything 3 code (ByteDance Seed), commit 3d835ec1 | Library | Runs Depth Anything 3 | https://github.com/ByteDance-Seed/Depth-Anything-3 | Apache 2.0 | No | Twin no-LiDAR depth benchmark |
+| addict 2.4.0 | Library | Imported by the Depth Anything 3 code | https://github.com/mewwts/addict | MIT | No | Twin no-LiDAR depth benchmark |
+| MoGe-3 ViT-L `Ruicheng/moge-3-vitl`, revision 184008f8 | Model | Metric depth from one image; primary for phones without LiDAR | https://huggingface.co/Ruicheng/moge-3-vitl | MIT | No | Twin no-LiDAR depth benchmark |
+| MoGe code (Microsoft), commit 74fbce05, with FlexGEMM | Library | Runs MoGe-3 | https://github.com/microsoft/MoGe | MIT (DINOv2 parts Apache 2.0); FlexGEMM MIT | No | Twin no-LiDAR depth benchmark |
 | LaMa big-lama | Model | AI inpainting of plane textures and of frames | https://github.com/advimman/lama | Apache 2.0 | No | SJ-116 twin risk spike |
 | simple-lama-inpainting v0.1.0 TorchScript export | Model file | Packaged big-lama weights loaded by the spike | https://github.com/enesmsahin/simple-lama-inpainting | Apache 2.0 | No | SJ-116 twin risk spike |
 | Transformers 4.57.1 (Hugging Face) | Library | Loading Grounding DINO and SAM 2.1 | https://github.com/huggingface/transformers | Apache 2.0 | No | SJ-116 twin risk spike |

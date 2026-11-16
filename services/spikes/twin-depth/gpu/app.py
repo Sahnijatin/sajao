@@ -115,6 +115,7 @@ da3_image = (
     .pip_install(
         f"depth-anything-3 @ git+https://github.com/ByteDance-Seed/Depth-Anything-3@{DA3_REF}"
     )
+    .pip_install("addict==2.4.0")  # imported by DA3 but not declared
     .env({"HF_HOME": "/vol/hf", "PYTHONUNBUFFERED": "1"})
 )
 moge_image = (
@@ -187,13 +188,15 @@ def main(stage: str = "all", rooms: str = "") -> None:
     names = rooms.split(",") if rooms else ROOMS
     if stage in ("all", "predict"):
         # One GPU call at a time, so this run adds at most one GPU to whatever else is running.
-        jobs = [(mapanything, (n, m)) for n in names for m in ("mapanything", "mapanything_apache")]
-        jobs += [(da3, (n,)) for n in names] + [(moge, (n,)) for n in names]
-        for function, args in jobs:
+        jobs = [
+            (m, mapanything, (n, m)) for n in names for m in ("mapanything", "mapanything_apache")
+        ]
+        jobs += [("da3_metric", da3, (n,)) for n in names] + [("moge3", moge, (n,)) for n in names]
+        for model, function, args in jobs:
             try:
                 print(json.dumps(function.remote(*args)))
             except Exception as error:  # one failing model must not hide the others' results
-                print(json.dumps({"failed": [function.tag, *args], "error": repr(error)[:500]}))
+                print(json.dumps({"failed": [model, *args], "error": repr(error)[:500]}))
     if stage in ("all", "score"):
         for r in score.starmap([(n, m) for n in names for m in MODELS], return_exceptions=True):
             print(json.dumps(r if isinstance(r, dict) else {"failed": repr(r)[:500]}))

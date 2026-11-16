@@ -1,0 +1,19 @@
+{
+  "scene": "arkit_bedroom_47895350",
+  "model": "lidar",
+  "objects_seen": {
+    "gt_objects": 10,
+    "predicted_objects": 31,
+    "predicted_annotated_classes": 21,
+    "recall_class_iou25": 0.7,
+    "recall_any_class_iou25": 0.9,
+    "recall_class_iou05": 0.8,
+    "precision_class_iou25": 0.3333333333333333,
+    "median_iou": 0.44620812388410636,
+    "median_center_error_m": 0.17653199327098595,
+    "median_length_error_m": 0.09609944745949467,
+    "median_width_error_m": 0.0866034545029059,
+    "median_height_error_m": 0.14956304413396093,
+    "median_size_error_rel": 0.21734921032144897
+  }
+}
