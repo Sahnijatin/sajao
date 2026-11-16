@@ -7,8 +7,11 @@
 // fridge); two labels never sit on the same object (class votes decide its
 // name).
 //
-// Labels are guidance for the person scanning. Positions here never set a
-// dimension; the twin measures objects on the server.
+// The phone captures; the server understands. Live labels are decoration
+// for the person scanning, not data: the authoritative object list comes
+// from the server twin. So only large objects are tracked (capture guidance
+// such as "walk around the sofa" needs them), and only a handful of
+// confident labels are shown. Positions here never set a dimension.
 
 export interface Vec3 {
   x: number;
@@ -16,71 +19,49 @@ export interface Vec3 {
   z: number;
 }
 
-/** Objects we name during the scan, from the detector's COCO classes. */
-export const LABEL_KINDS = [
-  "fridge",
-  "sofa",
-  "chair",
-  "table",
-  "bed",
-  "tv",
-  "microwave",
-  "oven",
-  "sink",
-  "toilet",
-  "plant",
-  "laptop",
-  "clock",
-  "vase",
-  "bench",
-  "toaster",
-] as const;
+/**
+ * Large objects tracked during the scan, from the detector's COCO classes.
+ * COCO has no wardrobe or almirah class; the server twin finds those.
+ */
+export const LABEL_KINDS = ["sofa", "bed", "table", "fridge", "tv"] as const;
 
 export type LabelKind = (typeof LABEL_KINDS)[number];
 
 const FROM_COCO: Record<string, LabelKind> = {
-  refrigerator: "fridge",
   couch: "sofa",
-  chair: "chair",
-  "dining table": "table",
   bed: "bed",
+  "dining table": "table",
+  refrigerator: "fridge",
   tv: "tv",
-  microwave: "microwave",
-  oven: "oven",
-  sink: "sink",
-  toilet: "toilet",
-  "potted plant": "plant",
-  laptop: "laptop",
-  clock: "clock",
-  vase: "vase",
-  bench: "bench",
-  toaster: "toaster",
 };
 
-/** The label kind for a detector class, or null for classes we do not name (people, cars). */
+/** The label kind for a detector class, or null for classes we do not track (small objects, people). */
 export function labelKindOf(detectorClass: string): LabelKind | null {
   return FROM_COCO[detectorClass.trim().toLowerCase()] ?? null;
 }
 
 /** How far apart two sightings can be and still be the same object, in metres. */
-const MERGE_RADIUS: Partial<Record<LabelKind, number>> = {
+const MERGE_RADIUS: Record<LabelKind, number> = {
   sofa: 0.9,
   bed: 1.0,
   table: 0.8,
   fridge: 0.6,
   tv: 0.5,
-  bench: 0.7,
 };
-const DEFAULT_RADIUS = 0.4;
 
 export function mergeRadius(kind: LabelKind): number {
-  return MERGE_RADIUS[kind] ?? DEFAULT_RADIUS;
+  return MERGE_RADIUS[kind];
 }
 
+/** A pinned label is shown only when its sightings average at least this confidence. */
+export const SHOW_MIN_SCORE = 0.6;
+/** At most this many labels are shown at once: decoration, not a list. */
+export const MAX_SHOWN = 5;
+
 /**
- * Detections below this confidence are ignored. Kept low so fridges, sinks
- * and plants are not missed: three agreeing sightings, not one confident
- * one, decide whether a label is pinned.
+ * Sightings below this confidence are ignored. Low enough that capture
+ * guidance knows where large objects are; what is shown needs three agreeing
+ * sightings and `SHOW_MIN_SCORE` on average.
  */
 export const MIN_SCORE = 0.35;
 /** A label is pinned once this many sightings agree on where its object is. */
@@ -112,18 +93,9 @@ export interface Detection {
 }
 
 /** Objects that hang flat on a wall: a label on the wall is right for these. */
-const ON_WALL_KINDS: ReadonlySet<LabelKind> = new Set(["tv", "clock"]);
+const ON_WALL_KINDS: ReadonlySet<LabelKind> = new Set(["tv"]);
 /** Objects that stand on the floor and rise well above it. */
-const FLOOR_KINDS: ReadonlySet<LabelKind> = new Set([
-  "fridge",
-  "sofa",
-  "chair",
-  "table",
-  "bed",
-  "bench",
-  "toilet",
-  "plant",
-]);
+const FLOOR_KINDS: ReadonlySet<LabelKind> = new Set(["fridge", "sofa", "table", "bed"]);
 
 export type RejectReason = "onWall" | "bareFloor" | "ceiling" | "tooFar";
 
@@ -312,8 +284,23 @@ export interface ShownLabel {
   z: number;
 }
 
-/** Labels confirmed by agreeing sightings, ready to pin in the AR view. */
+/** Average detector confidence of a label's own kind over its sightings. */
+export function meanScore(label: TrackedLabel): number {
+  return label.hits > 0 ? (label.votes[label.kind] ?? 0) / label.hits : 0;
+}
+
+/** Pinned labels that are confident on average: the few most confident, ready to show. */
 export function shownLabels(state: LabelState): ShownLabel[] {
+  return state.labels
+    .filter((label) => label.pinned && meanScore(label) >= SHOW_MIN_SCORE)
+    .sort((a, b) => meanScore(b) - meanScore(a) || a.id.localeCompare(b.id))
+    .slice(0, MAX_SHOWN)
+    .sort((a, b) => Number(a.id.slice(6)) - Number(b.id.slice(6)))
+    .map((label) => ({ id: label.id, kind: label.kind, ...label.position }));
+}
+
+/** Every pinned large object, confident or not: what capture guidance works from. */
+export function trackedObjects(state: LabelState): ShownLabel[] {
   return state.labels
     .filter((label) => label.pinned)
     .map((label) => ({ id: label.id, kind: label.kind, ...label.position }));
