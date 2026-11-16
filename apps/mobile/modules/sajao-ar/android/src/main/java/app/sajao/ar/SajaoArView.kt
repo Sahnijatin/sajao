@@ -7,6 +7,7 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import android.os.SystemClock
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
@@ -71,7 +72,13 @@ class SajaoArView(context: Context, appContext: AppContext) :
 
   private val background = CameraBackground()
   private val shapes = WorldShapes()
-  private val detector by lazy { Detector(context) }
+  // Created with the view so it loads on its own thread before the scan
+  // starts; never created lazily on ARCore's GL thread.
+  private val detector = Detector(context)
+  // Every new ARCore camera image, whether or not the detector is ready.
+  private var cameraFrames = 0
+  private var cpuImageSize = "-"
+  private var lastLogAt = 0L
 
   private val view = FloatArray(16)
   private val projection = FloatArray(16)
@@ -127,6 +134,10 @@ class SajaoArView(context: Context, appContext: AppContext) :
   private var featureCount = 0
   private var trackingName = "initializing"
   private var planeCount = 0
+  private var planeStates = "-"
+  // Coverage hits from planes and from tracked points, for the overlay.
+  private var surfacePlaneHits = 0
+  private var surfacePointHits = 0
 
   init {
     container.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
@@ -222,6 +233,9 @@ class SajaoArView(context: Context, appContext: AppContext) :
         depthSupported = created.isDepthModeSupported(Config.DepthMode.AUTOMATIC)
         if (depthSupported) config.depthMode = Config.DepthMode.AUTOMATIC
         created.configure(config)
+        val size = created.cameraConfig.imageSize
+        cpuImageSize = "${size.width}x${size.height}, depth ${if (depthSupported) "on" else "not supported"}"
+        Log.i(Detector.TAG, "ARCore session: planes horizontal and vertical, depth $depthSupported, CPU image $cpuImageSize")
         session = created
       }
       current.resume()
@@ -323,8 +337,12 @@ class SajaoArView(context: Context, appContext: AppContext) :
       // camera during the scan. Only a new image counts; update() can return
       // the same one again when the screen draws faster than the camera.
       val cameraTimestamp = frame.timestamp
-      if (cameraTimestamp != lastCameraTimestamp && detector.isAvailable) {
+      val newImage = cameraTimestamp != lastCameraTimestamp
+      if (newImage) {
         lastCameraTimestamp = cameraTimestamp
+        cameraFrames += 1
+      }
+      if (newImage && detector.isAvailable) {
         if (pacer.shouldSubmit(cameraTimestamp / 1e9, detector.isBusy) &&
           camera.trackingState == TrackingState.TRACKING
         ) {
@@ -424,12 +442,20 @@ class SajaoArView(context: Context, appContext: AppContext) :
     // on screen for the whole scan; a plane merged into another is dropped,
     // because the plane it merged into now covers it.
     var lowest: Float? = null
+    var tracking = 0
+    var paused = 0
     for (plane in session.getAllTrackables(Plane::class.java)) {
-      if (plane.subsumedBy != null) {
+      // Merged into another plane, or dropped by ARCore for good: its old
+      // outline would float where the plane no longer is.
+      if (plane.subsumedBy != null || plane.trackingState == TrackingState.STOPPED) {
         planeOutlines.remove(plane)
         continue
       }
-      if (plane.trackingState != TrackingState.TRACKING) continue
+      if (plane.trackingState != TrackingState.TRACKING) {
+        paused += 1
+        continue
+      }
+      tracking += 1
       if (plane.type == Plane.Type.HORIZONTAL_UPWARD_FACING) {
         val y = plane.centerPose.ty()
         lowest = minOf(lowest ?: y, y)
@@ -440,6 +466,7 @@ class SajaoArView(context: Context, appContext: AppContext) :
       drawOutline(plane, outline, now)
     }
     planeCount = planeOutlines.size
+    planeStates = "tracking $tracking paused $paused"
     // The lowest tracked upward plane is the floor; keep the last one seen.
     if (lowest != null) floorY = lowest
   }
@@ -573,6 +600,16 @@ class SajaoArView(context: Context, appContext: AppContext) :
   }
 
   private fun sendStatus(session: Session) {
+    val now = SystemClock.uptimeMillis()
+    if (now - lastLogAt > 5000) {
+      lastLogAt = now
+      Log.i(
+        Detector.TAG,
+        "scan: tracking $trackingName, camera frames $cameraFrames, detector ${detector.status}, " +
+          "runs $detectionsDone, found $detectionsFound, placed $detectionsPlaced, planes $planeStates, " +
+          "points ${pointCloud.size}",
+      )
+    }
     emitStatus(
       mapOf(
         "tracking" to trackingName,
@@ -585,8 +622,12 @@ class SajaoArView(context: Context, appContext: AppContext) :
         "brightness" to brightness,
         "ambientIntensity" to pixelIntensity * 1000,
         "detector" to detector.isAvailable,
+        "detectorStatus" to detector.status,
+        "cameraImage" to cpuImageSize,
+        "planeStates" to planeStates,
+        "surfaceHits" to "planes $surfacePlaneHits points $surfacePointHits",
         "labels" to labels.size,
-        "frames" to pacer.frames,
+        "frames" to cameraFrames,
         "detectorRuns" to detectionsDone,
         "detectorSkipped" to pacer.skippedBusy,
         "detectorMs" to lastDetectionMs,
@@ -644,6 +685,7 @@ class SajaoArView(context: Context, appContext: AppContext) :
       return
     }
     val hits = ArrayList<Map<String, Any>>(SurfaceSample.GRID.size)
+    val points = pointCloud.values.toList()
     for ((x, y) in SurfaceSample.GRID) {
       val (origin, direction) = camera.ray(x, y)
       // Without depth ARCore finds only patches of a plain wall, so each
@@ -656,7 +698,25 @@ class SajaoArView(context: Context, appContext: AppContext) :
         }
       } catch (_: Throwable) {
         null
-      } ?: continue
+      }
+      if (hit == null) {
+        // Few planes found: tracked feature points on the ray still count.
+        val range = frontOfCone(origin, direction, points) ?: continue
+        val fromPoints = SurfaceSample.pointHit(origin, direction, range, floorY) ?: continue
+        surfacePointHits += 1
+        hits.add(
+          mapOf(
+            "kind" to fromPoints.kind,
+            "normalYaw" to fromPoints.normalYaw,
+            "offset" to fromPoints.offset,
+            "x" to fromPoints.point[0].toDouble(),
+            "y" to fromPoints.point[1].toDouble(),
+            "z" to fromPoints.point[2].toDouble(),
+          ),
+        )
+        continue
+      }
+      surfacePlaneHits += 1
       val plane = hit.trackable as Plane
       val p = hit.hitPose.translation
       val kind = Surface.kind(

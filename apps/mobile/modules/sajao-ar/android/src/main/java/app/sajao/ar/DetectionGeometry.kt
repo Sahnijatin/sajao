@@ -115,6 +115,29 @@ object SurfaceSample {
     return yaw to offset.toDouble()
   }
 
+  /** A coverage hit from tracked feature points, where no plane was found. */
+  class PointHit(val kind: String, val normalYaw: Double, val offset: Double, val point: FloatArray)
+
+  /**
+   * When few planes are found (common on Android), a grid ray that meets
+   * tracked feature points still counts: at floor height as floor,
+   * otherwise as a wall facing the camera. A ray pointing steeply up or
+   * down that is not at the floor (a table top, the ceiling) counts as
+   * nothing. Same as iOS.
+   */
+  fun pointHit(origin: FloatArray, direction: FloatArray, range: Float, floorY: Float?): PointHit? {
+    val p = FloatArray(3) { origin[it] + direction[it] * range }
+    val atFloor = if (floorY != null) p[1] <= floorY + 0.15f else p[1] <= origin[1] - 1.1f
+    if (atFloor) return PointHit(Surface.FLOOR, 0.0, 0.0, p)
+    if (kotlin.math.abs(direction[1]) > 0.7f) return null
+    val nx = -direction[0]
+    val nz = -direction[2]
+    val length = kotlin.math.sqrt(nx * nx + nz * nz)
+    if (length < 1e-3f) return null
+    val (yaw, offset) = wallFrame(floatArrayOf(nx / length, 0f, nz / length), p)
+    return PointHit(Surface.WALL, yaw, offset, p)
+  }
+
   /**
    * How sharp a camera image is: the mean squared Laplacian of the luma on a
    * 40 by 30 grid of pixels. Motion blur flattens edges and drops it. The
@@ -152,10 +175,12 @@ object Placement {
     "dining table" to 0.76f,
     "refrigerator" to 1.7f,
     "tv" to 0.6f,
+    "chair" to 0.9f,
+    "microwave" to 0.3f,
   )
 
   /** Objects that stand on the floor: their footprint can be found from the floor plane. */
-  val STANDS_ON_FLOOR = setOf("couch", "bed", "dining table", "refrigerator")
+  val STANDS_ON_FLOOR = setOf("couch", "bed", "dining table", "refrigerator", "chair")
 
   private const val MIN_RANGE_M = 0.3f
   private const val MAX_RANGE_M = 8f

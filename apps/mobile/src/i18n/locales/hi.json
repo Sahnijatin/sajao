@@ -85,6 +85,10 @@
       "meshTriangles": "मेश त्रिकोण",
       "mappedPoints": "मैप पॉइंट",
       "detector": "पहचान मॉडल",
+      "detectorStatus": "डिटेक्टर स्थिति",
+      "cameraImage": "कैमरा इमेज",
+      "planeStates": "प्लेन स्थिति",
+      "surfaceHits": "कवरेज हिट",
       "labels": "लेबल",
       "detectionsFound": "पहचान",
       "detectionsPlaced": "रखी गई पहचान",
@@ -101,7 +105,9 @@
       "sofa": "सोफ़ा",
       "table": "मेज़",
       "bed": "पलंग",
-      "tv": "टीवी"
+      "tv": "टीवी",
+      "chair": "कुर्सी",
+      "microwave": "माइक्रोवेव"
     },
     "hints": {
       "doorway": "पहले यह जगह पूरी करें, फिर अगली स्कैन करें",

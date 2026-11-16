@@ -85,6 +85,10 @@
       "meshTriangles": "Mesh triangles",
       "mappedPoints": "Mapped points",
       "detector": "Detector",
+      "detectorStatus": "Detector status",
+      "cameraImage": "Camera image",
+      "planeStates": "Plane states",
+      "surfaceHits": "Coverage hits",
       "labels": "Labels",
       "detectionsFound": "Detections",
       "detectionsPlaced": "Detections placed",
@@ -101,7 +105,9 @@
       "sofa": "Sofa",
       "table": "Table",
       "bed": "Bed",
-      "tv": "TV"
+      "tv": "TV",
+      "chair": "Chair",
+      "microwave": "Microwave"
     },
     "hints": {
       "doorway": "Finish this space first, then scan the next one",
