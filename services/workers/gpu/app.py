@@ -28,14 +28,16 @@ MAX_GPUS = 3  # Must match sajao_workers.gpu.MAX_GPUS: model and splat functions
 MODEL_GPUS = 2
 SPLAT_GPUS = MAX_GPUS - MODEL_GPUS
 
+# Code revisions of the depth models (weights are pinned in sajao_workers.models).
+MOGE_REF = "74fbce054ebed49800de42d0ad0e83495065719a"
+DA3_REF = "3d835ec1a5802d64a8b8b15f817a1ab54809bfe4"
+
+# Detection, segmentation and depth share one image (torch 2.8, as MoGe-3 and DA3
+# need), so they share the model function and its GPUs.
 gpu_image = (
-    modal.Image.from_registry("nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04", add_python="3.11")
-    .apt_install("git", "libgl1", "libglib2.0-0")
-    .pip_install(
-        "torch==2.4.1",
-        "torchvision==0.19.1",
-        index_url="https://download.pytorch.org/whl/cu124",
-    )
+    modal.Image.from_registry("nvidia/cuda:12.8.1-cudnn-devel-ubuntu22.04", add_python="3.11")
+    .apt_install("git", "libgl1", "libglib2.0-0", "build-essential")
+    .pip_install("torch==2.8.0", "torchvision==0.23.0", "xformers==0.0.32.post2")
     .pip_install(
         "numpy==2.1.3",
         "pillow==11.0.0",
@@ -44,7 +46,45 @@ gpu_image = (
         "ultralytics==8.4.214",
         "git+https://github.com/ultralytics/CLIP.git",
     )
-    .env({"HF_HOME": "/vol/hf", "PYTHONUNBUFFERED": "1"})
+    # MoGe and DA3 declare demo and export packages that clash with the detectors' stack
+    # (DA3 wants numpy<2; MoGe pulls a huggingface-hub that transformers rejects). Both are
+    # installed without their lists, with what inference imports; the build checks that.
+    .pip_install(
+        f"moge @ git+https://github.com/microsoft/MoGe@{MOGE_REF}",
+        f"depth-anything-3 @ git+https://github.com/ByteDance-Seed/Depth-Anything-3@{DA3_REF}",
+        extra_options="--no-deps",
+    )
+    # Export-only imports of DA3 (two of them GPL-3.0) are stubbed: see da3_stubs/README.md.
+    .add_local_dir(HERE / "da3_stubs", "/opt/da3_stubs", copy=True)
+    .env({"PYTHONPATH": "/opt/da3_stubs"})
+    .pip_install(
+        # MoGe's own pins (git commits from its pyproject).
+        "utils3d_moge @ git+https://github.com/EasternJournalist/utils3d-moge.git@62f09d58509485564e24d5d9f6aac9ee9ebc0c37",
+        "pipeline @ git+https://github.com/EasternJournalist/pipeline.git@1c511390d90226c00c101f34b84df26a0f8789b4",
+        "flex-gemm @ git+https://github.com/JeffreyXiang/FlexGEMM.git@b2fadb29d41846c7981ade6801ffc689fae119cf",
+        "scipy==1.17.1",
+        "click==8.5.1",
+        "matplotlib==3.10.7",
+        "tqdm==4.67.1",
+        "addict==2.4.0",
+        "einops==0.8.1",
+        "omegaconf==2.3.0",
+        "safetensors==0.6.2",
+        "imageio==2.37.0",
+        "trimesh==4.11.0",
+        "e3nn==0.5.8",
+        "typer==0.19.2",
+        "pillow_heif==1.1.1",
+    )
+    .run_commands(
+        # MoGe's FlexGEMM asks the GPU its name on import, so the build (no GPU) only
+        # checks MoGe is present; the depth smoke loads it on a GPU.
+        "python -c 'import importlib.util, numpy, transformers;"
+        " from depth_anything_3.api import DepthAnything3; from transformers import Sam2Model;"
+        ' assert importlib.util.find_spec("moge.model.v3");'
+        " print(numpy.__version__, transformers.__version__)'"
+    )
+    .env({"HF_HOME": "/vol/hf", "HF_HUB_DISABLE_XET": "1", "PYTHONUNBUFFERED": "1"})
     .add_local_dir(SRC, "/root/sajao_workers")
 )
 
@@ -298,7 +338,72 @@ def segment(model: str, payload: dict[str, Any]) -> dict[str, Any]:
     return {"frames": frames}
 
 
-HANDLERS = {"twin_detect": detect, "twin_segment": segment}
+def _depth_model(model: str) -> Any:
+    if model not in _loaded:
+        name, revision = _split(model)
+        if name == "Ruicheng/moge-3-vitl":
+            from huggingface_hub import hf_hub_download
+            from moge.model.v3 import MoGeModel
+
+            weights = hf_hub_download(name, "model.pt", revision=revision)
+            _loaded[model] = MoGeModel.from_pretrained(weights).to("cuda").eval()
+        elif name == "depth-anything/DA3METRIC-LARGE":
+            from depth_anything_3.api import DepthAnything3
+
+            _loaded[model] = DepthAnything3.from_pretrained(name, revision=revision)
+            _loaded[model] = _loaded[model].to("cuda").eval()
+        else:
+            raise InputError(f"unknown depth model {model}")
+    return _loaded[model]
+
+
+def depth(model: str, payload: dict[str, Any]) -> dict[str, Any]:
+    """Metric depth per frame at the image size, stored as a 16-bit PNG in millimetres.
+
+    MoGe-3 is given the field of view from the AR intrinsics; DA3 Metric's output
+    becomes metres as focal length (pixels, at its processed size) times output / 300.
+    """
+    import math
+
+    import cv2
+    import numpy as np
+    import torch
+
+    network = _depth_model(model)
+    store = _store()
+    frames = []
+    for frame in payload["frames"]:
+        rgb = _rgb(frame["image"])
+        h, w = rgb.shape[:2]
+        k = np.asarray(frame["intrinsics"], dtype=np.float64)
+        if model.startswith("Ruicheng/moge"):
+            fov_x = math.degrees(2 * math.atan(w / (2 * k[0, 0])))
+            image = torch.tensor(rgb / 255, dtype=torch.float32, device="cuda").permute(2, 0, 1)
+            with torch.no_grad():
+                out = network.infer(image, fov_x=fov_x)
+            metres = out["depth"].float().cpu().numpy()
+            metres = np.where(out["mask"].cpu().numpy().astype(bool), metres, 0.0)
+        else:
+            with torch.no_grad():
+                raw = network.inference([rgb]).depth[0]
+            ph, pw = raw.shape
+            focal = (k[0, 0] * pw / w + k[1, 1] * ph / h) / 2
+            metres = cv2.resize(focal * raw / 300.0, (w, h), interpolation=cv2.INTER_LINEAR)
+        metres = np.where(np.isfinite(metres) & (metres > 0) & (metres < 65.0), metres, 0.0)
+        valid = metres > 0
+        png = cv2.imencode(".png", np.round(metres * 1000).astype(np.uint16))[1].tobytes()
+        frames.append(
+            {
+                "image": frame["image"],
+                "depth": store.put_blob(png),
+                "coverage": round(float(valid.mean()), 4),
+                "median_m": round(float(np.median(metres[valid])), 3) if valid.any() else 0.0,
+            }
+        )
+    return {"frames": frames}
+
+
+HANDLERS = {"twin_detect": detect, "twin_segment": segment, "twin_depth": depth}
 
 
 @app.function(
@@ -586,17 +691,25 @@ def _arkit_manifest(store: Any, scene: str, keyframes: int, y_up: bool = False) 
 @app.function(
     image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=4, memory=8192, timeout=3600
 )
-def objects_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
-    """Run the objects step on one ARKitScenes room and score it against its boxes."""
+def objects_smoke_cpu(scene: str, keyframes: int, depth: str = "lidar") -> dict[str, Any]:
+    """Run the objects step on one ARKitScenes room and score it against its boxes.
+
+    With `depth` "model", LiDAR is withheld: the depth step estimates depth first
+    (as on a phone without LiDAR), and its error against LiDAR is reported too.
+    "da3" does the same with the fallback model alone.
+    """
     import asyncio
     import json
     import math
 
+    import numpy as np
     from twin_gpu.objects import gt_boxes, gt_seen
 
     from sajao_gateway import InMemorySpendLedger, ModelGateway, SpendCaps
-    from sajao_workers.models import detect_chain, segment_chain
+    from sajao_workers.models import depth_chain, detect_chain, segment_chain
     from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.depth_step import depth_step
+    from sajao_workers.twin.objects import decode_depth_mm, depth_at
     from sajao_workers.twin.objects_step import objects_step
     from twin_risk.geometry import UprightBox
     from twin_risk.metrics import LabelledBox, summarise
@@ -610,11 +723,42 @@ def objects_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
         ModelGateway(detect_chain(volume_invoke("twin_detect")), ledger=ledger),
         ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger),
     )
-    result = asyncio.run(
-        StepRunner(store, max_attempts=1).run(
-            step, {"frames": store.put_blob(json.dumps(manifest).encode())}, {}
+    runner = StepRunner(store, max_attempts=1)
+    frames = store.put_blob(json.dumps(manifest).encode())
+    depth_report: dict[str, Any] = {}
+    if depth in ("model", "da3"):
+        chain = depth_chain(volume_invoke("twin_depth"))
+        if depth == "da3":
+            chain = chain[1:]
+        lidar = {f["keyframe_id"]: f["depth"] for f in manifest["frames"]}
+        withheld = {
+            **manifest,
+            "depth_source": "image",
+            "frames": [{**f, "depth": None} for f in manifest["frames"]],
+        }
+        estimated = asyncio.run(
+            runner.run(
+                depth_step(ModelGateway(chain, ledger=ledger)),
+                {"frames": store.put_blob(json.dumps(withheld).encode())},
+                # The step's key does not name the chain: keep the DA3-only run apart.
+                {"smoke_chain": depth},
+            )
         )
-    )
+        frames = estimated.outputs["frames"]
+        absrel = []
+        for f in json.loads(store.read_blob(frames))["frames"]:
+            truth = decode_depth_mm(store.read_blob(lidar[f["keyframe_id"]]))
+            guess = depth_at(decode_depth_mm(store.read_blob(f["depth"])), truth.shape)
+            ok = (truth > 0) & (guess > 0)
+            if ok.sum() >= 100:  # some frames have almost no confident LiDAR
+                absrel.append(float(np.median(np.abs(guess[ok] - truth[ok]) / truth[ok])))
+        depth_report = {
+            **dict(estimated.meta),
+            "median_absrel_vs_lidar": round(float(np.median(absrel)), 3) if absrel else None,
+            "frames_scored": len(absrel),
+            "charged_micro_inr": estimated.cost_micro_inr,
+        }
+    result = asyncio.run(runner.run(step, {"frames": frames}, {}))
     vol.commit()
     objects = json.loads(store.read_blob(result.outputs["objects"]))
     preds = [
@@ -636,6 +780,7 @@ def objects_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
     return {
         "scene": scene,
         "keyframes": keyframes,
+        "depth": depth_report or "lidar",
         "objects": len(objects),
         "cached": result.cached,
         "meta": dict(result.meta),
@@ -651,10 +796,12 @@ def objects_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
 
 
 @app.local_entrypoint()
-def objects_smoke(scene: str = "arkit_living_47331265", keyframes: int = 120) -> None:
+def objects_smoke(
+    scene: str = "arkit_living_47331265", keyframes: int = 120, depth: str = "lidar"
+) -> None:
     import json
 
-    print(json.dumps(objects_smoke_cpu.remote(scene, keyframes), indent=1))
+    print(json.dumps(objects_smoke_cpu.remote(scene, keyframes, depth), indent=1))
 
 
 @app.function(
