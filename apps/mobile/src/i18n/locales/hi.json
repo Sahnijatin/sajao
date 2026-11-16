@@ -88,7 +88,8 @@
       "labels": "लेबल",
       "detectionsFound": "पहचान",
       "detectionsPlaced": "रखी गई पहचान",
-      "detectorError": "डिटेक्टर त्रुटि"
+      "detectorError": "डिटेक्टर त्रुटि",
+      "labelsRejected": "अस्वीकृत लेबल"
     },
     "labels": {
       "fridge": "फ़्रिज",

@@ -88,7 +88,8 @@
       "labels": "Labels",
       "detectionsFound": "Detections",
       "detectionsPlaced": "Detections placed",
-      "detectorError": "Detector error"
+      "detectorError": "Detector error",
+      "labelsRejected": "Labels rejected"
     },
     "labels": {
       "fridge": "Fridge",

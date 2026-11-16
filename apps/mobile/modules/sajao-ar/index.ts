@@ -56,6 +56,12 @@ export interface ArDetectionEvent {
     detectorClass: string;
     score: number;
     world?: { x: number; y: number; z: number };
+    /** The plane the ray through the box centre meets. */
+    surface?: "wall" | "floor" | "ceiling" | "raised" | "none";
+    /** Metres from the object point to that plane along the ray. */
+    gap?: number;
+    /** Metres from the camera to the object point. */
+    range?: number;
   }[];
 }
 

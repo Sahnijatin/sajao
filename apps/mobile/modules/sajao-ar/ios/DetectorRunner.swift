@@ -35,7 +35,7 @@ final class DetectorRunner {
     options.baseOptions.modelAssetPath = path
     options.runningMode = .image
     options.maxResults = 10
-    options.scoreThreshold = 0.4
+    options.scoreThreshold = 0.3
     do {
       detector = try ObjectDetector(options: options)
     } catch {

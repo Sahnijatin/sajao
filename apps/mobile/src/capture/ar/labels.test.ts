@@ -1,10 +1,14 @@
 import {
   type Detection,
   EMPTY_LABELS,
+  FORGET_AFTER_MS,
   labelKindOf,
   type LabelState,
+  MAX_RANGE_M,
   MIN_SCORE,
+  rejectReason,
   shownLabels,
+  sightingsAgree,
   updateLabels,
 } from "./labels";
 
@@ -29,11 +33,15 @@ describe("live object labels", () => {
     expect(labelKindOf("car")).toBeNull();
   });
 
-  it("shows a label only after a second sighting", () => {
-    const once = feed([[seen("refrigerator")]]);
-    expect(shownLabels(once)).toEqual([]);
+  it("pins a label only after three sightings", () => {
     const twice = feed([[seen("refrigerator")], [seen("refrigerator", at(0.05, 0, -2))]]);
-    expect(shownLabels(twice)).toEqual([
+    expect(shownLabels(twice)).toEqual([]);
+    const thrice = feed([
+      [seen("refrigerator")],
+      [seen("refrigerator", at(0.05, 0, -2))],
+      [seen("refrigerator", at(0, 0.05, -2))],
+    ]);
+    expect(shownLabels(thrice)).toEqual([
       expect.objectContaining({ id: "label-1", kind: "fridge" }),
     ]);
   });
@@ -50,16 +58,16 @@ describe("live object labels", () => {
     const state = feed([
       [seen("chair", at(0, 0, -2)), seen("chair", at(1.5, 0, -2))],
       [seen("chair", at(0, 0, -2)), seen("chair", at(1.5, 0, -2))],
+      [seen("chair", at(0, 0, -2)), seen("chair", at(1.5, 0, -2))],
     ]);
     expect(shownLabels(state).map((label) => label.kind)).toEqual(["chair", "chair"]);
   });
 
-  it("sticks: a label moves only a little toward a stray sighting", () => {
+  it("sticks: one stray sighting does not move a label", () => {
     let state = feed(Array.from({ length: 5 }, () => [seen("microwave", at(1, 1, -1))]));
     state = updateLabels(state, [seen("microwave", at(1.3, 1, -1))], 2000);
     const [label] = shownLabels(state);
-    expect(label?.x).toBeGreaterThan(1);
-    expect(label?.x).toBeLessThan(1.1);
+    expect(label?.x).toBeCloseTo(1);
   });
 
   it("settles on the name seen most when the detector disagrees", () => {
@@ -67,6 +75,7 @@ describe("live object labels", () => {
       [seen("bench", at(0, 0, -2), 0.5)],
       [seen("couch", at(0.1, 0, -2), 0.9)],
       [seen("couch", at(0, 0, -2), 0.9)],
+      [seen("couch", at(0, 0.1, -2), 0.9)],
     ]);
     expect(shownLabels(state)).toEqual([expect.objectContaining({ kind: "sofa" })]);
   });
@@ -84,5 +93,66 @@ describe("live object labels", () => {
     const copy = JSON.parse(JSON.stringify(before));
     updateLabels(before, [seen("tv")], 999);
     expect(before).toEqual(copy);
+  });
+
+  describe("sightings that cannot be their object", () => {
+    const three = (detection: Detection) => feed([[detection], [detection], [detection]]);
+
+    it("drops a fridge whose ray ends flat on a door or wall", () => {
+      const door = { ...seen("refrigerator"), surface: "wall" as const, gap: 0.02 };
+      const state = three(door);
+      expect(shownLabels(state)).toEqual([]);
+      expect(state.rejected).toBe(3);
+      expect(rejectReason("fridge", door)).toBe("onWall");
+    });
+
+    it("keeps a fridge that stands in front of the wall", () => {
+      const fridge = { ...seen("refrigerator"), surface: "wall" as const, gap: 0.6 };
+      expect(shownLabels(three(fridge))).toHaveLength(1);
+    });
+
+    it("keeps a TV on the wall", () => {
+      const tv = { ...seen("tv"), surface: "wall" as const, gap: 0 };
+      expect(shownLabels(three(tv))).toHaveLength(1);
+    });
+
+    it("drops a chair on empty floor, keeps one standing there", () => {
+      const empty = { ...seen("chair"), surface: "floor" as const, gap: 0.01 };
+      expect(rejectReason("chair", empty)).toBe("bareFloor");
+      expect(shownLabels(three(empty))).toEqual([]);
+      const chair = { ...seen("chair"), surface: "floor" as const, gap: 0.5 };
+      expect(shownLabels(three(chair))).toHaveLength(1);
+    });
+
+    it("drops a sighting with no gap reading on a wall, the ceiling, or beyond range", () => {
+      expect(rejectReason("sofa", { ...seen("couch"), surface: "wall", gap: null })).toBe("onWall");
+      expect(rejectReason("plant", { ...seen("potted plant"), surface: "ceiling" })).toBe(
+        "ceiling",
+      );
+      expect(rejectReason("table", { ...seen("dining table"), range: MAX_RANGE_M + 1 })).toBe(
+        "tooFar",
+      );
+    });
+
+    it("keeps sightings from older builds that send no surface", () => {
+      expect(rejectReason("fridge", seen("refrigerator"))).toBeNull();
+    });
+  });
+
+  it("does not pin sightings that disagree on where the object is", () => {
+    const state = feed([
+      [seen("potted plant", at(0, 0, -2))],
+      [seen("potted plant", at(0.35, 0, -2))],
+      [seen("potted plant", at(0, 0.35, -2))],
+    ]);
+    expect(shownLabels(state)).toEqual([]);
+    expect(sightingsAgree("plant", [at(0, 0, -2), at(0.1, 0, -2), at(0, 0.1, -2)])).toBe(true);
+  });
+
+  it("forgets an unpinned label that is not seen again, keeps pinned ones", () => {
+    const tentative = feed([[seen("sink", at(0, 0, -2))]]);
+    expect(updateLabels(tentative, [], FORGET_AFTER_MS + 1).labels).toEqual([]);
+    const pinned = feed([[seen("sink")], [seen("sink")], [seen("sink")]]);
+    expect(shownLabels(updateLabels(pinned, [], 60_000))).toHaveLength(1);
   });
 });

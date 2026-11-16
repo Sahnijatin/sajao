@@ -206,6 +206,9 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
                 detectorClass: detection.detectorClass,
                 score: detection.score,
                 world: detection.world ?? null,
+                surface: detection.surface,
+                gap: detection.gap ?? null,
+                range: detection.range ?? null,
               })),
             )
           }

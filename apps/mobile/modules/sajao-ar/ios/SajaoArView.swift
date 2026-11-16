@@ -54,6 +54,8 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   private var brightness: Double = 128
   private var ambientIntensity: Double = 1000
   private var featureCount = 0
+  /// Height of the lowest horizontal plane seen: the floor.
+  private var floorY: Float?
 
   /// World-anchored feature points (phones without LiDAR), keyed by ARKit's identifier.
   private var pointCloud: [UInt64: SIMD3<Float>] = [:]
@@ -238,7 +240,14 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
     var planes = 0
     var triangles = 0
     for anchor in frame.anchors {
-      if anchor is ARPlaneAnchor { planes += 1 }
+      if let plane = anchor as? ARPlaneAnchor {
+        planes += 1
+        // The lowest horizontal plane is the floor.
+        if plane.alignment == .horizontal {
+          let y = plane.transform.columns.3.y
+          floorY = min(floorY ?? y, y)
+        }
+      }
       if let mesh = anchor as? ARMeshAnchor { triangles += mesh.geometry.faces.count }
     }
     if !lidar { triangles = 0 }
@@ -288,9 +297,10 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   // MARK: - Detector
 
   private func runDetector(_ frame: ARFrame) {
-    let viewport = bounds.size
-    guard viewport.width > 0, viewport.height > 0 else { return }
-    let toView = frame.displayTransform(for: .portrait, viewportSize: viewport)
+    // Each detection's ray is built from the camera as it was for this frame,
+    // so a result that arrives after the phone moved still lands on its object.
+    let camera = CaptureCamera(frame.camera)
+    let cloud = lidar ? [] : Array(pointCloud.values)
     detector.detect(pixelBuffer: frame.capturedImage) { [weak self] found, milliseconds in
       guard let self else { return }
       self.detectionsDone += 1
@@ -299,40 +309,135 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
       var payload: [[String: Any]] = []
       for detection in found {
         // Centre of the box in the upright image, back to the sensor image
-        // (turned 90 degrees clockwise), then to view coordinates.
+        // (turned 90 degrees clockwise), then a ray into the room.
         let upright = CGPoint(x: detection.box.midX, y: detection.box.midY)
         let sensor = CGPoint(x: upright.y, y: 1 - upright.x)
-        let normalised = sensor.applying(toView)
-        let point = CGPoint(x: normalised.x * viewport.width, y: normalised.y * viewport.height)
+        let ray = camera.ray(throughNormalised: sensor)
+        let sighting = self.locate(ray, cloud: cloud)
         var entry: [String: Any] = [
           "detectorClass": detection.detectorClass,
           "score": Double(detection.score),
+          "surface": sighting.surface,
         ]
         self.detectionsFound += 1
-        if let world = self.worldPoint(at: point) {
+        if let point = sighting.point {
           self.detectionsPlaced += 1
-          entry["world"] = ["x": Double(world.x), "y": Double(world.y), "z": Double(world.z)]
+          entry["world"] = ["x": Double(point.x), "y": Double(point.y), "z": Double(point.z)]
+          entry["range"] = Double(sighting.range)
         }
+        if let gap = sighting.gap { entry["gap"] = Double(gap) }
         payload.append(entry)
       }
       self.onArDetections(["detections": payload])
     }
   }
 
-  /// Where a screen point meets the room: the scene mesh or planes first,
-  /// then estimated planes (which use depth on LiDAR phones).
-  private func worldPoint(at point: CGPoint) -> SIMD3<Float>? {
-    let hits = sceneView.hitTest(point, options: [.searchMode: SCNHitTestSearchMode.closest.rawValue])
-    if let hit = hits.first(where: { $0.node.name == "sajao-surface" }) {
-      let w = hit.worldCoordinates
-      return SIMD3<Float>(Float(w.x), Float(w.y), Float(w.z))
+  private struct Sighting {
+    var point: SIMD3<Float>?
+    var range: Float = 0
+    var surface = "none"
+    var gap: Float?
+  }
+
+  private static let maxRange: Float = 8
+  /// Feature points within this angle of the ray belong to what it points at.
+  private static let coneTan: Float = tan(2.5 * .pi / 180)
+
+  /// Where a detection is: the object's own point on the ray (scene mesh on
+  /// LiDAR phones, tracked feature points elsewhere, an estimated plane as a
+  /// last resort), plus the plane the same ray meets and the gap between
+  /// them. A gap near zero means the "object" is the wall or floor itself.
+  private func locate(_ ray: Ray, cloud: [SIMD3<Float>]) -> Sighting {
+    var sighting = Sighting()
+    var objectRange: Float?
+    if lidar && !lite {
+      let end = ray.origin + ray.direction * Self.maxRange
+      let hits = sceneView.scene.rootNode.hitTestWithSegment(
+        from: SCNVector3(ray.origin.x, ray.origin.y, ray.origin.z),
+        to: SCNVector3(end.x, end.y, end.z),
+        options: [
+          SCNHitTestOption.searchMode.rawValue: SCNHitTestSearchMode.all.rawValue,
+          SCNHitTestOption.backFaceCulling.rawValue: false,
+        ])
+      objectRange = hits
+        .filter { $0.node.name == "sajao-surface" }
+        .map { hit -> Float in
+          let w = hit.worldCoordinates
+          return simd_dot(SIMD3<Float>(Float(w.x), Float(w.y), Float(w.z)) - ray.origin, ray.direction)
+        }
+        .filter { $0 > 0.1 }
+        .min()
+    } else if !cloud.isEmpty {
+      objectRange = Self.frontOfCone(ray, cloud: cloud)
     }
-    guard
-      let query = sceneView.raycastQuery(from: point, allowing: .estimatedPlane, alignment: .any),
-      let result = sceneView.session.raycast(query).first
-    else { return nil }
-    let c = result.worldTransform.columns.3
-    return SIMD3<Float>(c.x, c.y, c.z)
+    if objectRange == nil {
+      let query = ARRaycastQuery(
+        origin: ray.origin, direction: ray.direction, allowing: .estimatedPlane, alignment: .any)
+      if let hit = sceneView.session.raycast(query).first {
+        let c = hit.worldTransform.columns.3
+        objectRange = simd_dot(SIMD3<Float>(c.x, c.y, c.z) - ray.origin, ray.direction)
+      }
+    }
+    if let range = objectRange {
+      sighting.point = ray.origin + ray.direction * range
+      sighting.range = range
+    }
+
+    let planeQuery = ARRaycastQuery(
+      origin: ray.origin, direction: ray.direction, allowing: .existingPlaneGeometry, alignment: .any)
+    if let hit = sceneView.session.raycast(planeQuery).first(where: { $0.anchor is ARPlaneAnchor }),
+      let plane = hit.anchor as? ARPlaneAnchor
+    {
+      let c = hit.worldTransform.columns.3
+      sighting.surface = surfaceKind(plane, hitY: c.y, cameraY: ray.origin.y)
+      if let range = objectRange {
+        let planeRange = simd_dot(SIMD3<Float>(c.x, c.y, c.z) - ray.origin, ray.direction)
+        sighting.gap = max(0, planeRange - range)
+      }
+    }
+    return sighting
+  }
+
+  /// The front of whatever the ray points at: the near quarter of the
+  /// feature points inside a narrow cone around it. Needs three points.
+  private static func frontOfCone(_ ray: Ray, cloud: [SIMD3<Float>]) -> Float? {
+    var ranges: [Float] = []
+    for point in cloud {
+      let v = point - ray.origin
+      let along = simd_dot(v, ray.direction)
+      guard along > 0.2, along < maxRange else { continue }
+      let off = simd_length(v - ray.direction * along)
+      if off < along * coneTan { ranges.append(along) }
+    }
+    guard ranges.count >= 3 else { return nil }
+    ranges.sort()
+    return ranges[ranges.count / 4]
+  }
+
+  /// Walls, floor and ceiling from ARKit's plane classes where the phone has
+  /// them; otherwise from the plane's size and height.
+  private func surfaceKind(_ plane: ARPlaneAnchor, hitY: Float, cameraY: Float) -> String {
+    if ARPlaneAnchor.isClassificationSupported {
+      switch plane.classification {
+      case .wall, .door, .window: return "wall"
+      case .floor: return "floor"
+      case .ceiling: return "ceiling"
+      case .table, .seat: return "raised"
+      default: break
+      }
+    }
+    if plane.alignment == .vertical {
+      return Self.longestSide(plane) >= 1.2 ? "wall" : "none"
+    }
+    if let floor = floorY, hitY <= floor + 0.15 { return "floor" }
+    return hitY > cameraY + 0.3 ? "ceiling" : "raised"
+  }
+
+  private static func longestSide(_ plane: ARPlaneAnchor) -> Float {
+    if #available(iOS 16.0, *) {
+      return max(plane.planeExtent.width, plane.planeExtent.height)
+    }
+    return max(plane.extent.x, plane.extent.z)
   }
 
   // MARK: - Feature points (no LiDAR)
@@ -459,5 +564,39 @@ final class GlassLabel: UIView {
     blur.frame = bounds
     dot.frame = CGRect(x: 11, y: 10.5, width: 7, height: 7)
     label.frame = CGRect(x: 24, y: 0, width: label.bounds.width, height: 28)
+  }
+}
+
+/// A ray in world space, direction of unit length.
+struct Ray {
+  let origin: SIMD3<Float>
+  let direction: SIMD3<Float>
+}
+
+/// The camera as it was when a frame was captured: pose and intrinsics.
+struct CaptureCamera {
+  let transform: simd_float4x4
+  let intrinsics: simd_float3x3
+  let resolution: CGSize
+
+  init(_ camera: ARCamera) {
+    transform = camera.transform
+    intrinsics = camera.intrinsics
+    resolution = camera.imageResolution
+  }
+
+  /// The ray through a point of the sensor image, normalised 0 to 1 with y
+  /// down. ARKit's camera looks down -Z with +Y up, in sensor orientation.
+  func ray(throughNormalised point: CGPoint) -> Ray {
+    let u = Float(point.x * resolution.width)
+    let v = Float(point.y * resolution.height)
+    let fx = intrinsics.columns.0.x
+    let fy = intrinsics.columns.1.y
+    let cx = intrinsics.columns.2.x
+    let cy = intrinsics.columns.2.y
+    let local = SIMD4<Float>((u - cx) / fx, -(v - cy) / fy, -1, 0)
+    let world = transform * local
+    let origin = SIMD3<Float>(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
+    return Ray(origin: origin, direction: simd_normalize(SIMD3<Float>(world.x, world.y, world.z)))
   }
 }
