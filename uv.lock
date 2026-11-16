@@ -1779,6 +1779,7 @@ dependencies = [
     { name = "psycopg", extra = ["binary", "pool"] },
     { name = "pydantic-settings" },
     { name = "pyjwt", extra = ["crypto"] },
+    { name = "sajao-schemas" },
     { name = "structlog" },
     { name = "uvicorn" },
 ]
@@ -1790,6 +1791,7 @@ requires-dist = [
     { name = "psycopg", extras = ["binary", "pool"], specifier = ">=3.2" },
     { name = "pydantic-settings", specifier = ">=2.11" },
     { name = "pyjwt", extras = ["crypto"], specifier = ">=2.10" },
+    { name = "sajao-schemas", editable = "packages/schemas" },
     { name = "structlog", specifier = ">=25.4" },
     { name = "uvicorn", specifier = ">=0.38" },
 ]
