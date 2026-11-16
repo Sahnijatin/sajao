@@ -13,6 +13,7 @@ GPU budget: never more than three GPU containers at once across the app.
 
 from __future__ import annotations
 
+import contextlib
 import json
 from pathlib import Path
 
@@ -28,6 +29,7 @@ GATEWAY_SRC = (
 )
 
 MAX_GPUS = 3
+SMALL_GPU = ["L4", "A10G", "L40S"]  # first free; L4 capacity is sometimes short
 RENDER_GPUS = 2  # renders run beside a one-GPU gate pipeline
 CU124 = "https://download.pytorch.org/whl/cu124"
 TRIPOSG_REF = "fc5c40990181e2a756c4e0b1c2f4d6b5202faf8c"
@@ -301,10 +303,8 @@ VOLS = {"/bk": bk_vol}
 
 def _reload() -> None:
     """Pick up other containers' writes; a warm container may hold open cache logs."""
-    try:
+    with contextlib.suppress(RuntimeError):
         bk_vol.reload()
-    except RuntimeError:
-        pass
 
 
 TWIN_VOLS = {"/bk": bk_vol, "/vol": twin_vol}
@@ -319,7 +319,7 @@ ROOMS = [
 ]
 
 
-@app.function(image=twin_image, gpu="L4", volumes=TWIN_VOLS, timeout=1800, max_containers=1)
+@app.function(image=twin_image, gpu=SMALL_GPU, volumes=TWIN_VOLS, timeout=1800, max_containers=1)
 def survey(room: str) -> dict:
     from bk.twin import survey as run
 
@@ -337,7 +337,7 @@ def clear(room: str, ids: list[int], tag: str) -> dict:
     return r
 
 
-@app.function(image=asset_image, gpu="L4", volumes=VOLS, timeout=3600, max_containers=MAX_GPUS)
+@app.function(image=asset_image, gpu=SMALL_GPU, volumes=VOLS, timeout=3600, max_containers=MAX_GPUS)
 def cutouts(lids: list[str]) -> list[dict]:
     from bk.assets import make_cutouts
 
@@ -403,7 +403,7 @@ def sam3d(lids: list[str]) -> list[dict]:
 
 @app.function(
     image=gen_image,
-    gpu="L4",
+    gpu=SMALL_GPU,
     volumes=TWIN_VOLS,
     timeout=3600,
     max_containers=RENDER_GPUS,
@@ -453,7 +453,7 @@ def build_parametric(lids: list[str]) -> list[dict]:
     return out
 
 
-@app.function(image=asset_image, gpu="L4", volumes=VOLS, timeout=3600, max_containers=MAX_GPUS)
+@app.function(image=asset_image, gpu=SMALL_GPU, volumes=VOLS, timeout=3600, max_containers=MAX_GPUS)
 def gate(model: str, jobs: list[tuple[str, list[str]]]) -> list[dict]:
     from bk.fidelity import gate_listing
 
@@ -469,7 +469,7 @@ def gate(model: str, jobs: list[tuple[str, list[str]]]) -> list[dict]:
     return out
 
 
-@app.function(image=asset_image, gpu="L4", volumes=VOLS, timeout=3600, max_containers=MAX_GPUS)
+@app.function(image=asset_image, gpu=SMALL_GPU, volumes=VOLS, timeout=3600, max_containers=MAX_GPUS)
 def prepare_assets(model: str, lids: list[str]) -> list[dict]:
     from bk.fidelity import prepare_asset
 
@@ -484,7 +484,12 @@ def prepare_assets(model: str, lids: list[str]) -> list[dict]:
 
 
 @app.function(
-    image=gen_image, gpu="L4", volumes=VOLS, timeout=3600, max_containers=1, secrets=[hf_secret]
+    image=gen_image,
+    gpu=SMALL_GPU,
+    volumes=VOLS,
+    timeout=3600,
+    max_containers=1,
+    secrets=[hf_secret],
 )
 def recut(jobs: list[tuple[str, str]]) -> list[dict]:
     """Room-shot recut (Grounding DINO plus SAM 2.1) for photos BiRefNet could not isolate."""
@@ -502,7 +507,7 @@ def recut(jobs: list[tuple[str, str]]) -> list[dict]:
 
 
 @app.function(
-    image=twin_image, gpu="L4", volumes=TWIN_VOLS, timeout=3600, max_containers=RENDER_GPUS
+    image=twin_image, gpu=SMALL_GPU, volumes=TWIN_VOLS, timeout=3600, max_containers=RENDER_GPUS
 )
 def c3_prep(room: str, design_id: str, n: int = 4) -> dict:
     """Arm C3 removal, twin side: keyframes, removal masks and plane depth."""

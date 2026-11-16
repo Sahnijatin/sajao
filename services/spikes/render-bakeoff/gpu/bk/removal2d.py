@@ -101,18 +101,35 @@ def choose_keyframes(room: str, scene, original, removed, fi_hero: int, n: int =
     return [fi for fi, _ in chosen]
 
 
+def plausible_removal(box: dict) -> bool:
+    """Instance labels are noisy: a 1.4 m thin "lamp" is a radiator or curtain. Remove
+    only what the label and the shape agree on; the room shell stays."""
+    sz = sorted(box.get("size", [0, 0, 0])[:2])
+    if any(k in box["label"] for k in ("curtain", "window", "radiator", "door")):
+        return False
+    return not (box["label"] == "lamp" and sz[1] > 0.6)
+
+
 def c3_prep(room: str, variant: str, fi_hero: int, items: list[dict], n: int = 4) -> dict:
     """Photos, removal masks and plane depth for the chosen keyframes (twin image)."""
     import cv2
     import torch
     from bk.compose import camera, render_splat, wall_planes
     from bk.twin import load_twin, room_dir
-    from scipy.ndimage import binary_dilation
+    from scipy.ndimage import binary_dilation, binary_fill_holes
     from twin_gpu.common import read_rgb, scene_dir
 
-    scene, original, _, _ = load_twin(room)
-    fr = json.loads((room_dir(room) / "survey.json").read_text())["frame"]
+    scene, original, labels, _ = load_twin(room)
+    sv = json.loads((room_dir(room) / "survey.json").read_text())
+    fr = sv["frame"]
     removed = np.load(room_dir(room) / f"removed_{variant}.npy")
+    dropped = []
+    if labels is not None:
+        boxes = {b["id"]: b for b in sv.get("instances", sv.get("boxes", []))}
+        ids = [int(i) for i in np.unique(labels[removed]) if i > 0]
+        keep_ids = [i for i in ids if i in boxes and plausible_removal(boxes[i])]
+        dropped = [(i, boxes[i]["label"]) for i in ids if i not in keep_ids and i in boxes]
+        removed = np.isin(labels, keep_ids)
     frames = choose_keyframes(room, scene, original, removed, fi_hero, n)
     walls = wall_planes(original, fr, items, max_walls=4)
     out = c3_dir(room, variant)
@@ -122,7 +139,10 @@ def c3_prep(room: str, variant: str, fi_hero: int, items: list[dict], n: int = 4
         _, rd, ra = render_splat(original, k, c2w, w, h, mask=rm)
         _, fd, _ = render_splat(original, k, c2w, w, h)
         # only where the removed furniture is the front surface (kept objects in front stay)
-        mask = binary_dilation((ra > 0.2) & (rd <= fd + 0.05), iterations=6)
+        mask = (ra > 0.2) & (rd <= fd + 0.05)
+        # Close gaps inside the furniture silhouette so no fragments survive the inpaint.
+        mask = cv2.morphologyEx(mask.astype(np.uint8), cv2.MORPH_CLOSE, np.ones((25, 25), np.uint8))
+        mask = binary_dilation(binary_fill_holes(mask), iterations=6)
         photo = read_rgb(scene_dir(room) / scene["frames"][fi]["file"])
         photo = cv2.resize(photo, (w, h), interpolation=cv2.INTER_LANCZOS4)
         pd = plane_depth(k, c2w, w, h, fr, walls).astype(np.float32)
@@ -133,6 +153,7 @@ def c3_prep(room: str, variant: str, fi_hero: int, items: list[dict], n: int = 4
         "hero": fi_hero,
         "frames": frames,
         "walls": len(walls),
+        "not_removed": dropped,
     }
     (out / "prep.json").write_text(json.dumps(meta, indent=1))
     return meta
@@ -201,7 +222,7 @@ def c3_inpaint(room: str, variant: str, model: str = "qwen") -> dict:
     hero = prep["hero"]
     prompt = passes.CLEAN_PROMPT
     seconds = 0.0
-    fills, independent = {}, {}
+    fills, independent, coverage = {}, {}, {}
     fills[hero], dt = passes.region_edit(
         model, views[hero]["photo"], views[hero]["mask"], prompt, [], 21
     )
@@ -217,6 +238,11 @@ def c3_inpaint(room: str, variant: str, model: str = "qwen") -> dict:
         holes = cv2.morphologyEx(
             holes.astype(np.uint8), cv2.MORPH_OPEN, np.ones((5, 5), np.uint8)
         ).astype(bool)
+        coverage[fi] = {
+            "mask_px": int(v["mask"].sum()),
+            "reprojected_px": int(valid.sum()),
+            "model_filled_px": int(holes.sum()),
+        }
         if holes.sum() > 200:
             p2 = (
                 prompt
@@ -247,7 +273,10 @@ def c3_inpaint(room: str, variant: str, model: str = "qwen") -> dict:
         cv2.imwrite(str(d / f"{fi}_inpainted.png"), cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
     for fi, img in independent.items():
         cv2.imwrite(str(d / f"{fi}_independent.png"), cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
+    # Note: propagated overlap matches the primary by construction (same pixels, resampled);
+    # the independent baseline shows how far apart per-view inpaints drift without it.
     res = {
+        "coverage": coverage,
         "room": room,
         "variant": variant,
         "model": model,

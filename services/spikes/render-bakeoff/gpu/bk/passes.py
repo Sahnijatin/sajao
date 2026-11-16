@@ -28,7 +28,8 @@ LIGHT_PROMPT = (
 )
 CLEAN_PROMPT = (
     "Fill the grey area with the empty floor and wall that continue naturally around it, matching their colour, "
-    "texture and lighting. Do not add any furniture or objects. Keep everything outside the grey area unchanged."
+    "texture and lighting. The floor keeps exactly the material visible elsewhere in the image (carpet stays "
+    "carpet, tiles stay tiles). Do not add any furniture or objects. Keep everything outside the grey area unchanged."
 )
 
 

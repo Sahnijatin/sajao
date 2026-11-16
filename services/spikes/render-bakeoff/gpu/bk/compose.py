@@ -606,7 +606,7 @@ def composite(
     params = splat_params(room, variant)
     fr = json.loads((room_dir(room) / "survey.json").read_text())["frame"]
     k, c2w, w, h = camera(scene, fi)
-    rgb, sdepth, salpha = render_splat(params, k, c2w, w, h)
+    rgb, sdepth, _ = render_splat(params, k, c2w, w, h)
     t_splat = time.time() - t0
     photo = None
     if background == "keyframe":

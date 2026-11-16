@@ -126,7 +126,7 @@ def main(stage: str, model: str = "triposg", only: str = "") -> None:
             res = batched_map(A.prepare_assets, [model] * len(lids), [[lid] for lid in lids])
             (OUT / f"prepare_{model}.json").write_text(json.dumps(res, indent=1, default=float))
             print(sum(1 for r in res if "error" in r), "errors of", len(res))
-        elif stage in ("clear", "compose", "plant", "pilot", "generate", "check"):
+        elif stage in ("clear", "c3", "compose", "plant", "pilot", "generate", "check"):
             rooms = room_files()
             sel = only.split(",") if only else []
             jobs = [
@@ -143,6 +143,14 @@ def main(stage: str, model: str = "triposg", only: str = "") -> None:
                     [r for r in rs],
                     [rooms[r]["clear"]["zone"] for r in rs],
                     ["zone"] * len(rs),
+                )
+            elif stage == "c3":
+                # One removal per room: every design in a room shares the cleared keyframes.
+                rs = [r for r in rooms if not sel or r in sel]
+                prep = stream(A.c3_prep, rs, [rooms[r]["designs"][0]["id"] for r in rs])
+                ok = [p for p in prep if "variant" in p]
+                res = prep + stream(
+                    A.c3_inpaint, [p["room"] for p in ok], [p["variant"] for p in ok]
                 )
             elif stage == "compose":
                 res = stream(A.compose, [j[0] for j in jobs], [j[1] for j in jobs])
