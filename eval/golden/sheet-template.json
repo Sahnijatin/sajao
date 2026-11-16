@@ -1,0 +1,12 @@
+{
+  "room": "City bedroom 1",
+  "unit": "cm",
+  "walls": { "W1": 352, "W2": 410, "W3": 350, "W4": 412 },
+  "ceiling": [272, 270],
+  "doors": [{ "wall": "W1", "width": 90, "height": 210, "offset": 30 }],
+  "windows": [{ "wall": "W3", "width": 120, "height": 120, "sill": 90, "offset": 60 }],
+  "furniture": [
+    { "name": "bed", "width": 195, "depth": 160, "height": 95 },
+    { "name": "almirah", "width": 90, "depth": 50, "height": 190 }
+  ]
+}
