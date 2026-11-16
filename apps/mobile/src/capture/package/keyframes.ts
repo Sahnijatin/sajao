@@ -20,8 +20,14 @@ export const YAW_CELL_DEGREES = 30;
 const PITCH_BANDS = [-20, 20];
 /** Without a pose, one keyframe per this many milliseconds. */
 export const TIME_CELL_MS = 1500;
-/** A blurred frame never becomes a keyframe. */
-export const MIN_SHARPNESS = 60;
+/**
+ * A frame with no measurable detail never becomes a keyframe. The sharpness
+ * scale depends on the phone, the light and the room (a plain wall in a dim
+ * room reads low while perfectly sharp), so there is no fixed bar for
+ * "blurred": each cell keeps its sharpest frame instead, and a scan in a
+ * plain or dim room still produces keyframes.
+ */
+export const MIN_SHARPNESS = 1;
 /** A cell's keyframe is replaced only by a clearly sharper frame. */
 const REPLACE_MARGIN = 1.1;
 export const MAX_KEYFRAMES = 120;

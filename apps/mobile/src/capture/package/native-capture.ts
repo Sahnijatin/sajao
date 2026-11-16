@@ -87,8 +87,19 @@ export function localCapture(
 
 /** Sensor readings are logged at most this often. */
 export const SENSOR_INTERVAL_MS = 200;
+/** Motion sensor readings arrive ten a second and are all kept. */
+export const IMU_INTERVAL_MS = 90;
 
-/** True when a sensor reading at `atMs` should be logged after one at `lastMs`. */
-export function sensorDue(lastMs: number | null, atMs: number): boolean {
-  return lastMs === null || atMs - lastMs >= SENSOR_INTERVAL_MS;
+/** How often a source is logged, in ms. */
+export function sensorInterval(source: string): number {
+  return source === "imu" ? IMU_INTERVAL_MS : SENSOR_INTERVAL_MS;
+}
+
+/** True when a sensor reading at `atMs` should be logged after one from the same source at `lastMs`. */
+export function sensorDue(
+  lastMs: number | null,
+  atMs: number,
+  intervalMs: number = SENSOR_INTERVAL_MS,
+): boolean {
+  return lastMs === null || atMs - lastMs >= intervalMs;
 }

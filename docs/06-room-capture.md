@@ -10,19 +10,21 @@ You scan whatever you want redone: a whole room, a corner, a balcony or any area
 
 **Guardrails.** Live chips watch light, speed and shake, phone level, and mirrors and glare. When one fails the scan pauses softly with a fix ("A little more light") and keeps everything mapped so far; you can also scan anyway. Never a hard error.
 
+**Two scan modes, one package.** The full scan counts coverage on walls and floor from AR planes and offers hints from live labels. The simple scan asks nothing of planes or the detector: it shows one clean progress ring and counts coverage from how the camera turned and moved (heading sectors covered while turning slowly with a sharp picture, plus metres walked from AR poses, or steady time when AR never tracks). Its hints come from motion alone: slow down, step back, walk around, Done. Android starts in the simple scan. Any phone turns simple when no plane is found or the detector has not loaded ten seconds into the scan, and it never switches back, so progress never jumps. The live mesh and labels still draw wherever the phone finds them (LiDAR, or once planes appear); they are a preview, and the complete inventory comes from the server. Both modes record the same capture package.
+
 Works on any Android or iPhone. Translucent glass guides over the camera (level line, "step back", "include a corner", "turn on lights"), a coverage ring, and sharpness and blur checks running on the device without AI. Gallery upload is allowed. ARKit or ARCore poses are attached when the phone has them, but never required. Compass headings are averaged during capture for Vastu. Uploads are compressed on the phone and resumable in the background.
 
 ## Capture package
 
 An AR scan records one package for the twin (schema: `Capture.package`). The phone captures; the server understands.
 
-- **Video.** On Android, ARCore's Recording API writes the scan as an MP4 with AR data tracks, from start to Done, whatever tracking says.
+- **Video.** The whole scan from start to Done, whatever tracking says. On Android, ARCore's Recording API writes an MP4 with AR data tracks. On iOS, the AR session's own camera images are written as an H.264 MP4 at up to 30 frames a second, in sensor orientation like the keyframes, with the AR frames' own timestamps.
 - **Keyframes.** Up to 120 full-resolution JPEGs, the sharpest per direction (30 degree yaw sectors, three pitch bands), or per 1.5 s while tracking is lost. Keyframes never depend on the detector or on tracking: a frame taken without tracking is kept without a pose, and the server solves it. The native view saves a candidate only when it is clearly sharper than the best for its cell; the app's recorder decides which are kept and the rest are deleted at once. Images are stored in sensor orientation.
 - **Pose and intrinsics per keyframe.** ARKit or ARCore camera pose in the AR world frame (metres, gravity aligned, y up): position and a unit quaternion (x, y, z, w), with the camera's +X right, +Y up and -Z forward relative to the stored image. Intrinsics (fx, fy, cx, cy) are in the stored image's pixels.
 - **Depth** where the phone has it (LiDAR scene depth; ARCore raw depth with its own confidence image, not the smoothed depth that fills blank walls by interpolation): one file, format SJDEPTH1, little endian: magic `SJDEPTH1`, `uint32` count, then per keyframe `uint16` id length, the keyframe id (`k1`, `k2`, ...), `uint32` width, `uint32` height, `uint16` millimetres per pixel (0 means no reading), `uint8` confidence per pixel (0 to 255). Each depth image is aligned to its keyframe; scale the keyframe's intrinsics by the width ratio. Reader: `sajao_workers.capture_depth`.
 - **Planes** as JSON (`sajao-planes-1`): type, ARKit class where available, a column-major 4 by 4 transform, extent and the polygon in the plane's x and z.
 - **LiDAR scene mesh** as binary PLY in the AR world frame with ARKit's surface class per face.
-- **Live detections** with world points, and a **sensor log** of AR poses (JSON lines, at most five a second).
+- **Live detections** with world points, and a **sensor log** as JSON lines: AR poses (`source: "ar_pose"`, at most five a second) and motion sensor readings (`source: "imu"`, about ten a second: turn rates in degrees a second as `gyro_alpha`, `gyro_beta`, `gyro_gamma`, and acceleration in m/s² without gravity as `accel_x`, `accel_y`, `accel_z` and with gravity as `gravity_accel_*`, on the axes the platform reports). Each line carries `t`, milliseconds since the scan started.
 
 The package works without AR (keyframes and video, no poses). Depth, planes and mesh are measurements from the phone's sensors; nothing in the package is set by a generative model, and tape still decides fit. Keyframes follow the same upload safety path as photos.
 
@@ -40,6 +42,10 @@ Single-image models can shrink far-away geometry, which is why scale is cross-ch
 ## Confirm, never draw
 
 The Space Profile card shows what we found (the space type and size, with a Change action) and the plan drawn over your photo. You choose what to redo, "All of it" or "Just a part" by drawing around a corner or wall. You can drag a door, mark each existing item keep, replace or remove, and add tape values. Each value snaps in with a haptic tick and re-fits the whole room.
+
+## Upload and registration
+
+On Done the phone uploads every file of the package with the resumable uploader (small files first, the video last), then registers the capture with the API (`POST /v1/captures`). The API validates the Capture object, checks that every storage key belongs to the caller, and stores it for the twin worker. The capture id is chosen on the phone when the scan starts, so both steps are safe to repeat after a lost connection or an app restart: finished files are skipped and registering again returns the stored capture.
 
 ## Upload safety and privacy
 

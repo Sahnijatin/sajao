@@ -5,7 +5,7 @@
 // Everything that touches the network or the disk is passed in, so this
 // logic is tested without a phone.
 
-export type MediaKind = "photo" | "video";
+export type MediaKind = "photo" | "video" | "data";
 
 export interface UploadedPart {
   part_number: number;

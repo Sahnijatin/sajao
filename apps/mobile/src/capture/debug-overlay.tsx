@@ -4,12 +4,18 @@
 import { Text } from "@sajao/ui";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
+import { headingShare } from "./motion-coverage";
 import type { ScanState } from "./scan-session";
 import type { ScanDebug } from "./use-scan-session";
 
 const round = (value: number, digits = 0) => value.toFixed(digits);
 
-export function scanDebugLines(debug: ScanDebug, state: ScanState): [string, string][] {
+export function scanDebugLines(
+  debug: ScanDebug,
+  state: ScanState,
+  /** Why the AR session could not start, when it could not: the scan then runs in 2D. */
+  arStartError: string | null = null,
+): [string, string][] {
   const stats = state.frame?.stats;
   return [
     ["cameraFps", round(debug.cameraFps)],
@@ -29,6 +35,14 @@ export function scanDebugLines(debug: ScanDebug, state: ScanState): [string, str
     ["gyro", state.hasGyro ? "1" : "0"],
     ["usable", round(state.usableFrames)],
     ["error", debug.diagnostics.lastError ?? "-"],
+    ["mode", `${state.mode.mode}${state.mode.reason ? ` (${state.mode.reason})` : ""}`],
+    ["heading", `${round(headingShare(state.motionCoverage) * 100)}%`],
+    ["moved", `${round(state.motionCoverage.pathM, 1)} m`],
+    [
+      "motionSamples",
+      `${state.motionCoverage.accepted} / ${state.motionCoverage.rejected} rejected`,
+    ],
+    ...(arStartError ? ([["arStart", arStartError]] as [string, string][]) : []),
     ...(debug.ar
       ? ([
           ["tracking", debug.ar.tracking],
@@ -39,6 +53,7 @@ export function scanDebugLines(debug: ScanDebug, state: ScanState): [string, str
           ["detector", debug.ar.detector ? "1" : "0"],
           ["detectorStatus", debug.ar.detectorStatus || "-"],
           ["cameraImage", debug.ar.cameraImage || "-"],
+          ["session", debug.ar.session || "-"],
           ["planeStates", debug.ar.planeStates || "-"],
           ["surfaceHits", debug.ar.surfaceHits || "-"],
           ["video", debug.ar.video || "-"],
@@ -59,7 +74,15 @@ export function scanDebugLines(debug: ScanDebug, state: ScanState): [string, str
   ];
 }
 
-export function DebugOverlay({ debug, state }: { debug: ScanDebug; state: ScanState }) {
+export function DebugOverlay({
+  debug,
+  state,
+  arStartError = null,
+}: {
+  debug: ScanDebug;
+  state: ScanState;
+  arStartError?: string | null;
+}) {
   const { t } = useTranslation();
   return (
     <View
@@ -67,7 +90,7 @@ export function DebugOverlay({ debug, state }: { debug: ScanDebug; state: ScanSt
       pointerEvents="none"
       style={{ padding: 8, borderRadius: 8, backgroundColor: "rgba(0, 0, 0, 0.7)", gap: 2 }}
     >
-      {scanDebugLines(debug, state).map(([key, value]) => (
+      {scanDebugLines(debug, state, arStartError).map(([key, value]) => (
         <Text key={key} variant="caption" tone="onDark">
           {`${t(`capture.debug.${key}`)}: ${value}`}
         </Text>

@@ -87,6 +87,8 @@
       "detector": "Detector",
       "detectorStatus": "Detector status",
       "cameraImage": "Camera image",
+      "session": "AR session",
+      "arStart": "AR start error",
       "planeStates": "Plane states",
       "surfaceHits": "Coverage hits",
       "video": "Video",
@@ -101,7 +103,11 @@
       "arTurn": "AR turn deg/s",
       "walls": "Walls",
       "samplesAccepted": "Samples counted",
-      "samplesRejected": "Samples rejected"
+      "samplesRejected": "Samples rejected",
+      "mode": "Scan mode",
+      "heading": "Heading covered",
+      "moved": "Walked",
+      "motionSamples": "Motion samples"
     },
     "labels": {
       "fridge": "Fridge",
@@ -116,7 +122,10 @@
       "doorway": "Finish this space first, then scan the next one",
       "stepBack": "Step back to fit it all in",
       "walkAround": "Walk around the {{object}}",
-      "coverMore": "Done is ready. Cover a bit more for the best result"
+      "coverMore": "Done is ready. Cover a bit more for the best result",
+      "slowDown": "Slow down a little",
+      "walk": "Walk around the space as you scan",
+      "complete": "All covered. Tap Done"
     }
   },
   "space": {

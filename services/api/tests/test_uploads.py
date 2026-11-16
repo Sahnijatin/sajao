@@ -116,11 +116,22 @@ async def test_uploads_need_a_signed_in_or_guest_caller() -> None:
         ({"kind": "photo", "content_type": "application/pdf", "size_bytes": 10}, 415, None),
         ({"kind": "photo", "content_type": "video/mp4", "size_bytes": 10}, 415, None),
         ({"kind": "photo", "content_type": "image/jpeg", "size_bytes": 21 * MIB}, 413, None),
-        ({"kind": "video", "content_type": "video/mp4", "size_bytes": 201 * MIB}, 413, None),
+        ({"kind": "video", "content_type": "video/mp4", "size_bytes": 513 * MIB}, 413, None),
+        ({"kind": "data", "content_type": "application/json", "size_bytes": 101 * MIB}, 413, None),
+        ({"kind": "data", "content_type": "image/jpeg", "size_bytes": 10}, 415, None),
         ({"kind": "photo", "content_type": "image/jpeg", "size_bytes": 0}, 422, None),
         ({"kind": "document", "content_type": "image/jpeg", "size_bytes": 10}, 422, None),
     ],
-    ids=["pdf", "video-as-photo", "photo-too-large", "video-too-large", "empty", "unknown-kind"],
+    ids=[
+        "pdf",
+        "video-as-photo",
+        "photo-too-large",
+        "video-too-large",
+        "data-too-large",
+        "image-as-data",
+        "empty",
+        "unknown-kind",
+    ],
 )
 async def test_only_room_media_within_the_size_limits_can_start_an_upload(
     body: dict[str, Any], status: int, code: None
@@ -270,3 +281,35 @@ async def test_a_real_multipart_upload_resumes_on_the_local_stack() -> None:
         )
         assert gone.status_code == 404
     storage.delete(plan["key"])
+
+
+@pytest.mark.parametrize(
+    ("content_type", "extension"),
+    [
+        ("application/x-ndjson", "jsonl"),
+        ("application/json", "json"),
+        ("application/octet-stream", "bin"),
+    ],
+)
+async def test_capture_package_data_files_upload_and_resume(
+    content_type: str, extension: str
+) -> None:
+    storage = InMemoryObjectStorage()
+    body = {"kind": "data", "content_type": content_type, "size_bytes": 2000}
+    async with client(storage) as api:
+        created = await api.post("/v1/uploads", json=body, headers=headers())
+        plan = created.json()
+        assert created.status_code == 201
+        assert plan["key"].startswith(f"{USER_A}/") and plan["key"].endswith(f".{extension}")
+        ref = {"key": plan["key"], "upload_id": plan["upload_id"]}
+        resumed = await api.post(
+            "/v1/uploads/resume", json={**ref, "size_bytes": 2000}, headers=headers()
+        )
+        assert resumed.status_code == 200
+        etag = storage.put_part(plan["key"], plan["upload_id"], 1, b"x" * 2000)
+        done = await api.post(
+            "/v1/uploads/complete",
+            json={**ref, "parts": [{"part_number": 1, "size_bytes": 2000, "etag": etag}]},
+            headers=headers(),
+        )
+        assert done.json() == {"key": plan["key"], "size_bytes": 2000}

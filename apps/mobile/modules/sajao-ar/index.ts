@@ -46,7 +46,9 @@ export interface ArStatusEvent {
   detectorStatus?: string;
   /** Camera image size the detector and keyframes see, for example "640x480". */
   cameraImage?: string;
-  /** Planes by state, for example "tracking 4 paused 1". */
+  /** The AR session as configured: plane finding, depth, focus and camera configuration. */
+  session?: string;
+  /** Planes by state, for example "tracking 4 paused 1 stopped 0 merged 2 of 7". */
   planeStates?: string;
   /** Coverage hits by source, for example "planes 120 points 40". */
   surfaceHits?: string;
@@ -133,7 +135,7 @@ export interface ArCaptureFiles {
   planes: string | null;
   sceneMesh: string | null;
   depth: string | null;
-  /** The scan video (Android: ARCore's MP4 with AR data tracks); null when none was recorded. */
+  /** The scan video (Android: ARCore's MP4 with AR data tracks; iOS: H.264 MP4 of the AR camera); null when none was recorded. */
   video?: string | null;
   error?: string;
 }

@@ -144,6 +144,7 @@ splat_image = (
     splat_base.add_local_dir(SRC, "/root/sajao_workers")
     .add_local_file(HERE / "splat_gpu.py", "/root/splat_gpu.py")
     .add_local_file(HERE / "removal_gpu.py", "/root/removal_gpu.py")
+    .add_local_file(HERE / "review_gpu.py", "/root/review_gpu.py")
 )
 
 # Phone splats: PlayCanvas splat-transform on CPU, pinned as in the SJ-116 spike.
@@ -166,6 +167,7 @@ cpu_image = (
     .pip_install("pydantic==2.14.3")
     # Vision models for the room inventory (Gemini on Vertex AI, Claude).
     .pip_install("httpx==0.28.1", "google-auth[requests]==2.62.2", "anthropic==2.8.0")
+    .pip_install("imageio==2.37.0", "imageio-ffmpeg==0.6.0")  # review videos
     .env({"PYTHONUNBUFFERED": "1"})
     .add_local_dir(SRC, "/root/sajao_workers")
     .add_local_dir(GATEWAY, "/root/sajao_gateway")
@@ -508,6 +510,10 @@ def run_splat(model: str, task: str, payload: dict[str, Any]) -> dict[str, Any]:
                 lama_sha256=model.split("@", 1)[1],
                 steps=int(payload.get("steps", 5000)),
             )
+        elif task == "twin_review" and model.startswith("gsplat@"):
+            import review_gpu
+
+            output = review_gpu.review(payload, _store())
         else:
             return {"error": f"unknown splat task {task} for {model}"}
     except splat_gpu.InputError as error:
@@ -1289,7 +1295,7 @@ async def _build_twin(
         {
             "twin_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"twin/{capture['id']}")),
             "version": 1,
-            "created_at": "2026-11-16T00:00:00Z",
+            "created_at": capture.get("created_at", "2026-11-16T00:00:00Z"),
         },
     )
     vol.commit()
@@ -1462,6 +1468,213 @@ def edit_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
     return asyncio.run(run())
 
 
+def _capture_file(root: Path, key: str) -> bytes:
+    """A file of an uploaded capture folder, by its storage key (or the key's file name)."""
+    for path in (root / key, root / Path(key).name):
+        if path.is_file():
+            return path.read_bytes()
+    raise FileNotFoundError(f"{key} is not in the capture folder")
+
+
+@app.function(
+    image=cpu_image,
+    volumes={"/work": vol, "/vol": spike_vol},
+    cpu=8,
+    memory=16384,
+    timeout=7200,
+    secrets=VISION_SECRETS,
+)
+def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
+    """An uploaded capture to its twin, and the twin's accuracy against the tape sheet."""
+    import asyncio
+    import json
+
+    from sajao_gateway import ModelGateway
+    from sajao_schemas.generated.v1 import Capture
+    from sajao_workers.golden import accuracy_report, markdown, read_sheet
+    from sajao_workers.models import depth_chain
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.capture_frames import frames_manifest
+    from sajao_workers.twin.depth_step import depth_step
+
+    vol.reload()
+    root = Path("/work/golden") / folder
+    capture = json.loads((root / "capture.json").read_text())
+    Capture.model_validate(capture)
+    package = capture["package"]
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    runner = StepRunner(store, max_attempts=1)
+    ledger = _ledger()
+    images = {
+        k["id"]: store.put_blob(_capture_file(root, k["image"])) for k in package["keyframes"]
+    }
+    depth = _capture_file(root, package["depth"]) if package.get("depth") else None
+    manifest = frames_manifest(package, images, depth, store)
+
+    async def run() -> dict[str, Any]:
+        nonlocal manifest
+        depth_meta: dict[str, Any] = {"model": "lidar"}
+        if manifest["depth_source"] != "lidar":  # phones without LiDAR: depth from images
+            estimated = await runner.run(
+                depth_step(ModelGateway(depth_chain(volume_invoke("twin_depth")), ledger=ledger)),
+                {"frames": store.put_blob(json.dumps(manifest).encode())},
+                {},
+            )
+            manifest = json.loads(store.read_blob(estimated.outputs["frames"]))
+            depth_meta = dict(estimated.meta)
+        built = await _build_twin(store, runner, ledger, capture, manifest)
+        twin = json.loads(store.read_blob(built["twin"].outputs["twin"]))
+        report = accuracy_report(twin, read_sheet(sheet))
+        charged = sum(built[k].cost_micro_inr for k in ("objects", "splat", "phone"))
+        return {
+            "twin": twin,
+            "report": report,
+            "markdown": markdown(report),
+            "run": {
+                "depth": depth_meta,
+                "objects": dict(built["objects"].meta),
+                "splat": dict(built["splat"].meta),
+                "twin": dict(built["twin"].meta),
+                "charged_micro_inr": charged,
+            },
+        }
+
+    return asyncio.run(run())
+
+
+def _quaternion_xyzw(r: Any) -> list[float]:
+    """Unit quaternion (x, y, z, w) of a rotation matrix, the capture package's order."""
+    import numpy as np
+
+    def part(a: float, b: float, c: float, sign: float) -> float:
+        return float(np.copysign(np.sqrt(max(0.0, 1 + a - b - c)) / 2, sign))
+
+    w = float(np.sqrt(max(0.0, 1 + np.trace(r))) / 2)
+    return [
+        part(r[0, 0], r[1, 1], r[2, 2], r[2, 1] - r[1, 2]),
+        part(r[1, 1], r[0, 0], r[2, 2], r[0, 2] - r[2, 0]),
+        part(r[2, 2], r[0, 0], r[1, 1], r[1, 0] - r[0, 1]),
+        w,
+    ]
+
+
+@app.function(image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, timeout=1800)
+def golden_fixture_cpu(scene: str, keyframes: int) -> str:
+    """An ARKitScenes room written as an uploaded capture folder (capture.json, keyframe
+    JPEGs, SJDEPTH1 depth), to test the golden-room command before real rooms exist."""
+    import json
+    import struct
+    import uuid
+
+    import numpy as np
+    from PIL import Image
+
+    from sajao_schemas.generated.v1 import Capture
+
+    cams = json.loads(Path(f"/vol/scenes/{scene}/cameras.json").read_text())
+    turn = _y_up(cams["up"])  # into an AR world, y up, as a phone delivers it
+    picks = np.linspace(0, len(cams["frames"]) - 1, keyframes).round().astype(int)
+    root = Path(f"/work/golden-fixtures/{scene}")
+    (root / "keyframes").mkdir(parents=True, exist_ok=True)
+    depth_parts = [b"SJDEPTH1", struct.pack("<I", len(picks))]
+    frames, media = [], []
+    capture_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"golden-fixture/{scene}"))
+    for n, i in enumerate(picks, start=1):
+        f = cams["frames"][int(i)]
+        base = Path(f"/vol/scenes/{scene}")
+        key = f"keyframes/k{n}.jpg"
+        (root / key).write_bytes((base / f["file"]).read_bytes())
+        c2w = np.asarray(f["c2w"], dtype=np.float64)
+        rotation = turn @ c2w[:3, :3] @ np.diag([1.0, -1.0, -1.0])  # OpenCV to AR camera axes
+        position = turn @ c2w[:3, 3]
+        q = _quaternion_xyzw(rotation)
+        k = f["K"]
+        frames.append(
+            {
+                "id": f"k{n}",
+                "image": key,
+                "captured_at_ms": 250 * n,
+                "sharpness": 1.0,
+                "pose": {
+                    "position": {"x_m": position[0], "y_m": position[1], "z_m": position[2]},
+                    "rotation": q,
+                },
+                "intrinsics": {"fx": k[0][0], "fy": k[1][1], "cx": k[0][2], "cy": k[1][2],
+                               "width_px": f["w"], "height_px": f["h"]},
+            }
+        )  # fmt: skip
+        media.append(
+            {"id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"{capture_id}/{n}")), "kind": "photo",
+             "origin": "camera", "storage_key": key, "width_px": f["w"], "height_px": f["h"],
+             "has_ar_pose": True}
+        )  # fmt: skip
+        depth = np.asarray(Image.open(base / f["depth"]), dtype=np.uint16)
+        ident = f"k{n}".encode()
+        depth_parts += [
+            struct.pack("<H", len(ident)),
+            ident,
+            struct.pack("<II", depth.shape[1], depth.shape[0]),
+            depth.astype("<u2").tobytes(),
+            np.where(depth > 0, 255, 0).astype(np.uint8).tobytes(),
+        ]
+    (root / "depth.sjdepth").write_bytes(b"".join(depth_parts))
+    (root / "sensor.jsonl").write_text("")
+    capture = {
+        "schema_version": "1.0",
+        "id": capture_id,
+        "user_id": str(uuid.uuid5(uuid.NAMESPACE_URL, "golden-fixture/user")),
+        "created_at": "2026-11-16T00:00:00Z",
+        "media": media[:40],
+        "device": {"platform": "ios", "tier": "standard", "has_ar": True},
+        # ARKitScenes has no compass reading: a declared test heading, not a measurement.
+        "compass": {"mean_heading_deg": 0.0, "sample_count": 1},
+        "package": {
+            "ar": {"tracking": "arkit", "lidar": True, "depth": True},
+            "keyframes": frames,
+            "depth": "depth.sjdepth",
+            "detections": [],
+            "sensor_log": "sensor.jsonl",
+        },
+    }
+    Capture.model_validate(capture)
+    (root / "capture.json").write_text(json.dumps(capture, indent=1))
+    vol.commit()
+    return str(root)
+
+
+@app.local_entrypoint()
+def golden_fixture(scene: str = "arkit_living_47331265", keyframes: int = 120) -> None:
+    print(golden_fixture_cpu.remote(scene, keyframes))
+
+
+@app.local_entrypoint()
+def golden_room(capture: str, tape: str, out: str = "") -> None:
+    """One golden room: `--capture` is the uploaded capture folder (capture.json plus the
+    files its storage keys name), `--tape` the measurement sheet (eval/golden). Writes the
+    twin, the report as JSON and Markdown, and run details to `--out`."""
+    import json
+    import re
+
+    from sajao_workers.golden import read_sheet
+
+    sheet = json.loads(Path(tape).read_text())
+    room = read_sheet(sheet).room or Path(capture).name  # a bad sheet stops here, before any GPU
+    slug = re.sub(r"[^a-z0-9]+", "-", room.lower()).strip("-") or "room"
+    if not (Path(capture) / "capture.json").is_file():
+        raise SystemExit(f"{capture} has no capture.json: pass the capture folder itself")
+    with vol.batch_upload(force=True) as batch:
+        batch.put_directory(capture, f"golden/{slug}")
+    result = golden_room_cpu.remote(slug, sheet)
+    target = Path(out or f"golden-runs/{slug}")
+    target.mkdir(parents=True, exist_ok=True)
+    (target / "twin.json").write_text(json.dumps(result["twin"], indent=1) + "\n")
+    (target / "report.json").write_text(json.dumps(result["report"], indent=1) + "\n")
+    (target / "report.md").write_text(result["markdown"])
+    (target / "run.json").write_text(json.dumps(result["run"], indent=1) + "\n")
+    print(result["markdown"])
+    print(f"Written to {target}")
+
+
 @app.local_entrypoint()
 def edit_smoke(scene: str = "arkit_living_47331265", keyframes: int = 120) -> None:
     import json
@@ -1545,6 +1758,13 @@ def removal_smoke_cpu(scene: str, keyframes: int, category: str) -> dict[str, An
             "removal": dict(removed.meta),
             "preview": preview,
             "charged_micro_inr": removed.cost_micro_inr,
+            "inputs": {
+                "splat": splat.outputs["splat"],
+                "removed": removed.outputs["splat"],
+                "cameras": splat.outputs["cameras"],
+                "frames": frames,
+                "objects": objects.outputs["objects"],
+            },
         }
 
     return asyncio.run(run())
@@ -1711,3 +1931,91 @@ def inventory_eval(
         (target / name).write_text(json.dumps(result, indent=1) + "\n")
         print(result["scene"], json.dumps(result["recall"]["listed"]["all"]),
               json.dumps(result["recall"]["placed"]["all"]))  # fmt: skip
+
+
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=8, memory=16384, timeout=7200
+)
+def review_pack_cpu(scene: str, keyframes: int, category: str) -> dict[str, Any]:
+    """A visual review of one room's twin: renders from the splat (see review_gpu).
+
+    The objects, splat and removal steps are the removal smoke's, so stored results are
+    reused; only the renders are new GPU work."""
+    import io
+    import json
+
+    import imageio.v2 as imageio
+    import numpy as np
+    from PIL import Image
+
+    from sajao_workers.models import GSPLAT
+    from sajao_workers.steps import LocalArtifactStore
+
+    smoke = removal_smoke_cpu.local(scene, keyframes, category)
+    if "error" in smoke:
+        return smoke
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    vol.reload()
+    payload = {**smoke["inputs"], "removed_index": int(smoke["object"][1:])}
+    reply = run_splat.remote(GSPLAT, "twin_review", payload)
+    if "error" in reply:
+        return {"scene": scene, "error": reply["error"]}
+    vol.reload()
+    out = reply["output"]
+    video = io.BytesIO()
+    with imageio.get_writer(
+        video, format="mp4", fps=out["fps"], codec="libx264", quality=8, macro_block_size=8
+    ) as writer:
+        for digest in out["video_frames"]:
+            writer.append_data(np.asarray(Image.open(io.BytesIO(store.read_blob(digest)))))
+    files: dict[str, bytes] = {"flythrough.mp4": video.getvalue()}
+    for still in [*out["stills"], *out["extremes"]]:
+        files[f"{still['name']}.jpg"] = store.read_blob(still["image"])
+    files["boxes.jpg"] = store.read_blob(out["boxes"]["image"])
+    files["control_photo_vs_render.jpg"] = store.read_blob(out["control"])
+    for view, pair in out["removal"].items():
+        before = Image.open(io.BytesIO(store.read_blob(pair["before"])))
+        after = Image.open(io.BytesIO(store.read_blob(pair["after"])))
+        side = Image.new("RGB", (before.width * 2 + 8, before.height), "white")
+        side.paste(before, (0, 0))
+        side.paste(after, (before.width + 8, 0))
+        buf = io.BytesIO()
+        side.save(buf, format="JPEG", quality=92)
+        files[f"removal_{view}_before_after.jpg"] = buf.getvalue()
+    summary = {
+        "scene": scene,
+        "removed": {"object": smoke["object"], "category": category, **smoke["removal"]},
+        "stills": [
+            {k: v for k, v in s.items() if k not in ("image", "c2w")}
+            for s in [*out["stills"], *out["extremes"]]
+        ],
+        "candidate_scores": out["candidate_scores"],
+        "video_nearest_training_camera_m": out["video_nearest_m"],
+        "boxes": {"from": out["boxes"]["from"], "labels": out["boxes"]["labels"]},
+        "removal_views": {
+            v: {k: x for k, x in p.items() if k not in ("before", "after")}
+            for v, p in out["removal"].items()
+        },
+        "room": out["room"],
+        "gpu_seconds": reply["gpu_seconds"],
+    }
+    files["summary.json"] = (json.dumps(summary, indent=1) + "\n").encode()
+    return {"files": files, "summary": summary}
+
+
+@app.local_entrypoint()
+def review_pack(
+    scene: str = "arkit_living_47331265",
+    keyframes: int = 120,
+    category: str = "sofa",
+    out: str = "review-pack",
+) -> None:
+    result = review_pack_cpu.remote(scene, keyframes, category)
+    if "files" not in result:
+        print(result)
+        return
+    target = Path(out)
+    target.mkdir(parents=True, exist_ok=True)
+    for name, data in result["files"].items():
+        (target / name).write_bytes(data)
+    print(result["files"]["summary.json"].decode())

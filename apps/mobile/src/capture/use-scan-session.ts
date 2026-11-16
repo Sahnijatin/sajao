@@ -9,6 +9,7 @@ import {
   currentHint,
   type Hint,
   isCutOff,
+  simpleHint,
   updateViews,
   type ViewBins,
   walkAroundTarget,
@@ -24,9 +25,18 @@ import {
   updateLabels,
 } from "./ar/labels";
 import type { SurfaceHit } from "./ar/surface-coverage";
-import { motionSample } from "./pose";
+import { motionSample, type RawMotion } from "./pose";
 import type { AnalysedFrame, CameraDiagnostics } from "./scan-camera";
-import { canFinish, INITIAL_SCAN, mappedShare, scanReducer } from "./scan-session";
+import { shouldWalk } from "./motion-coverage";
+import {
+  canFinish,
+  initialScan,
+  isSimple,
+  mappedShare,
+  scanReducer,
+  shouldShowSlowDown,
+  shouldStepBack,
+} from "./scan-session";
 
 const MOTION_INTERVAL_MS = 100;
 const DEBUG_WINDOW_MS = 1000;
@@ -67,6 +77,8 @@ export interface ArDebug {
   /** Detector load and self-test result. */
   detectorStatus: string;
   cameraImage: string;
+  /** The AR session as configured (plane finding, depth, camera configuration). */
+  session: string;
   planeStates: string;
   surfaceHits: string;
   /** Caught errors by type, the last message, and the scan video's state. */
@@ -89,11 +101,20 @@ const EMPTY_DEBUG: ScanDebug = {
   ar: null,
 };
 
-/** Scan state driven by analysed camera frames and the phone's motion sensors. */
-export function useScanSession(active: boolean) {
+/**
+ * Scan state driven by analysed camera frames and the phone's motion sensors.
+ * `onImu` receives every raw motion sensor reading, for the capture package.
+ */
+export function useScanSession(active: boolean, onImu?: (reading: RawMotion) => void) {
   const { tier } = useTheme();
   const reducer = useMemo(() => scanReducer(tier), [tier]);
-  const [state, dispatch] = useReducer(reducer, INITIAL_SCAN);
+  const [state, dispatch] = useReducer(
+    reducer,
+    Platform.OS === "ios" ? "ios" : "android",
+    initialScan,
+  );
+  const imu = useRef(onImu);
+  imu.current = onImu;
   const [debug, setDebug] = useState<ScanDebug>(EMPTY_DEBUG);
   const counters = useRef({
     startMs: Date.now(),
@@ -114,6 +135,7 @@ export function useScanSession(active: boolean) {
     const platform = Platform.OS === "ios" ? "ios" : "android";
     DeviceMotion.setUpdateInterval(MOTION_INTERVAL_MS);
     const subscription = DeviceMotion.addListener((reading) => {
+      imu.current?.(reading);
       dispatch({ type: "motion", sample: motionSample(reading, platform), atMs: Date.now() });
     });
     return () => subscription.remove();
@@ -207,6 +229,7 @@ export function useScanSession(active: boolean) {
         detectorError: status.detectorError ?? "",
         detectorStatus: status.detectorStatus ?? "",
         cameraImage: status.cameraImage ?? "",
+        session: status.session ?? "",
         planeStates: status.planeStates ?? "",
         surfaceHits: status.surfaceHits ?? "",
         errors: status.errors ?? "",
@@ -253,12 +276,24 @@ export function useScanSession(active: boolean) {
     });
     if (cutOff) setStepBackUntil(now + STEP_BACK_MS);
   }, []);
-  const hint: Hint = currentHint({
-    outside: state.doorway.outside,
-    stepBack: Date.now() < stepBackUntil,
-    walkAround: walkAroundTarget(trackedObjects(labels), views.current, mappedShare(state)),
-    coverMore: state.surfacesSeen && canFinish(state) && mappedShare(state) < 1,
-  });
+  const share = mappedShare(state);
+  const cutOff = Date.now() < stepBackUntil;
+  const walkAround = walkAroundTarget(trackedObjects(labels), views.current, share);
+  const hint: Hint = isSimple(state)
+    ? simpleHint({
+        slowDown: shouldShowSlowDown(state),
+        stepBack: cutOff || shouldStepBack(state),
+        walkAround,
+        walk: shouldWalk(state.motionCoverage),
+        doneReady: canFinish(state),
+        complete: canFinish(state) && share >= 1,
+      })
+    : currentHint({
+        outside: state.doorway.outside,
+        stepBack: cutOff,
+        walkAround,
+        coverMore: state.surfacesSeen && canFinish(state) && share < 1,
+      });
   useEffect(() => {
     counters.current.labelsRejected = labels.rejected;
   }, [labels.rejected]);

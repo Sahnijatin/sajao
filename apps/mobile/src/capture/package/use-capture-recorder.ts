@@ -12,22 +12,21 @@ import {
   type LocalCapture,
   localCapture,
   sensorDue,
+  sensorInterval,
 } from "./native-capture";
 import { record, type RecorderEvent, startRecording } from "./recorder";
+import { uuidV4 } from "./upload-capture";
 
 type Detections = Extract<RecorderEvent, { type: "detections" }>["detections"];
 
 const NO_FILES: ArCaptureFiles = { planes: null, sceneMesh: null, depth: null };
 
-/** A capture id that is unique on this phone; it names the local folder. */
-function newCaptureId(): string {
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
-}
-
 export function useCaptureRecorder(ar: CapturePackage["ar"]) {
-  const captureId = useMemo(newCaptureId, []);
+  // A UUID: it names the local folder and is the capture's id on the server.
+  const captureId = useMemo(() => uuidV4(), []);
   const state = useRef(startRecording(Date.now(), ar));
-  const lastSensor = useRef<number | null>(null);
+  // Each sensor source is paced on its own, so one never crowds out another.
+  const lastSensor = useRef<Record<string, number>>({});
   const viewRef = useRef<SajaoArViewRef>(null);
   const setLast = useCaptureStore((store) => store.setLast);
 
@@ -43,8 +42,9 @@ export function useCaptureRecorder(ar: CapturePackage["ar"]) {
 
   const onSensor = useCallback((reading: Record<string, number | string | boolean>) => {
     const now = Date.now();
-    if (!sensorDue(lastSensor.current, now)) return;
-    lastSensor.current = now;
+    const source = String(reading.source ?? "");
+    if (!sensorDue(lastSensor.current[source] ?? null, now, sensorInterval(source))) return;
+    lastSensor.current[source] = now;
     state.current = record(state.current, { type: "sensor", atMs: now, reading });
   }, []);
 
