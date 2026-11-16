@@ -15,6 +15,9 @@ android {
   sourceSets {
     // The detector model is shared with the iOS module.
     main.assets.srcDirs += ['../ios/Assets']
+    // Depth Anything V2 Small (Apache 2.0) for the on-device speed
+    // measurement only (PR "depth benchmark", not for merge).
+    main.assets.srcDirs += ['benchmark-assets']
   }
 }
 
@@ -23,5 +26,9 @@ dependencies {
   implementation 'com.google.ar:core:1.57.0'
   // MediaPipe Tasks: Apache 2.0.
   implementation 'com.google.mediapipe:tasks-vision:0.10.33'
+  // LiteRT runtime and GPU delegate (Apache 2.0): the depth benchmark only.
+  implementation 'com.google.ai.edge.litert:litert:1.4.2'
+  implementation 'com.google.ai.edge.litert:litert-gpu:1.4.2'
+  implementation 'com.google.ai.edge.litert:litert-gpu-api:1.4.2'
   testImplementation 'junit:junit:4.13.2'
 }

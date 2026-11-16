@@ -101,7 +101,10 @@
       "arTurn": "AR turn deg/s",
       "walls": "Walls",
       "samplesAccepted": "Samples counted",
-      "samplesRejected": "Samples rejected"
+      "samplesRejected": "Samples rejected",
+      "benchmark": "Depth benchmark",
+      "benchmarkRunning": "Measuring depth speed...",
+      "benchmarkUnavailable": "Depth benchmark is not in this build"
     },
     "labels": {
       "fridge": "Fridge",

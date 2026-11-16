@@ -101,7 +101,10 @@
       "arTurn": "AR घुमाव डिग्री/से",
       "walls": "दीवारें",
       "samplesAccepted": "गिने गए नमूने",
-      "samplesRejected": "अस्वीकृत नमूने"
+      "samplesRejected": "अस्वीकृत नमूने",
+      "benchmark": "डेप्थ बेंचमार्क",
+      "benchmarkRunning": "डेप्थ की गति माप रहे हैं...",
+      "benchmarkUnavailable": "इस बिल्ड में डेप्थ बेंचमार्क नहीं है"
     },
     "labels": {
       "fridge": "फ़्रिज",
