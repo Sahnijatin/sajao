@@ -15,7 +15,7 @@ import json
 from typing import Any
 
 from sajao_gateway import ModelGateway, ModelRequest
-from sajao_workers.models import VOCABULARY
+from sajao_workers.models import VOCABULARY, prompts_for
 from sajao_workers.steps import NonRetryableStepError, Step, StepContext, StepOutput
 from sajao_workers.twin.objects import (
     FrameMasks,
@@ -27,7 +27,7 @@ from sajao_workers.twin.objects import (
 from sajao_workers.validate import check_detections, check_masks
 
 # Bump when this step's logic, prompts or pinned model chains change.
-VERSION = 4
+VERSION = 5
 
 
 def objects_step(detect: ModelGateway, segment: ModelGateway) -> Step:
@@ -41,7 +41,11 @@ def objects_step(detect: ModelGateway, segment: ModelGateway) -> Step:
             )
 
         images = [{"image": f["image"], "width": f["width"], "height": f["height"]} for f in frames]
-        detect_payload = {"images": images, "vocabulary": list(VOCABULARY)}
+        detect_payload = {
+            "images": images,
+            "vocabulary": list(VOCABULARY),
+            "prompts": prompts_for(VOCABULARY),
+        }
         detected = await detect.call(
             ModelRequest("twin_detect", "vision", "twin_detect@1", detect_payload),
             validate=check_detections(detect_payload),

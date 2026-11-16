@@ -89,6 +89,12 @@ GROUPS = {
     "nightstand": "cabinet",
     "wardrobe": "cabinet",
     "shelf": "cabinet",
+    "almirah": "cabinet",
+    "shoe rack": "cabinet",
+    "tv unit": "cabinet",
+    "diwan": "sofa",
+    "dressing table": "table",
+    "gas stove": "stove",
 }
 
 
