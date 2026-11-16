@@ -1509,6 +1509,7 @@ dependencies = [
     { name = "numpy" },
     { name = "pillow" },
     { name = "sajao-gateway" },
+    { name = "sajao-schemas" },
 ]
 
 [package.metadata]
@@ -1516,6 +1517,7 @@ requires-dist = [
     { name = "numpy", specifier = ">=2.1" },
     { name = "pillow", specifier = ">=11.0" },
     { name = "sajao-gateway", editable = "services/gateway" },
+    { name = "sajao-schemas", editable = "packages/schemas" },
 ]
 
 [[package]]
