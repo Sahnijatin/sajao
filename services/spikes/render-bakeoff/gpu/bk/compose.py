@@ -426,9 +426,31 @@ def wall_planes(
         if t1 - t0 < 0.8:
             pts = pts[~inl]
             continue
-        walls.append({"ends": [(a + d * t0).tolist(), (a + d * t1).tolist()], "inliers": best[0]})
+        walls.append(
+            {
+                "ends": [(a + d * t0).tolist(), (a + d * t1).tolist()],
+                "inliers": best[0],
+                "point": a.tolist(),
+                "normal": [float(-d[1]), float(d[0])],
+            }
+        )
         pts = pts[~inl]
     return walls
+
+
+def walls_behind(walls: list[dict], cam_xy, items: list[dict], margin: float = 0.03) -> list[dict]:
+    """Keep only walls that stand behind every product as seen from the camera. A shadow
+    catcher is solid to camera rays, so a plane in front of a product would hide it."""
+    keep = []
+    for w in walls:
+        a, n = np.asarray(w["point"]), np.asarray(w["normal"])
+        side_cam = float((np.asarray(cam_xy) - a) @ n)
+        ok = all(
+            float((np.asarray(it["position"]) - a) @ n) * np.sign(side_cam) > margin for it in items
+        )
+        if ok and abs(side_cam) > 0.3:
+            keep.append(w)
+    return keep
 
 
 def key_light(env: np.ndarray) -> dict | None:
@@ -537,6 +559,22 @@ def blender_render(
     }
 
 
+def kept_object_depth(room, original, labels, variant, k, c2w, w, h) -> np.ndarray:
+    """Depth of the furniture the design keeps (labelled objects not removed); inf elsewhere."""
+    import torch
+
+    if labels is None:
+        return np.full((h, w), np.inf)
+    keep = labels > 0
+    rm = room_dir(room) / f"removed_{variant}.npy"
+    if variant != "original" and rm.exists():
+        keep &= ~np.load(rm)
+    if not keep.any():
+        return np.full((h, w), np.inf)
+    _, depth, alpha = render_splat(original, k, c2w, w, h, mask=torch.from_numpy(keep).cuda())
+    return np.where(alpha > 0.5, depth, np.inf)  # ED is already normalised by alpha
+
+
 def floor_depth(k, c2w_world, w, h, fr: dict) -> np.ndarray:
     """Depth along the optical axis where each pixel ray meets the floor (inf if never)."""
     ys, xs = np.mgrid[0:h, 0:w]
@@ -564,7 +602,7 @@ def composite(
     import cv2
 
     t0 = time.time()
-    scene, _, _labels, _ = load_twin(room)
+    scene, original, labels, _ = load_twin(room)
     params = splat_params(room, variant)
     fr = json.loads((room_dir(room) / "survey.json").read_text())["frame"]
     k, c2w, w, h = camera(scene, fi)
@@ -589,19 +627,26 @@ def composite(
     t1 = time.time()
     env = env_map(params, fr, env_centre)
     t_env = time.time() - t1
-    walls = wall_planes(params, fr, design["render_items"])
+    walls = walls_behind(
+        wall_planes(params, fr, design["render_items"]),
+        c2w_space[:2, 3],
+        [it for it in design["render_items"] if it["tier"] != "art"],
+    )
     light = key_light(env)
     br = blender_render(design["render_items"], k, c2w_space, w, h, env, samples, walls, light)
     a = br["rgba"][..., 3]
     pdepth = np.where(a > 0.01, br["depth"], np.inf)
-    visible_px = (a > 0.01) & (pdepth < sdepth + 0.05 + 0.02 * sdepth) | (
-        (a > 0.01) & (salpha < 0.5)
-    )
+    # Products are hidden only by furniture the design keeps, never by the room shell or
+    # by floaters left where furniture was removed.
+    occl = kept_object_depth(room, original, labels, variant, k, c2w, w, h)
+    visible_px = (a > 0.01) & ~(np.isfinite(occl) & (occl < pdepth - 0.03))
     # Shadows land only where a catcher (floor or wall) is the surface the twin shows there.
     fdepth = floor_depth(k, c2w, w, h, fr)
     catcher = br["index"] >= CATCHER_INDEX
     cdepth = np.where(catcher, br["depth"], fdepth)
-    on_catcher = np.abs(cdepth - sdepth) < 0.08 + 0.04 * sdepth
+    # The cleared splat is unreliable where furniture was removed (floaters), so test only
+    # that no kept furniture stands in front of the catcher surface.
+    on_catcher = np.isfinite(cdepth) & ~(np.isfinite(occl) & (occl < cdepth - 0.05))
     sh = np.where(on_catcher[..., None], np.clip(br["shadow"], 0, 1), 1.0)
     bg_lin = srgb_to_linear(rgb) * sh
     prod = np.clip(br["rgba"][..., :3], 0, None)
@@ -623,6 +668,15 @@ def composite(
         "blender_seconds": br["render_seconds"],
         "splat_seconds": round(t_splat, 2),
         "walls": len(walls),
+        "debug": {
+            "product_alpha_px": int((a > 0.01).sum()),
+            "index_max": int(br["index"].max()),
+            "index_values": sorted({int(v) for v in np.unique(br["index"])})[:12],
+            "depth_min": float(np.min(br["depth"])),
+            "visible_px": int(visible_px.sum()),
+            "shadow_min": float(br["shadow"].min()),
+            "shadowed_px": int(((sh < 0.9).any(-1)).sum()),
+        },
         "key_light": light,
         "env_seconds": round(t_env, 2),
         "total_seconds": round(time.time() - t0, 2),
@@ -640,6 +694,13 @@ def composite(
     if out is not None:
         out.mkdir(parents=True, exist_ok=True)
         cv2.imwrite(str(out / "image.png"), cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
+        cv2.imwrite(
+            str(out / "products_raw.png"),
+            cv2.cvtColor(
+                (np.clip(linear_to_srgb(br["rgba"][..., :3]), 0, 1) * 255).astype(np.uint8),
+                cv2.COLOR_RGB2BGR,
+            ),
+        )
         np.savez_compressed(
             out / "masks.npz",
             vis=np.stack([masks_vis[i] for i in masks_vis])
@@ -678,6 +739,13 @@ def keyframe_background(room, scene, fi, cleared_params, variant, k, c2w, w, h, 
         return photo, np.zeros((h, w), bool), photo
     from twin_gpu.common import out_dir
 
+    # Preferred: 2D diffusion inpaint of this keyframe (bk.removal2d), consistent across views.
+    inp = room_dir(room) / "c3" / variant / f"{fi}_inpainted.png"
+    npz = room_dir(room) / "c3" / variant / f"{fi}.npz"
+    if inp.exists() and npz.exists():
+        filled = cv2.cvtColor(cv2.imread(str(inp)), cv2.COLOR_BGR2RGB).astype(np.float64) / 255
+        if filled.shape[:2] == (h, w):
+            return filled, np.load(npz)["mask"], photo
     original = load_params(out_dir(room) / "splat.pt")
     removed = np.load(room_dir(room) / f"removed_{variant}.npy")
     _, _, ra = render_splat(original, k, c2w, w, h, mask=torch.from_numpy(removed).cuda())

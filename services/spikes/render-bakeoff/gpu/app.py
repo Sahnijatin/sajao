@@ -297,6 +297,16 @@ app = modal.App("sajao-render-bakeoff")
 # blocking every other stage.
 gated = modal.App("sajao-render-bakeoff-gated")
 VOLS = {"/bk": bk_vol}
+
+
+def _reload() -> None:
+    """Pick up other containers' writes; a warm container may hold open cache logs."""
+    try:
+        bk_vol.reload()
+    except RuntimeError:
+        pass
+
+
 TWIN_VOLS = {"/bk": bk_vol, "/vol": twin_vol}
 ROOMS = [
     "arkit_living_47331265",
@@ -403,7 +413,7 @@ def generate_gemini(room: str, design_id: str, arms: list[str]) -> dict:
     """Arm B with Gemini on Vertex AI (through the gateway). The GPU runs the item checks."""
     from bk.run import generate_arms
 
-    bk_vol.reload()
+    _reload()
     r = generate_arms(room, design_id, "gemini", arms)
     bk_vol.commit()
     return r
@@ -474,6 +484,60 @@ def prepare_assets(model: str, lids: list[str]) -> list[dict]:
 
 
 @app.function(
+    image=gen_image, gpu="L4", volumes=VOLS, timeout=3600, max_containers=1, secrets=[hf_secret]
+)
+def recut(jobs: list[tuple[str, str]]) -> list[dict]:
+    """Room-shot recut (Grounding DINO plus SAM 2.1) for photos BiRefNet could not isolate."""
+    from bk.assets import recut_with_detector
+
+    _reload()
+    out = []
+    for lid, cat in jobs:
+        try:
+            out.append(recut_with_detector(lid, cat))
+        except Exception as e:
+            out.append({"id": lid, "error": repr(e)[:400]})
+    bk_vol.commit()
+    return out
+
+
+@app.function(
+    image=twin_image, gpu="L4", volumes=TWIN_VOLS, timeout=3600, max_containers=RENDER_GPUS
+)
+def c3_prep(room: str, design_id: str, n: int = 4) -> dict:
+    """Arm C3 removal, twin side: keyframes, removal masks and plane depth."""
+    from bk.design import load_render_design
+    from bk.removal2d import c3_prep as prep
+
+    _reload()
+    d = load_render_design(room, design_id, "")
+    r = prep(room, d["variant"], d["hero_frame"], d["render_items"], n)
+    bk_vol.commit()
+    return r
+
+
+@app.function(
+    image=gen_image,
+    gpu="H100",
+    volumes=TWIN_VOLS,
+    timeout=3600,
+    max_containers=RENDER_GPUS,
+    secrets=[
+        modal.Secret.from_dict({"PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True"}),
+        hf_secret,
+    ],
+)
+def c3_inpaint(room: str, variant: str, model: str = "qwen") -> dict:
+    """Arm C3 removal, diffusion side: inpaint the hero, propagate, measure consistency."""
+    from bk.removal2d import c3_inpaint as inpaint
+
+    _reload()
+    r = inpaint(room, variant, model)
+    bk_vol.commit()
+    return r
+
+
+@app.function(
     image=twin_image, gpu="L40S", volumes=TWIN_VOLS, timeout=3600, max_containers=RENDER_GPUS
 )
 def compose(room: str, design_id: str, planted: str = "") -> dict:
@@ -483,7 +547,7 @@ def compose(room: str, design_id: str, planted: str = "") -> dict:
     from bk.compose import composite
     from bk.design import load_render_design
 
-    bk_vol.reload()
+    _reload()
     d = load_render_design(room, design_id, planted)
     base = Path("/bk/renders") / room / (design_id + (f"__{planted}" if planted else ""))
     out = {"A": composite(room, d, d["hero_frame"], d["variant"], "splat", out=base / "A")}
@@ -509,7 +573,7 @@ def compose(room: str, design_id: str, planted: str = "") -> dict:
 def generate(room: str, design_id: str, model: str, arms: list[str]) -> dict:
     from bk.run import generate_arms
 
-    bk_vol.reload()
+    _reload()
     r = generate_arms(room, design_id, model, arms)
     bk_vol.commit()
     return r
@@ -521,7 +585,7 @@ def generate(room: str, design_id: str, model: str, arms: list[str]) -> dict:
 def check(room: str, design_id: str, arms: list[str], planted: str = "") -> dict:
     from bk.run import check_arms
 
-    bk_vol.reload()
+    _reload()
     r = check_arms(room, design_id, arms, planted)
     bk_vol.commit()
     return r
