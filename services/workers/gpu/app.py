@@ -23,7 +23,9 @@ HERE = Path(__file__).parent
 SRC = HERE.parent / "src" / "sajao_workers"
 GATEWAY = HERE.parent.parent / "gateway" / "src" / "sajao_gateway"
 SPIKE = HERE.parent.parent / "spikes" / "twin-risk"
-MAX_GPUS = 3  # Must match sajao_workers.gpu.MAX_GPUS.
+MAX_GPUS = 3  # Must match sajao_workers.gpu.MAX_GPUS: model and splat functions share it.
+MODEL_GPUS = 2
+SPLAT_GPUS = MAX_GPUS - MODEL_GPUS
 
 gpu_image = (
     modal.Image.from_registry("nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04", add_python="3.11")
@@ -43,6 +45,62 @@ gpu_image = (
     )
     .env({"HF_HOME": "/vol/hf", "PYTHONUNBUFFERED": "1"})
     .add_local_dir(SRC, "/root/sajao_workers")
+)
+
+# Splat training: the SJ-116 spike's image recipe, with gsplat also built for the
+# A100 (gsplat is built from source for this torch).
+MAPANYTHING_REF = "3d10cf7a3016fc0f9bb13a071ee66c47b10be0d9"
+
+splat_base = (
+    modal.Image.from_registry("nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04", add_python="3.11")
+    .apt_install(
+        "git", "ffmpeg", "libgl1", "libglib2.0-0", "unzip", "curl", "pigz", "build-essential"
+    )
+    .pip_install(
+        "torch==2.4.1",
+        "torchvision==0.19.1",
+        "torchaudio==2.4.1",
+        index_url="https://download.pytorch.org/whl/cu124",
+    )
+    # Keep later installs from replacing the torch that gsplat is compiled against.
+    .run_commands(
+        "printf 'torch==2.4.1\\ntorchvision==0.19.1\\ntorchaudio==2.4.1\\nnumpy==2.1.3\\n' > /constraints.txt"  # noqa: E501 (copied verbatim: same image layer)
+    )
+    .env({"PIP_CONSTRAINT": "/constraints.txt"})
+    .pip_install("numpy==2.1.3", "ninja==1.11.1.3", "jaxtyping==0.2.36", "rich==13.9.4")
+    # No prebuilt gsplat wheel exists for Python 3.11 with torch 2.4, so build it
+    # here for T4 (7.5), A100 (8.0, the splat function's fallback), A10G (8.6),
+    # L4 and L40S (8.9). The spike's list lacked 8.0: a run that fell back to an
+    # A100 failed with "no kernel image".
+    .env({"TORCH_CUDA_ARCH_LIST": "7.5;8.0;8.6;8.9", "MAX_JOBS": "8"})
+    .run_commands("pip install --no-build-isolation gsplat==1.5.3")
+    .pip_install(
+        "transformers==4.57.1",
+        "pillow==11.0.0",
+        "pytorch-msssim==1.0.0",
+        "open3d==0.19.0",
+        "trimesh==4.5.3",
+        "pycolmap==3.10.0",
+        f"mapanything @ git+https://github.com/facebookresearch/map-anything@{MAPANYTHING_REF}",
+    )
+    .pip_install("opencv-python-headless==4.10.0.84", "numpy==2.1.3")
+    .pip_install(
+        "ultralytics==8.4.214",
+        "git+https://github.com/ultralytics/CLIP.git",
+        "opencv-python-headless==4.10.0.84",
+        "numpy==2.1.3",
+    )
+    # gsplat compiles its CUDA kernels on first use; keep them on the volume.
+    .env(
+        {
+            "HF_HOME": "/vol/hf",
+            "PYTHONUNBUFFERED": "1",
+            "TORCH_EXTENSIONS_DIR": "/root/torch_extensions",
+        }
+    )
+)
+splat_image = splat_base.add_local_dir(SRC, "/root/sajao_workers").add_local_file(
+    HERE / "splat_gpu.py", "/root/splat_gpu.py"
 )
 
 # Orchestration runs on CPU: it calls the GPU function only through the gateway.
@@ -228,7 +286,7 @@ HANDLERS = {"twin_detect": detect, "twin_segment": segment}
     gpu="L40S",
     volumes={"/vol": vol},
     timeout=1800,
-    max_containers=MAX_GPUS,
+    max_containers=MODEL_GPUS,
     scaledown_window=60,
 )
 def run_model(model: str, task: str, payload: dict[str, Any]) -> dict[str, Any]:
@@ -241,6 +299,32 @@ def run_model(model: str, task: str, payload: dict[str, Any]) -> dict[str, Any]:
         output = HANDLERS[task](model, payload)
     except InputError as error:
         return {"error": str(error)}
+    vol.commit()
+    return {"output": output, "gpu_seconds": round(time.time() - started, 3)}
+
+
+@app.function(
+    image=splat_image,
+    gpu=["L40S", "A100-40GB"],  # Modal falls back to an A100 when no L40S is free.
+    volumes={"/vol": vol},
+    timeout=3600,
+    max_containers=SPLAT_GPUS,
+    scaledown_window=60,
+)
+def run_splat(model: str, task: str, payload: dict[str, Any]) -> dict[str, Any]:
+    """Train and split one splat; the time charged includes loading and evaluation."""
+    import splat_gpu
+
+    started = time.time()
+    vol.reload()
+    splat_gpu.load_cached_kernels()
+    if task != "twin_splat" or not model.startswith("gsplat@"):
+        return {"error": f"unknown splat model {model}"}
+    try:
+        output = splat_gpu.train(payload, _store(), steps=int(payload.get("steps", 15000)))
+    except splat_gpu.InputError as error:
+        return {"error": str(error)}
+    splat_gpu.save_compiled_kernels()
     vol.commit()
     return {"output": output, "gpu_seconds": round(time.time() - started, 3)}
 
@@ -315,7 +399,7 @@ def smoke(scene: str = "arkit_living_47331265", frames: int = 6) -> None:
     asyncio.run(main())
 
 
-def volume_invoke(task: str):
+def volume_invoke(task: str, function: Any = None):
     """Gateway invoke for a CPU orchestrator: share blobs with the GPU function.
 
     The volume is committed before the call so the GPU sees the inputs, and
@@ -324,33 +408,19 @@ def volume_invoke(task: str):
 
     async def invoke(model: str, payload: Any) -> Any:
         vol.commit()
-        reply = await run_model.remote.aio(model, task, dict(payload))
+        reply = await (function or run_model).remote.aio(model, task, dict(payload))
         vol.reload()
         return reply
 
     return invoke
 
 
-@app.function(
-    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=4, memory=8192, timeout=3600
-)
-def objects_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
-    """Run the objects step on one ARKitScenes room and score it against its boxes."""
-    import asyncio
+def _arkit_manifest(store: Any, scene: str, keyframes: int) -> dict[str, Any]:
+    """A frames manifest from an ARKitScenes room on the spike volume (smoke runs only)."""
     import json
-    import math
 
     import numpy as np
-    from twin_gpu.objects import gt_boxes, gt_seen
 
-    from sajao_gateway import InMemorySpendLedger, ModelGateway, SpendCaps
-    from sajao_workers.models import detect_chain, segment_chain
-    from sajao_workers.steps import LocalArtifactStore, StepRunner
-    from sajao_workers.twin.objects_step import objects_step
-    from twin_risk.geometry import UprightBox
-    from twin_risk.metrics import LabelledBox, summarise
-
-    store = LocalArtifactStore(Path("/work/artifacts"))
     cams = json.loads(Path(f"/vol/scenes/{scene}/cameras.json").read_text())
     up_axis = int(np.argmax(np.abs(cams["up"])))
     picks = np.linspace(0, len(cams["frames"]) - 1, keyframes).round().astype(int)
@@ -369,7 +439,30 @@ def objects_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
                 "depth": store.put_blob((base / f["depth"]).read_bytes()),
             }
         )
-    manifest = {"up_axis": up_axis, "depth_source": "lidar", "frames": frames}
+    return {"up_axis": up_axis, "depth_source": "lidar", "frames": frames}
+
+
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=4, memory=8192, timeout=3600
+)
+def objects_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
+    """Run the objects step on one ARKitScenes room and score it against its boxes."""
+    import asyncio
+    import json
+    import math
+
+    from twin_gpu.objects import gt_boxes, gt_seen
+
+    from sajao_gateway import InMemorySpendLedger, ModelGateway, SpendCaps
+    from sajao_workers.models import detect_chain, segment_chain
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.objects_step import objects_step
+    from twin_risk.geometry import UprightBox
+    from twin_risk.metrics import LabelledBox, summarise
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    manifest = _arkit_manifest(store, scene, keyframes)
+    up_axis = manifest["up_axis"]
     caps = SpendCaps(per_user_daily_micro_inr=10**9, global_daily_micro_inr=10**9)
     ledger = InMemorySpendLedger(caps)
     step = objects_step(
@@ -421,3 +514,60 @@ def objects_smoke(scene: str = "arkit_living_47331265", keyframes: int = 120) ->
     import json
 
     print(json.dumps(objects_smoke_cpu.remote(scene, keyframes), indent=1))
+
+
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=4, memory=8192, timeout=7200
+)
+def splat_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
+    """Objects then splat on one ARKitScenes room, through the gateways and durable steps."""
+    import asyncio
+    import json
+
+    from sajao_gateway import InMemorySpendLedger, ModelGateway, SpendCaps
+    from sajao_workers.models import detect_chain, segment_chain, splat_chain
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.objects_step import objects_step
+    from sajao_workers.twin.splat_step import splat_step
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    manifest = _arkit_manifest(store, scene, keyframes)
+    caps = SpendCaps(per_user_daily_micro_inr=10**9, global_daily_micro_inr=10**9)
+    ledger = InMemorySpendLedger(caps)
+    runner = StepRunner(store, max_attempts=1)
+    frames = store.put_blob(json.dumps(manifest).encode())
+
+    async def run() -> dict[str, Any]:
+        objects = await runner.run(
+            objects_step(
+                ModelGateway(detect_chain(volume_invoke("twin_detect")), ledger=ledger),
+                ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger),
+            ),
+            {"frames": frames},
+            {},
+        )
+        splat = await runner.run(
+            splat_step(
+                ModelGateway(splat_chain(volume_invoke("twin_splat", run_splat)), ledger=ledger)
+            ),
+            {"frames": frames, "objects": objects.outputs["objects"]},
+            {},
+        )
+        vol.commit()
+        return {
+            "scene": scene,
+            "keyframes": keyframes,
+            "objects": {"cached": objects.cached, **dict(objects.meta)},
+            "splat": {"cached": splat.cached, **dict(splat.meta)},
+            "splat_bytes": len(store.read_blob(splat.outputs["splat"])),
+            "charged_micro_inr": objects.cost_micro_inr + splat.cost_micro_inr,
+        }
+
+    return asyncio.run(run())
+
+
+@app.local_entrypoint()
+def splat_smoke(scene: str = "arkit_living_47331265", keyframes: int = 120) -> None:
+    import json
+
+    print(json.dumps(splat_smoke_cpu.remote(scene, keyframes), indent=1))

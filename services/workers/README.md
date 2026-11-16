@@ -42,3 +42,8 @@ modal billing report --for today -r h --json   # billed spend per app, reported 
 ```bash
 uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/workers/gpu/app.py::objects_smoke
 ```
+- **Splat** (`sajao_workers.twin.splat_step`): train the room splat with per-camera pose and exposure refinement (gsplat 1.5.3, `gpu/splat_gpu.py`, ported from the spike), seeded from depth points, with every eighth keyframe held out. Each Gaussian joins an object by mask votes at the refined poses. The GPU writes the splat, labels and refined cameras straight to the store; the step records them by digest. A splat under 20 dB on held-out views fails validation.
+
+```bash
+uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/workers/gpu/app.py::splat_smoke
+```

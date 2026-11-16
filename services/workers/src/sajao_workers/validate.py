@@ -82,3 +82,27 @@ def check_masks(payload: Mapping[str, Any]) -> Validator:
                 _require(_unit(mask.get("score")), "score between 0 and 1")
 
     return validate
+
+
+# The spike reached 25.7 to 26.0 dB on held-out views of phone captures with pose
+# refinement and 17 to 18 dB without it. Below this a splat is not shown to anyone.
+MIN_SPLAT_PSNR_DB = 20.0
+
+
+def check_splat() -> Validator:
+    def validate(result: ProviderResult) -> None:
+        out = result.output
+        for key in ("splat", "labels", "cameras"):
+            _require(DIGEST.match(str(out.get(key))) is not None, f"{key} is a blob digest")
+        gaussians = out.get("gaussians")
+        _require(
+            isinstance(gaussians, int) and 10_000 <= gaussians <= 8_000_000,
+            "gaussian count is plausible",
+        )
+        psnr = out.get("psnr_heldout")
+        _require(
+            isinstance(psnr, int | float) and math.isfinite(psnr) and psnr >= MIN_SPLAT_PSNR_DB,
+            f"held-out PSNR is at least {MIN_SPLAT_PSNR_DB} dB",
+        )
+
+    return validate

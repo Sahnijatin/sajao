@@ -15,10 +15,18 @@ from sajao_gateway import MICRO_INR_PER_RUPEE, ModelRequest, ProviderError, Prov
 from sajao_gateway.types import Modality
 
 # Modal list prices per GPU second. Update with the price source when they change.
-GPU_USD_PER_SECOND = {"L40S": 0.000542, "L4": 0.000222, "T4": 0.000164}
+GPU_USD_PER_SECOND = {
+    "L40S": 0.000542,
+    "A100-40GB": 0.000583,
+    "L4": 0.000222,
+    "T4": 0.000164,
+}
 # Pinned conversion for cost accounting; spend reports use the same number.
 INR_PER_USD = 88
-# The Modal GPU function's max_containers. The provider limit matches it.
+# Time for a cold container to start and load weights, on top of the job's own limit.
+COLD_START_SECONDS = 180.0
+# GPUs the whole pipeline may hold: the model function and the splat function
+# share them (their max_containers in gpu/app.py), and provider limits match.
 MAX_GPUS = 3
 
 # (pinned model, request payload) -> {"output": ..., "gpu_seconds": ...} or {"error": ...}
@@ -38,6 +46,13 @@ class GpuModelProvider:
     invoke: Invoke
     modalities: frozenset[Modality] = field(default=frozenset({"vision"}))
     max_concurrency: int = MAX_GPUS
+    # Gateway retries for this provider; 1 for expensive jobs the durable step retries.
+    max_attempts: int | None = None
+
+    @property
+    def timeout_seconds(self) -> float:
+        """How long the gateway waits: the remote limit plus a cold start."""
+        return self.max_seconds + COLD_START_SECONDS
 
     def estimate_cost_micro_inr(self, request: ModelRequest) -> int:
         return gpu_cost_micro_inr(self.gpu, self.max_seconds)

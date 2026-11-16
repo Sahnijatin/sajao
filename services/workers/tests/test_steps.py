@@ -221,3 +221,26 @@ def test_blobs_are_content_addressed_and_written_once(tmp_path: Path) -> None:
     assert first == second
     assert store.read_blob(first) == b"same bytes"
     assert len(list((tmp_path / "blobs").rglob("*"))) == 2  # one shard directory, one blob
+
+
+async def test_a_step_can_record_blobs_already_in_the_store(tmp_path: Path) -> None:
+    steps = runner(tmp_path)
+    big = steps.store.put_blob(b"written by the GPU")
+
+    async def gpu(_context: StepContext) -> StepOutput:
+        return StepOutput(refs={"splat": big}, files={"report": b"{}"})
+
+    result = await steps.run(Step("splat", 1, gpu), {}, {})
+
+    assert result.outputs["splat"] == big
+    assert steps.store.read_blob(result.outputs["report"]) == b"{}"
+
+
+async def test_a_ref_to_a_missing_blob_fails_and_stores_nothing(tmp_path: Path) -> None:
+    async def gpu(_context: StepContext) -> StepOutput:
+        return StepOutput(refs={"splat": "f" * 64})
+
+    steps = runner(tmp_path)
+    with pytest.raises(StepFailedError, match="splat"):
+        await steps.run(Step("splat", 1, gpu), {}, {})
+    assert steps.store.read_manifest(steps.key(Step("splat", 1, gpu), {}, {})) is None

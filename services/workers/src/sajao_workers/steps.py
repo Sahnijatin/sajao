@@ -39,9 +39,14 @@ class StepBusyError(Exception):
 
 @dataclass(frozen=True)
 class StepOutput:
-    """What a step returns: named output files, small JSON metadata, and what it spent."""
+    """What a step returns: named output files, small JSON metadata, and what it spent.
+
+    `refs` names blobs already in the store (written by a GPU function), so large
+    outputs such as a splat are recorded without passing through this process.
+    """
 
     files: Mapping[str, bytes] = field(default_factory=dict)
+    refs: Mapping[str, str] = field(default_factory=dict)
     meta: Mapping[str, Any] = field(default_factory=dict)
     gpu_seconds: float = 0.0
     cost_micro_inr: int = 0
@@ -191,7 +196,13 @@ class StepRunner:
         self._take_lease(step, key)
         try:
             output = await self._run_with_retries(step, StepContext(self.store, inputs, params))
+            missing = sorted(n for n, d in output.refs.items() if not self.store.has_blob(d))
+            if missing:
+                raise StepFailedError(
+                    f"{step.name}: output {', '.join(missing)} is not in the store"
+                )
             outputs = {name: self.store.put_blob(data) for name, data in output.files.items()}
+            outputs.update(output.refs)
             manifest = {
                 "step": step.name,
                 "version": step.version,
