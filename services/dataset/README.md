@@ -7,7 +7,7 @@ Builds a labelled set of real Indian rooms for the on-device detector. Every sta
 | 1. Find candidate videos | `find` | Ready |
 | 1a. Record each video's license (YouTube Data API) | `licenses` | Ready |
 | 1b. Drop builder and designer promos | `prefilter` | Ready |
-| 2. Screen with Gemini (keep or skip, room timestamps) | | Next |
+| 2. Screen with Gemini on Vertex AI (keep or skip, room timestamps) | `screen` | Ready |
 | 3. Download kept segments (Windows) | `download` | Ready |
 | 4. Sample frames, drop near-duplicates and blur, blur faces | `frames` | Ready |
 | 5. Auto-label and hand-check | | Next |
@@ -53,6 +53,22 @@ uv run python -m sajao_dataset prefilter
 
 A free keyword pass before Gemini screening. It drops videos under 1 minute and videos whose title, channel or description match pinned promo terms (`src/sajao_dataset/prefilter.py`): sample and show flats, builder walkthroughs and project launches, sale and rent listings, designer reels and studio channels, 3D renders and Shorts. Channel-only terms (realty, developers, interiors and similar) apply to the channel name, not the title. It writes one decision per video, with the reason and the matched text, to `data/prefilter.jsonl`. Changing a term means a new `PREFILTER_VERSION`.
 
+## 2. Screen with Gemini
+
+```sh
+export GCP_PROJECT_ID=...   # and GCP_SA_KEY (service account JSON, raw or base64), or gcloud ADC
+uv run python -m sajao_dataset screen --limit 50 --cap-inr 500
+```
+
+Gemini on Vertex AI reads each public YouTube URL directly, so screening runs anywhere, including the cloud, and downloads nothing. It screens the videos the pre-filter kept, empty-flat and new-build tours first, then Creative Commons first, and answers keep or skip with a reason and room segments (`living_room`, `bedroom`, `kitchen`, `puja_room` and the other pinned room types in `src/sajao_dataset/screen.py`, with start, end and whether the room is furnished).
+
+- **Models.** Through the model gateway: `gemini-3-flash-preview` first, `gemini-3.5-flash-lite` as the cheaper fallback, both at location `global`. `gemini-3.5-flash` is not used: Vertex AI refuses YouTube URLs for it.
+- **Validation.** Room types must be in the pinned list, timestamps must be MM:SS and inside the screened window, a keep needs segments and a skip has none. An invalid answer is retried once, then the fallback is tried; if both fail the video is logged as failed and retried on the next run. Same-room segments that touch are merged; segments under 5 seconds are dropped.
+- **Window.** Only the first 20 minutes of a video are screened, at 1 frame per second and low media resolution.
+- **Cost.** About Rs 2 to 5 per video (Rs 24 for the 9 pilot videos, about 92 tokens per second of video). `--cap-inr` stops the run before the billed spend plus one worst-case video would pass it; calls whose answers were rejected count too.
+- **Outputs.** `data/screening.jsonl` (one line per video, latest wins; reruns skip videos already answered by this `SCREEN_VERSION`), `data/segments.jsonl` (the kept room segments for `download --segments`, rewritten every run) and `data/screen_calls.jsonl` (the gateway's call log: outcomes, cost and latency, never prompts, URLs or keys).
+- Credentials are read from the environment and never printed or logged.
+
 ## 3. Download kept segments (Windows PC)
 
 YouTube blocks downloads from cloud servers, so this stage runs on a home PC.
@@ -79,7 +95,13 @@ uv run python -m sajao_dataset prefilter
 uv run python -m sajao_dataset download --limit 50
 ```
 
-Without screening, each kept video contributes its first 10 minutes (`--head-s 600`): empty-flat and new-build tours first, then Creative Commons first. With screening, pass `--segments data\segments.jsonl` and only the kept room segments are fetched.
+With screening (run `screen` anywhere first and copy `data\segments.jsonl` to the PC), pass `--segments data\segments.jsonl` and only the kept room segments are fetched:
+
+```powershell
+uv run python -m sajao_dataset download --segments data\segments.jsonl
+```
+
+Without screening, each kept video contributes its first 10 minutes (`--head-s 600`): empty-flat and new-build tours first, then Creative Commons first.
 
 - **Video only**, up to 1080p (`--max-height`). About 150 to 300 MB per 10 minutes at 1080p; the 50-video pilot needs roughly 10 GB free.
 - **Resumable.** Each clip is checked with ffprobe (it must cover at least 80 percent of the requested range), checksummed and logged to `data\downloads.jsonl`. Rerunning skips finished clips and retries failed ones. A clip deleted from disk is fetched again.
