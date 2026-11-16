@@ -69,6 +69,10 @@ export interface ArDebug {
   cameraImage: string;
   planeStates: string;
   surfaceHits: string;
+  /** Caught errors by type, the last message, and the scan video's state. */
+  errors: string;
+  lastError: string;
+  video: string;
   /** Why the detector failed to load; empty when it loaded. */
   detectorError: string;
   /** Detector sightings dropped as a wall, a door or bare floor. */
@@ -205,6 +209,9 @@ export function useScanSession(active: boolean) {
         cameraImage: status.cameraImage ?? "",
         planeStates: status.planeStates ?? "",
         surfaceHits: status.surfaceHits ?? "",
+        errors: status.errors ?? "",
+        lastError: status.lastError ?? "",
+        video: status.video ?? "",
         labelsRejected: counters.current.labelsRejected,
       };
       dispatch(arFrameEvent(status, platform, Date.now()));

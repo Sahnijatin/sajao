@@ -136,7 +136,18 @@ class SajaoArView(context: Context, appContext: AppContext) :
   // Sharpness of the latest camera image copied for the detector.
   @Volatile private var latestSharpness = 0.0
   private var lastSurfacesAt = 0L
-  private var brightness = 128.0
+  @Volatile private var brightness = 128.0
+  // Camera images are copied, measured and handed to the detector and the
+  // recorder on this worker, never on ARCore's GL thread. One image at a time.
+  private val imageWorker = Executors.newSingleThreadExecutor()
+  private val imageBusy = java.util.concurrent.atomic.AtomicBoolean(false)
+  // Every caught error, counted by type, with the last message: shown in the overlay.
+  private val errorCounts = java.util.concurrent.ConcurrentHashMap<String, Int>()
+  @Volatile private var lastError = ""
+  // ARCore raw depth (with confidence) where the phone supports it.
+  private var rawDepthSupported = false
+  // The scan video, recorded by ARCore while a capture id is set.
+  @Volatile private var videoStatus = "off"
   private var pixelIntensity = 1.0
   private var featureCount = 0
   private var trackingName = "initializing"
@@ -218,7 +229,51 @@ class SajaoArView(context: Context, appContext: AppContext) :
     recorder = if (id.isEmpty()) {
       null
     } else {
-      CaptureRecorder(CaptureRecorder.folder(context.cacheDir, id)) { payload -> post { onArKeyframe(payload) } }
+      CaptureRecorder(
+        CaptureRecorder.folder(context.cacheDir, id),
+        emit = { payload -> post { onArKeyframe(payload) } },
+        onError = ::countError,
+      )
+    }
+    if (running) startRecording()
+  }
+
+  /**
+   * Record the scan video with ARCore's Recording API: an MP4 of the
+   * camera with AR data tracks, from the first frame to Done, whatever
+   * tracking says. Safe to call again; starts only once per capture.
+   */
+  private fun startRecording() {
+    val session = session ?: return
+    val capture = recorder ?: return
+    if (videoStatus == "recording" || videoStatus.startsWith("saved")) return
+    try {
+      val config = com.google.ar.core.RecordingConfig(session)
+        .setMp4DatasetUri(android.net.Uri.fromFile(capture.videoFile))
+        .setAutoStopOnPause(false)
+      session.startRecording(config)
+      videoStatus = "recording"
+      Log.i(Detector.TAG, "video recording to ${capture.videoFile.name}")
+    } catch (error: Throwable) {
+      videoStatus = "failed: ${error.javaClass.simpleName}"
+      countError(error)
+    }
+  }
+
+  /** Stop the video; the file's uri, or null when nothing was recorded. */
+  private fun stopRecording(): String? {
+    val session = session ?: return null
+    val capture = recorder ?: return null
+    if (videoStatus != "recording") return null
+    return try {
+      session.stopRecording()
+      val file = capture.videoFile
+      videoStatus = "saved (${file.length() / 1024} KB)"
+      if (file.exists() && file.length() > 0) "file://${file.absolutePath}" else null
+    } catch (error: Throwable) {
+      videoStatus = "failed: ${error.javaClass.simpleName}"
+      countError(error)
+      null
     }
   }
 
@@ -233,19 +288,20 @@ class SajaoArView(context: Context, appContext: AppContext) :
    * files' uris.
    */
   fun finishCapture(chosen: List<String>, done: (Map<String, Any?>) -> Unit) {
-    val current = recorder ?: return done(mapOf("planes" to null, "depth" to null, "sceneMesh" to null))
+    val current = recorder ?: return done(mapOf("planes" to null, "depth" to null, "sceneMesh" to null, "video" to null))
     val session = session
     if (session == null || !running) {
-      current.finish(org.json.JSONArray(), chosen, done)
+      current.finish(org.json.JSONArray(), chosen, stopRecording(), done)
       return
     }
     surface.queueEvent {
       val planes = try {
         current.snapshotPlanes(session)
-      } catch (_: Throwable) {
+      } catch (error: Throwable) {
+        countError(error)
         org.json.JSONArray()
       }
-      current.finish(planes, chosen, done)
+      current.finish(planes, chosen, stopRecording(), done)
     }
   }
 
@@ -254,8 +310,10 @@ class SajaoArView(context: Context, appContext: AppContext) :
     recorder?.close()
     session?.close()
     session = null
+    stopRecording()
     detector.close()
     linkExecutor.shutdown()
+    imageWorker.shutdown()
   }
 
   override fun onDetachedFromWindow() {
@@ -288,15 +346,19 @@ class SajaoArView(context: Context, appContext: AppContext) :
         } catch (_: Throwable) {
           // The default camera configuration still works.
         }
-        depthSupported = created.isDepthModeSupported(Config.DepthMode.AUTOMATIC)
-        if (depthSupported) config.depthMode = Config.DepthMode.AUTOMATIC
+        // Raw depth: fewer pixels than smoothed depth, but measured, with a
+        // real confidence image, and about half the compute.
+        rawDepthSupported = created.isDepthModeSupported(Config.DepthMode.RAW_DEPTH_ONLY)
+        depthSupported = rawDepthSupported
+        if (rawDepthSupported) config.depthMode = Config.DepthMode.RAW_DEPTH_ONLY
         created.configure(config)
         val size = created.cameraConfig.imageSize
-        cpuImageSize = "${size.width}x${size.height}, depth ${if (depthSupported) "on" else "not supported"}"
-        Log.i(Detector.TAG, "ARCore session: planes horizontal and vertical, depth $depthSupported, CPU image $cpuImageSize")
+        cpuImageSize = "${size.width}x${size.height}, raw depth ${if (rawDepthSupported) "on" else "not supported"}"
+        Log.i(Detector.TAG, "ARCore session: planes horizontal and vertical, CPU image $cpuImageSize")
         session = created
       }
       current.resume()
+      startRecording()
       surface.onResume()
       running = true
       displayDirty = true
@@ -400,16 +462,125 @@ class SajaoArView(context: Context, appContext: AppContext) :
         lastCameraTimestamp = cameraTimestamp
         cameraFrames += 1
       }
-      if (newImage && detector.isAvailable) {
-        if (pacer.shouldSubmit(cameraTimestamp / 1e9, detector.isBusy) &&
-          camera.trackingState == TrackingState.TRACKING
-        ) {
-          runDetector(frame)
+      // Keyframes, brightness, sharpness and the detector all come from
+      // this pipeline, 8 images a second, whatever tracking says and whether
+      // or not the detector loaded.
+      if (newImage && pacer.shouldSubmit(cameraTimestamp / 1e9, imageBusy.get())) {
+        startImageWork(frame)
+      }
+    } catch (error: Throwable) {
+      // A dropped frame is fine; the next one tries again. Counted, not hidden.
+      countError(error)
+    }
+  }
+
+  private fun countError(error: Throwable) {
+    val name = error.javaClass.simpleName.ifEmpty { "Error" }
+    errorCounts.merge(name, 1, Int::plus)
+    lastError = "$name: ${error.message ?: ""}".take(120)
+  }
+
+  /**
+   * On the GL thread: take what needs the frame (the camera image, raw
+   * depth and confidence, the pose when tracking), then copy and process on
+   * the image worker so the GL thread stays free for tracking.
+   */
+  private fun startImageWork(frame: Frame) {
+    val image = try {
+      frame.acquireCameraImage()
+    } catch (error: Throwable) {
+      countError(error)
+      return
+    }
+    val snapshot = try {
+      snapshotOf(frame)
+    } catch (error: Throwable) {
+      image.close()
+      countError(error)
+      return
+    }
+    var depth: android.media.Image? = null
+    var confidence: android.media.Image? = null
+    if (recorder != null && rawDepthSupported) {
+      try {
+        depth = frame.acquireRawDepthImage16Bits()
+        confidence = frame.acquireRawDepthConfidenceImage()
+      } catch (error: Throwable) {
+        // Depth comes a moment after tracking starts: NotYetAvailable is normal then.
+        depth?.close()
+        depth = null
+        if (error !is com.google.ar.core.exceptions.NotYetAvailableException) countError(error)
+      }
+    }
+    val capture = recorder
+    val depthImage = depth
+    val confidenceImage = confidence
+    imageBusy.set(true)
+    try {
+      imageWorker.execute {
+        try {
+          val copy = image.use { YuvCopy.from(it) }
+          val raw = if (depthImage != null && confidenceImage != null) {
+            try {
+              RawDepth.from(depthImage, confidenceImage)
+            } finally {
+              depthImage.close()
+              confidenceImage.close()
+            }
+          } else {
+            depthImage?.close()
+            confidenceImage?.close()
+            null
+          }
+          brightness = copy.meanBrightness()
+          latestSharpness = SurfaceSample.lumaSharpness(copy.y, copy.width, copy.height, copy.yRowStride)
+          capture?.offer(copy, latestSharpness, snapshot, raw)
+          val rays = snapshot.camera
+          if (rays != null && detector.isAvailable && !detector.isBusy) {
+            detector.detect(copy) { found, milliseconds ->
+              detectionsDone += 1
+              lastDetectionMs = milliseconds
+              pendingDetections.set(PendingDetections(found, rays))
+            }
+          }
+        } catch (error: Throwable) {
+          countError(error)
+        } finally {
+          imageBusy.set(false)
         }
       }
-    } catch (_: Throwable) {
-      // A dropped frame is fine; the next one tries again.
+    } catch (error: Throwable) {
+      image.close()
+      depthImage?.close()
+      confidenceImage?.close()
+      imageBusy.set(false)
+      countError(error)
     }
+  }
+
+  /** What the image worker needs from this frame, read now while the frame is valid. */
+  private fun snapshotOf(frame: Frame): FrameSnapshot {
+    val camera = frame.camera
+    val intrinsics = camera.imageIntrinsics
+    val focal = intrinsics.focalLength
+    val principal = intrinsics.principalPoint
+    if (camera.trackingState != TrackingState.TRACKING) {
+      return FrameSnapshot(false, null, null, null, null, focal, principal, null)
+    }
+    val pose = camera.pose
+    val rotation = FloatArray(4)
+    pose.getRotationQuaternion(rotation, 0)
+    val (yaw, pitch) = yawPitch(frame)
+    return FrameSnapshot(
+      true,
+      rotation,
+      pose.translation,
+      yaw,
+      pitch,
+      focal,
+      principal,
+      CaptureCamera(rotation, pose.translation, focal, principal, intrinsics.imageDimensions),
+    )
   }
 
   private fun applyTorch(session: Session) {
@@ -495,31 +666,30 @@ class SajaoArView(context: Context, appContext: AppContext) :
   }
 
   private fun drawPlanes(session: Session, now: Long) {
-    // Refresh the outline of every plane ARCore is tracking. A plane that
-    // ARCore stops tracking keeps its last outline, so mapped surfaces stay
-    // on screen for the whole scan; a plane merged into another is dropped,
-    // because the plane it merged into now covers it.
+    // Only planes ARCore is tracking right now, from their current pose:
+    // ARCore keeps correcting its world, so an outline kept from an earlier
+    // pose floats where the plane no longer is.
     var lowest: Float? = null
     var tracking = 0
     var paused = 0
+    val seen = HashSet<Plane>()
     for (plane in session.getAllTrackables(Plane::class.java)) {
-      // Merged into another plane, or dropped by ARCore for good: its old
-      // outline would float where the plane no longer is.
-      if (plane.subsumedBy != null || plane.trackingState == TrackingState.STOPPED) {
-        planeOutlines.remove(plane)
-        continue
-      }
-      if (plane.trackingState != TrackingState.TRACKING) {
-        paused += 1
+      if (plane.subsumedBy != null || plane.trackingState != TrackingState.TRACKING) {
+        if (plane.trackingState == TrackingState.PAUSED) paused += 1
         continue
       }
       tracking += 1
+      seen.add(plane)
       if (plane.type == Plane.Type.HORIZONTAL_UPWARD_FACING) {
         val y = plane.centerPose.ty()
         lowest = minOf(lowest ?: y, y)
       }
-      outlineOf(plane)?.let { planeOutlines[plane] = it }
+      // Rebuild the outline only when the plane moved or grew, so its grid
+      // buffer is not reallocated every frame.
+      val current = planeOutlines[plane]
+      if (current == null || current.isStale(plane)) outlineOf(plane)?.let { planeOutlines[plane] = it }
     }
+    planeOutlines.keys.retainAll(seen)
     for ((plane, outline) in planeOutlines) {
       drawOutline(plane, outline, now)
     }
@@ -559,7 +729,10 @@ class SajaoArView(context: Context, appContext: AppContext) :
       grid[k * 3 + 1] = out[1]
       grid[k * 3 + 2] = out[2]
     }
-    return PlaneOutline(world, grid, pose.translation, plane.type == Plane.Type.VERTICAL, plane.extentX * plane.extentZ)
+    return PlaneOutline(
+      world, grid, pose.translation, plane.type == Plane.Type.VERTICAL, plane.extentX * plane.extentZ,
+      plane.extentX, plane.extentZ,
+    )
   }
 
   private fun drawOutline(plane: Plane, outline: PlaneOutline, now: Long) {
@@ -688,6 +861,9 @@ class SajaoArView(context: Context, appContext: AppContext) :
         "detectorStatus" to detector.status,
         "cameraImage" to cpuImageSize,
         "planeStates" to planeStates,
+        "errors" to errorCounts.entries.sortedByDescending { it.value }.joinToString(", ") { "${it.key} ${it.value}" },
+        "lastError" to lastError,
+        "video" to videoStatus,
         "surfaceHits" to "planes $surfacePlaneHits points $surfacePointHits",
         "labels" to labels.size,
         "frames" to cameraFrames,
@@ -706,35 +882,6 @@ class SajaoArView(context: Context, appContext: AppContext) :
     post { onArStatus(payload) }
   }
 
-  private fun runDetector(frame: Frame) {
-    val copy = try {
-      frame.acquireCameraImage().use { YuvCopy.from(it) }
-    } catch (_: Throwable) {
-      return
-    }
-    brightness = copy.meanBrightness()
-    latestSharpness = SurfaceSample.lumaSharpness(copy.y, copy.width, copy.height, copy.yRowStride)
-    recorder?.let { capture ->
-      val (yaw, pitch) = yawPitch(frame)
-      capture.offer(frame, copy, latestSharpness, yaw, pitch)
-    }
-    // The camera as it was for this image: rays are built from it, so a
-    // result that arrives after the phone moved still lands on its object.
-    val camera = try {
-      val pose = frame.camera.pose
-      val rotation = FloatArray(4)
-      pose.getRotationQuaternion(rotation, 0)
-      val intrinsics = frame.camera.imageIntrinsics
-      CaptureCamera(rotation, pose.translation, intrinsics.focalLength, intrinsics.principalPoint, intrinsics.imageDimensions)
-    } catch (_: Throwable) {
-      return
-    }
-    detector.detect(copy) { found, milliseconds ->
-      detectionsDone += 1
-      lastDetectionMs = milliseconds
-      pendingDetections.set(PendingDetections(found, camera))
-    }
-  }
 
   /**
    * Coverage on walls and floor: a 4 by 3 grid of rays from the camera into
@@ -946,8 +1093,17 @@ class PlaneOutline(
   val centre: FloatArray,
   val vertical: Boolean,
   val area: Float,
+  private val extentX: Float,
+  private val extentZ: Float,
 ) {
   private var buffer: FloatBuffer? = null
+
+  /** True when the plane has moved or changed size since this outline was built. */
+  fun isStale(plane: Plane): Boolean {
+    val t = plane.centerPose.translation
+    val moved = kotlin.math.abs(t[0] - centre[0]) + kotlin.math.abs(t[1] - centre[1]) + kotlin.math.abs(t[2] - centre[2])
+    return moved > 0.005f || kotlin.math.abs(plane.extentX - extentX) > 0.01f || kotlin.math.abs(plane.extentZ - extentZ) > 0.01f
+  }
 
   /** The grid as a GL buffer, built once per outline. */
   fun gridBuffer(): FloatBuffer = buffer ?: Gl.floats(grid).also { buffer = it }

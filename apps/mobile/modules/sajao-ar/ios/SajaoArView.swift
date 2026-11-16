@@ -62,6 +62,7 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   private var lastPointsAt: TimeInterval = 0
   private var lastBrightnessAt: TimeInterval = 0
   private var lastSurfacesAt: TimeInterval = 0
+  private var lastKeyframeAt: TimeInterval = 0
   private var brightness: Double = 128
   private var ambientIntensity: Double = 1000
   private var featureCount = 0
@@ -257,10 +258,14 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
       lastSurfacesAt = now
       let sharpness = Self.sharpness(frame.capturedImage) ?? 0
       sendSurfaces(frame, sharpness: sharpness)
-      if let recorder {
-        let (yaw, pitch) = Self.yawPitch(frame.camera.transform)
-        recorder.offer(frame, sharpness: sharpness, yaw: yaw, pitch: pitch)
-      }
+    }
+    // Keyframes are offered whatever tracking says; without tracking they
+    // are kept by time, without a pose.
+    if let recorder, now - lastKeyframeAt > 0.25 {
+      lastKeyframeAt = now
+      let sharpness = Self.sharpness(frame.capturedImage) ?? 0
+      let (yaw, pitch) = Self.yawPitch(frame.camera.transform)
+      recorder.offer(frame, sharpness: sharpness, yaw: yaw, pitch: pitch)
     }
     if !lidar && now - lastPointsAt > 0.2 {
       lastPointsAt = now

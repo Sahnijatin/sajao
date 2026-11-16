@@ -2,6 +2,7 @@ import ARKit
 import CoreImage
 import Foundation
 import ImageIO
+import QuartzCore
 
 /// Decides which frames are worth saving as keyframe candidates: the same
 /// direction cells as the app's `keyframes.ts`, and only a frame clearly
@@ -19,14 +20,23 @@ struct KeyframeGate {
     return "d\(sector)-\(band)"
   }
 
-  func shouldSave(yaw: Double, pitch: Double, sharpness: Double) -> Bool {
+  /// Without a pose, one cell per this many milliseconds, as keyframes.ts.
+  static let timeCellMs = 1500.0
+
+  /// By direction when tracking gives a pose, by time otherwise: frames are kept whatever tracking says.
+  static func cellFor(yaw: Double?, pitch: Double?, elapsedMs: Double) -> String {
+    if let yaw, let pitch { return cellOf(yaw: yaw, pitch: pitch) }
+    return "t\(Int(elapsedMs / timeCellMs))"
+  }
+
+  func shouldSave(cell: String, sharpness: Double) -> Bool {
     guard sharpness > 0 else { return false }
-    guard let current = best[Self.cellOf(yaw: yaw, pitch: pitch)] else { return true }
+    guard let current = best[cell] else { return true }
     return sharpness >= current * Self.replaceMargin
   }
 
-  mutating func saved(yaw: Double, pitch: Double, sharpness: Double) {
-    best[Self.cellOf(yaw: yaw, pitch: pitch)] = sharpness
+  mutating func saved(cell: String, sharpness: Double) {
+    best[cell] = sharpness
   }
 }
 
@@ -82,6 +92,7 @@ final class CaptureRecorder {
   /// Read and written on the main thread.
   private var busy = false
   private var count = 0
+  private let startedAt = CACurrentMediaTime()
 
   static func folder(_ captureId: String) -> URL {
     FileManager.default.temporaryDirectory.appendingPathComponent("sajao-capture/\(captureId)", isDirectory: true)
@@ -96,9 +107,17 @@ final class CaptureRecorder {
   /// Offer an AR frame. Saves it as a keyframe candidate when it is clearly
   /// the sharpest yet for its direction. Main thread; encoding runs on a
   /// background queue.
-  func offer(_ frame: ARFrame, sharpness: Double, yaw: Double, pitch: Double) {
-    guard case .normal = frame.camera.trackingState else { return }
-    guard !busy, gate.shouldSave(yaw: yaw, pitch: pitch, sharpness: sharpness) else { return }
+  func offer(_ frame: ARFrame, sharpness: Double, yaw: Double?, pitch: Double?) {
+    // Kept whatever tracking says: without a pose, by time; the server
+    // solves those poses from the video.
+    let tracking: Bool = {
+      if case .normal = frame.camera.trackingState { return true }
+      return false
+    }()
+    let cell = KeyframeGate.cellFor(
+      yaw: tracking ? yaw : nil, pitch: tracking ? pitch : nil,
+      elapsedMs: (CACurrentMediaTime() - startedAt) * 1000)
+    guard !busy, gate.shouldSave(cell: cell, sharpness: sharpness) else { return }
     busy = true
     count += 1
     let name = String(format: "kf-%04d", count)
@@ -126,19 +145,14 @@ final class CaptureRecorder {
       DispatchQueue.main.async {
         self.busy = false
         guard ok else { return }
-        self.gate.saved(yaw: yaw, pitch: pitch, sharpness: sharpness)
+        self.gate.saved(cell: cell, sharpness: sharpness)
         let q = simd_quatf(transform)
         let t = transform.columns.3
-        self.emit([
+        var payload: [String: Any] = [
           "uri": jpeg.absoluteString,
           "sharpness": sharpness,
-          "yaw": yaw,
-          "pitch": pitch,
           "depth": depth != nil,
-          "pose": [
-            "position": ["x_m": Double(t.x), "y_m": Double(t.y), "z_m": Double(t.z)],
-            "rotation": [Double(q.imag.x), Double(q.imag.y), Double(q.imag.z), Double(q.real)],
-          ],
+          "tracking": tracking,
           "intrinsics": [
             "fx": Double(intrinsics.columns.0.x),
             "fy": Double(intrinsics.columns.1.y),
@@ -146,8 +160,17 @@ final class CaptureRecorder {
             "cy": Double(intrinsics.columns.2.y),
             "width_px": Int(resolution.width),
             "height_px": Int(resolution.height),
-          ],
-        ])
+          ]
+        ]
+        if tracking, let yaw, let pitch {
+          payload["yaw"] = yaw
+          payload["pitch"] = pitch
+          payload["pose"] = [
+            "position": ["x_m": Double(t.x), "y_m": Double(t.y), "z_m": Double(t.z)],
+            "rotation": [Double(q.imag.x), Double(q.imag.y), Double(q.imag.z), Double(q.real)],
+          ]
+        }
+        self.emit(payload)
       }
     }
   }
