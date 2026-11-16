@@ -51,7 +51,7 @@ known-first-party = ["sajao_api", "sajao_gateway", "sajao_schemas", "sajao_worke
 # Render bake-off: GPU jobs write scratch files in /tmp; the local fetcher reads public pages with urllib
 # and seeds a reproducible sampler, never for security.
 "services/spikes/render-bakeoff/gpu/**" = ["S108", "S311", "E501"]
-"services/spikes/render-bakeoff/local/**" = ["S310", "S311", "E501"]
+"services/spikes/render-bakeoff/local/**" = ["S310", "S311", "S603", "S607", "E501"]
 
 [tool.mypy]
 python_version = "3.13"
