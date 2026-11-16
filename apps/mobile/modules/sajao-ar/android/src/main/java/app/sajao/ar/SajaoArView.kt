@@ -46,6 +46,7 @@ class SajaoArView(context: Context, appContext: AppContext) :
   private val onArStatus by EventDispatcher()
   private val onArPose by EventDispatcher()
   private val onArDetections by EventDispatcher()
+  private val onArSurfaces by EventDispatcher()
 
   var lite = false
   var reducedMotion = false
@@ -105,6 +106,9 @@ class SajaoArView(context: Context, appContext: AppContext) :
   private val pendingDetections = AtomicReference<PendingDetections?>(null)
   // Height of the lowest upward-facing plane: the floor.
   private var floorY: Float? = null
+  // Sharpness of the latest camera image copied for the detector.
+  @Volatile private var latestSharpness = 0.0
+  private var lastSurfacesAt = 0L
   private var brightness = 128.0
   private var pixelIntensity = 1.0
   private var featureCount = 0
@@ -285,6 +289,10 @@ class SajaoArView(context: Context, appContext: AppContext) :
         drawPlanes(session, now)
         drawPoints()
         projectLabels()
+        if (now - lastSurfacesAt > 250) {
+          lastSurfacesAt = now
+          sendSurfaces(frame)
+        }
       }
       if (now - lastPoseAt > 100) {
         lastPoseAt = now
@@ -521,6 +529,7 @@ class SajaoArView(context: Context, appContext: AppContext) :
       return
     }
     brightness = copy.meanBrightness()
+    latestSharpness = SurfaceSample.lumaSharpness(copy.y, copy.width, copy.height, copy.yRowStride)
     // The camera as it was for this image: rays are built from it, so a
     // result that arrives after the phone moved still lands on its object.
     val camera = try {
@@ -537,6 +546,62 @@ class SajaoArView(context: Context, appContext: AppContext) :
       lastDetectionMs = milliseconds
       pendingDetections.set(PendingDetections(found, camera))
     }
+  }
+
+  /**
+   * Coverage on walls and floor: a 4 by 3 grid of rays from the camera into
+   * the planes found so far, with the latest image's sharpness. JavaScript
+   * decides whether the sample counts (slow turn, sharp frame).
+   */
+  private fun sendSurfaces(frame: Frame) {
+    val camera = try {
+      val pose = frame.camera.pose
+      val rotation = FloatArray(4)
+      pose.getRotationQuaternion(rotation, 0)
+      val intrinsics = frame.camera.imageIntrinsics
+      CaptureCamera(rotation, pose.translation, intrinsics.focalLength, intrinsics.principalPoint, intrinsics.imageDimensions)
+    } catch (_: Throwable) {
+      return
+    }
+    val hits = ArrayList<Map<String, Any>>(SurfaceSample.GRID.size)
+    for ((x, y) in SurfaceSample.GRID) {
+      val (origin, direction) = camera.ray(x, y)
+      val hit = try {
+        frame.hitTest(origin, 0, direction, 0).firstOrNull { result ->
+          val plane = result.trackable as? Plane
+          plane != null && plane.isPoseInPolygon(result.hitPose)
+        }
+      } catch (_: Throwable) {
+        null
+      } ?: continue
+      val plane = hit.trackable as Plane
+      val p = hit.hitPose.translation
+      val kind = Surface.kind(
+        vertical = plane.type == Plane.Type.VERTICAL,
+        facingDown = plane.type == Plane.Type.HORIZONTAL_DOWNWARD_FACING,
+        longestSide = maxOf(plane.extentX, plane.extentZ),
+        hitY = p[1],
+        floorY = floorY,
+      )
+      if (kind != Surface.WALL && kind != Surface.FLOOR) continue
+      // A plane's normal is its pose's +Y axis.
+      val (normalYaw, offset) = SurfaceSample.wallFrame(plane.centerPose.yAxis, p)
+      hits.add(
+        mapOf(
+          "kind" to kind,
+          "normalYaw" to normalYaw,
+          "offset" to offset,
+          "x" to p[0].toDouble(),
+          "y" to p[1].toDouble(),
+          "z" to p[2].toDouble(),
+        ),
+      )
+    }
+    val payload = HashMap<String, Any>()
+    payload["sharpness"] = latestSharpness
+    payload["hits"] = hits
+    floorY?.let { payload["floorY"] = it.toDouble() }
+    post { onArSurfaces(payload) }
   }
 
   /**

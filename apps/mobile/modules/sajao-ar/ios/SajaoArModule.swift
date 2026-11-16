@@ -23,7 +23,7 @@ public final class SajaoArModule: Module {
     }
 
     View(SajaoArView.self) {
-      Events("onArStatus", "onArPose", "onArDetections")
+      Events("onArStatus", "onArPose", "onArDetections", "onArSurfaces")
 
       Prop("active") { (view: SajaoArView, value: Bool) in
         view.setActive(value)

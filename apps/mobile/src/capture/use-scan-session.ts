@@ -5,6 +5,7 @@ import { Platform } from "react-native";
 import { arCountersOf, type ArFrameCounters, arFrameRates, NO_AR_COUNTERS } from "./ar/ar-debug";
 import { arFrameEvent, type ArStatus, arPoseEvent } from "./ar/ar-events";
 import { type Detection, EMPTY_LABELS, type LabelState, updateLabels } from "./ar/labels";
+import type { SurfaceHit } from "./ar/surface-coverage";
 import { motionSample } from "./pose";
 import type { AnalysedFrame, CameraDiagnostics } from "./scan-camera";
 import { INITIAL_SCAN, scanReducer } from "./scan-session";
@@ -191,6 +192,11 @@ export function useScanSession(active: boolean) {
       dispatch(arPoseEvent(pose, Date.now())),
     [],
   );
+  const onArSurfaces = useCallback(
+    (sample: { sharpness: number; hits: readonly SurfaceHit[]; floorY?: number | null }) =>
+      dispatch({ type: "arSurfaces", ...sample, atMs: Date.now() }),
+    [],
+  );
   const onArDetections = useCallback((detections: Detection[]) => {
     setLabels((current) => updateLabels(current, detections, Date.now()));
   }, []);
@@ -208,6 +214,7 @@ export function useScanSession(active: boolean) {
     onArStatus,
     onArPose,
     onArDetections,
+    onArSurfaces,
     scanAnyway,
   };
 }

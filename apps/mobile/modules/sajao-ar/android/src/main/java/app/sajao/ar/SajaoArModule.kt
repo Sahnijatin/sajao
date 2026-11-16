@@ -45,7 +45,7 @@ class SajaoArModule : Module() {
     }
 
     View(SajaoArView::class) {
-      Events("onArStatus", "onArPose", "onArDetections")
+      Events("onArStatus", "onArPose", "onArDetections", "onArSurfaces")
 
       Prop("active") { view: SajaoArView, value: Boolean ->
         view.setActive(value)
