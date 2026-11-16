@@ -7,11 +7,36 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSCameraUsageDescription": "The camera is used to scan the space you want redone.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
-    "plugins": ["expo-router", "expo-status-bar", "expo-localization", "expo-font"],
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-localization",
+      "expo-font",
+      "expo-dev-client"
+    ],
     "experiments": {
       "typedRoutes": true
+    },
+    "android": {
+      "permissions": ["android.permission.CAMERA"]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "7fef2ddd-9260-44b5-8a73-5e6919ac0837"
+      }
+    },
+    "owner": "sahniijatinn",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/7fef2ddd-9260-44b5-8a73-5e6919ac0837"
     }
   }
 }

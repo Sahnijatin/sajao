@@ -28,7 +28,7 @@ Sprint dates live in Notion. Each phase ends at a gate with numbers; the next ph
 | Play closed test needs 12 testers for 14 days | Android production access waits | Closed test starts as soon as a stable build exists; testers recruited early |
 | Scope creep | Misses the store date | Notion change protocol; Must tier first, deep before wide |
 | Vastu direction errors | Wrong advice | Averaged compass plus confirmation, approximate flag, consultant-reviewed rules |
-| Model licenses | Legal risk | Recorded and reviewed before use |
+| Model and dataset licenses | Legal risk | Listed in the third-party register; legal team reviews separately |
 | Privacy of home photos | Trust and legal risk | Consent, blurring, raw video deleted after processing |
 
 ## Decision log
@@ -75,5 +75,6 @@ These supersede earlier rows where they conflict; earlier rows are kept as histo
 | Infrastructure | Supabase Postgres, R2, Cloud Run, Modal, one model gateway, durable jobs | Scales from 10 to 1 lakh users without a rebuild |
 | Tracking | Notion is the single tracker; scope changes need founder approval | Prevents drift |
 | Skills in repo | Licensed third-party skills copied into `.claude/skills/` instead of declared as plugins | Cloud sessions do not reliably install plugins; copies are versioned with the code |
+| Third-party register | Engineering may use any model, library or dataset (including for training); all are listed in docs/24 for the legal team, who approve separately | Legal team instruction; speed and best technology first |
 
 Open: final product name after domain, store and trademark checks.
