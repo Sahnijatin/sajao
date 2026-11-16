@@ -45,13 +45,14 @@ known-first-party = ["sajao_api", "sajao_gateway", "sajao_schemas", "sajao_worke
 "**/tests/**" = ["S101"]
 # One-off GPU jobs: they shell out to curl, unzip, ffmpeg and splat-transform with fixed arguments.
 "services/spikes/twin-risk/gpu/**" = ["S603", "S607", "S108", "E501"]
+"services/spikes/twin-depth/gpu/**" = ["E501"]
 
 [tool.mypy]
 python_version = "3.13"
 strict = true
 files = ["packages/schemas/python", "services"]
 # GPU jobs import CUDA libraries that only exist in the Modal image.
-exclude = ["/generated/", "services/spikes/twin-risk/gpu/", "services/workers/gpu/"]
+exclude = ["/generated/", "services/spikes/twin-risk/gpu/", "services/spikes/twin-depth/gpu/", "services/workers/gpu/"]
 
 [[tool.mypy.overrides]]
 module = ["boto3.*", "botocore.*"]
