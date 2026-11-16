@@ -253,6 +253,8 @@ def grow(out_dir: Path) -> None:
     path = out_dir / "listings.json"
     listings = json.loads(path.read_text())
     for item in listings:
+        if item.get("gallery_done"):
+            continue
         try:
             extra = [u for u in full_gallery(item) if u not in item["images"]]
         except Exception as e:
@@ -290,6 +292,7 @@ def grow(out_dir: Path) -> None:
         new = cand[:need]
         for item in new:
             item["images"] = full_gallery(item)[:MAX_IMAGES] or item["images"]
+            item["gallery_done"] = True
             d = out_dir / item["id"]
             d.mkdir(exist_ok=True)
             for i, u in enumerate(item["images"]):
