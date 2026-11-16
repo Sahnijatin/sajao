@@ -1,0 +1,1418 @@
+[
+ {
+  "id": "ikea_10615526",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   2.01,
+   0.91,
+   0.82
+  ],
+  "build_seconds": 2.33,
+  "faces": 1656,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s39620339",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   2.5,
+   1.07,
+   0.95
+  ],
+  "build_seconds": 0.1,
+  "faces": 1356,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s49482832",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   2.28,
+   0.95,
+   0.83
+  ],
+  "build_seconds": 0.09,
+  "faces": 1200,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s69615336",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   2.46,
+   0.94,
+   0.9
+  ],
+  "build_seconds": 0.11,
+  "faces": 1356,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s39270312",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   2.04,
+   0.89,
+   0.78
+  ],
+  "build_seconds": 0.11,
+  "faces": 1356,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_20619072",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   2.01,
+   0.9,
+   0.69
+  ],
+  "build_seconds": 0.08,
+  "faces": 750,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s69449691",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   1.1,
+   1.1,
+   0.75
+  ],
+  "build_seconds": 2.04,
+  "faces": 1336,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_40551226",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   2.25,
+   1.05,
+   0.83
+  ],
+  "build_seconds": 0.12,
+  "faces": 1536,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_50646413",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   0.78,
+   0.64,
+   0.76
+  ],
+  "build_seconds": 0.1,
+  "faces": 1604,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ws_henry-l-shape-right-arm-corner-sofa-indigo-blue",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   2.7560000000000002,
+   0.825,
+   0.787
+  ],
+  "build_seconds": 0.09,
+  "faces": 786,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   1.524,
+   0.8640000000000001,
+   0.8640000000000001
+  ],
+  "build_seconds": 0.11,
+  "faces": 1224,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ikea_60458755",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   1.42,
+   2.02,
+   0.55
+  ],
+  "build_seconds": 0.09,
+  "faces": 502,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s39581837",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   1.86,
+   2.06,
+   0.66
+  ],
+  "build_seconds": 1.66,
+  "faces": 600,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_30504631",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   1.66,
+   2.07,
+   0.86
+  ],
+  "build_seconds": 0.08,
+  "faces": 586,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_40573681",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   1.46,
+   2.07,
+   1.99
+  ],
+  "build_seconds": 0.08,
+  "faces": 390,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s69200643",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   1.96,
+   2.09,
+   1.0
+  ],
+  "build_seconds": 0.06,
+  "faces": 600,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s89198465",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   1.66,
+   2.07,
+   0.95
+  ],
+  "build_seconds": 0.08,
+  "faces": 502,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s29308527",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   1.653,
+   2.046,
+   0.68
+  ],
+  "build_seconds": 0.06,
+  "faces": 600,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_50579055",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   1.68,
+   2.09,
+   1.35
+  ],
+  "build_seconds": 1.79,
+  "faces": 652,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ws_lotus-premium-ash-wood-bed-with-brass-inlay-queen-size-teak-",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   1.829,
+   2.21,
+   1.016
+  ],
+  "build_seconds": 0.07,
+  "faces": 450,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ikea_30437241",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   1.17,
+   0.55,
+   1.76
+  ],
+  "build_seconds": 0.07,
+  "faces": 24,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s39551722",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   2.0,
+   0.66,
+   2.364
+  ],
+  "build_seconds": 0.06,
+  "faces": 24,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_40456917",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   1.18,
+   0.55,
+   1.99
+  ],
+  "build_seconds": 0.06,
+  "faces": 24,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s89500966",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   1.5,
+   0.66,
+   2.012
+  ],
+  "build_seconds": 0.07,
+  "faces": 24,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s99502371",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   1.5,
+   0.66,
+   2.012
+  ],
+  "build_seconds": 0.07,
+  "faces": 24,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s79561309",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   1.5,
+   0.66,
+   2.364
+  ],
+  "build_seconds": 0.07,
+  "faces": 24,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s89432369",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   2.24,
+   0.76,
+   0.73
+  ],
+  "build_seconds": 0.06,
+  "faces": 24,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s09432306",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   1.5,
+   0.66,
+   2.364
+  ],
+  "build_seconds": 0.07,
+  "faces": 24,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ws_emboss-1-door-multi-utility-wardrobe-honey-finish",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   0.5589999999999999,
+   0.5589999999999999,
+   1.829
+  ],
+  "build_seconds": 0.07,
+  "faces": 168,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_citroen-1-door-multi-utility-wardrobe-walnut-finish",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   0.5589999999999999,
+   0.5589999999999999,
+   1.829
+  ],
+  "build_seconds": 0.07,
+  "faces": 168,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_holden-1-door-multi-utility-wardrobe-walnut-finish",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   0.5589999999999999,
+   0.5589999999999999,
+   1.829
+  ],
+  "build_seconds": 0.06,
+  "faces": 180,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_cambrey-1-door-with-3-drawers-wardrobe-walnut-finish",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   0.5589999999999999,
+   0.5589999999999999,
+   1.829
+  ],
+  "build_seconds": 0.07,
+  "faces": 198,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_adolph-wardrobe-honey-finish",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   0.914,
+   0.5589999999999999,
+   1.829
+  ],
+  "build_seconds": 0.08,
+  "faces": 366,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_charles-2-door-multi-utility-wardrobe-walnut-finish",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   0.914,
+   0.5589999999999999,
+   1.829
+  ],
+  "build_seconds": 0.09,
+  "faces": 324,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ikea_20352987",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.9,
+   0.55,
+   0.45
+  ],
+  "build_seconds": 0.06,
+  "faces": 180,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_20500407",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.8,
+   0.5,
+   0.45
+  ],
+  "build_seconds": 0.06,
+  "faces": 180,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_10604349",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.5,
+   0.5,
+   0.5
+  ],
+  "build_seconds": 0.07,
+  "faces": 180,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_10500356",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.7,
+   0.7,
+   0.42
+  ],
+  "build_seconds": 0.06,
+  "faces": 64,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_00411997",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.45,
+   0.45,
+   0.53
+  ],
+  "build_seconds": 0.06,
+  "faces": 58,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_30651392",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.9,
+   0.9,
+   0.48
+  ],
+  "build_seconds": 0.06,
+  "faces": 138,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_00586553",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.97,
+   0.97,
+   0.38
+  ],
+  "build_seconds": 0.07,
+  "faces": 58,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_80576319",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.37,
+   0.28,
+   0.45
+  ],
+  "build_seconds": 0.08,
+  "faces": 180,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_50497583",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.88,
+   0.88,
+   0.35
+  ],
+  "build_seconds": 0.07,
+  "faces": 64,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ws_adolph-bedside-table-honey-finish",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ws_morse-bedside-table-honey-finish",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ws_ferguson-bedside-table-walnut-finish",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.457,
+   0.35600000000000004,
+   0.406
+  ],
+  "build_seconds": 0.07,
+  "faces": 180,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_allan-bedside-honey-finish",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.406,
+   0.35600000000000004,
+   0.5589999999999999
+  ],
+  "build_seconds": 0.07,
+  "faces": 180,
+  "textured": false,
+  "input_view": 2
+ },
+ {
+  "id": "ws_denzel-bedside-table-walnut-finish",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.457,
+   0.406,
+   0.457
+  ],
+  "build_seconds": 0.07,
+  "faces": 180,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_florian-bedside-table-honey-finish",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ws_bryson-bedside-table-walnut-finish",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.406,
+   0.35600000000000004,
+   0.457
+  ],
+  "build_seconds": 0.06,
+  "faces": 180,
+  "textured": false,
+  "input_view": 2
+ },
+ {
+  "id": "ws_swirl-bedside-table",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ws_orwell-round-coffee-table-honey-finish",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.762,
+   0.762,
+   0.43200000000000005
+  ],
+  "build_seconds": 0.07,
+  "faces": 102,
+  "textured": false,
+  "input_view": 2
+ },
+ {
+  "id": "ikea_70533491",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.78,
+   0.64,
+   0.76
+  ],
+  "build_seconds": 0.07,
+  "faces": 704,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_80581919",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.75,
+   0.63,
+   0.68
+  ],
+  "build_seconds": 0.06,
+  "faces": 324,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s19625328",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.82,
+   0.68,
+   1.0
+  ],
+  "build_seconds": 0.09,
+  "faces": 624,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_10535544",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.71,
+   0.66,
+   0.73
+  ],
+  "build_seconds": 0.08,
+  "faces": 704,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_30492317",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.97,
+   0.8,
+   1.01
+  ],
+  "build_seconds": 0.07,
+  "faces": 704,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s39626280",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "chair",
+  "template_matches_category": false,
+  "size_m": [
+   1.07,
+   1.07,
+   1.0
+  ],
+  "build_seconds": 0.09,
+  "faces": 924,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_90581914",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.86,
+   0.81,
+   0.68
+  ],
+  "build_seconds": 0.08,
+  "faces": 324,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_70535895",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.723,
+   0.662,
+   0.996
+  ],
+  "build_seconds": 0.08,
+  "faces": 624,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s99628653",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "chair",
+  "template_matches_category": false,
+  "size_m": [
+   1.04,
+   0.88,
+   0.88
+  ],
+  "build_seconds": 0.08,
+  "faces": 900,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ws_udaya-sheesham-wood-arm-chair-green-stripe-teak-finish",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.584,
+   0.5329999999999999,
+   1.003
+  ],
+  "build_seconds": 0.07,
+  "faces": 624,
+  "textured": false,
+  "input_view": null
+ },
+ {
+  "id": "ws_kelvin-arm-chair-with-cane-cream-robins",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.584,
+   0.5589999999999999,
+   1.016
+  ],
+  "build_seconds": 0.09,
+  "faces": 624,
+  "textured": false,
+  "input_view": 5
+ },
+ {
+  "id": "ws_danon-lounge-chair-blue-stripe",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.838,
+   0.711,
+   1.219
+  ],
+  "build_seconds": 0.08,
+  "faces": 624,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_thrace-lounge-chair-salmon-pink",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.584,
+   0.5589999999999999,
+   0.762
+  ],
+  "build_seconds": 0.08,
+  "faces": 324,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_crisper-lounge-chair-cotton-grey-robins",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.762,
+   0.61,
+   0.787
+  ],
+  "build_seconds": 0.07,
+  "faces": 624,
+  "textured": false,
+  "input_view": 4
+ },
+ {
+  "id": "ws_adire-lounge-chair-cream-robins",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.762,
+   0.737,
+   1.067
+  ],
+  "build_seconds": 0.07,
+  "faces": 624,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_crisper-lounge-chair-bubble-robins",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.762,
+   0.61,
+   0.787
+  ],
+  "build_seconds": 0.07,
+  "faces": 624,
+  "textured": false,
+  "input_view": 4
+ },
+ {
+  "id": "ikea_20321321",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_60563577",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_60459712",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_20405047",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_50314814",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_10478124",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_60602041",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ws_adolph-bed-honey-finish",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   1.905,
+   2.083,
+   1.067
+  ],
+  "build_seconds": 0.06,
+  "faces": 624,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_adolph-queen-size-bed-walnut-finish",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   1.6,
+   2.083,
+   1.067
+  ],
+  "build_seconds": 0.07,
+  "faces": 624,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_walken-queen-size-bed-honey-finish",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   1.6,
+   2.235,
+   0.838
+  ],
+  "build_seconds": 0.07,
+  "faces": 600,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   1.575,
+   2.1590000000000003,
+   1.041
+  ],
+  "build_seconds": 0.06,
+  "faces": 450,
+  "textured": false,
+  "input_view": 5
+ },
+ {
+  "id": "ws_knot-floor-lamp",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_s69510607",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   0.95,
+   0.95,
+   0.87
+  ],
+  "build_seconds": 0.1,
+  "faces": 1800,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s59536306",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   0.76,
+   0.76,
+   0.73
+  ],
+  "build_seconds": 0.08,
+  "faces": 586,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s39585821",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   0.74,
+   0.74,
+   0.86
+  ],
+  "build_seconds": 0.09,
+  "faces": 1524,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s99613524",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   0.76,
+   0.76,
+   0.76
+  ],
+  "build_seconds": 0.08,
+  "faces": 736,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s49395019",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   0.618,
+   0.6,
+   2.48
+  ],
+  "build_seconds": 0.12,
+  "faces": 1636,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s79627659",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   1.64,
+   0.88,
+   0.9
+  ],
+  "build_seconds": 0.1,
+  "faces": 1224,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_30638777",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   1.46,
+   0.91,
+   0.82
+  ],
+  "build_seconds": 0.1,
+  "faces": 1304,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_30437811",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_20568223",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_80573580",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_60404913",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_70524458",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_00594614",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_30575812",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.81,
+   0.79,
+   0.71
+  ],
+  "build_seconds": 0.08,
+  "faces": 624,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_00582036",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.69,
+   0.64,
+   0.71
+  ],
+  "build_seconds": 0.1,
+  "faces": 436,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_00598216",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.72,
+   0.66,
+   0.71
+  ],
+  "build_seconds": 0.08,
+  "faces": 736,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_30503655",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   0.87,
+   2.05,
+   0.58
+  ],
+  "build_seconds": 0.06,
+  "faces": 450,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_20518271",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   0.392,
+   0.4,
+   0.88
+  ],
+  "build_seconds": 0.06,
+  "faces": 436,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_40453768",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   1.17,
+   0.55,
+   1.76
+  ],
+  "build_seconds": 0.05,
+  "faces": 24,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_50409893",
+  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ikea_50409893/spec.json'\n"
+ },
+ {
+  "id": "ikea_50483878",
+  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ikea_50483878/spec.json'\n"
+ },
+ {
+  "id": "ikea_80498939",
+  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ikea_80498939/spec.json'\n"
+ },
+ {
+  "id": "ws_melvina-tv-unit-honey-finish",
+  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ws_melvina-tv-unit-honey-finish/spec.json'\n"
+ },
+ {
+  "id": "ws_radiant-tv-unit-frosty-white-finish",
+  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ws_radiant-tv-unit-frosty-white-finish/spec.json'\n"
+ },
+ {
+  "id": "ws_harvey-tv-unit-frosty-white",
+  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ws_harvey-tv-unit-frosty-white/spec.json'\n"
+ },
+ {
+  "id": "ikea_00522047",
+  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ikea_00522047/spec.json'\n"
+ },
+ {
+  "id": "ikea_s69528344",
+  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ikea_s69528344/spec.json'\n"
+ },
+ {
+  "id": "ikea_90520355",
+  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ikea_90520355/spec.json'\n"
+ },
+ {
+  "id": "ws_juniper-book-shelf-honey",
+  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ws_juniper-book-shelf-honey/spec.json'\n"
+ },
+ {
+  "id": "ws_greta-book-shelf-honey-finish",
+  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ws_greta-book-shelf-honey-finish/spec.json'\n"
+ },
+ {
+  "id": "ws_javier-bookshelf-honey-finish",
+  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ws_javier-bookshelf-honey-finish/spec.json'\n"
+ }
+]
