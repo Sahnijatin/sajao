@@ -195,10 +195,11 @@ def test_cli_find_appends_only_new(
 ) -> None:
     fake = FakeSearch(cc=[hit("ccccccccccc", cc=True)], any_=[hit("aaaaaaaaaaa", cc=False)])
     monkeypatch.setattr("sajao_dataset.cli._backend", lambda choice: fake)
+    monkeypatch.delenv("YOUTUBE_API_KEY", raising=False)
     manifest = tmp_path / "sources.jsonl"
 
     assert main(["find", "--manifest", str(manifest), "--query", "q"]) == 0
     assert main(["find", "--manifest", str(manifest), "--query", "q"]) == 0
 
     assert [r.video_id for r in read_manifest(manifest)] == ["ccccccccccc", "aaaaaaaaaaa"]
-    assert "0 new videos" in capsys.readouterr().out.splitlines()[-1]
+    assert "0 new videos" in capsys.readouterr().out

@@ -16,13 +16,21 @@ from sajao_dataset.download import (
     ytdlp_fetch,
 )
 from sajao_dataset.frames import fetch_yunet, sample_all, yunet_faces
+from sajao_dataset.licenses import (
+    DataApiVideos,
+    append_licenses,
+    apply_licenses,
+    check_licenses,
+    read_licenses,
+)
 from sajao_dataset.manifest import append_records, read_manifest
 from sajao_dataset.prefilter import decide, read_decisions, write_decisions
-from sajao_dataset.queries import QUERIES, QUERY_SET
+from sajao_dataset.queries import ALL_QUERIES, QUERY_SET, category_of
 from sajao_dataset.youtube import DataApiSearch, Search, YtDlpSearch, find
 
 DEFAULT_MANIFEST = Path("data/sources.jsonl")
 DEFAULT_PREFILTER = Path("data/prefilter.jsonl")
+DEFAULT_LICENSES = Path("data/licenses.jsonl")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -36,6 +44,11 @@ def main(argv: list[str] | None = None) -> int:
     find_cmd.add_argument("--max-new", type=int, default=500, help="New videos to add this run")
     find_cmd.add_argument("--query", action="append", help="Run only these queries (repeatable)")
 
+    lic_cmd = commands.add_parser("licenses", help="Record each video's license (Data API)")
+    lic_cmd.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
+    lic_cmd.add_argument("--licenses", type=Path, default=DEFAULT_LICENSES)
+    lic_cmd.add_argument("--refresh", action="store_true", help="Recheck videos already recorded")
+
     pre_cmd = commands.add_parser("prefilter", help="Drop builder and designer promos")
     pre_cmd.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     pre_cmd.add_argument("--out", type=Path, default=DEFAULT_PREFILTER)
@@ -43,6 +56,7 @@ def main(argv: list[str] | None = None) -> int:
     dl_cmd = commands.add_parser("download", help="Download kept segments (run on the PC)")
     dl_cmd.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     dl_cmd.add_argument("--prefilter", type=Path, default=DEFAULT_PREFILTER)
+    dl_cmd.add_argument("--licenses", type=Path, default=DEFAULT_LICENSES)
     dl_cmd.add_argument("--segments", type=Path, help="Segments JSONL from screening")
     dl_cmd.add_argument("--clips", type=Path, default=Path("data/clips"))
     dl_cmd.add_argument("--ledger", type=Path, default=Path("data/downloads.jsonl"))
@@ -71,6 +85,8 @@ def main(argv: list[str] | None = None) -> int:
         return _find(args)
     if args.command == "prefilter":
         return _prefilter(args)
+    if args.command == "licenses":
+        return _licenses(args)
     return 2
 
 
@@ -79,17 +95,39 @@ def _find(args: argparse.Namespace) -> int:
     existing = read_manifest(args.manifest)
     records = find(
         search,
-        args.query or QUERIES,
+        args.query or ALL_QUERIES,
         query_set=QUERY_SET if not args.query else "ad-hoc",
+        category_of=category_of,
         seen={r.video_id for r in existing},
         per_query=args.per_query,
         max_new=args.max_new,
     )
     added = append_records(args.manifest, records)
-    licenses = Counter(r.license for r in records)
     print(
-        f"{added} new videos via {search.name} ({dict(licenses)}); "
+        f"{added} new videos via {search.name} "
+        f"(by category {dict(Counter(r.category for r in records))}); "
         f"{len(existing) + added} in {args.manifest}"
+    )
+    if os.environ.get("YOUTUBE_API_KEY"):
+        ledger = args.manifest.parent / DEFAULT_LICENSES.name
+        return _licenses(argparse.Namespace(manifest=args.manifest, licenses=ledger, refresh=False))
+    print("Set YOUTUBE_API_KEY and run `licenses` to record each video's license.")
+    return 0
+
+
+def _licenses(args: argparse.Namespace) -> int:
+    key = os.environ.get("YOUTUBE_API_KEY")
+    if not key:
+        sys.exit("Set YOUTUBE_API_KEY to record licenses from the YouTube Data API.")
+    sources = read_manifest(args.manifest)
+    known = {} if args.refresh else read_licenses(args.licenses)
+    todo = [s.video_id for s in sources if s.video_id not in known]
+    records = check_licenses(DataApiVideos(key), todo)
+    append_licenses(args.licenses, records)
+    calls = -(-len(todo) // 50)
+    print(
+        f"{len(records)} videos checked ({calls} quota units): "
+        f"{dict(Counter((r.license, r.availability) for r in records))}. Ledger: {args.licenses}"
     )
     return 0
 
@@ -110,8 +148,12 @@ def _download(args: argparse.Namespace) -> int:
         with args.segments.open(encoding="utf-8") as f:
             segments = [Segment.model_validate_json(line) for line in f if line.strip()]
     else:
+        sources = read_manifest(args.manifest)
+        licenses = read_licenses(args.licenses)
+        if not licenses:
+            print("No license ledger yet; run `licenses` first to use Data API licenses.")
         segments = plan_head_segments(
-            read_manifest(args.manifest),
+            apply_licenses(sources, licenses),
             read_decisions(args.prefilter),
             head_s=args.head_s,
             limit=args.limit,

@@ -5,6 +5,7 @@ Builds a labelled set of real Indian rooms for the on-device detector. Every sta
 | Stage | Command | Status |
 | --- | --- | --- |
 | 1. Find candidate videos | `find` | Ready |
+| 1a. Record each video's license (YouTube Data API) | `licenses` | Ready |
 | 1b. Drop builder and designer promos | `prefilter` | Ready |
 | 2. Screen with Gemini (keep or skip, room timestamps) | | Next |
 | 3. Download kept segments (Windows) | `download` | Ready |
@@ -26,14 +27,23 @@ uv run python -m sajao_dataset find --query "2bhk flat tour pune" --per-query 5
 YOUTUBE_API_KEY=... uv run python -m sajao_dataset find --backend data-api
 ```
 
-Each pinned query (`src/sajao_dataset/queries.py`, English and Hindi) runs twice: once restricted to Creative Commons and once unrestricted. New videos are appended to `data/sources.jsonl`, Creative Commons first; videos already in the manifest are skipped. Videos shorter than 1 minute or longer than 1 hour are dropped.
+Each pinned query (`src/sajao_dataset/queries.py`, English and Hindi) runs twice: once restricted to Creative Commons and once unrestricted. Empty-flat and new-build home tours are the priority category: their queries run first and their videos rank first everywhere, then Creative Commons first within each category. New videos are appended to `data/sources.jsonl`; videos already in the manifest are skipped. Videos shorter than 1 minute or longer than 1 hour are dropped.
 
 | Backend | Needs | License field |
 | --- | --- | --- |
 | `yt-dlp` (default without a key) | Nothing | `creative_commons` from YouTube's own filter, otherwise `unknown` |
 | `data-api` | `YOUTUBE_API_KEY` | Read from each video's status: `creative_commons` or `standard` |
 
-The Data API costs 100 quota units per search; the full query set uses about 7,200 of the default 10,000 a day.
+Searching through the Data API costs 100 quota units per query and pass (about 9,800 units for the full set, most of the default 10,000 a day), so search stays on yt-dlp by default and only licenses come from the API.
+
+## 1a. Record each video's license
+
+```sh
+uv run python -m sajao_dataset licenses            # runs automatically after find when YOUTUBE_API_KEY is set
+uv run python -m sajao_dataset licenses --refresh  # recheck every video
+```
+
+Reads each video's `status` from the YouTube Data API, 50 videos per call at 1 quota unit (500 videos cost 10 units), and appends one line per video to `data/licenses.jsonl`: `creative_commons` or `standard`, and whether the video is still public. The ledger overrides what search inferred; private or deleted videos are never downloaded. The key is read from the environment and never printed or logged.
 
 ## 1b. Drop builder and designer promos
 
@@ -63,12 +73,13 @@ ffmpeg -version                        # must print a version
 ### Run
 
 ```powershell
-uv run python -m sajao_dataset find
+$env:YOUTUBE_API_KEY = "<your key>"      # PowerShell; keeps the key out of files
+uv run python -m sajao_dataset find      # also records licenses
 uv run python -m sajao_dataset prefilter
 uv run python -m sajao_dataset download --limit 50
 ```
 
-Without screening, each kept video contributes its first 10 minutes (`--head-s 600`), Creative Commons first. With screening, pass `--segments data\segments.jsonl` and only the kept room segments are fetched.
+Without screening, each kept video contributes its first 10 minutes (`--head-s 600`): empty-flat and new-build tours first, then Creative Commons first. With screening, pass `--segments data\segments.jsonl` and only the kept room segments are fetched.
 
 - **Video only**, up to 1080p (`--max-height`). About 150 to 300 MB per 10 minutes at 1080p; the 50-video pilot needs roughly 10 GB free.
 - **Resumable.** Each clip is checked with ffprobe (it must cover at least 80 percent of the requested range), checksummed and logged to `data\downloads.jsonl`. Rerunning skips finished clips and retries failed ones. A clip deleted from disk is fetched again.

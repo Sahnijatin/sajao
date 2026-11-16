@@ -25,6 +25,11 @@ Creative Commons search filter, or nothing yet."""
 
 FoundBy = Literal["yt-dlp", "youtube-data-api"]
 
+Category = Literal["empty_new_build", "general"]
+"""empty_new_build: tours of empty or newly handed-over homes, the priority category."""
+
+CATEGORY_RANK: dict[str, int] = {"empty_new_build": 0, "general": 1}
+
 
 class SourceRecord(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -42,6 +47,7 @@ class SourceRecord(BaseModel):
     license_evidence: LicenseEvidence
     query: str
     query_set: str
+    category: Category = "general"
     found_by: FoundBy
     found_at: datetime
     use: Literal["internal_training_only"] = "internal_training_only"
