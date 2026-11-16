@@ -96,8 +96,8 @@ Every model, library and dataset used to build, train or evaluate Sajao is liste
 | addict 2.4.0 | Library | Imported by the Depth Anything 3 code | https://github.com/mewwts/addict | MIT | No | Twin no-LiDAR depth benchmark |
 | MoGe-3 ViT-L `Ruicheng/moge-3-vitl`, revision 184008f8 | Model | Metric depth from one image; primary for phones without LiDAR | https://huggingface.co/Ruicheng/moge-3-vitl | MIT | No | Twin no-LiDAR depth benchmark |
 | MoGe code (Microsoft), commit 74fbce05, with FlexGEMM | Library | Runs MoGe-3 | https://github.com/microsoft/MoGe | MIT (DINOv2 parts Apache 2.0); FlexGEMM MIT | No | Twin no-LiDAR depth benchmark |
-| LaMa big-lama | Model | AI inpainting of plane textures and of frames | https://github.com/advimman/lama | Apache 2.0 | No | SJ-116 twin risk spike |
-| simple-lama-inpainting v0.1.0 TorchScript export | Model file | Packaged big-lama weights loaded by the spike | https://github.com/enesmsahin/simple-lama-inpainting | Apache 2.0 | No | SJ-116 twin risk spike |
+| LaMa big-lama | Model | Inpaints keyframes when an object is removed from the twin (fill B), in the twin worker | https://github.com/advimman/lama | Apache 2.0 | No | SJ-116 twin risk spike; twin object removal |
+| simple-lama-inpainting v0.1.0 TorchScript export | Model file | Packaged big-lama weights, pinned by SHA-256 7ba7aa7a, loaded by the twin worker | https://github.com/enesmsahin/simple-lama-inpainting | Apache 2.0 | No | SJ-116 twin risk spike; twin object removal |
 | Qwen-Image `Qwen/Qwen-Image`, revision 75e0b4be | Model | Diffusion inpainting compared with LaMa for object removal (not chosen) | https://huggingface.co/Qwen/Qwen-Image | Apache 2.0 | No | Twin object removal comparison |
 | Qwen-Image Lightning LoRA, 8 steps V2.0, revision d468c534 | Model | Fast sampling for Qwen-Image in the comparison | https://huggingface.co/lightx2v/Qwen-Image-Lightning | Apache 2.0 | No | Twin object removal comparison |
 | diffusers 0.43.0 (Hugging Face) | Library | Runs Qwen-Image inpainting | https://github.com/huggingface/diffusers | Apache 2.0 | No | Twin object removal comparison |
