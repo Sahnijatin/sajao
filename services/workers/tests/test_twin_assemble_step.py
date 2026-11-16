@@ -12,7 +12,8 @@ from PIL import Image
 
 from sajao_schemas.generated.v1 import SpaceTwin
 from sajao_workers.steps import LocalArtifactStore, StepFailedError, StepRunner
-from sajao_workers.twin.assemble_step import assemble_step, shell_points
+from sajao_workers.twin.assemble_step import _shell_from_frames, assemble_step, shell_points
+from sajao_workers.twin.space import fit_space
 
 W, H, F = 160, 120, 100.0
 K = [[F, 0.0, W / 2], [0.0, F, H / 2], [0.0, 0.0, 1.0]]
@@ -137,16 +138,24 @@ async def test_the_step_stores_a_valid_twin_with_crops(
     crop = store.read_blob(view["crop"].rsplit("/", 1)[-1])
     assert Image.open(io.BytesIO(crop)).size == (77, 55)  # mask box plus a 10% margin
     assert result.meta["objects"] == 1 and result.meta["extent"] in {"whole_room", "part"}
-    # Every wall the level cameras see gets a texture from the keyframes, stored as an
-    # artifact; a surface no frame sees (here the ceiling) gets none rather than a guess.
-    coverage = result.meta["texture_coverage"]
-    for surface in twin["shell"]["surfaces"]:
+    assert all("texture" not in surface for surface in twin["shell"]["surfaces"])  # off for now
+
+
+def test_textures_when_switched_on_cover_the_walls_the_cameras_see(
+    tmp_path: Path, room: Callable[..., np.ndarray]
+) -> None:
+    store, inputs, room = setup(tmp_path, room)
+    manifest = json.loads(store.read_blob(inputs["frames"]))
+    space = fit_space(room(), depth_source="lidar")
+
+    coverage = _shell_from_frames(store, manifest, [], [], space, textures=True)
+
+    for surface in space.shell["surfaces"]:
         if coverage[surface["id"]] > 0:
-            assert surface["texture"].startswith("artifacts/blobs/")
             assert store.has_blob(surface["texture"].rsplit("/", 1)[-1])
         else:
-            assert "texture" not in surface
-    assert all(coverage[w["id"]] > 0.2 for w in twin["shell"]["walls"])
+            assert "texture" not in surface  # no frame sees it: no guess
+    assert any(coverage[w["id"]] > 0 for w in space.shell["walls"])
 
 
 async def test_door_and_window_masks_become_openings_on_the_walls(

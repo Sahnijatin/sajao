@@ -1,6 +1,7 @@
 """Doors, windows and textures of the room shell, on a synthetic room."""
 
 from collections.abc import Callable
+from typing import Any
 
 import numpy as np
 import pytest
@@ -148,3 +149,21 @@ def test_object_masks_keep_furniture_out_of_the_texture(space: Space) -> None:
     _, seen_free = surface_texture(rect, [frame], [image], [None], [blocked], space)
 
     assert seen_free < seen_all * 0.7
+
+
+def test_panes_of_one_window_join_and_frames_and_slivers_are_dropped() -> None:
+    def twice(kind: str, along: tuple[float, float], z: tuple[float, float]) -> list[Any]:
+        return [OpeningSighting(kind, "w2", along, z)] * 2  # type: ignore[arg-type]
+
+    sightings = [
+        *twice("window", (0.69, 1.33), (0.97, 2.12)),  # left pane
+        *twice("window", (1.29, 2.10), (0.91, 2.09)),  # right pane of the same window
+        *twice("window", (3.00, 3.20), (1.55, 1.98)),  # a picture frame: too small
+        *twice("door", (4.00, 4.15), (0.0, 2.05)),  # a door edge: too narrow
+    ]
+
+    (window,) = fuse_openings(sightings, depth_source="lidar")
+
+    assert window["offset"]["value_m"] == pytest.approx(0.69)
+    assert window["width"]["value_m"] == pytest.approx(1.41)
+    assert window["sill_height"]["value_m"] == pytest.approx(0.91)

@@ -1257,8 +1257,15 @@ def twin_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
         )
         objects, splat, phone, twin = (built[k] for k in ("objects", "splat", "phone", "twin"))
         doc = json.loads(store.read_blob(twin.outputs["twin"]))
+        for surface in doc["shell"]["surfaces"]:  # textures to look at
+            if "texture" in surface:
+                data = store.read_blob(surface["texture"].rsplit("/", 1)[-1])
+                await asyncio.to_thread(_save, f"/work/previews/{scene}_{surface['id']}.jpg", data)
+        openings = json.loads(store.read_blob(objects.outputs["openings"]))
+        vol.commit()
         return {
             "scene": scene,
+            "opening_masks": {k: sum(o["kind"] == k for o in openings) for k in ("door", "window")},
             "cached": {
                 "objects": objects.cached,
                 "splat": splat.cached,
@@ -1466,6 +1473,68 @@ def removal_smoke(
     import json
 
     print(json.dumps(removal_smoke_cpu.remote(scene, keyframes, category), indent=1))
+
+
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=8, memory=16384, timeout=3600
+)
+def shell_smoke_cpu(scene: str, keyframes: int, detectors: str) -> dict[str, Any]:
+    """The shell alone (walls, doors, windows, textures) from the objects step's masks, with
+    a chosen detector chain: no splat, so it is quick to iterate on."""
+    import asyncio
+    import json
+
+    from sajao_gateway import ModelGateway
+    from sajao_workers.models import detect_chain, detector_order, segment_chain
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.assemble_step import _shell_from_frames, shell_points
+    from sajao_workers.twin.objects_step import objects_step
+    from sajao_workers.twin.space import fit_space
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    manifest = _arkit_manifest(store, scene, keyframes, y_up=True)
+    chosen = {"SAJAO_DETECTORS": detectors} if detectors else {}
+    ledger = _ledger()
+    objects = asyncio.run(
+        StepRunner(store, max_attempts=1).run(
+            objects_step(
+                ModelGateway(
+                    detect_chain(volume_invoke("twin_detect"), order=detector_order(chosen)),
+                    ledger=ledger,
+                ),
+                ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger),
+            ),
+            {"frames": store.put_blob(json.dumps(manifest).encode())},
+            chosen,
+        )
+    )
+    found = json.loads(store.read_blob(objects.outputs["objects"]))
+    openings = json.loads(store.read_blob(objects.outputs["openings"]))
+    space = fit_space(shell_points(store, manifest), depth_source=manifest["depth_source"])
+    coverage = _shell_from_frames(store, manifest, found, openings, space, textures=True)
+    for surface in space.shell["surfaces"]:
+        if "texture" in surface:
+            data = store.read_blob(surface["texture"].rsplit("/", 1)[-1])
+            _save(f"/work/previews/{scene}_{detectors or 'default'}_{surface['id']}.jpg", data)
+    vol.commit()
+    return {
+        "scene": scene,
+        "detector": objects.meta["detector"],
+        "opening_masks": {k: sum(o["kind"] == k for o in openings) for k in ("door", "window")},
+        "walls": [(w["id"], w["length"]["value_m"]) for w in space.shell["walls"]],
+        "openings": space.shell["openings"],
+        "texture_coverage": coverage,
+        "charged_micro_inr": objects.cost_micro_inr,
+    }
+
+
+@app.local_entrypoint()
+def shell_smoke(
+    scene: str = "arkit_living_47331265", keyframes: int = 120, detectors: str = "owlv2"
+) -> None:
+    import json
+
+    print(json.dumps(shell_smoke_cpu.remote(scene, keyframes, detectors), indent=1))
 
 
 @app.local_entrypoint()

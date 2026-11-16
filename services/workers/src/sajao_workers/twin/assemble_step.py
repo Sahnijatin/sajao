@@ -63,6 +63,10 @@ def shell_points(store: ArtifactStore, manifest: Mapping[str, Any], stride: int 
 
 
 TEXTURE_IMAGE_WIDTH = 960  # keyframes are read at this width for textures
+# Off until textures pass a visual check: on the ARKitScenes living room the first
+# version smears furniture and streaks across the walls where the fitted wall rectangle
+# misses the real wall. A wall without a texture is better than a smeared one.
+ATTACH_TEXTURES = False
 
 
 def _rgb(data: bytes, width: int | None = None) -> np.ndarray:
@@ -78,8 +82,10 @@ def _shell_from_frames(
     objects: list[Any],
     openings: list[Any],
     space: Space,
+    textures: bool = ATTACH_TEXTURES,
 ) -> dict[str, Any]:
-    """Doors and windows on the walls, and a texture for every surface, into the shell."""
+    """Doors and windows on the walls and, if `textures`, a texture per surface, into the
+    shell. Returns each surface's seen share (empty without textures)."""
     frames = {f["keyframe_id"]: f for f in manifest["frames"]}
     sightings = []
     for entry in openings:
@@ -93,6 +99,8 @@ def _shell_from_frames(
             sightings.append(found)
     space.shell["openings"] = fuse_openings(sightings, manifest["depth_source"])
 
+    if not textures:
+        return {}
     covered: dict[str, list[str]] = {}
     for obj in objects:
         for view in obj["views"]:

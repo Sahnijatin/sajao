@@ -37,6 +37,10 @@ OPENING_BANDS: dict[DepthSource, tuple[float, float]] = {
     "image": (0.08, 0.08),
 }
 TEXELS_PER_M = 100
+MIN_FACING = 0.35  # cosine of the view angle to the surface (about 70 degrees off square)
+# Plausible openings (metres): smaller ones are frames, mirrors or mask fragments.
+MIN_SIZE: dict[str, tuple[float, float]] = {"door": (0.5, 1.6), "window": (0.3, 0.3)}
+JOIN_GAP_M = 0.15  # panes of one window this close along the wall are one window
 MAX_TEXTURE_PX = 2048
 
 
@@ -163,25 +167,52 @@ def fuse_openings(
                 break
         else:
             groups.append([s])
-    openings = []
+    fused: list[tuple[str, str, float, float, float, float]] = []
     for group in groups:
         if len(group) < MIN_FRAMES:
             continue
         a0, a1, z0, z1 = np.median(
             [[g.along[0], g.along[1], g.vertical[0], g.vertical[1]] for g in group], axis=0
         )
-        kind = group[0].kind
+        fused.append((group[0].kind, group[0].wall_id, float(a0), float(a1), float(z0), float(z1)))
+    # Join panes: same kind and wall, touching along the wall, overlapping in height.
+    fused.sort(key=lambda f: (f[0], f[1], f[2]))
+    joined: list[tuple[str, str, float, float, float, float]] = []
+    for f in fused:
+        last = joined[-1] if joined else None
+        if (
+            last
+            and last[:2] == f[:2]
+            and f[2] - last[3] <= JOIN_GAP_M
+            and _overlap((last[4], last[5]), (f[4], f[5])) > 0.5
+        ):
+            joined[-1] = (
+                f[0],
+                f[1],
+                last[2],
+                max(last[3], f[3]),
+                min(last[4], f[4]),
+                max(last[5], f[5]),
+            )
+        else:
+            joined.append(f)
+    openings = []
+    for kind, wall_id, a0, a1, z0, z1 in joined:
+        min_width, min_height = MIN_SIZE[kind]
+        height = z1 if kind == "door" else z1 - z0
+        if a1 - a0 < min_width or height < min_height:
+            continue
         opening: dict[str, Any] = {
             "kind": kind,
-            "wall_id": group[0].wall_id,
-            "offset": _dimension(float(a0), depth_source),
-            "width": _dimension(float(a1 - a0), depth_source),
+            "wall_id": wall_id,
+            "offset": _dimension(a0, depth_source),
+            "width": _dimension(a1 - a0, depth_source),
         }
         if kind == "door":
-            opening["height"] = _dimension(float(z1), depth_source)  # from the floor
+            opening["height"] = _dimension(z1, depth_source)  # from the floor
         else:
-            opening["height"] = _dimension(float(z1 - z0), depth_source)
-            opening["sill_height"] = _dimension(float(z0), depth_source)
+            opening["height"] = _dimension(z1 - z0, depth_source)
+            opening["sill_height"] = _dimension(z0, depth_source)
         openings.append(opening)
     openings.sort(key=lambda o: (o["wall_id"], o["offset"]["value_m"]))
     for kind in ("door", "window"):
@@ -271,6 +302,7 @@ class TextureBuilder:
         to_camera = camera[None, :] - self.points
         distance = np.linalg.norm(to_camera, axis=1)
         facing = np.abs(to_camera @ self.normal) / np.maximum(distance, 1e-6)
+        inside &= facing >= MIN_FACING  # glancing views smear texels into streaks
         weight = np.where(inside, facing / np.maximum(distance, 0.3), 0.0)
         take = weight > self.best
         self.best = np.where(take, weight, self.best)
