@@ -103,6 +103,19 @@ splat_image = splat_base.add_local_dir(SRC, "/root/sajao_workers").add_local_fil
     HERE / "splat_gpu.py", "/root/splat_gpu.py"
 )
 
+# Phone splats: PlayCanvas splat-transform on CPU, pinned as in the SJ-116 spike.
+compress_image = (
+    modal.Image.debian_slim(python_version="3.13")
+    .apt_install("curl", "ca-certificates", "gnupg")
+    .run_commands(
+        "curl -fsSL https://deb.nodesource.com/setup_22.x | bash -",
+        "apt-get install -y nodejs",
+        "npm install -g @playcanvas/splat-transform@3.11.2",
+    )
+    .env({"PYTHONUNBUFFERED": "1"})
+    .add_local_dir(SRC, "/root/sajao_workers")
+)
+
 # Orchestration runs on CPU: it calls the GPU function only through the gateway.
 cpu_image = (
     modal.Image.debian_slim(python_version="3.13")
@@ -327,6 +340,89 @@ def run_splat(model: str, task: str, payload: dict[str, Any]) -> dict[str, Any]:
     splat_gpu.save_compiled_kernels()
     vol.commit()
     return {"output": output, "gpu_seconds": round(time.time() - started, 3)}
+
+
+def _ply_count(path: Path) -> int:
+    with path.open("rb") as file:
+        for line in file:
+            if line.startswith(b"element vertex"):
+                return int(line.split()[-1])
+            if line.startswith(b"end_header"):
+                break
+    return 0
+
+
+def _splat_transform(args: list[str]) -> tuple[bool, str]:
+    import subprocess
+
+    done = subprocess.run(  # noqa: S603 (fixed tool, arguments built here)
+        ["splat-transform", "-w", "-g", "cpu", *args],  # noqa: S607
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return done.returncode == 0, (done.stderr or done.stdout)[-600:]
+
+
+@app.function(
+    image=compress_image,
+    volumes={"/vol": vol},
+    cpu=16,
+    memory=32768,
+    timeout=3600,
+    max_containers=1,
+)
+def compress_splat(payload: dict[str, Any]) -> dict[str, Any]:
+    """Decimate a splat to each Gaussian budget and save it as colour-only SOG.
+
+    Adaptive (mass-preserving) decimation needs WebGPU above about 2M Gaussians;
+    on CPU it falls back to plain decimation, which the spike found as good.
+    """
+    import tempfile
+
+    started = time.time()
+    vol.reload()
+    store = _store()
+    if not store.has_blob(payload["splat"]):
+        return {"error": "splat is not in the store"}
+    work = Path(tempfile.mkdtemp())
+    full = work / "full.ply"
+    full.write_bytes(store.read_blob(payload["splat"]))
+    source = _ply_count(full)
+    variants = []
+    for budget in payload["budgets"]:
+        t0 = time.time()
+        ply, sog = work / f"{budget}.ply", work / f"{budget}.sog"
+        method = None
+        if budget >= source:
+            ply, method = full, "none"
+        else:
+            for flag in ("--decimate-adaptive", "--decimate"):
+                ok, _ = _splat_transform([str(full), flag, str(budget), str(ply)])
+                if ok:
+                    method = flag.lstrip("-")
+                    break
+        if method is None:
+            return {"error": f"splat-transform could not decimate to {budget}"}
+        ok, err = _splat_transform([str(ply), "-H", "0", str(sog)])
+        if not ok:
+            return {"error": f"splat-transform could not write SOG: {err}"}
+        variants.append(
+            {
+                "budget": budget,
+                "gaussians": _ply_count(ply),
+                "sog": store.put_blob(sog.read_bytes()),
+                "bytes": sog.stat().st_size,
+                "decimate_method": method,
+                "seconds": round(time.time() - t0, 1),
+            }
+        )
+    vol.commit()
+    return {
+        "source_gaussians": source,
+        "variants": variants,
+        "cpu_seconds": round(time.time() - started, 1),
+    }
 
 
 @app.local_entrypoint()
@@ -571,3 +667,67 @@ def splat_smoke(scene: str = "arkit_living_47331265", keyframes: int = 120) -> N
     import json
 
     print(json.dumps(splat_smoke_cpu.remote(scene, keyframes), indent=1))
+
+
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=4, memory=8192, timeout=7200
+)
+def phone_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
+    """Objects, splat and phone splats on one room; finished steps are reused."""
+    import asyncio
+    import json
+
+    from sajao_gateway import InMemorySpendLedger, ModelGateway, SpendCaps
+    from sajao_workers.models import detect_chain, segment_chain, splat_chain
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.objects_step import objects_step
+    from sajao_workers.twin.phone_step import phone_splat_step
+    from sajao_workers.twin.splat_step import splat_step
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    manifest = _arkit_manifest(store, scene, keyframes)
+    ledger = InMemorySpendLedger(
+        SpendCaps(per_user_daily_micro_inr=10**9, global_daily_micro_inr=10**9)
+    )
+    runner = StepRunner(store, max_attempts=1)
+    frames = store.put_blob(json.dumps(manifest).encode())
+
+    async def compress(payload: Any) -> Any:
+        vol.commit()
+        reply = await compress_splat.remote.aio(dict(payload))
+        vol.reload()
+        return reply
+
+    async def run() -> dict[str, Any]:
+        objects = await runner.run(
+            objects_step(
+                ModelGateway(detect_chain(volume_invoke("twin_detect")), ledger=ledger),
+                ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger),
+            ),
+            {"frames": frames},
+            {},
+        )
+        splat = await runner.run(
+            splat_step(
+                ModelGateway(splat_chain(volume_invoke("twin_splat", run_splat)), ledger=ledger)
+            ),
+            {"frames": frames, "objects": objects.outputs["objects"]},
+            {},
+        )
+        phone = await runner.run(phone_splat_step(compress), {"splat": splat.outputs["splat"]}, {})
+        return {
+            "scene": scene,
+            "objects_cached": objects.cached,
+            "splat_cached": splat.cached,
+            "phone": {"cached": phone.cached, **dict(phone.meta)},
+            "phone_charged_micro_inr": phone.cost_micro_inr,
+        }
+
+    return asyncio.run(run())
+
+
+@app.local_entrypoint()
+def phone_smoke(scene: str = "arkit_living_47331265", keyframes: int = 120) -> None:
+    import json
+
+    print(json.dumps(phone_smoke_cpu.remote(scene, keyframes), indent=1))
