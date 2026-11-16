@@ -61,7 +61,7 @@ def stream(fn, *arg_lists):
 
 def main(stage: str, model: str = "triposg", only: str = "") -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    with A.app.run():
+    with (A.gated if stage in ("trellis2", "sam3d") else A.app).run():
         if stage == "cutouts":
             lids = [x["id"] for x in listings(extras=True)]
             res = batched_map(

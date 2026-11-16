@@ -289,6 +289,9 @@ claude_image = (
 )
 
 app = modal.App("sajao-render-bakeoff")
+# The gated 3D models build heavy images; a separate app keeps their builds from
+# blocking every other stage.
+gated = modal.App("sajao-render-bakeoff-gated")
 VOLS = {"/bk": bk_vol}
 TWIN_VOLS = {"/bk": bk_vol, "/vol": twin_vol}
 ROOMS = [
@@ -343,7 +346,7 @@ def triposg(lids: list[str]) -> list[dict]:
     return out
 
 
-@app.function(
+@gated.function(
     image=trellis_image,
     gpu="H100",
     volumes=VOLS,
@@ -366,7 +369,7 @@ def trellis2(lids: list[str]) -> list[dict]:
     return out
 
 
-@app.function(
+@gated.function(
     image=sam3d_image, gpu="H100", volumes=VOLS, timeout=3600, max_containers=2, secrets=[hf_secret]
 )
 def sam3d(lids: list[str]) -> list[dict]:
