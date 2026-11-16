@@ -63,6 +63,14 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   private var pointCloud: [UInt64: SIMD3<Float>] = [:]
   private let pointNode = SCNNode()
   private let maxPoints = 5000
+  /// Point ids oldest first, so a full cloud drops its oldest point and newly mapped areas keep appearing.
+  private var pointOrder: [UInt64] = []
+  /// Tracked points joined to their nearest neighbours: the wire mesh over non-flat things.
+  private let linkNode = SCNNode()
+  private var lastLinksAt: TimeInterval = 0
+  private let maxLinkedPoints = 2500
+  private let linkQueue = DispatchQueue(label: "app.sajao.ar.links", qos: .utility)
+  private var linksBusy = false
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -74,6 +82,7 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
     sceneView.autoenablesDefaultLighting = false
     sceneView.antialiasingMode = .multisampling2X
     sceneView.scene.rootNode.addChildNode(pointNode)
+    sceneView.scene.rootNode.addChildNode(linkNode)
     addSubview(sceneView)
     labelLayer.isUserInteractionEnabled = false
     addSubview(labelLayer)
@@ -512,11 +521,33 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
 
   private func accumulatePoints(_ frame: ARFrame) {
     guard let cloud = frame.rawFeaturePoints, case .normal = frame.camera.trackingState else { return }
-    for (index, id) in cloud.identifiers.enumerated() where pointCloud.count < maxPoints {
+    for (index, id) in cloud.identifiers.enumerated() {
+      if pointCloud[id] == nil {
+        if pointCloud.count >= maxPoints, !pointOrder.isEmpty {
+          pointCloud.removeValue(forKey: pointOrder.removeFirst())
+        }
+        pointOrder.append(id)
+      }
       pointCloud[id] = cloud.points[index]
     }
-    let vertices = pointCloud.values.map { SCNVector3($0.x, $0.y, $0.z) }
+    let ordered = pointOrder.compactMap { pointCloud[$0] }
+    let vertices = ordered.map { SCNVector3($0.x, $0.y, $0.z) }
     guard !vertices.isEmpty else { return }
+    if !lite && !linksBusy && frame.timestamp - lastLinksAt > 0.6 {
+      lastLinksAt = frame.timestamp
+      linksBusy = true
+      let newest = Array(ordered.suffix(maxLinkedPoints))
+      // Joining thousands of points takes a few milliseconds: off the main thread.
+      linkQueue.async { [weak self] in
+        let links = SurfaceMesh.links(newest)
+        let geometry = MeshStyle.lineGeometry(newest.map { SCNVector3($0.x, $0.y, $0.z) }, indices: links)
+        DispatchQueue.main.async {
+          guard let self else { return }
+          self.linksBusy = false
+          self.linkNode.geometry = geometry
+        }
+      }
+    }
     let source = SCNGeometrySource(vertices: vertices)
     let element = SCNGeometryElement(
       indices: Array(0..<UInt32(vertices.count)), primitiveType: .point)
