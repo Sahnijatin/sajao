@@ -17,11 +17,17 @@ from typing import Any
 from sajao_gateway import ModelGateway, ModelRequest
 from sajao_workers.models import VOCABULARY
 from sajao_workers.steps import NonRetryableStepError, Step, StepContext, StepOutput
-from sajao_workers.twin.objects import FrameMasks, build_objects, decode_depth_mm, decode_mask
+from sajao_workers.twin.objects import (
+    FrameMasks,
+    build_objects,
+    decode_depth_mm,
+    decode_mask,
+    depth_at,
+)
 from sajao_workers.validate import check_detections, check_masks
 
 # Bump when this step's logic, prompts or pinned model chains change.
-VERSION = 3
+VERSION = 4
 
 
 def objects_step(detect: ModelGateway, segment: ModelGateway) -> Step:
@@ -63,7 +69,10 @@ def objects_step(detect: ModelGateway, segment: ModelGateway) -> Step:
                     frame["keyframe_id"],
                     frame["c2w"],
                     frame["intrinsics"],
-                    decode_depth_mm(context.store.read_blob(frame["depth"])),
+                    depth_at(
+                        decode_depth_mm(context.store.read_blob(frame["depth"])),
+                        (frame["height"], frame["width"]),
+                    ),
                     masks,
                 )
             )

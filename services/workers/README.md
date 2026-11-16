@@ -47,3 +47,7 @@ uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/workers/gpu/a
 ```bash
 uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/workers/gpu/app.py::splat_smoke
 ```
+
+## From capture to frames
+
+`sajao_workers.capture_depth` reads the capture package's SJDEPTH1 depth file (format in `docs/06-room-capture.md`); only high-confidence readings place points. `sajao_workers.twin.capture_frames.frames_manifest` turns a capture package into the frames manifest the objects and splat steps read: AR poses (camera +Y up, -Z forward) become OpenCV cameras, intrinsics become matrices, and depth becomes a millimetre PNG per keyframe. A capture without AR poses is refused (`CaptureError`). Depth from LiDAR keeps the LiDAR error band; ARCore depth uses the wider image band.

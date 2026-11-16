@@ -245,3 +245,15 @@ def test_fusion_counts_what_it_separated() -> None:
     stats: dict[str, int] = {}
     merge_instances(fuse(side_by_side(frames_seeing_both=3), stats=stats), stats=stats)
     assert stats["ambiguous_views_dropped"] == 2
+
+
+def test_low_resolution_depth_is_scaled_to_the_mask_without_blending() -> None:
+    from sajao_workers.twin.objects import depth_at
+
+    depth = np.array([[1.0, 0.0], [2.0, 3.0]], np.float32)
+
+    scaled = depth_at(depth, (4, 6))
+
+    assert scaled.shape == (4, 6)
+    assert set(np.unique(scaled).tolist()) <= {0.0, 1.0, 2.0, 3.0}  # no blended depths
+    assert scaled[0, 0] == 1.0 and scaled[3, 5] == 3.0 and scaled[0, 5] == 0.0
