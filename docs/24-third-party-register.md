@@ -92,6 +92,12 @@ Every model, library and dataset used to build, train or evaluate Sajao is liste
 | MapAnything checkpoint `facebook/map-anything` | Model | Metric depth without LiDAR from images, intrinsics and AR poses | https://huggingface.co/facebook/map-anything | CC BY-NC 4.0 (an Apache 2.0 checkpoint, `facebook/map-anything-apache`, also exists) | No | SJ-116 twin risk spike |
 | LaMa big-lama | Model | AI inpainting of plane textures and of frames | https://github.com/advimman/lama | Apache 2.0 | No | SJ-116 twin risk spike |
 | simple-lama-inpainting v0.1.0 TorchScript export | Model file | Packaged big-lama weights loaded by the spike | https://github.com/enesmsahin/simple-lama-inpainting | Apache 2.0 | No | SJ-116 twin risk spike |
+| Qwen-Image `Qwen/Qwen-Image`, revision 75e0b4be | Model | Diffusion inpainting compared with LaMa for object removal (not chosen) | https://huggingface.co/Qwen/Qwen-Image | Apache 2.0 | No | Twin object removal comparison |
+| Qwen-Image Lightning LoRA, 8 steps V2.0, revision d468c534 | Model | Fast sampling for Qwen-Image in the comparison | https://huggingface.co/lightx2v/Qwen-Image-Lightning | Apache 2.0 | No | Twin object removal comparison |
+| diffusers 0.43.0 (Hugging Face) | Library | Runs Qwen-Image inpainting | https://github.com/huggingface/diffusers | Apache 2.0 | No | Twin object removal comparison |
+| Transformers 5.23.0, Accelerate 1.15.0, PEFT 0.21.3 (Hugging Face) | Library | Qwen-Image text encoder, loading and LoRA | https://github.com/huggingface | Apache 2.0 | No | Twin object removal comparison |
+| PyTorch 2.8.0 | Library | GPU runtime for the comparison and depth benchmark images | https://github.com/pytorch/pytorch | BSD 3-clause | No | Twin object removal comparison |
+| LPIPS 0.1.4 | Library and model | Perceptual image distance for scoring fills | https://github.com/richzhang/PerceptualSimilarity | BSD 2-clause | No | Twin object removal comparison |
 | Transformers 4.57.1 (Hugging Face) | Library | Loading Grounding DINO and SAM 2.1 | https://github.com/huggingface/transformers | Apache 2.0 | No | SJ-116 twin risk spike |
 | OpenCV 4.10 (headless) | Library | Image processing | https://github.com/opencv/opencv | Apache 2.0 | No | SJ-116 twin risk spike |
 | Open3D 0.19 | Library | Ray casting Replica meshes | https://github.com/isl-org/Open3D | MIT | No | SJ-116 twin risk spike |

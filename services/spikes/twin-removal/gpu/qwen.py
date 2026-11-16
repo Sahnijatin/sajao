@@ -42,7 +42,26 @@ SCHEDULER = {
     "use_karras_sigmas": False,
 }
 
+NEGATIVE = "furniture, chair, sofa, armchair, cushion, pillow, table, box, object, person"
+FULL_STEPS = 40
+FULL_CFG = 4.0
+
 _pipe = None
+_full = None
+
+
+def full_pipeline():
+    """Qwen-Image without the Lightning LoRA: default scheduler, real guidance and a negative prompt."""
+    global _full
+    if _full is None:
+        import torch
+        from diffusers import QwenImageInpaintPipeline
+
+        _full = QwenImageInpaintPipeline.from_pretrained(
+            MODEL, revision=MODEL_REVISION, torch_dtype=torch.bfloat16
+        ).to("cuda")
+        _full.set_progress_bar_config(disable=True)
+    return _full
 
 
 def pipeline():
@@ -73,7 +92,7 @@ def _crop(mask: np.ndarray) -> tuple[int, int, int, int]:
     return x0, y0, min(w, x0 + side), min(h, y0 + side)
 
 
-def inpaint(rgb: np.ndarray, mask: np.ndarray, seed: int) -> np.ndarray:
+def inpaint(rgb: np.ndarray, mask: np.ndarray, seed: int, full: bool = False) -> np.ndarray:
     import cv2
     import torch
     from PIL import Image
@@ -86,16 +105,20 @@ def inpaint(rgb: np.ndarray, mask: np.ndarray, seed: int) -> np.ndarray:
     scale = math.sqrt(WORK_PIXELS / (ch * cw))
     width, height = max(16, round(cw * scale / 16) * 16), max(16, round(ch * scale / 16) * 16)
     grown = cv2.dilate(hole.astype(np.uint8) * 255, np.ones((7, 7), np.uint8))
-    out = pipeline()(
+    settings = (
+        {"negative_prompt": NEGATIVE, "num_inference_steps": FULL_STEPS, "true_cfg_scale": FULL_CFG}
+        if full
+        else {"num_inference_steps": STEPS, "true_cfg_scale": 1.0}
+    )
+    out = (full_pipeline() if full else pipeline())(
         prompt=PROMPT,
         image=Image.fromarray(crop).resize((width, height), Image.LANCZOS),
         mask_image=Image.fromarray(grown).resize((width, height), Image.NEAREST),
         height=height,
         width=width,
         strength=1.0,
-        num_inference_steps=STEPS,
-        true_cfg_scale=1.0,
         generator=torch.Generator("cuda").manual_seed(seed),
+        **settings,
     ).images[0]
     filled = np.asarray(out.resize((cw, ch), Image.LANCZOS))
     # Soft edge just outside the hole; pixels outside it stay the photo's.

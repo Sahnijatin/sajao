@@ -165,6 +165,43 @@ def qwen_inpaint(name: str, kind: str) -> dict:
     return {**out, "gpu_seconds": time.time() - started}
 
 
+@app.function(image=qwen_image, volumes=V, gpu="H100", timeout=3 * 3600, max_containers=1)
+def qwen_full_known(name: str, kind: str) -> dict:
+    """Ablation: full Qwen-Image (40 steps, guidance 4, negative prompt) on the known-truth holes."""
+    import time
+
+    import numpy as np
+    import qwen
+    from prep_io import load_prep, removal_dir, train_rgb
+
+    vol.reload()
+    started = time.time()
+    prep = load_prep(name, kind)
+    known = [
+        qwen.inpaint(train_rgb(name, prep["frames"][j]), m, seed=int(j), full=True)
+        for j, m in zip(prep["known"], prep["known_holes"], strict=True)
+    ]
+    np.savez_compressed(removal_dir(name, kind) / "inpaint_qwen_full.npz", known=np.stack(known))
+    vol.commit()
+    return {
+        "case": [name, kind],
+        "holes": len(known),
+        "gpu_seconds": round(time.time() - started, 1),
+    }
+
+
+@app.function(image=eval_image, volumes=V, gpu="L40S", timeout=1800, max_containers=1)
+def score_known(name: str, kind: str, model: str) -> dict:
+    import removal
+    from twin_gpu.common import save_json
+
+    vol.reload()
+    out = {"case": [name, kind], "model": model, **removal.known_truth_scores(name, kind, model)}
+    save_json(removal.removal_dir(name, kind) / f"known_{model}.json", out)
+    vol.commit()
+    return out
+
+
 @app.function(image=eval_image, volumes=V, gpu="L40S", timeout=3 * 3600, max_containers=2)
 def refill(name: str, kind: str) -> dict:
     import removal
@@ -185,6 +222,12 @@ def main(stage: str = "all") -> None:
     if stage in ("all", "qwen"):
         for r in qwen_inpaint.starmap(CASES):
             print(json.dumps(r))
+    if stage == "ablation":
+        large = [c for c in CASES if c[1] == "large"]
+        for r in qwen_full_known.starmap(large, return_exceptions=True):
+            print(json.dumps(r if isinstance(r, dict) else {"failed": repr(r)[:500]}))
+        for r in score_known.starmap([(*c, "qwen_full") for c in large], return_exceptions=True):
+            print(json.dumps(r if isinstance(r, dict) else {"failed": repr(r)[:500]}))
     if stage in ("all", "refill"):
         for r in refill.starmap(CASES, return_exceptions=True):
             print(json.dumps(r if isinstance(r, dict) else {"failed": repr(r)[:500]}))
