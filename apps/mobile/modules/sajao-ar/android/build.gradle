@@ -11,6 +11,8 @@ android {
   defaultConfig {
     versionCode 1
     versionName "0.1.0"
+    // Keeps MediaPipe working when the app's release build shrinks and renames code.
+    consumerProguardFiles 'consumer-rules.pro'
   }
   sourceSets {
     // The detector model is shared with the iOS module.

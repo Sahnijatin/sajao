@@ -87,6 +87,8 @@
       "detector": "पहचान मॉडल",
       "detectorStatus": "डिटेक्टर स्थिति",
       "cameraImage": "कैमरा इमेज",
+      "session": "AR सेशन",
+      "arStart": "AR शुरू होने में त्रुटि",
       "planeStates": "प्लेन स्थिति",
       "surfaceHits": "कवरेज हिट",
       "video": "वीडियो",

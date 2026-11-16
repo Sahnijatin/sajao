@@ -87,6 +87,8 @@
       "detector": "Detector",
       "detectorStatus": "Detector status",
       "cameraImage": "Camera image",
+      "session": "AR session",
+      "arStart": "AR start error",
       "planeStates": "Plane states",
       "surfaceHits": "Coverage hits",
       "video": "Video",
