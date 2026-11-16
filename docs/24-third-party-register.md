@@ -128,7 +128,7 @@ Every model, library and dataset used to build, train or evaluate Sajao is liste
 | diffusers 0.43.0 (Hugging Face) | Library | Runs Qwen-Image inpainting | https://github.com/huggingface/diffusers | Apache 2.0 | No | Twin object removal comparison |
 | Transformers 5.23.0, Accelerate 1.15.0, PEFT 0.21.3 (Hugging Face) | Library | Qwen-Image text encoder, loading and LoRA | https://github.com/huggingface | Apache 2.0 | No | Twin object removal comparison |
 | PyTorch 2.8.0 | Library | GPU runtime for the comparison and depth benchmark images, and the twin worker's model image (detection, segmentation, depth) | https://github.com/pytorch/pytorch | BSD 3-clause | No | Twin object removal comparison |
-| LPIPS 0.1.4 | Library and model | Perceptual image distance for scoring fills | https://github.com/richzhang/PerceptualSimilarity | BSD 2-clause | No | Twin object removal comparison |
+| LPIPS 0.1.4 | Library and model | Perceptual image distance: scoring fills in the removal comparison, and scoring held-out views of the room splat in the twin worker (AlexNet backbone, weights from torchvision) | https://github.com/richzhang/PerceptualSimilarity | BSD 2-clause (torchvision BSD 3-clause) | No | Twin object removal comparison; twin render quality |
 | Transformers 4.57.1 (Hugging Face) | Library | Loading Grounding DINO, OWLv2 and SAM 2.1 | https://github.com/huggingface/transformers | Apache 2.0 | No | SJ-116 twin risk spike |
 | OpenCV 4.10 (headless) | Library | Image processing | https://github.com/opencv/opencv | Apache 2.0 | No | SJ-116 twin risk spike |
 | Open3D 0.19 | Library | Ray casting Replica meshes | https://github.com/isl-org/Open3D | MIT | No | SJ-116 twin risk spike |
