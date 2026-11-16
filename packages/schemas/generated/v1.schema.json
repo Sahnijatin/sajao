@@ -73,6 +73,51 @@
       "exclusiveMaximum": 360,
       "description": "Degrees, 0 inclusive to 360 exclusive."
     },
+    "ArPoint": {
+      "description": "A point in the AR session's world frame, in metres, y up.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x_m",
+        "y_m",
+        "z_m"
+      ],
+      "properties": {
+        "x_m": {
+          "type": "number"
+        },
+        "y_m": {
+          "type": "number"
+        },
+        "z_m": {
+          "type": "number"
+        }
+      }
+    },
+    "ArPose": {
+      "description": "Camera pose from AR tracking: position and a unit quaternion (x, y, z, w).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "position",
+        "rotation"
+      ],
+      "properties": {
+        "position": {
+          "$ref": "#/$defs/ArPoint"
+        },
+        "rotation": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -1,
+            "maximum": 1
+          },
+          "minItems": 4,
+          "maxItems": 4
+        }
+      }
+    },
     "Brief": {
       "title": "Brief",
       "description": "Per-room choices on top of the taste profile. With the space profile and the catalog, the only input the design engine reads.",
@@ -264,6 +309,9 @@
           "items": {
             "$ref": "#/$defs/TapeMeasurement"
           }
+        },
+        "package": {
+          "$ref": "#/$defs/CapturePackage"
         }
       }
     },
@@ -293,6 +341,39 @@
         },
         "has_ar": {
           "type": "boolean"
+        }
+      }
+    },
+    "CaptureKeyframe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "image",
+        "captured_at_ms",
+        "sharpness"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "image": {
+          "$ref": "#/$defs/StorageKey"
+        },
+        "captured_at_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Milliseconds from the start of the scan."
+        },
+        "sharpness": {
+          "type": "number",
+          "minimum": 0
+        },
+        "pose": {
+          "$ref": "#/$defs/ArPose"
+        },
+        "intrinsics": {
+          "$ref": "#/$defs/CameraIntrinsics"
         }
       }
     },
@@ -352,6 +433,81 @@
         },
         "compass_heading_deg": {
           "$ref": "#/$defs/AngleDeg"
+        }
+      }
+    },
+    "CapturePackage": {
+      "description": "Everything the scan recorded for building the twin, uploaded as one package. Works without AR: then there is video and keyframes only, with no poses. AR poses and points are in the AR session's world frame: metres, gravity aligned, y up; the twin converts them to the space frame.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ar",
+        "keyframes",
+        "detections",
+        "sensor_log"
+      ],
+      "properties": {
+        "ar": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "tracking",
+            "lidar",
+            "depth"
+          ],
+          "properties": {
+            "tracking": {
+              "type": "string",
+              "enum": [
+                "arkit",
+                "arcore",
+                "none"
+              ]
+            },
+            "lidar": {
+              "type": "boolean"
+            },
+            "depth": {
+              "type": "boolean",
+              "description": "Depth images are in the package."
+            }
+          }
+        },
+        "video": {
+          "$ref": "#/$defs/StorageKey",
+          "description": "The scan video, when recorded."
+        },
+        "keyframes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CaptureKeyframe"
+          },
+          "minItems": 1,
+          "maxItems": 120
+        },
+        "planes": {
+          "$ref": "#/$defs/StorageKey",
+          "description": "AR planes as JSON."
+        },
+        "scene_mesh": {
+          "$ref": "#/$defs/StorageKey",
+          "description": "LiDAR scene mesh with surface classes, when the phone has LiDAR."
+        },
+        "depth": {
+          "$ref": "#/$defs/StorageKey",
+          "description": "Depth images aligned to keyframes, when the phone provides them."
+        },
+        "detections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LiveDetection"
+          },
+          "maxItems": 4000,
+          "description": "Live detector results during the scan."
+        },
+        "sensor_log": {
+          "$ref": "#/$defs/StorageKey",
+          "description": "Motion, pose and light readings over time, as JSON lines."
         }
       }
     },
@@ -875,6 +1031,33 @@
         "sharpness": {
           "type": "number",
           "minimum": 0
+        }
+      }
+    },
+    "LiveDetection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "detector_class",
+        "score",
+        "at_ms"
+      ],
+      "properties": {
+        "detector_class": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "score": {
+          "$ref": "#/$defs/UnitScore"
+        },
+        "at_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "world": {
+          "$ref": "#/$defs/ArPoint",
+          "description": "Where the detection hit the AR scene, when it did."
         }
       }
     },

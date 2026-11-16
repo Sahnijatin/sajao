@@ -174,6 +174,31 @@ y_m: number
 z_m: number
 }
 /**
+ * A point in the AR session's world frame, in metres, y up.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "ArPoint".
+ */
+export interface ArPoint {
+x_m: number
+y_m: number
+z_m: number
+}
+/**
+ * Camera pose from AR tracking: position and a unit quaternion (x, y, z, w).
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "ArPose".
+ */
+export interface ArPose {
+position: ArPoint
+/**
+ * @minItems 4
+ * @maxItems 4
+ */
+rotation: [number, number, number, number]
+}
+/**
  * Per-room choices on top of the taste profile. With the space profile and the catalog, the only input the design engine reads.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -262,6 +287,7 @@ media: [CaptureMedia, ...(CaptureMedia)[]]
 device: CaptureDevice
 compass?: CompassReading
 tape_measurements?: TapeMeasurement[]
+package?: CapturePackage
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -317,6 +343,63 @@ export interface TapeMeasurement {
 target: ("wall_length" | "ceiling_height" | "door_height" | "door_width" | "window_width" | "other")
 value_m: number
 note?: string
+}
+/**
+ * Everything the scan recorded for building the twin, uploaded as one package. Works without AR: then there is video and keyframes only, with no poses. AR poses and points are in the AR session's world frame: metres, gravity aligned, y up; the twin converts them to the space frame.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "CapturePackage".
+ */
+export interface CapturePackage {
+ar: {
+tracking: ("arkit" | "arcore" | "none")
+lidar: boolean
+/**
+ * Depth images are in the package.
+ */
+depth: boolean
+}
+video?: StorageKey
+/**
+ * @minItems 1
+ * @maxItems 120
+ */
+keyframes: [CaptureKeyframe, ...(CaptureKeyframe)[]]
+planes?: StorageKey
+scene_mesh?: StorageKey
+depth?: StorageKey
+/**
+ * Live detector results during the scan.
+ * 
+ * @maxItems 4000
+ */
+detections: LiveDetection[]
+sensor_log: StorageKey
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "CaptureKeyframe".
+ */
+export interface CaptureKeyframe {
+id: LocalId
+image: StorageKey
+/**
+ * Milliseconds from the start of the scan.
+ */
+captured_at_ms: number
+sharpness: number
+pose?: ArPose
+intrinsics?: CameraIntrinsics
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "LiveDetection".
+ */
+export interface LiveDetection {
+detector_class: string
+score: UnitScore
+at_ms: number
+world?: ArPoint
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
