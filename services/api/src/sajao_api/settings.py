@@ -32,6 +32,15 @@ class Settings(BaseSettings):
     storage_bucket: str | None = None
     storage_access_key_id: SecretStr | None = None
     storage_secret_access_key: SecretStr | None = None
+    # Sign every storage request with the caller's own access token as the
+    # session token (Supabase Storage session auth: the access key id is the
+    # project ref and the secret is the project's public anon key). The store's
+    # row level security then keeps each user inside their own folder, and the
+    # API holds no storage credential that could read another user's files.
+    storage_user_sessions: bool = False
+    # The store's own limit for one object, when it is lower than the API's
+    # per-kind limits. Larger files are refused before any part is sent.
+    storage_max_object_bytes: int | None = Field(default=None, gt=0)
 
     # Apps older than this are told to update. "0.0.0" allows every version.
     min_app_version: str = Field(default="0.0.0", pattern=r"^\d+\.\d+\.\d+$")
