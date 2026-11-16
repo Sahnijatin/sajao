@@ -1,0 +1,343 @@
+{
+  "schema_version": "1.0",
+  "id": "00000000-0000-4000-8000-0000000000a1",
+  "capture_id": "00000000-0000-4000-8000-000000000001",
+  "version": 1,
+  "created_at": "2026-01-05T10:00:00Z",
+  "space_type": "living_room",
+  "space_type_source": "detected",
+  "extent": "whole_room",
+  "extent_source": "detected",
+  "shell": {
+    "floor_polygon": [
+      {
+        "x_m": 0,
+        "y_m": 0
+      },
+      {
+        "x_m": 4.2,
+        "y_m": 0
+      },
+      {
+        "x_m": 4.2,
+        "y_m": 3.4
+      },
+      {
+        "x_m": 0,
+        "y_m": 3.4
+      }
+    ],
+    "walls": [
+      {
+        "id": "w1",
+        "start": {
+          "x_m": 0,
+          "y_m": 0
+        },
+        "end": {
+          "x_m": 4.2,
+          "y_m": 0
+        },
+        "length": {
+          "value_m": 4.2,
+          "source": "measured",
+          "error_band_m": 0.01
+        }
+      },
+      {
+        "id": "w2",
+        "start": {
+          "x_m": 4.2,
+          "y_m": 0
+        },
+        "end": {
+          "x_m": 4.2,
+          "y_m": 3.4
+        },
+        "length": {
+          "value_m": 3.4,
+          "source": "estimated",
+          "error_band_m": 0.12
+        }
+      },
+      {
+        "id": "w3",
+        "start": {
+          "x_m": 4.2,
+          "y_m": 3.4
+        },
+        "end": {
+          "x_m": 0,
+          "y_m": 3.4
+        },
+        "length": {
+          "value_m": 4.2,
+          "source": "estimated",
+          "error_band_m": 0.15
+        }
+      },
+      {
+        "id": "w4",
+        "start": {
+          "x_m": 0,
+          "y_m": 3.4
+        },
+        "end": {
+          "x_m": 0,
+          "y_m": 0
+        },
+        "length": {
+          "value_m": 3.4,
+          "source": "user_confirmed",
+          "error_band_m": 0.12
+        }
+      }
+    ],
+    "ceiling_height": {
+      "value_m": 2.9,
+      "source": "estimated",
+      "error_band_m": 0.08
+    },
+    "openings": [
+      {
+        "id": "d1",
+        "kind": "door",
+        "wall_id": "w4",
+        "offset": {
+          "value_m": 0.3,
+          "source": "estimated",
+          "error_band_m": 0.05
+        },
+        "width": {
+          "value_m": 0.9,
+          "source": "estimated",
+          "error_band_m": 0.05
+        },
+        "height": {
+          "value_m": 2.05,
+          "source": "estimated",
+          "error_band_m": 0.03
+        },
+        "swing": {
+          "hinge": "start",
+          "opens": "inward"
+        }
+      },
+      {
+        "id": "win1",
+        "kind": "window",
+        "wall_id": "w1",
+        "offset": {
+          "value_m": 1.2,
+          "source": "estimated",
+          "error_band_m": 0.05
+        },
+        "width": {
+          "value_m": 1.5,
+          "source": "estimated",
+          "error_band_m": 0.05
+        },
+        "height": {
+          "value_m": 1.2,
+          "source": "estimated",
+          "error_band_m": 0.05
+        },
+        "sill_height": {
+          "value_m": 0.9,
+          "source": "estimated",
+          "error_band_m": 0.05
+        }
+      }
+    ],
+    "fixtures": [
+      {
+        "id": "sb1",
+        "kind": "switchboard",
+        "wall_id": "w4",
+        "offset": {
+          "value_m": 1.4,
+          "source": "estimated",
+          "error_band_m": 0.05
+        },
+        "mount_height": {
+          "value_m": 1.3,
+          "source": "estimated",
+          "error_band_m": 0.05
+        }
+      }
+    ],
+    "surfaces": [
+      {
+        "id": "w1",
+        "kind": "wall",
+        "texture": "twins/a1/surfaces/w1.jpg",
+        "material": {
+          "kind": "paint",
+          "color": "#e8e2d6"
+        }
+      },
+      {
+        "id": "floor",
+        "kind": "floor",
+        "material": {
+          "kind": "tile",
+          "tile_size": {
+            "value_m": 0.6,
+            "source": "estimated",
+            "error_band_m": 0.02
+          }
+        }
+      }
+    ]
+  },
+  "objects": [
+    {
+      "id": "sofa-1",
+      "category": "sofa",
+      "label": "Grey three-seater sofa",
+      "box": {
+        "center": {
+          "x_m": 2.1,
+          "y_m": 0.6,
+          "z_m": 0.42
+        },
+        "yaw_deg": 0,
+        "width": {
+          "value_m": 2.1,
+          "source": "estimated",
+          "error_band_m": 0.06
+        },
+        "depth": {
+          "value_m": 0.9,
+          "source": "estimated",
+          "error_band_m": 0.05
+        },
+        "height": {
+          "value_m": 0.84,
+          "source": "estimated",
+          "error_band_m": 0.05
+        }
+      },
+      "detection": {
+        "source": "live_scan",
+        "confidence": 0.91
+      },
+      "views": [
+        {
+          "keyframe_id": "k1",
+          "mask": "twins/a1/masks/sofa-1-k1.png",
+          "crop": "twins/a1/crops/sofa-1-k1.jpg"
+        }
+      ],
+      "model": {
+        "key": "twins/a1/models/sofa-1.glb",
+        "generator": "image-to-3d pinned version",
+        "scaled_to_box": true
+      },
+      "splat_subset": "twins/a1/splat/sofa-1.spz",
+      "catalog_matches": [
+        {
+          "product_id": "prod-123",
+          "similarity": 0.82,
+          "fits_box": true
+        }
+      ],
+      "state": "keep"
+    },
+    {
+      "id": "almirah-1",
+      "category": "almirah",
+      "label": "Steel almirah",
+      "box": {
+        "center": {
+          "x_m": 0.4,
+          "y_m": 3.0,
+          "z_m": 0.95
+        },
+        "yaw_deg": 90,
+        "width": {
+          "value_m": 0.9,
+          "source": "estimated",
+          "error_band_m": 0.05
+        },
+        "depth": {
+          "value_m": 0.5,
+          "source": "estimated",
+          "error_band_m": 0.04
+        },
+        "height": {
+          "value_m": 1.9,
+          "source": "estimated",
+          "error_band_m": 0.06
+        }
+      },
+      "detection": {
+        "source": "server_segmentation",
+        "confidence": 0.77
+      },
+      "views": [],
+      "catalog_matches": [],
+      "state": "keep"
+    }
+  ],
+  "keyframes": [
+    {
+      "id": "k1",
+      "image": "captures/c1/keyframes/k1.jpg",
+      "captured_at_ms": 1200,
+      "pose": {
+        "position": {
+          "x_m": 2.0,
+          "y_m": 2.8,
+          "z_m": 1.4
+        },
+        "rotation": [0, 0, 0, 1]
+      },
+      "intrinsics": {
+        "fx": 1450,
+        "fy": 1450,
+        "cx": 960,
+        "cy": 720,
+        "width_px": 1920,
+        "height_px": 1440
+      },
+      "sharpness": 420
+    }
+  ],
+  "scale": {
+    "anchors": [
+      {
+        "kind": "geometry_model",
+        "implied_scale": 1.0
+      },
+      {
+        "kind": "door_height",
+        "implied_scale": 1.03
+      },
+      {
+        "kind": "tape",
+        "implied_scale": 1.01
+      }
+    ],
+    "anchors_agree": true,
+    "needs_tape_value": false
+  },
+  "direction": {
+    "north_deg": 12.0,
+    "confidence": "approximate",
+    "sources": ["compass"]
+  },
+  "splat": {
+    "key": "twins/a1/splat/room.spz",
+    "format": "spz"
+  },
+  "phone_splats": [
+    {
+      "key": "twins/t1/v1/phone_500k.sog",
+      "format": "sog",
+      "tier": "flagship",
+      "gaussians": 500000,
+      "bytes": 5971379
+    }
+  ]
+}

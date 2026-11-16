@@ -1,0 +1,35 @@
+{
+  "scene": "arkit_living_41159541",
+  "kind": "large",
+  "object": "sofa",
+  "models": {
+    "lama": {
+      "train_frames_used": 170,
+      "refill_seconds": 206.1,
+      "fill_agreement_psnr": 29.7,
+      "ghost_detector_score": 0.303,
+      "known_truth": {
+        "holes": 12,
+        "psnr_in_hole": 19.39,
+        "lpips_on_hole_box": 0.1663
+      }
+    },
+    "qwen": {
+      "train_frames_used": 170,
+      "refill_seconds": 207.9,
+      "fill_agreement_psnr": 19.74,
+      "ghost_detector_score": 0.469,
+      "known_truth": {
+        "holes": 12,
+        "psnr_in_hole": 10.63,
+        "lpips_on_hole_box": 0.3533
+      }
+    },
+    "lama_all": {
+      "train_frames_used": 240,
+      "refill_seconds": 192.5,
+      "fill_agreement_psnr": 29.22,
+      "ghost_detector_score": 0.461
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "scene": "arkit_bedroom_47430034",
+  "model": "mapanything_apache",
+  "objects_seen": null,
+  "depth": {
+    "frames": 270,
+    "abs_rel": 0.1085,
+    "delta_1_25": 0.9229,
+    "median_scale_ratio": 0.964,
+    "coverage_of_lidar_pixels": 0.898
+  },
+  "predict": {
+    "model": "mapanything_apache",
+    "frames": 270,
+    "seconds": 80.1
+  }
+}

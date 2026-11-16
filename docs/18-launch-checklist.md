@@ -23,7 +23,7 @@ Status and owners are tracked in Notion; this list is the reference.
 - [ ] Flipkart Affiliate with Product Feed API access
 - [ ] Amazon Associates India (Creators API once eligible; manual links until then)
 - [ ] Cuelinks, EarnKaro, vCommission, INRDeals
-- [ ] Rental partners (Furlenco via Cuelinks, others direct)
+- [ ] Rental partners (Furlenco via Cuelinks, others direct), after launch
 - [ ] D2C brand deals with coupon codes and image permission
 - [ ] App traffic rules confirmed per campaign
 
@@ -45,7 +45,7 @@ Status and owners are tracked in Notion; this list is the reference.
 - [ ] Quality gates in [assumptions and accuracy](02-assumptions-and-accuracy.md) passed on the golden set
 - [ ] Vastu rule set reviewed by the consultant
 - [ ] Spend caps, alerts and fallback chain live
-- [ ] Load test at 10 times expected launch traffic
+- [ ] Smoke load test before launch (10 times expected traffic after launch)
 - [ ] No paywall anywhere in the app; entitlements off
 - [ ] Store listings with a before and after preview video
 - [ ] Marketing plan ready for launch day

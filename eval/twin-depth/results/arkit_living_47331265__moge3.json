@@ -1,0 +1,31 @@
+{
+  "scene": "arkit_living_47331265",
+  "model": "moge3",
+  "objects_seen": {
+    "gt_objects": 10,
+    "predicted_objects": 52,
+    "predicted_annotated_classes": 27,
+    "recall_class_iou25": 0.6,
+    "recall_any_class_iou25": 0.6,
+    "recall_class_iou05": 0.9,
+    "precision_class_iou25": 0.2222222222222222,
+    "median_iou": 0.3984949881548623,
+    "median_center_error_m": 0.19503311205130136,
+    "median_length_error_m": 0.16141349270098926,
+    "median_width_error_m": 0.11950212687258022,
+    "median_height_error_m": 0.16937970450270845,
+    "median_size_error_rel": 0.18969464284820317
+  },
+  "depth": {
+    "frames": 267,
+    "abs_rel": 0.0507,
+    "delta_1_25": 0.9867,
+    "median_scale_ratio": 0.993,
+    "coverage_of_lidar_pixels": 1.0
+  },
+  "predict": {
+    "model": "moge3",
+    "frames": 270,
+    "seconds": 104.2
+  }
+}
