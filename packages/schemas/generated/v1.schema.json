@@ -13,14 +13,110 @@
     "Render",
     "ShoppingList",
     "SpaceProfile",
+    "SpaceTwin",
     "TasteProfile"
   ],
   "$defs": {
+    "AddEdit": {
+      "title": "AddEdit",
+      "description": "Add a catalog product at a pose.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "op",
+        "by",
+        "product_id",
+        "product_size",
+        "to",
+        "yaw_deg",
+        "label"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "op": {
+          "const": "add"
+        },
+        "by": {
+          "type": "string",
+          "enum": [
+            "user",
+            "solver"
+          ],
+          "description": "Who made the edit. Never a model."
+        },
+        "product_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "product_size": {
+          "$ref": "#/$defs/ProductSize"
+        },
+        "to": {
+          "$ref": "#/$defs/Point3"
+        },
+        "yaw_deg": {
+          "$ref": "#/$defs/AngleDeg"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      }
+    },
     "AngleDeg": {
       "type": "number",
       "minimum": 0,
       "exclusiveMaximum": 360,
       "description": "Degrees, 0 inclusive to 360 exclusive."
+    },
+    "ArPoint": {
+      "description": "A point in the AR session's world frame, in metres, y up.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x_m",
+        "y_m",
+        "z_m"
+      ],
+      "properties": {
+        "x_m": {
+          "type": "number"
+        },
+        "y_m": {
+          "type": "number"
+        },
+        "z_m": {
+          "type": "number"
+        }
+      }
+    },
+    "ArPose": {
+      "description": "Camera pose from AR tracking: position and a unit quaternion (x, y, z, w).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "position",
+        "rotation"
+      ],
+      "properties": {
+        "position": {
+          "$ref": "#/$defs/ArPoint"
+        },
+        "rotation": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -1,
+            "maximum": 1
+          },
+          "minItems": 4,
+          "maxItems": 4
+        }
+      }
     },
     "Brief": {
       "title": "Brief",
@@ -105,6 +201,68 @@
         }
       }
     },
+    "CameraIntrinsics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fx",
+        "fy",
+        "cx",
+        "cy",
+        "width_px",
+        "height_px"
+      ],
+      "properties": {
+        "fx": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "fy": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "cx": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cy": {
+          "type": "number",
+          "minimum": 0
+        },
+        "width_px": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height_px": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "CameraPose": {
+      "description": "Camera position and orientation in the space frame. Rotation is a unit quaternion (x, y, z, w).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "position",
+        "rotation"
+      ],
+      "properties": {
+        "position": {
+          "$ref": "#/$defs/Point3"
+        },
+        "rotation": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -1,
+            "maximum": 1
+          },
+          "minItems": 4,
+          "maxItems": 4
+        }
+      }
+    },
     "Capture": {
       "title": "Capture",
       "description": "Input stage: the photos or video of any space, at any extent (a whole room, a corner, a balcony), plus optional tape values. The space type is detected later, not picked here.",
@@ -151,6 +309,9 @@
           "items": {
             "$ref": "#/$defs/TapeMeasurement"
           }
+        },
+        "package": {
+          "$ref": "#/$defs/CapturePackage"
         }
       }
     },
@@ -180,6 +341,39 @@
         },
         "has_ar": {
           "type": "boolean"
+        }
+      }
+    },
+    "CaptureKeyframe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "image",
+        "captured_at_ms",
+        "sharpness"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "image": {
+          "$ref": "#/$defs/StorageKey"
+        },
+        "captured_at_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Milliseconds from the start of the scan."
+        },
+        "sharpness": {
+          "type": "number",
+          "minimum": 0
+        },
+        "pose": {
+          "$ref": "#/$defs/ArPose"
+        },
+        "intrinsics": {
+          "$ref": "#/$defs/CameraIntrinsics"
         }
       }
     },
@@ -239,6 +433,103 @@
         },
         "compass_heading_deg": {
           "$ref": "#/$defs/AngleDeg"
+        }
+      }
+    },
+    "CapturePackage": {
+      "description": "Everything the scan recorded for building the twin, uploaded as one package. Works without AR: then there is video and keyframes only, with no poses. AR poses and points are in the AR session's world frame: metres, gravity aligned, y up; the twin converts them to the space frame.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ar",
+        "keyframes",
+        "detections",
+        "sensor_log"
+      ],
+      "properties": {
+        "ar": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "tracking",
+            "lidar",
+            "depth"
+          ],
+          "properties": {
+            "tracking": {
+              "type": "string",
+              "enum": [
+                "arkit",
+                "arcore",
+                "none"
+              ]
+            },
+            "lidar": {
+              "type": "boolean"
+            },
+            "depth": {
+              "type": "boolean",
+              "description": "Depth images are in the package."
+            }
+          }
+        },
+        "video": {
+          "$ref": "#/$defs/StorageKey",
+          "description": "The scan video, when recorded."
+        },
+        "keyframes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CaptureKeyframe"
+          },
+          "minItems": 1,
+          "maxItems": 120
+        },
+        "planes": {
+          "$ref": "#/$defs/StorageKey",
+          "description": "AR planes as JSON."
+        },
+        "scene_mesh": {
+          "$ref": "#/$defs/StorageKey",
+          "description": "LiDAR scene mesh with surface classes, when the phone has LiDAR."
+        },
+        "depth": {
+          "$ref": "#/$defs/StorageKey",
+          "description": "Depth images aligned to keyframes, when the phone provides them."
+        },
+        "detections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LiveDetection"
+          },
+          "maxItems": 4000,
+          "description": "Live detector results during the scan."
+        },
+        "sensor_log": {
+          "$ref": "#/$defs/StorageKey",
+          "description": "Motion, pose and light readings over time, as JSON lines."
+        }
+      }
+    },
+    "CatalogMatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product_id",
+        "similarity",
+        "fits_box"
+      ],
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "similarity": {
+          "$ref": "#/$defs/UnitScore"
+        },
+        "fits_box": {
+          "type": "boolean",
+          "description": "The product's catalog size fits this object's box, with the error band as margin."
         }
       }
     },
@@ -465,6 +756,10 @@
             "minLength": 1
           },
           "description": "Why this works, generated from the solver's own scores."
+        },
+        "twin": {
+          "$ref": "#/$defs/TwinReference",
+          "description": "The twin this design builds on and its edits. The render, plan, 3D view and shopping list read the same twin plus edits."
         }
       }
     },
@@ -705,6 +1000,67 @@
       "pattern": "^https://\\S+$",
       "maxLength": 2048
     },
+    "Keyframe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "image",
+        "captured_at_ms",
+        "pose",
+        "intrinsics"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "image": {
+          "$ref": "#/$defs/StorageKey"
+        },
+        "captured_at_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Milliseconds from the start of the capture."
+        },
+        "pose": {
+          "$ref": "#/$defs/CameraPose"
+        },
+        "intrinsics": {
+          "$ref": "#/$defs/CameraIntrinsics"
+        },
+        "sharpness": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "LiveDetection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "detector_class",
+        "score",
+        "at_ms"
+      ],
+      "properties": {
+        "detector_class": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "score": {
+          "$ref": "#/$defs/UnitScore"
+        },
+        "at_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "world": {
+          "$ref": "#/$defs/ArPoint",
+          "description": "Where the detection hit the AR scene, when it did."
+        }
+      }
+    },
     "LocalId": {
       "type": "string",
       "pattern": "^[a-z0-9_-]{1,40}$",
@@ -751,6 +1107,84 @@
           "type": "integer",
           "minimum": 0,
           "description": "Amount in paise."
+        }
+      }
+    },
+    "MoveEdit": {
+      "title": "MoveEdit",
+      "description": "Move an object: its box centre moves, its measured size does not.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "op",
+        "by",
+        "object_id",
+        "to"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "op": {
+          "const": "move"
+        },
+        "by": {
+          "type": "string",
+          "enum": [
+            "user",
+            "solver"
+          ],
+          "description": "Who made the edit. Never a model."
+        },
+        "object_id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "to": {
+          "$ref": "#/$defs/Point3"
+        }
+      }
+    },
+    "ObjectModel": {
+      "description": "A 3D model made from the object's own crops. Scaled to the measured box; the model never sets the size.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "generator",
+        "scaled_to_box"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/StorageKey"
+        },
+        "generator": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Model name and pinned version that made it."
+        },
+        "scaled_to_box": {
+          "const": true
+        }
+      }
+    },
+    "ObjectView": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "keyframe_id",
+        "mask",
+        "crop"
+      ],
+      "properties": {
+        "keyframe_id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "mask": {
+          "$ref": "#/$defs/StorageKey"
+        },
+        "crop": {
+          "$ref": "#/$defs/StorageKey"
         }
       }
     },
@@ -816,6 +1250,35 @@
               ]
             }
           }
+        }
+      }
+    },
+    "OrientedBox": {
+      "description": "An object's measured box: centre, turn about the vertical axis and size. Sizes are dimensions with a source and an error band.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "center",
+        "yaw_deg",
+        "width",
+        "depth",
+        "height"
+      ],
+      "properties": {
+        "center": {
+          "$ref": "#/$defs/Point3"
+        },
+        "yaw_deg": {
+          "$ref": "#/$defs/AngleDeg"
+        },
+        "width": {
+          "$ref": "#/$defs/Dimension"
+        },
+        "depth": {
+          "$ref": "#/$defs/Dimension"
+        },
+        "height": {
+          "$ref": "#/$defs/Dimension"
         }
       }
     },
@@ -968,6 +1431,27 @@
           "type": "number"
         },
         "y_m": {
+          "type": "number"
+        }
+      }
+    },
+    "Point3": {
+      "description": "A point in the space frame, in metres. z is height above the floor.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x_m",
+        "y_m",
+        "z_m"
+      ],
+      "properties": {
+        "x_m": {
+          "type": "number"
+        },
+        "y_m": {
+          "type": "number"
+        },
+        "z_m": {
           "type": "number"
         }
       }
@@ -1149,6 +1633,27 @@
         }
       }
     },
+    "ProductSize": {
+      "description": "A catalog product's size: retailer data, so measured or estimated, never set by a model.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "depth",
+        "height"
+      ],
+      "properties": {
+        "width": {
+          "$ref": "#/$defs/Dimension"
+        },
+        "depth": {
+          "$ref": "#/$defs/Dimension"
+        },
+        "height": {
+          "$ref": "#/$defs/Dimension"
+        }
+      }
+    },
     "RedoArea": {
       "description": "What the user wants redone: all of the scanned space, or just a part they drew around.",
       "type": "object",
@@ -1167,6 +1672,37 @@
         "polygon": {
           "$ref": "#/$defs/Polygon",
           "description": "The part to redo, in the space frame. Present when scope is part; the design engine checks this."
+        }
+      }
+    },
+    "RemoveEdit": {
+      "title": "RemoveEdit",
+      "description": "Remove an object; the fill behind it is a render concern.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "op",
+        "by",
+        "object_id"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "op": {
+          "const": "remove"
+        },
+        "by": {
+          "type": "string",
+          "enum": [
+            "user",
+            "solver"
+          ],
+          "description": "Who made the edit. Never a model."
+        },
+        "object_id": {
+          "$ref": "#/$defs/LocalId"
         }
       }
     },
@@ -1298,6 +1834,116 @@
         }
       }
     },
+    "ReplaceEdit": {
+      "title": "ReplaceEdit",
+      "description": "Replace an object with a catalog product of the given size.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "op",
+        "by",
+        "object_id",
+        "product_id",
+        "product_size"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "op": {
+          "const": "replace"
+        },
+        "by": {
+          "type": "string",
+          "enum": [
+            "user",
+            "solver"
+          ],
+          "description": "Who made the edit. Never a model."
+        },
+        "object_id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "product_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "product_size": {
+          "$ref": "#/$defs/ProductSize"
+        }
+      }
+    },
+    "RestyleSurfaceEdit": {
+      "title": "RestyleSurfaceEdit",
+      "description": "Repaint or refloor a surface.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "op",
+        "by",
+        "surface_id",
+        "material"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "op": {
+          "const": "restyle_surface"
+        },
+        "by": {
+          "type": "string",
+          "enum": [
+            "user",
+            "solver"
+          ],
+          "description": "Who made the edit. Never a model."
+        },
+        "surface_id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "material": {
+          "$ref": "#/$defs/SurfaceMaterial"
+        }
+      }
+    },
+    "RotateEdit": {
+      "title": "RotateEdit",
+      "description": "Turn an object about the vertical axis.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "op",
+        "by",
+        "object_id",
+        "yaw_deg"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "op": {
+          "const": "rotate"
+        },
+        "by": {
+          "type": "string",
+          "enum": [
+            "user",
+            "solver"
+          ],
+          "description": "Who made the edit. Never a model."
+        },
+        "object_id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "yaw_deg": {
+          "$ref": "#/$defs/AngleDeg"
+        }
+      }
+    },
     "ScaleEvidence": {
       "description": "Independent scale anchors and whether they agree.",
       "type": "object",
@@ -1353,6 +1999,82 @@
       "type": "string",
       "pattern": "^1\\.[0-9]+$",
       "description": "Contract version of the object. Minor versions only add optional fields."
+    },
+    "Shell": {
+      "description": "The room itself: floor, walls, ceiling, doors, windows and wall fixtures.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "floor_polygon",
+        "walls",
+        "ceiling_height",
+        "openings",
+        "fixtures",
+        "surfaces"
+      ],
+      "properties": {
+        "floor_polygon": {
+          "$ref": "#/$defs/Polygon"
+        },
+        "walls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Wall"
+          },
+          "minItems": 1
+        },
+        "ceiling_height": {
+          "$ref": "#/$defs/Dimension"
+        },
+        "openings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Opening"
+          }
+        },
+        "fixtures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Fixture"
+          }
+        },
+        "surfaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ShellSurface"
+          },
+          "description": "Appearance of each wall, the floor and the ceiling."
+        }
+      }
+    },
+    "ShellSurface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId",
+          "description": "A wall's id, or floor or ceiling."
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "wall",
+            "floor",
+            "ceiling"
+          ]
+        },
+        "texture": {
+          "$ref": "#/$defs/StorageKey",
+          "description": "Photo texture projected from the keyframes with objects masked out."
+        },
+        "material": {
+          "$ref": "#/$defs/SurfaceMaterial"
+        }
+      }
     },
     "ShoppingList": {
       "title": "ShoppingList",
@@ -1638,6 +2360,91 @@
         }
       }
     },
+    "SpaceTwin": {
+      "title": "SpaceTwin",
+      "description": "The 3D digital twin of a scanned space: the room shell and every object as its own editable item. Built from one immutable capture; a new reconstruction is a new version, and edits are deltas kept outside the twin. Every dimension carries a value, a source and an error band; generated 3D models never set an object's size, the measured box does. The space frame is metric: x and y on the floor (as in SpaceProfile), z up from the floor.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "id",
+        "capture_id",
+        "version",
+        "created_at",
+        "space_type",
+        "space_type_source",
+        "extent",
+        "extent_source",
+        "shell",
+        "objects",
+        "keyframes",
+        "scale",
+        "direction"
+      ],
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "capture_id": {
+          "$ref": "#/$defs/Uuid",
+          "description": "The capture this twin was built from. The capture never changes."
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Reconstruction version for this capture. Designs reference a twin id and version."
+        },
+        "created_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "space_type": {
+          "$ref": "#/$defs/SpaceType"
+        },
+        "space_type_source": {
+          "$ref": "#/$defs/DetectionSource"
+        },
+        "extent": {
+          "type": "string",
+          "enum": [
+            "whole_room",
+            "part"
+          ]
+        },
+        "extent_source": {
+          "$ref": "#/$defs/DetectionSource"
+        },
+        "shell": {
+          "$ref": "#/$defs/Shell"
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TwinObject"
+          },
+          "description": "Every object found in the space, each its own item."
+        },
+        "keyframes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Keyframe"
+          },
+          "minItems": 1,
+          "description": "Sharp frames with camera poses and intrinsics, in the space frame."
+        },
+        "scale": {
+          "$ref": "#/$defs/ScaleEvidence"
+        },
+        "direction": {
+          "$ref": "#/$defs/SpaceDirection"
+        },
+        "splat": {
+          "$ref": "#/$defs/SplatRef"
+        }
+      }
+    },
     "SpaceType": {
       "type": "string",
       "enum": [
@@ -1647,6 +2454,28 @@
         "other"
       ],
       "description": "What the scanned space is. Detected from the scan, never picked up front; the user can change it."
+    },
+    "SplatRef": {
+      "description": "The photoreal room splat trained on the keyframes.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "format"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/StorageKey"
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "ply",
+            "spz",
+            "ksplat"
+          ]
+        }
+      }
     },
     "StorageKey": {
       "type": "string",
@@ -1665,6 +2494,38 @@
         "minimal_wabi_sabi"
       ],
       "description": "The six launch style profiles."
+    },
+    "SurfaceMaterial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "paint",
+            "tile",
+            "wood",
+            "stone",
+            "wallpaper",
+            "other"
+          ]
+        },
+        "color": {
+          "$ref": "#/$defs/HexColor"
+        },
+        "tile_size": {
+          "$ref": "#/$defs/Dimension",
+          "description": "Side of one tile, when the material is tile."
+        },
+        "product_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Catalog product for a restyle (paint or flooring)."
+        }
+      }
     },
     "TapeMeasurement": {
       "description": "An optional value read from a tape by the user.",
@@ -1910,6 +2771,139 @@
       "type": "string",
       "format": "date-time",
       "description": "UTC instant, RFC 3339."
+    },
+    "TwinEdit": {
+      "description": "One change to a twin, kept outside it. Made by the user or the solver, never by a model. Undo is dropping the edit.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/MoveEdit"
+        },
+        {
+          "$ref": "#/$defs/RotateEdit"
+        },
+        {
+          "$ref": "#/$defs/RemoveEdit"
+        },
+        {
+          "$ref": "#/$defs/ReplaceEdit"
+        },
+        {
+          "$ref": "#/$defs/AddEdit"
+        },
+        {
+          "$ref": "#/$defs/RestyleSurfaceEdit"
+        }
+      ]
+    },
+    "TwinObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "category",
+        "label",
+        "box",
+        "detection",
+        "views",
+        "catalog_matches",
+        "state"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "description": "Machine class, for example sofa or almirah."
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Name shown to the user, for example Grey three-seater sofa."
+        },
+        "box": {
+          "$ref": "#/$defs/OrientedBox"
+        },
+        "detection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "confidence"
+          ],
+          "properties": {
+            "source": {
+              "type": "string",
+              "enum": [
+                "live_scan",
+                "server_segmentation",
+                "user"
+              ]
+            },
+            "confidence": {
+              "$ref": "#/$defs/UnitScore"
+            }
+          }
+        },
+        "views": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectView"
+          },
+          "description": "Masks and best crops from the keyframes that see this object."
+        },
+        "model": {
+          "$ref": "#/$defs/ObjectModel"
+        },
+        "splat_subset": {
+          "$ref": "#/$defs/StorageKey",
+          "description": "This object's part of the room splat."
+        },
+        "catalog_matches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CatalogMatch"
+          }
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "keep",
+            "move",
+            "remove",
+            "replace"
+          ],
+          "description": "keep in a freshly built twin. Edits change it only in a derived view, never in the stored twin."
+        }
+      }
+    },
+    "TwinReference": {
+      "description": "Which twin a design builds on, and the ordered edits it makes to it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "twin_id",
+        "twin_version",
+        "edits"
+      ],
+      "properties": {
+        "twin_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "twin_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "edits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TwinEdit"
+          }
+        }
+      }
     },
     "UnitScore": {
       "type": "number",

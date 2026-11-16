@@ -1,6 +1,20 @@
 /* Generated from schemas/v1 by scripts/generate.mjs. Do not edit. */
 
 /**
+ * Identifier that is unique inside its parent object, for example a wall or a design item.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "LocalId".
+ */
+export type LocalId = string
+/**
+ * measured: tape or verified retailer data. estimated: from geometry models or unverified listings. user_confirmed: accepted by the user without a tape value.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "DimensionSource".
+ */
+export type DimensionSource = ("measured" | "estimated" | "user_confirmed")
+/**
  * Degrees, 0 inclusive to 360 exclusive.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -27,13 +41,6 @@ export type Uuid = string
  */
 export type Timestamp = string
 /**
- * Identifier that is unique inside its parent object, for example a wall or a design item.
- * 
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "LocalId".
- */
-export type LocalId = string
-/**
  * Object key in the media store. Never a public URL; clients receive signed URLs.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -55,13 +62,6 @@ export type UnitScore = number
  */
 export type ProductGroup = ("furniture" | "lighting" | "decor" | "paint" | "flooring")
 /**
- * measured: tape or verified retailer data. estimated: from geometry models or unverified listings. user_confirmed: accepted by the user without a tape value.
- * 
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "DimensionSource".
- */
-export type DimensionSource = ("measured" | "estimated" | "user_confirmed")
-/**
  * The six launch style profiles.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -78,6 +78,13 @@ export type HttpsUrl = string
  * via the `definition` "HexColor".
  */
 export type HexColor = string
+/**
+ * One change to a twin, kept outside it. Made by the user or the solver, never by a model. Undo is dropping the edit.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "TwinEdit".
+ */
+export type TwinEdit = (MoveEdit | RotateEdit | RemoveEdit | ReplaceEdit | AddEdit | RestyleSurfaceEdit)
 /**
  * detected: worked out from the scan. user: changed or confirmed by the user.
  * 
@@ -107,6 +114,89 @@ export type SpaceType = ("living_room" | "bedroom" | "balcony" | "other")
  */
 export interface SajaoContract {
 [k: string]: unknown
+}
+/**
+ * Add a catalog product at a pose.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "AddEdit".
+ */
+export interface AddEdit {
+id: LocalId
+op: "add"
+/**
+ * Who made the edit. Never a model.
+ */
+by: ("user" | "solver")
+product_id: string
+product_size: ProductSize
+to: Point3
+yaw_deg: AngleDeg
+label: string
+}
+/**
+ * A catalog product's size: retailer data, so measured or estimated, never set by a model.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "ProductSize".
+ */
+export interface ProductSize {
+width: Dimension
+depth: Dimension
+height: Dimension
+}
+/**
+ * A length that is honest about where it came from. Every dimension carries a value, a source and an error band.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "Dimension".
+ */
+export interface Dimension {
+/**
+ * Best value in metres.
+ */
+value_m: number
+source: DimensionSource
+/**
+ * Half-width of the error band in metres: the true value is expected within value_m plus or minus error_band_m. The solver adds it as margin.
+ */
+error_band_m: number
+}
+/**
+ * A point in the space frame, in metres. z is height above the floor.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "Point3".
+ */
+export interface Point3 {
+x_m: number
+y_m: number
+z_m: number
+}
+/**
+ * A point in the AR session's world frame, in metres, y up.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "ArPoint".
+ */
+export interface ArPoint {
+x_m: number
+y_m: number
+z_m: number
+}
+/**
+ * Camera pose from AR tracking: position and a unit quaternion (x, y, z, w).
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "ArPose".
+ */
+export interface ArPose {
+position: ArPoint
+/**
+ * @minItems 4
+ * @maxItems 4
+ */
+rotation: [number, number, number, number]
 }
 /**
  * Per-room choices on top of the taste profile. With the space profile and the catalog, the only input the design engine reads.
@@ -153,6 +243,32 @@ currency: "INR"
 amount_minor: number
 }
 /**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "CameraIntrinsics".
+ */
+export interface CameraIntrinsics {
+fx: number
+fy: number
+cx: number
+cy: number
+width_px: number
+height_px: number
+}
+/**
+ * Camera position and orientation in the space frame. Rotation is a unit quaternion (x, y, z, w).
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "CameraPose".
+ */
+export interface CameraPose {
+position: Point3
+/**
+ * @minItems 4
+ * @maxItems 4
+ */
+rotation: [number, number, number, number]
+}
+/**
  * Input stage: the photos or video of any space, at any extent (a whole room, a corner, a balcony), plus optional tape values. The space type is detected later, not picked here.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -171,6 +287,7 @@ media: [CaptureMedia, ...(CaptureMedia)[]]
 device: CaptureDevice
 compass?: CompassReading
 tape_measurements?: TapeMeasurement[]
+package?: CapturePackage
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -226,6 +343,75 @@ export interface TapeMeasurement {
 target: ("wall_length" | "ceiling_height" | "door_height" | "door_width" | "window_width" | "other")
 value_m: number
 note?: string
+}
+/**
+ * Everything the scan recorded for building the twin, uploaded as one package. Works without AR: then there is video and keyframes only, with no poses. AR poses and points are in the AR session's world frame: metres, gravity aligned, y up; the twin converts them to the space frame.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "CapturePackage".
+ */
+export interface CapturePackage {
+ar: {
+tracking: ("arkit" | "arcore" | "none")
+lidar: boolean
+/**
+ * Depth images are in the package.
+ */
+depth: boolean
+}
+video?: StorageKey
+/**
+ * @minItems 1
+ * @maxItems 120
+ */
+keyframes: [CaptureKeyframe, ...(CaptureKeyframe)[]]
+planes?: StorageKey
+scene_mesh?: StorageKey
+depth?: StorageKey
+/**
+ * Live detector results during the scan.
+ * 
+ * @maxItems 4000
+ */
+detections: LiveDetection[]
+sensor_log: StorageKey
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "CaptureKeyframe".
+ */
+export interface CaptureKeyframe {
+id: LocalId
+image: StorageKey
+/**
+ * Milliseconds from the start of the scan.
+ */
+captured_at_ms: number
+sharpness: number
+pose?: ArPose
+intrinsics?: CameraIntrinsics
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "LiveDetection".
+ */
+export interface LiveDetection {
+detector_class: string
+score: UnitScore
+at_ms: number
+world?: ArPoint
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "CatalogMatch".
+ */
+export interface CatalogMatch {
+product_id: string
+similarity: UnitScore
+/**
+ * The product's catalog size fits this object's box, with the error band as margin.
+ */
+fits_box: boolean
 }
 /**
  * The verifier's independent re-check.
@@ -297,6 +483,7 @@ check_report: CheckReport
  * Why this works, generated from the solver's own scores.
  */
 explanations: string[]
+twin?: TwinReference
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -367,23 +554,6 @@ depth: Dimension
 height: Dimension
 }
 /**
- * A length that is honest about where it came from. Every dimension carries a value, a source and an error band.
- * 
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "Dimension".
- */
-export interface Dimension {
-/**
- * Best value in metres.
- */
-value_m: number
-source: DimensionSource
-/**
- * Half-width of the error band in metres: the true value is expected within value_m plus or minus error_band_m. The solver adds it as margin.
- */
-error_band_m: number
-}
-/**
  * A permitted affiliate or rental route to a product.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -427,6 +597,110 @@ export interface LightingScheme {
  * @minItems 1
  */
 layers: [("ambient" | "task" | "accent"), ...(("ambient" | "task" | "accent"))[]]
+}
+/**
+ * Which twin a design builds on, and the ordered edits it makes to it.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "TwinReference".
+ */
+export interface TwinReference {
+twin_id: Uuid
+twin_version: number
+edits: TwinEdit[]
+}
+/**
+ * Move an object: its box centre moves, its measured size does not.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "MoveEdit".
+ */
+export interface MoveEdit {
+id: LocalId
+op: "move"
+/**
+ * Who made the edit. Never a model.
+ */
+by: ("user" | "solver")
+object_id: LocalId
+to: Point3
+}
+/**
+ * Turn an object about the vertical axis.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "RotateEdit".
+ */
+export interface RotateEdit {
+id: LocalId
+op: "rotate"
+/**
+ * Who made the edit. Never a model.
+ */
+by: ("user" | "solver")
+object_id: LocalId
+yaw_deg: AngleDeg
+}
+/**
+ * Remove an object; the fill behind it is a render concern.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "RemoveEdit".
+ */
+export interface RemoveEdit {
+id: LocalId
+op: "remove"
+/**
+ * Who made the edit. Never a model.
+ */
+by: ("user" | "solver")
+object_id: LocalId
+}
+/**
+ * Replace an object with a catalog product of the given size.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "ReplaceEdit".
+ */
+export interface ReplaceEdit {
+id: LocalId
+op: "replace"
+/**
+ * Who made the edit. Never a model.
+ */
+by: ("user" | "solver")
+object_id: LocalId
+product_id: string
+product_size: ProductSize
+}
+/**
+ * Repaint or refloor a surface.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "RestyleSurfaceEdit".
+ */
+export interface RestyleSurfaceEdit {
+id: LocalId
+op: "restyle_surface"
+/**
+ * Who made the edit. Never a model.
+ */
+by: ("user" | "solver")
+surface_id: LocalId
+material: SurfaceMaterial
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "SurfaceMaterial".
+ */
+export interface SurfaceMaterial {
+kind: ("paint" | "tile" | "wood" | "stone" | "wallpaper" | "other")
+color?: HexColor
+tile_size?: Dimension
+/**
+ * Catalog product for a restyle (paint or flooring).
+ */
+product_id?: string
 }
 /**
  * Action stage: one entry in the event log (saves, swaps, buy taps, shares).
@@ -493,6 +767,44 @@ width?: Dimension
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "Keyframe".
+ */
+export interface Keyframe {
+id: LocalId
+image: StorageKey
+/**
+ * Milliseconds from the start of the capture.
+ */
+captured_at_ms: number
+pose: CameraPose
+intrinsics: CameraIntrinsics
+sharpness?: number
+}
+/**
+ * A 3D model made from the object's own crops. Scaled to the measured box; the model never sets the size.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "ObjectModel".
+ */
+export interface ObjectModel {
+key: StorageKey
+/**
+ * Model name and pinned version that made it.
+ */
+generator: string
+scaled_to_box: true
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "ObjectView".
+ */
+export interface ObjectView {
+keyframe_id: LocalId
+mask: StorageKey
+crop: StorageKey
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
  * via the `definition` "Opening".
  */
 export interface Opening {
@@ -510,6 +822,19 @@ swing?: {
 hinge: ("start" | "end")
 opens: ("inward" | "outward")
 }
+}
+/**
+ * An object's measured box: centre, turn about the vertical axis and size. Sizes are dimensions with a source and an error band.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "OrientedBox".
+ */
+export interface OrientedBox {
+center: Point3
+yaw_deg: AngleDeg
+width: Dimension
+depth: Dimension
+height: Dimension
 }
 /**
  * Spatial view: the dimensioned 2D plan derived from one design and its space profile.
@@ -638,6 +963,46 @@ kind: ("geometry_model" | "door_height" | "switchboard_height" | "ceiling_prior"
 implied_scale: number
 }
 /**
+ * The room itself: floor, walls, ceiling, doors, windows and wall fixtures.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "Shell".
+ */
+export interface Shell {
+floor_polygon: Polygon
+/**
+ * @minItems 1
+ */
+walls: [Wall, ...(Wall)[]]
+ceiling_height: Dimension
+openings: Opening[]
+fixtures: Fixture[]
+/**
+ * Appearance of each wall, the floor and the ceiling.
+ */
+surfaces: ShellSurface[]
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "Wall".
+ */
+export interface Wall {
+id: LocalId
+start: Point2
+end: Point2
+length: Dimension
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "ShellSurface".
+ */
+export interface ShellSurface {
+id: LocalId
+kind: ("wall" | "floor" | "ceiling")
+texture?: StorageKey
+material?: SurfaceMaterial
+}
+/**
  * Commerce stage: the buyable view of one design. Totals come from the same items the render shows.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -741,14 +1106,79 @@ direction: SpaceDirection
 scale: ScaleEvidence
 }
 /**
+ * The 3D digital twin of a scanned space: the room shell and every object as its own editable item. Built from one immutable capture; a new reconstruction is a new version, and edits are deltas kept outside the twin. Every dimension carries a value, a source and an error band; generated 3D models never set an object's size, the measured box does. The space frame is metric: x and y on the floor (as in SpaceProfile), z up from the floor.
+ * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "Wall".
+ * via the `definition` "SpaceTwin".
  */
-export interface Wall {
+export interface SpaceTwin {
+schema_version: SchemaVersion
+id: Uuid
+capture_id: Uuid
+/**
+ * Reconstruction version for this capture. Designs reference a twin id and version.
+ */
+version: number
+created_at: Timestamp
+space_type: SpaceType
+space_type_source: DetectionSource
+extent: ("whole_room" | "part")
+extent_source: DetectionSource
+shell: Shell
+/**
+ * Every object found in the space, each its own item.
+ */
+objects: TwinObject[]
+/**
+ * Sharp frames with camera poses and intrinsics, in the space frame.
+ * 
+ * @minItems 1
+ */
+keyframes: [Keyframe, ...(Keyframe)[]]
+scale: ScaleEvidence
+direction: SpaceDirection
+splat?: SplatRef
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "TwinObject".
+ */
+export interface TwinObject {
 id: LocalId
-start: Point2
-end: Point2
-length: Dimension
+/**
+ * Machine class, for example sofa or almirah.
+ */
+category: string
+/**
+ * Name shown to the user, for example Grey three-seater sofa.
+ */
+label: string
+box: OrientedBox
+detection: {
+source: ("live_scan" | "server_segmentation" | "user")
+confidence: UnitScore
+}
+/**
+ * Masks and best crops from the keyframes that see this object.
+ */
+views: ObjectView[]
+model?: ObjectModel
+splat_subset?: StorageKey
+catalog_matches: CatalogMatch[]
+/**
+ * keep in a freshly built twin. Edits change it only in a derived view, never in the stored twin.
+ */
+state: ("keep" | "move" | "remove" | "replace")
+}
+/**
+ * The photoreal room splat trained on the keyframes.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "SplatRef".
+ */
+export interface SplatRef {
+key: StorageKey
+format: ("ply" | "spz" | "ksplat")
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
