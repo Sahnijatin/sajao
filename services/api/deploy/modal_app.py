@@ -13,7 +13,10 @@ from pathlib import Path
 
 import modal
 
-ROOT = Path(__file__).resolve().parents[3]
+HERE = Path(__file__).resolve()
+# Inside the container this file sits alone in /root: the repository root only
+# exists where the deployment is run from, which is where the image is built.
+ROOT = HERE.parents[3] if len(HERE.parents) > 3 else HERE.parent
 
 image = (
     modal.Image.debian_slim(python_version="3.13")
