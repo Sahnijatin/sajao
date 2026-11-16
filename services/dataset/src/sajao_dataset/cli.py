@@ -9,10 +9,12 @@ from collections import Counter
 from pathlib import Path
 
 from sajao_dataset.manifest import append_records, read_manifest
+from sajao_dataset.prefilter import decide, write_decisions
 from sajao_dataset.queries import QUERIES, QUERY_SET
 from sajao_dataset.youtube import DataApiSearch, Search, YtDlpSearch, find
 
 DEFAULT_MANIFEST = Path("data/sources.jsonl")
+DEFAULT_PREFILTER = Path("data/prefilter.jsonl")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -26,9 +28,15 @@ def main(argv: list[str] | None = None) -> int:
     find_cmd.add_argument("--max-new", type=int, default=500, help="New videos to add this run")
     find_cmd.add_argument("--query", action="append", help="Run only these queries (repeatable)")
 
+    pre_cmd = commands.add_parser("prefilter", help="Drop builder and designer promos")
+    pre_cmd.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
+    pre_cmd.add_argument("--out", type=Path, default=DEFAULT_PREFILTER)
+
     args = parser.parse_args(argv)
     if args.command == "find":
         return _find(args)
+    if args.command == "prefilter":
+        return _prefilter(args)
     return 2
 
 
@@ -49,6 +57,17 @@ def _find(args: argparse.Namespace) -> int:
         f"{added} new videos via {search.name} ({dict(licenses)}); "
         f"{len(existing) + added} in {args.manifest}"
     )
+    return 0
+
+
+def _prefilter(args: argparse.Namespace) -> int:
+    records = read_manifest(args.manifest)
+    decisions = [decide(r) for r in records]
+    write_decisions(args.out, decisions)
+    kept = [r for r, d in zip(records, decisions, strict=True) if d.keep]
+    reasons = Counter(d.reason for d in decisions if not d.keep)
+    print(f"{len(kept)} of {len(records)} kept; dropped by reason: {dict(reasons.most_common())}")
+    print(f"kept by license: {dict(Counter(r.license for r in kept))}")
     return 0
 
 
