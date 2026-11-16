@@ -3,6 +3,8 @@ package app.sajao.ar
 import android.content.Context
 import android.graphics.Bitmap
 import android.media.Image
+import android.os.SystemClock
+import android.util.Log
 import com.google.mediapipe.framework.image.BitmapImageBuilder
 import com.google.mediapipe.tasks.core.BaseOptions
 import com.google.mediapipe.tasks.vision.core.RunningMode
@@ -105,32 +107,54 @@ class YuvCopy(
 class Detector(context: Context) {
   private val executor = Executors.newSingleThreadExecutor()
   private val busy = AtomicBoolean(false)
+  @Volatile private var detector: ObjectDetector? = null
 
-  /** Why the detector could not load, for the debug overlay; null when it loaded. */
-  var loadError: String? = null
+  /**
+   * "loading", "loaded (N ms)" after a test detection on a blank image, or
+   * "error: ..." with the reason. Shown in the debug overlay.
+   */
+  @Volatile var status: String = "loading"
     private set
 
-  private val detector: ObjectDetector? = try {
-    val bytes = context.assets.open(MODEL).use { it.readBytes() }
-    val buffer = ByteBuffer.allocateDirect(bytes.size).order(ByteOrder.nativeOrder())
-    buffer.put(bytes)
-    buffer.rewind()
-    val options = ObjectDetector.ObjectDetectorOptions.builder()
-      .setBaseOptions(BaseOptions.builder().setModelAssetBuffer(buffer).build())
-      .setRunningMode(RunningMode.IMAGE)
-      .setMaxResults(10)
-      .setScoreThreshold(0.3f)
-      .build()
-    ObjectDetector.createFromOptions(context, options)
-  } catch (error: Throwable) {
-    loadError = "${error.javaClass.simpleName}: ${error.message ?: ""}".take(120)
-    null
+  /** Why the detector could not load, for the debug overlay; null while loading or once loaded. */
+  val loadError: String? get() = status.takeIf { it.startsWith("error") }
+
+  init {
+    // Loaded on the detector's own thread, never on ARCore's GL thread:
+    // MediaPipe sets up its own graphics context when it is created.
+    val appContext = context.applicationContext
+    executor.execute { load(appContext) }
+  }
+
+  private fun load(context: Context) {
+    val started = SystemClock.elapsedRealtime()
+    try {
+      val bytes = context.assets.open(MODEL).use { it.readBytes() }
+      val buffer = ByteBuffer.allocateDirect(bytes.size).order(ByteOrder.nativeOrder())
+      buffer.put(bytes)
+      buffer.rewind()
+      val options = ObjectDetector.ObjectDetectorOptions.builder()
+        .setBaseOptions(BaseOptions.builder().setModelAssetBuffer(buffer).build())
+        .setRunningMode(RunningMode.IMAGE)
+        .setMaxResults(10)
+        .setScoreThreshold(0.3f)
+        .build()
+      val created = ObjectDetector.createFromOptions(context, options)
+      // Self-test: one detection on a blank image proves the model runs.
+      val blank = Bitmap.createBitmap(INPUT_WIDTH, INPUT_WIDTH * 4 / 3, Bitmap.Config.ARGB_8888)
+      created.detect(BitmapImageBuilder(blank).build())
+      detector = created
+      status = "loaded (${SystemClock.elapsedRealtime() - started} ms, ${bytes.size / 1024} KB model)"
+      Log.i(TAG, "detector $status")
+    } catch (error: Throwable) {
+      status = "error: ${error.javaClass.simpleName}: ${error.message ?: ""}".take(160)
+      Log.e(TAG, "detector failed to load", error)
+    }
   }
 
   val isAvailable: Boolean get() = detector != null
   val isBusy: Boolean get() = busy.get()
 
-  /** Calls `done` on the detector thread with what was found and how long it took. */
   fun detect(image: YuvCopy, done: (List<UprightDetection>, Double) -> Unit) {
     val detector = detector ?: return
     if (!busy.compareAndSet(false, true)) return
@@ -176,5 +200,6 @@ class Detector(context: Context) {
   companion object {
     private const val MODEL = "efficientdet_lite0.tflite"
     private const val INPUT_WIDTH = 480
+    const val TAG = "SajaoAr"
   }
 }

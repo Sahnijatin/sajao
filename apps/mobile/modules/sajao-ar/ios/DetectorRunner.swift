@@ -26,6 +26,9 @@ final class DetectorRunner {
   /// Why the detector could not load, for the debug overlay; nil when it loaded.
   private(set) var loadError: String?
 
+  /// "loaded" or "error: ..." for the debug overlay.
+  var status: String { loadError.map { "error: \($0)" } ?? (detector != nil ? "loaded" : "loading") }
+
   init() {
     guard let path = DetectorRunner.modelPath() else {
       loadError = "model file not found"

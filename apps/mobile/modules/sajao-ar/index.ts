@@ -42,6 +42,14 @@ export interface ArStatusEvent {
   placedBy?: string;
   /** Why the detector failed to load; empty when it loaded. */
   detectorError?: string;
+  /** "loading", "loaded (N ms, ...)" after a self-test, or "error: ...". */
+  detectorStatus?: string;
+  /** Camera image size the detector and keyframes see, for example "640x480". */
+  cameraImage?: string;
+  /** Planes by state, for example "tracking 4 paused 1". */
+  planeStates?: string;
+  /** Coverage hits by source, for example "planes 120 points 40". */
+  surfaceHits?: string;
 }
 
 export interface ArPoseEvent {
