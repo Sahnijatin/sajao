@@ -164,7 +164,7 @@ def phone_table() -> str:
             if "gaussians" not in v:
                 continue
             rows.append(
-                f"| {s} | {v['variant']} | {v.get('decimate_method', 'none')} | "
+                f"| {s} | {v['variant']} | {v.get('decimate_method') or ('none' if v['variant'] == 'full' else 'decimate-adaptive')} | "
                 f"{v['gaussians'] / 1e6:.2f} M | {mb(v.get('ply_bytes'))} | "
                 f"{mb(v.get('compressed_ply_bytes'))} | {mb(v.get('spz_bytes'))} | "
                 f"{mb(v.get('sog_sh0_bytes'))} | "

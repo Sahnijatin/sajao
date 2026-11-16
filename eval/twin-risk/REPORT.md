@@ -11,7 +11,7 @@ Scored on two ARKitScenes living rooms (`arkit_living_47331265`, `arkit_living_4
 | Objects: find, name and size the furniture | Go, with tape for anything that decides fit | 67 to 70% of the visible annotated objects found with the right class (IoU 0.25), 80 to 100% at loose overlap; centre error 13 to 24 cm; size error 13 to 27%. Good enough to place, label and suggest; not good enough to decide fit without tape. |
 | Splats: photoreal room | Go | 26.0 and 25.7 dB held-out PSNR on the ARKit rooms after pose and exposure refinement (17 and 18 dB without it), 37.5 dB on Replica; 5 to 10 min on one L40S. |
 | Hide an object and fill the hole | Go for small objects, conditional for large ones | Per-frame inpainting then a short re-train (fill B) covers 99 to 100% of the hole and removes the object cleanly when the background was seen. Large objects against walls no camera saw come out soft; the capture flow has to ask for those views. |
-| Budget phones | See "Phones" below | |
+| Budget phones | Go, hybrid | A room ships as a 3 to 6 MB compressed splat (500k or 250k Gaussians) at under 1.5 dB loss on real rooms; server-rendered stills give full quality for the hero images. Budget Android fps is an estimate (about 6 to 12 fps at 500k, double at 250k) and must be checked on a device. |
 
 ## 1. Objects
 
@@ -62,7 +62,34 @@ Decision: fill B. Fill A is only a fast preview. Images: `images/<scene>/edit/<k
 
 ## 3. Phones
 
-PHONE_SECTION
+Two approaches compared on the go or no-go rooms:
+
+- On-device: decimate the splat to a Gaussian budget with PlayCanvas splat-transform (adaptive, mass-preserving decimation), compress it, and render it on the phone.
+- Server-rendered: render phone-sized views (720x1280) on a server GPU and send JPEG stills or an H.264 stream, plus a light mesh (floor and object boxes) so the phone can still hit-test and drag.
+
+On-device, sizes and quality. PSNR here is on held-out views without the per-view pose touch-up used in the splat table, so it reads lower; compare the columns with each other, not with that table.
+
+| Room | Variant | SOG, colour only | SPZ | PSNR full colour / colour only / SOG decoded | Render ms on T4 at 720x1280 |
+| --- | --- | --- | --- | --- | --- |
+| living 47331265 | full, 2.58 M | 30.2 MB | 48.5 MB | 22.0 / 20.8 / 20.8 dB | 24.2 |
+| | 500k | 6.0 MB | 9.6 MB | 21.5 / 20.6 / 20.6 dB | 5.7 |
+| | 250k | 3.0 MB | 4.8 MB | 21.2 / 20.4 / 20.4 dB | 3.3 |
+| living 41159541 | full, 1.91 M | 21.6 MB | 35.4 MB | 23.3 / 22.2 / 22.2 dB | 17.7 |
+| | 500k | 6.0 MB | 9.1 MB | 22.6 / 21.8 / 21.8 dB | 5.8 |
+| | 250k | 3.1 MB | 4.5 MB | 21.7 / 21.2 / 21.2 dB | 3.5 |
+| apartment_1 | full, 1.10 M | 12.4 MB | 19.9 MB | 37.5 / 31.2 / 31.2 dB | 9.9 |
+| | 500k | 6.1 MB | 9.0 MB | 33.8 / 30.7 / 30.7 dB | 5.1 |
+| | 250k | 3.1 MB | 4.3 MB | 32.2 / 30.1 / 30.1 dB | 3.2 |
+
+Findings:
+
+- SOG compression itself costs nothing measurable (decoded SOG equals the uncompressed colour-only splat). Dropping view-dependent colour (spherical harmonics) costs 0.5 to 1.2 dB on real rooms and 6 dB on the synthetic Replica scene, which is mostly glossy floors. Decimating to 500k costs a further 0.2 to 0.5 dB on real rooms. A room fits in 3 to 6 MB.
+- SOG with full spherical harmonics needs WebGPU to build: on 16 CPU cores it ran over an hour per room and was stopped. Adaptive decimation also needs WebGPU above about 2M splats; the largest room fell back to plain decimation, with similar quality.
+- Phone fps is an estimate, not a device measurement. A T4 renders 500k Gaussians in about 5.7 ms. Mobile GPUs in budget Android phones have roughly 1/15 to 1/30 of a T4's throughput, and recent iPhones about 1/4, so 500k should run at about 6 to 12 fps on a budget Android and 30 fps or more on a recent iPhone; 250k roughly doubles that. This needs checking on real devices in the epic.
+
+Server-rendered: one L4 renders a full room at 720x1280 in 6 to 15 ms (67 to 178 fps). A 30 fps stream is 1.4 to 2.4 Mbps of H.264 and costs about 0.002 to 0.007 USD of GPU time per viewing minute; a still view is about 55 KB of JPEG. The light mesh is 0.6 to 5 KB gzipped.
+
+Decision: hybrid. Ship the room on device as a SOG, colour only, at 500k Gaussians for capable phones and 250k for budget Android (3 to 6 MB, under 1.5 dB loss), built with WebGPU on the server. Use server-rendered stills at full quality for the hero before and after images, where view-dependent colour matters most. Do not stream video by default: per-minute cost is low, but it needs a steady connection and adds latency to every drag; keep it as the fallback for phones that fail the on-device fps check.
 
 ## 4. Cost per room
 
@@ -73,16 +100,16 @@ Measured GPU time for the production path on one L40S (0.000542 USD per second):
 | Splat with pose refinement | 4.5 to 10 min | 0.15 to 0.33 USD |
 | Objects (YOLOE, SAM 2.1, lift, fuse) | 0.5 to 1.5 min | 0.01 to 0.04 USD |
 | Hide one object (fill B) | 1.7 to 4.4 min | 0.06 to 0.15 USD |
-| Compress for phones (CPU) | about 1 to 4 min | under 0.01 USD |
+| Compress for phones (16 CPU cores) | 0.5 to 7.5 min | under 0.07 USD |
 
-A room with three removed objects costs about 0.35 to 0.80 USD of GPU time. The whole spike across ten scenes recorded 5.20 USD of stage time; the true spend, including image builds and idle containers, was higher but within the free credits.
+A room with three removed objects costs about 0.35 to 0.80 USD of GPU time. The whole spike across ten scenes recorded 5.36 USD of stage time; the true spend, including image builds and idle containers, was higher but within the free credits.
 
 ## Recommendation
 
 1. Build the Space Twin on Gaussian splats trained on the server with pose and exposure refinement. Without refinement phone captures are not good enough.
 2. Objects: YOLOE plus SAM 2.1 lifted with LiDAR where the phone has it and MapAnything where it does not. Code fits the boxes; every dimension carries the error band measured here (about 15 cm and 20%), and tape decides fit.
 3. Object removal: per-frame inpainting plus a short re-train (fill B). The capture flow must ask the user to film behind large furniture; without those views the fill is soft.
-4. Phones: see the phone recommendation above.
+4. Phones: on-device SOG (colour only, 500k or 250k Gaussians by device class) built on the server with WebGPU, server-rendered stills for hero images, streaming only as a fallback.
 5. Follow-ups for the epic: phone fps on a real iPhone and a budget Android; a size and class filter for detected objects; a coverage check during capture; SAM 3 (weights are gated, not tested here).
 
 ## Limitations

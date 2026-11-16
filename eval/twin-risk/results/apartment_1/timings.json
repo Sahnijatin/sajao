@@ -20,7 +20,7 @@
     "device": "NVIDIA L40S"
   },
   "phone_compress": {
-    "seconds": 1.06,
+    "seconds": 25.23,
     "gpu": "cpu",
     "device": "cpu"
   },
@@ -28,5 +28,25 @@
     "seconds": 295.0,
     "gpu": "L40S",
     "device": "NVIDIA L40S"
+  },
+  "phone_export": {
+    "seconds": 3.3,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "phone_measure_L40S": {
+    "seconds": 21.14,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "phone_measure_L4": {
+    "seconds": 28.24,
+    "gpu": "L4",
+    "device": "NVIDIA L4"
+  },
+  "phone_measure_T4": {
+    "seconds": 32.98,
+    "gpu": "T4",
+    "device": "Tesla T4"
   }
 }

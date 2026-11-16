@@ -74,3 +74,17 @@ Add `--scenes room,kitchen` to run a subset. Outputs live on the Modal volume
 `sajao-twin-risk` under `out/<scene>/`.
 
 Tests for the pure parts run with the rest of the repo: `uv run pytest services/spikes`.
+
+## Results
+
+Go or no-go rooms: two ARKitScenes living rooms and Replica `apartment_1`. Full tables in
+[`eval/twin-risk/tables.md`](../../../eval/twin-risk/tables.md).
+
+| Risk | Best approach | Key numbers | Verdict |
+| --- | --- | --- | --- |
+| Objects | YOLOE plus SAM 2.1, lifted with LiDAR | 71% of visible objects found with the right class (89% loose), 15 cm centre error, 22% size error; image-only depth 61%, 18 cm | Go; tape decides fit |
+| Splats | gsplat with pose and exposure refinement | 26.0 and 25.7 dB on ARKit rooms (17 to 18 dB without refinement), 37.5 dB on Replica, 4 to 8 min on L40S | Go |
+| Hide and fill | Per-frame LaMa then re-train (fill B) | 99 to 100% of the hole filled, 1.7 to 4.4 min per object; plane fill (A) is fast but visibly wrong | Go for small objects; large ones need extra capture views |
+| Phones | On-device SOG, colour only, 250k to 500k Gaussians, plus server stills | 3 to 6 MB per room, under 1.5 dB loss on real rooms, 5.7 ms on T4 at 500k; server render 0.002 to 0.007 USD per viewing minute | Go, hybrid; fps on real devices still to measure |
+
+Collect fetches every image at full size; the committed images are downscaled and pruned by hand.

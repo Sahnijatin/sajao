@@ -146,29 +146,34 @@ Annotated objects whose centre was within 5 m, in frame and not hidden behind a 
 
 ## On-device splat variants
 
-| Scene | Variant | Gaussians | PLY | SOG (SH3) | SOG (SH0) | SPZ | PSNR SH3 / SH0 / SOG | Render ms L40S / L4 / T4 (720x1280) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| arkit_living_47331265 | full | 2.58 M | 639.9 MB | n/a | n/a | n/a | 22.0 / 20.8 / n/a | n/a / n/a / n/a |
-| arkit_living_47331265 | 1000k | 1.00 M | 248.0 MB | n/a | n/a | n/a | 20.9 / 20.3 / n/a | n/a / n/a / n/a |
-| arkit_living_47331265 | 500k | 0.50 M | 124.0 MB | n/a | n/a | n/a | 19.6 / 19.5 / n/a | n/a / n/a / n/a |
-| arkit_living_47331265 | 250k | 0.25 M | 62.0 MB | n/a | n/a | n/a | 18.5 / 18.6 / n/a | n/a / n/a / n/a |
-| arkit_living_41159541 | full | 1.91 M | 474.4 MB | n/a | n/a | n/a | 23.3 / 22.2 / n/a | n/a / n/a / n/a |
-| arkit_living_41159541 | 1000k | 1.00 M | 248.0 MB | n/a | n/a | n/a | 22.7 / 22.0 / n/a | n/a / n/a / n/a |
-| arkit_living_41159541 | 500k | 0.50 M | 124.0 MB | n/a | n/a | n/a | 21.0 / 20.9 / n/a | n/a / n/a / n/a |
-| arkit_living_41159541 | 250k | 0.25 M | 62.0 MB | n/a | n/a | n/a | 19.1 / 19.3 / n/a | n/a / n/a / n/a |
-| arkit_living_41159566 | full | 4.61 M | 1143.6 MB | n/a | n/a | n/a | 17.6 / 16.9 / n/a | n/a / n/a / n/a |
-| arkit_living_41159566 | 1000k | 1.00 M | 248.0 MB | n/a | n/a | n/a | 15.9 / 16.0 / n/a | n/a / n/a / n/a |
-| arkit_living_41159566 | 500k | 0.50 M | 124.0 MB | n/a | n/a | n/a | 15.2 / 15.5 / n/a | n/a / n/a / n/a |
-| arkit_living_41159566 | 250k | 0.25 M | 62.0 MB | n/a | n/a | n/a | 14.4 / 14.9 / n/a | n/a / n/a / n/a |
-| arkit_bedroom_47430034 | full | 3.84 M | 952.5 MB | n/a | n/a | n/a | 19.9 / 19.3 / n/a | n/a / n/a / n/a |
-| arkit_bedroom_47430034 | 1000k | 1.00 M | 248.0 MB | n/a | n/a | n/a | 18.6 / 18.6 / n/a | n/a / n/a / n/a |
-| arkit_bedroom_47430034 | 500k | 0.50 M | 124.0 MB | n/a | n/a | n/a | 17.7 / 18.0 / n/a | n/a / n/a / n/a |
-| arkit_bedroom_47430034 | 250k | 0.25 M | 62.0 MB | n/a | n/a | n/a | 16.9 / 17.4 / n/a | n/a / n/a / n/a |
+| Scene | Variant | Decimation | Gaussians | PLY | Compressed PLY | SPZ | SOG (SH0) | PSNR SH3 / SH0 / SOG SH0 decoded | Render ms SH3, L40S / L4 / T4 (720x1280) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| arkit_living_47331265 | full | none | 2.58 M | 639.9 MB | 158.1 MB | 48.5 MB | 30.2 MB | 22.0 / 20.8 / 20.8 | 6.7 / 15.1 / 24.2 |
+| arkit_living_47331265 | 1000k | decimate | 1.00 M | 248.0 MB | 61.3 MB | 18.9 MB | 11.8 MB | 21.8 / 20.7 / 20.7 | 2.6 / 5.9 / 10.5 |
+| arkit_living_47331265 | 500k | decimate | 0.50 M | 124.0 MB | 30.6 MB | 9.6 MB | 6.0 MB | 21.5 / 20.6 / 20.6 | 1.4 / 3.3 / 5.7 |
+| arkit_living_47331265 | 250k | decimate | 0.25 M | 62.0 MB | 15.3 MB | 4.8 MB | 3.0 MB | 21.2 / 20.4 / 20.4 | 0.8 / 1.9 / 3.3 |
+| arkit_living_41159541 | full | none | 1.91 M | 474.4 MB | 117.2 MB | 35.4 MB | 21.6 MB | 23.3 / 22.2 / 22.2 | 4.8 / 10.4 / 17.7 |
+| arkit_living_41159541 | 1000k | decimate-adaptive | 1.00 M | 248.0 MB | 61.3 MB | 18.6 MB | 11.8 MB | 23.2 / 22.2 / 22.2 | 2.6 / 5.7 / 10.1 |
+| arkit_living_41159541 | 500k | decimate-adaptive | 0.50 M | 124.0 MB | 30.6 MB | 9.1 MB | 6.0 MB | 22.6 / 21.8 / 21.8 | 1.4 / 3.2 / 5.8 |
+| arkit_living_41159541 | 250k | decimate-adaptive | 0.25 M | 62.0 MB | 15.3 MB | 4.5 MB | 3.1 MB | 21.7 / 21.2 / 21.2 | 0.9 / 2.0 / 3.5 |
+| apartment_1 | full | none | 1.10 M | 272.5 MB | 67.3 MB | 19.9 MB | 12.4 MB | 37.5 / 31.2 / 31.2 | 2.7 / 5.7 / 9.9 |
+| apartment_1 | 1000k | decimate-adaptive | 1.00 M | 248.0 MB | 61.3 MB | 18.2 MB | 11.6 MB | 36.7 / 31.2 / 31.2 | 2.5 / 5.3 / 9.0 |
+| apartment_1 | 500k | decimate-adaptive | 0.50 M | 124.0 MB | 30.6 MB | 9.0 MB | 6.1 MB | 33.8 / 30.7 / 30.7 | 1.3 / 3.2 / 5.1 |
+| apartment_1 | 250k | decimate-adaptive | 0.25 M | 62.0 MB | 15.3 MB | 4.3 MB | 3.1 MB | 32.2 / 30.1 / 30.1 | 0.8 / 2.0 / 3.2 |
 
 ## Server-rendered views
 
 | Scene | GPU | Render ms per frame | Max fps, one stream | H.264 Mbps | JPEG per view | GPU cost per viewing minute (30 fps) | Light mesh (gzip) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| arkit_living_47331265 | L40S | 6.7 | 149 | 2.4 | 55 KB | $0.0065 | 4315 B |
+| arkit_living_47331265 | L4 | 15.0 | 67 | 2.4 | 55 KB | $0.0060 | 4315 B |
+| arkit_living_47331265 | T4 | 24.1 | 42 | 2.4 | 55 KB | $0.0071 | 4315 B |
+| arkit_living_41159541 | L40S | 4.8 | 210 | 2.4 | 59 KB | $0.0047 | 4795 B |
+| arkit_living_41159541 | L4 | 10.5 | 95 | 2.4 | 59 KB | $0.0042 | 4795 B |
+| arkit_living_41159541 | T4 | 17.6 | 57 | 2.4 | 59 KB | $0.0052 | 4795 B |
+| apartment_1 | L40S | 2.7 | 368 | 1.4 | 56 KB | $0.0026 | 599 B |
+| apartment_1 | L4 | 5.6 | 178 | 1.4 | 56 KB | $0.0022 | 599 B |
+| apartment_1 | T4 | 9.7 | 103 | 1.4 | 56 KB | $0.0029 | 599 B |
 
 ## GPU time and cost per scene
 
@@ -180,10 +185,14 @@ Annotated objects whose centre was within 5 m, in frame and not hidden behind a 
 | arkit_living_47331265 | objects_gdino_refined_lidar_mapanything | L40S | 19 | 0.010 |
 | arkit_living_47331265 | segment_yoloe | L40S | 0 | 0.000 |
 | arkit_living_47331265 | objects_yoloe_refined_lidar_mapanything | L40S | 13 | 0.007 |
-| arkit_living_47331265 | phone_export | L40S | 18 | 0.010 |
+| arkit_living_47331265 | phone_export | L40S | 4 | 0.002 |
 | arkit_living_47331265 | objects_gdino_raw_lidar_mapanything | L40S | 16 | 0.009 |
 | arkit_living_47331265 | objects_yoloe_raw_lidar_mapanything | L40S | 11 | 0.006 |
 | arkit_living_47331265 | split_and_fill | L40S | 558 | 0.302 |
+| arkit_living_47331265 | phone_compress | cpu | 442 | 0.062 |
+| arkit_living_47331265 | phone_measure_L40S | L40S | 29 | 0.016 |
+| arkit_living_47331265 | phone_measure_L4 | L4 | 53 | 0.012 |
+| arkit_living_47331265 | phone_measure_T4 | T4 | 51 | 0.008 |
 | arkit_living_41159541 | prep | cpu | 132 | 0.018 |
 | arkit_living_41159541 | segment_gdino | L40S | 7 | 0.004 |
 | arkit_living_41159541 | objects_gdino_lidar_mapanything | L40S | 70 | 0.038 |
@@ -192,10 +201,14 @@ Annotated objects whose centre was within 5 m, in frame and not hidden behind a 
 | arkit_living_41159541 | splat_train | L40S | 483 | 0.262 |
 | arkit_living_41159541 | objects_gdino_refined_lidar_mapanything | L40S | 19 | 0.010 |
 | arkit_living_41159541 | objects_yoloe_refined_lidar_mapanything | L40S | 15 | 0.008 |
-| arkit_living_41159541 | phone_export | L40S | 10 | 0.005 |
+| arkit_living_41159541 | phone_export | L40S | 3 | 0.002 |
 | arkit_living_41159541 | objects_gdino_raw_lidar_mapanything | L40S | 17 | 0.009 |
 | arkit_living_41159541 | objects_yoloe_raw_lidar_mapanything | L40S | 15 | 0.008 |
 | arkit_living_41159541 | split_and_fill | L40S | 447 | 0.242 |
+| arkit_living_41159541 | phone_compress | cpu | 34 | 0.005 |
+| arkit_living_41159541 | phone_measure_L40S | L40S | 26 | 0.014 |
+| arkit_living_41159541 | phone_measure_L4 | L4 | 35 | 0.008 |
+| arkit_living_41159541 | phone_measure_T4 | T4 | 46 | 0.008 |
 | arkit_living_41159566 | prep | cpu | 334 | 0.047 |
 | arkit_living_41159566 | splat_train | L40S | 938 | 0.509 |
 | arkit_living_41159566 | segment_gdino | L40S | 7 | 0.004 |
@@ -249,13 +262,17 @@ Annotated objects whose centre was within 5 m, in frame and not hidden behind a 
 | apartment_1 | splat_train | L40S | 273 | 0.148 |
 | apartment_1 | segment_gdino | L40S | 59 | 0.032 |
 | apartment_1 | segment_yoloe | L40S | 25 | 0.013 |
-| apartment_1 | phone_compress | cpu | 1 | 0.000 |
+| apartment_1 | phone_compress | cpu | 25 | 0.004 |
 | apartment_1 | split_and_fill | L40S | 295 | 0.160 |
+| apartment_1 | phone_export | L40S | 3 | 0.002 |
+| apartment_1 | phone_measure_L40S | L40S | 21 | 0.011 |
+| apartment_1 | phone_measure_L4 | L4 | 28 | 0.006 |
+| apartment_1 | phone_measure_T4 | T4 | 33 | 0.005 |
 
 | Scene | Total spike cost (USD) |
 | --- | --- |
-| arkit_living_47331265 | 0.69 |
-| arkit_living_41159541 | 0.64 |
+| arkit_living_47331265 | 0.78 |
+| arkit_living_41159541 | 0.67 |
 | arkit_living_41159566 | 0.62 |
 | arkit_bedroom_47430034 | 0.57 |
 | arkit_bedroom_47895350 | 0.53 |
@@ -263,4 +280,4 @@ Annotated objects whose centre was within 5 m, in frame and not hidden behind a 
 | kitchen | 0.41 |
 | counter | 0.46 |
 | frl_apartment_0 | 0.42 |
-| apartment_1 | 0.36 |
+| apartment_1 | 0.39 |
