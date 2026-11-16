@@ -14,7 +14,7 @@ The gaps a careful team closes from day one. Each item is a task in Notion in th
 | Privacy | Clear consent at first use; in-app account and data deletion (required by both stores); data retention rules; raw video deleted after processing |
 | AI quality operations | Prompts and model versions pinned in the repo; every model output logged for audit; golden-set evaluations rerun on any model or prompt change |
 | Language and units | English and Hindi from day one (all strings externalised); dimensions in feet and inches or centimetres by user choice; INR formatting |
-| Growth plumbing | Deep links and universal links for shared designs; web viewer for people without the app; referral source tracked |
+| Growth plumbing | Deep links and universal links for shared designs; landing page for people without the app (web viewer after launch); referral source tracked |
 | Analytics plan | Event plan defined before screens are built: capture started, room ready, taste done, designs viewed, swap, buy tap, share |
 | Internal admin | One web admin for catalog curation, user support, flags and cost dashboard |
 | Support | In-app feedback with logs attached, support email, FAQ |

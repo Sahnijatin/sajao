@@ -27,7 +27,7 @@ Honesty labels: "Illustrative render" on images, "Estimated ±X cm" on unverifie
 | Tier | Contents |
 | --- | --- |
 | Must (store launch) | Photo or video capture of any space at any extent, with guides and a live scan mesh; Space Profile with detected space type, "all of it or just a part", confirm and optional tape; taste profile with adaptive swipes; three designs with three intents; guided render with checks and 3D fallback; dimensioned 2D plan with drag and rotate; shopping list with buy and rent links; basic Vastu tab; share reel; save and history; login with guest first; English and Hindi |
-| Next | 3D dollhouse view on capable phones; design chat ("make it cosier"); whole-home Vastu from floor plans; Vastu expert call; subscription switched on; full template sets for every space type once golden-set tests pass |
+| Next | 3D dollhouse view on capable phones; several rooms joined into one home; rental prices; push when renders finish; web viewer for shared designs; reference images for taste; design chat ("make it cosier"); whole-home Vastu from floor plans; Vastu expert call; subscription switched on; full template sets for every space type once golden-set tests pass |
 | Later | Vastu home visit; own trained taste and ranking models; carpentry and built-ins |
 
 Nothing is picked up front: you scan whatever you want redone (a whole room, a corner, a balcony) and the app works out what it is and how much of it there is. Living rooms and bedrooms are the quality bar at launch; other spaces ship with a lighter template set, labelled as such, until golden-set tests pass. Rearrange-only mode uses the same journey with your existing items as the catalog.
