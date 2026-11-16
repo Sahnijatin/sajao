@@ -1381,6 +1381,12 @@ source = { editable = "services/spikes/twin-risk" }
 name = "sajao-workers"
 version = "0.0.0"
 source = { editable = "services/workers" }
+dependencies = [
+    { name = "sajao-gateway" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "sajao-gateway", editable = "services/gateway" }]
 
 [[package]]
 name = "six"

@@ -19,3 +19,18 @@ result = await runner.run(objects_step, {"package": frames}, {"detector": "yoloe
 - **Spend.** Each result records GPU seconds and cost, reported per run.
 
 `LocalArtifactStore` works on a local disk or a mounted Modal volume. The job table and live status for the app are part of the durable job pipeline task, built on top of this layer.
+
+## GPU models
+
+Every GPU model runs in one Modal function, `run_model` in `gpu/app.py`, capped at three containers, so the pipeline never holds more than three GPUs. Callers reach it only through the model gateway:
+
+- `sajao_workers.gpu.GpuModelProvider` is one pinned model on that function. It reserves its time limit against spend caps and charges the measured GPU seconds at the pinned price (`GPU_USD_PER_SECOND`, `INR_PER_USD`).
+- `sajao_workers.models` pins each chain, primary first: detection (YOLOE, then Grounding DINO) and masks (SAM 2.1 large, then base plus).
+- `sajao_workers.validate` checks every output against its request: same frames in order, classes from the vocabulary, boxes inside the image, one mask per box.
+
+Inputs and outputs are blobs on the `sajao-twin` volume, passed by digest.
+
+```bash
+uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/workers/gpu/app.py::smoke
+modal billing report --for today -r h --json   # billed spend per app, reported in each PR
+```
