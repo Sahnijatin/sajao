@@ -65,6 +65,22 @@ export interface ArDetectionEvent {
   }[];
 }
 
+export interface ArSurfacesEvent {
+  /** Sharpness of the camera frame; any scale, compared within a session. */
+  sharpness: number;
+  /** Where a 4 by 3 grid of rays from the camera met walls and floor. */
+  hits: {
+    kind: "wall" | "floor";
+    normalYaw: number;
+    offset: number;
+    x: number;
+    y: number;
+    z: number;
+  }[];
+  /** World height of the floor plane, once found. */
+  floorY?: number;
+}
+
 export interface ArLabelProp {
   id: string;
   text: string;
@@ -82,6 +98,7 @@ export interface SajaoArViewProps {
   onArStatus?: (event: NativeSyntheticEvent<ArStatusEvent>) => void;
   onArPose?: (event: NativeSyntheticEvent<ArPoseEvent>) => void;
   onArDetections?: (event: NativeSyntheticEvent<ArDetectionEvent>) => void;
+  onArSurfaces?: (event: NativeSyntheticEvent<ArSurfacesEvent>) => void;
   style?: StyleProp<ViewStyle>;
 }
 

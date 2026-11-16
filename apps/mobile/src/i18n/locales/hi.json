@@ -22,7 +22,7 @@
       },
       "motion": {
         "good": "स्थिर",
-        "warn": "बहुत तेज़"
+        "warn": "धीरे करें"
       },
       "level": {
         "good": "सीधा",
@@ -89,7 +89,11 @@
       "detectionsFound": "पहचान",
       "detectionsPlaced": "रखी गई पहचान",
       "detectorError": "डिटेक्टर त्रुटि",
-      "labelsRejected": "अस्वीकृत लेबल"
+      "labelsRejected": "अस्वीकृत लेबल",
+      "arTurn": "AR घुमाव डिग्री/से",
+      "walls": "दीवारें",
+      "samplesAccepted": "गिने गए नमूने",
+      "samplesRejected": "अस्वीकृत नमूने"
     },
     "labels": {
       "fridge": "फ़्रिज",

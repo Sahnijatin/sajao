@@ -22,7 +22,7 @@
       },
       "motion": {
         "good": "Steady",
-        "warn": "Moving fast"
+        "warn": "Slow down"
       },
       "level": {
         "good": "Level",
@@ -89,7 +89,11 @@
       "detectionsFound": "Detections",
       "detectionsPlaced": "Detections placed",
       "detectorError": "Detector error",
-      "labelsRejected": "Labels rejected"
+      "labelsRejected": "Labels rejected",
+      "arTurn": "AR turn deg/s",
+      "walls": "Walls",
+      "samplesAccepted": "Samples counted",
+      "samplesRejected": "Samples rejected"
     },
     "labels": {
       "fridge": "Fridge",

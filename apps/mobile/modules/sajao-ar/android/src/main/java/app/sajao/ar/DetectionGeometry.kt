@@ -95,3 +95,40 @@ object Surface {
   /** Metres from the object point to the plane behind it; never negative. */
   fun gap(objectRange: Float, planeRange: Float): Float = maxOf(0f, planeRange - objectRange)
 }
+
+/** Inputs for coverage on walls and floor; the same numbers as iOS. */
+object SurfaceSample {
+  /** Where the rays go, as normalised sensor image points: a 4 by 3 grid away from the edges. */
+  val GRID: List<Pair<Float, Float>> =
+    listOf(0.2f, 0.4f, 0.6f, 0.8f).flatMap { x -> listOf(0.25f, 0.5f, 0.75f).map { y -> x to y } }
+
+  /** A wall's facing direction in degrees about the vertical, and its distance from the origin along that normal. */
+  fun wallFrame(normal: FloatArray, point: FloatArray): Pair<Double, Double> {
+    val yaw = Math.toDegrees(kotlin.math.atan2(normal[0].toDouble(), normal[2].toDouble()))
+    val offset = normal[0] * point[0] + normal[1] * point[1] + normal[2] * point[2]
+    return yaw to offset.toDouble()
+  }
+
+  /**
+   * How sharp a camera image is: the mean squared Laplacian of the luma on a
+   * 40 by 30 grid of pixels. Motion blur flattens edges and drops it. The
+   * scale depends on the phone and the room, so the app compares a frame
+   * with the same session's recent frames, never with a fixed number.
+   */
+  fun lumaSharpness(y: ByteArray, width: Int, height: Int, rowStride: Int): Double {
+    if (width < 8 || height < 8) return 0.0
+    val columns = 40
+    val rows = 30
+    var sum = 0.0
+    for (row in 0 until rows) {
+      val py = height / 10 + (row * (height * 8 / 10)) / rows
+      for (column in 0 until columns) {
+        val px = width / 10 + (column * (width * 8 / 10)) / columns
+        fun at(x: Int, yy: Int) = (y[yy * rowStride + x].toInt() and 0xff).toDouble()
+        val laplacian = 4 * at(px, py) - at(px - 1, py) - at(px + 1, py) - at(px, py - 1) - at(px, py + 1)
+        sum += laplacian * laplacian
+      }
+    }
+    return sum / (columns * rows)
+  }
+}

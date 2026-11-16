@@ -22,6 +22,7 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   let onArStatus = EventDispatcher()
   let onArPose = EventDispatcher()
   let onArDetections = EventDispatcher()
+  let onArSurfaces = EventDispatcher()
 
   var lite = false
   var reducedMotion = false
@@ -51,6 +52,7 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   private var lastDetectionMs: Double = 0
   private var lastPointsAt: TimeInterval = 0
   private var lastBrightnessAt: TimeInterval = 0
+  private var lastSurfacesAt: TimeInterval = 0
   private var brightness: Double = 128
   private var ambientIntensity: Double = 1000
   private var featureCount = 0
@@ -200,6 +202,10 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
       lastStatusAt = now
       sendStatus(frame)
     }
+    if now - lastSurfacesAt > 0.25, case .normal = frame.camera.trackingState {
+      lastSurfacesAt = now
+      sendSurfaces(frame)
+    }
     if !lidar && now - lastPointsAt > 0.2 {
       lastPointsAt = now
       accumulatePoints(frame)
@@ -341,7 +347,7 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
 
   private static let maxRange: Float = 8
   /// Feature points within this angle of the ray belong to what it points at.
-  private static let coneTan: Float = tan(2.5 * .pi / 180)
+  private static let coneTan: Float = tanf(2.5 * Float.pi / 180)
 
   /// Where a detection is: the object's own point on the ray (scene mesh on
   /// LiDAR phones, tracked feature points elsewhere, an estimated plane as a
@@ -434,10 +440,72 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   }
 
   private static func longestSide(_ plane: ARPlaneAnchor) -> Float {
-    if #available(iOS 16.0, *) {
-      return max(plane.planeExtent.width, plane.planeExtent.height)
+    max(plane.planeExtent.width, plane.planeExtent.height)
+  }
+
+  // MARK: - Coverage on walls and floor
+
+  /// Where the rays go, as normalised sensor image points: a 4 by 3 grid away from the edges.
+  private static let surfaceGrid: [CGPoint] = [0.2, 0.4, 0.6, 0.8].flatMap { x in
+    [0.25, 0.5, 0.75].map { y in CGPoint(x: x, y: y) }
+  }
+
+  /// A 4 by 3 grid of rays from the camera into the planes found so far,
+  /// with the frame's sharpness. JavaScript decides whether the sample
+  /// counts (slow turn, sharp frame). Same as Android.
+  private func sendSurfaces(_ frame: ARFrame) {
+    let camera = CaptureCamera(frame.camera)
+    var hits: [[String: Any]] = []
+    for point in Self.surfaceGrid {
+      let ray = camera.ray(throughNormalised: point)
+      let query = ARRaycastQuery(
+        origin: ray.origin, direction: ray.direction, allowing: .existingPlaneGeometry, alignment: .any)
+      guard let hit = sceneView.session.raycast(query).first(where: { $0.anchor is ARPlaneAnchor }),
+        let plane = hit.anchor as? ARPlaneAnchor
+      else { continue }
+      let c = hit.worldTransform.columns.3
+      let kind = surfaceKind(plane, hitY: c.y, cameraY: ray.origin.y)
+      guard kind == "wall" || kind == "floor" else { continue }
+      // A plane's normal is its +Y axis.
+      let n = plane.transform.columns.1
+      let normalYaw = atan2(Double(n.x), Double(n.z)) * 180 / .pi
+      let offset = Double(n.x * c.x + n.y * c.y + n.z * c.z)
+      hits.append([
+        "kind": kind, "normalYaw": normalYaw, "offset": offset,
+        "x": Double(c.x), "y": Double(c.y), "z": Double(c.z),
+      ])
     }
-    return max(plane.extent.x, plane.extent.z)
+    var payload: [String: Any] = ["sharpness": Self.sharpness(frame.capturedImage) ?? 0, "hits": hits]
+    if let floorY { payload["floorY"] = Double(floorY) }
+    onArSurfaces(payload)
+  }
+
+  /// Mean squared Laplacian of the luma on a 40 by 30 grid of pixels: motion
+  /// blur flattens edges and drops it. Compared only with the same session's
+  /// recent frames. Same as Android's `SurfaceSample.lumaSharpness`.
+  private static func sharpness(_ buffer: CVPixelBuffer) -> Double? {
+    guard CVPixelBufferGetPlaneCount(buffer) > 0 else { return nil }
+    CVPixelBufferLockBaseAddress(buffer, .readOnly)
+    defer { CVPixelBufferUnlockBaseAddress(buffer, .readOnly) }
+    guard let base = CVPixelBufferGetBaseAddressOfPlane(buffer, 0) else { return nil }
+    let width = CVPixelBufferGetWidthOfPlane(buffer, 0)
+    let height = CVPixelBufferGetHeightOfPlane(buffer, 0)
+    let rowBytes = CVPixelBufferGetBytesPerRowOfPlane(buffer, 0)
+    guard width >= 8, height >= 8 else { return nil }
+    let bytes = base.assumingMemoryBound(to: UInt8.self)
+    func at(_ x: Int, _ y: Int) -> Double { Double(bytes[y * rowBytes + x]) }
+    let columns = 40
+    let rows = 30
+    var sum = 0.0
+    for row in 0..<rows {
+      let y = height / 10 + (row * (height * 8 / 10)) / rows
+      for column in 0..<columns {
+        let x = width / 10 + (column * (width * 8 / 10)) / columns
+        let laplacian = 4 * at(x, y) - at(x - 1, y) - at(x + 1, y) - at(x, y - 1) - at(x, y + 1)
+        sum += laplacian * laplacian
+      }
+    }
+    return sum / Double(columns * rows)
   }
 
   // MARK: - Feature points (no LiDAR)

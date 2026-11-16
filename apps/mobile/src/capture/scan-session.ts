@@ -13,6 +13,13 @@ import {
   EMPTY_COVERAGE,
   enoughCoverage,
 } from "./coverage";
+import {
+  addSurfaceSample,
+  EMPTY_SURFACE_COVERAGE,
+  type SurfaceCoverage,
+  surfaceFraction,
+  type SurfaceHit,
+} from "./ar/surface-coverage";
 import type { FeaturePoint } from "./feature-points";
 import type { FrameStats } from "./frame-stats";
 import {
@@ -66,6 +73,17 @@ export interface ScanState {
   motionMs: number | null;
   /** Frames that were good enough to use, so far. */
   usableFrames: number;
+  /**
+   * AR scan coverage on walls and floor. Used once the AR view sends its
+   * first surface sample; until then (or on an older build) coverage is by
+   * direction.
+   */
+  surfaces: SurfaceCoverage;
+  surfacesSeen: boolean;
+  /** How fast the AR camera turns, degrees per second, from AR poses. */
+  turnRate: number;
+  /** The previous AR pose, to measure the turn. */
+  lastArPose: { yaw: number; pitch: number; atMs: number } | null;
 }
 
 export const INITIAL_SCAN: ScanState = {
@@ -84,6 +102,10 @@ export const INITIAL_SCAN: ScanState = {
   clockMs: null,
   motionMs: null,
   usableFrames: 0,
+  surfaces: EMPTY_SURFACE_COVERAGE,
+  surfacesSeen: false,
+  turnRate: 0,
+  lastArPose: null,
 };
 
 export type ScanEvent =
@@ -114,6 +136,14 @@ export type ScanEvent =
       /** Feature points the tracker sees in this frame. */
       featureCount: number;
       tracking: ArTracking;
+      atMs: number;
+    }
+  | {
+      /** Where a small grid of rays from the AR camera landed on walls and floor. */
+      type: "arSurfaces";
+      sharpness: number;
+      hits: readonly SurfaceHit[];
+      floorY?: number | null;
       atMs: number;
     }
   | { type: "exposure"; isoRatio: number }
@@ -212,14 +242,42 @@ export function scanReducer(tier: "standard" | "low") {
             tracking: event.tracking,
             hasGyro: true,
             clockMs: event.atMs,
+            turnRate: turnRateAfter(state, event),
+            lastArPose: { yaw: event.yaw, pitch: event.pitch, atMs: event.atMs },
           },
           stepMs(state, event.atMs),
         );
+        // Facing a direction earns nothing by itself; coverage comes from
+        // sharp, slow frames that land on walls and floor (arSurfaces). Older
+        // builds without surface samples still count steady directions.
         const steady =
+          !state.surfacesSeen &&
           event.tracking === "normal" &&
           judged.guardrails.motion === "good" &&
           !judged.pause.paused;
         return steady ? { ...judged, coverage: addSweep(judged.coverage, event.yaw) } : judged;
+      }
+      case "arSurfaces": {
+        // Nothing counts while paused; what was mapped stays.
+        if (state.pause.paused) return { ...state, surfacesSeen: true };
+        const sample = { sharpness: event.sharpness, hits: event.hits, floorY: event.floorY };
+        const surfaces = addSurfaceSample(
+          state.surfaces,
+          sample,
+          state.turnRate,
+          state.tracking === "normal",
+        );
+        const accepted = surfaces.accepted > state.surfaces.accepted;
+        return {
+          ...state,
+          surfaces,
+          surfacesSeen: true,
+          // The mini-map shows the directions of accepted samples only.
+          coverage: accepted
+            ? addFrame(state.coverage, state.pose.yaw, state.frame?.featureCount ?? 0)
+            : state.coverage,
+          usableFrames: state.usableFrames + (accepted ? 1 : 0),
+        };
       }
       case "arFrame": {
         const stats = { brightness: event.brightness, glare: 0, sharpness: 0 };
@@ -237,7 +295,11 @@ export function scanReducer(tier: "standard" | "low") {
           },
           stepMs(state, event.atMs),
         );
-        if (event.tracking !== "normal" || !shouldUseFrame(judged.pause, judged.guardrails)) {
+        if (
+          state.surfacesSeen ||
+          event.tracking !== "normal" ||
+          !shouldUseFrame(judged.pause, judged.guardrails)
+        ) {
           return judged;
         }
         return {
@@ -280,15 +342,36 @@ export function scanReducer(tier: "standard" | "low") {
   };
 }
 
+/** Weight of a new turn reading against the running value. */
+const TURN_SMOOTHING = 0.5;
+
+/** Turn rate after a new AR pose: the angle between poses over the time between them. */
+function turnRateAfter(state: ScanState, pose: { yaw: number; pitch: number; atMs: number }) {
+  const last = state.lastArPose;
+  if (!last) return 0;
+  const dtSeconds = (pose.atMs - last.atMs) / 1000;
+  // A long gap (app in background) says nothing about turning.
+  if (dtSeconds <= 0 || dtSeconds > 1) return state.turnRate;
+  const turned = Math.hypot(wrapDegrees(pose.yaw - last.yaw), pose.pitch - last.pitch);
+  return state.turnRate + (turned / dtSeconds - state.turnRate) * TURN_SMOOTHING;
+}
+
 /** Steady frames needed before Done, on top of coverage. */
 export const MIN_USABLE_FRAMES = 15;
+/** Done is offered at this share of walls and floor: a corner, two walls and some floor. */
+export const SURFACE_DONE_SHARE = 0.45;
 
 /** Enough has been mapped for "Done" to make sense. */
 export function canFinish(state: ScanState): boolean {
-  return enoughCoverage(state.coverage, state.hasGyro) && state.usableFrames >= MIN_USABLE_FRAMES;
+  const covered = state.surfacesSeen
+    ? surfaceFraction(state.surfaces) >= SURFACE_DONE_SHARE
+    : enoughCoverage(state.coverage, state.hasGyro);
+  return covered && state.usableFrames >= MIN_USABLE_FRAMES;
 }
 
 /** 0 to 1, shown as the share mapped. */
 export function mappedShare(state: ScanState): number {
-  return coverageFraction(state.coverage, state.hasGyro);
+  return state.surfacesSeen
+    ? surfaceFraction(state.surfaces)
+    : coverageFraction(state.coverage, state.hasGyro);
 }

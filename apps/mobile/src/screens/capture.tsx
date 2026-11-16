@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCameraPermission } from "react-native-vision-camera";
 import { getArCapabilities, getArView } from "../../modules/sajao-ar";
 import { shownLabels } from "@/capture/ar/labels";
+import { shouldSlowDown } from "@/capture/ar/surface-coverage";
 import { mappedSectors } from "@/capture/coverage";
 import { DebugOverlay } from "@/capture/debug-overlay";
 import type { GuardrailId, GuardrailStatus } from "@/capture/guardrails";
@@ -121,6 +122,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
     onArStatus,
     onArPose,
     onArDetections,
+    onArSurfaces,
     scanAnyway,
   } = useScanSession(permission.hasPermission);
   // AR-anchored scan where the phone supports it; otherwise the 2D scan.
@@ -157,6 +159,10 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
   const reason = state.pause.reason;
   // Glare has no chip of its own until it is a problem.
   const chips = state.guardrails.glare === "warn" ? [...CHIPS, "glare" as const] : CHIPS;
+  // AR scan: frames rejected for turning fast or blur also ask you to slow down.
+  const slowDown = state.surfacesSeen && shouldSlowDown(state.surfaces);
+  const chipStatus = (id: GuardrailId): GuardrailStatus =>
+    id === "motion" && slowDown ? "warn" : state.guardrails[id];
 
   if (!permission.hasPermission) {
     return (
@@ -200,6 +206,13 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
             else onArStatus(nativeEvent);
           }}
           onArPose={({ nativeEvent }) => onArPose(nativeEvent)}
+          onArSurfaces={({ nativeEvent }) =>
+            onArSurfaces({
+              sharpness: nativeEvent.sharpness,
+              hits: nativeEvent.hits ?? [],
+              floorY: nativeEvent.floorY ?? null,
+            })
+          }
           onArDetections={({ nativeEvent }) =>
             onArDetections(
               (nativeEvent.detections ?? []).map((detection) => ({
@@ -284,7 +297,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
           }}
         >
           {chips.map((id) => (
-            <StatusChip key={id} id={id} status={state.guardrails[id]} />
+            <StatusChip key={id} id={id} status={chipStatus(id)} />
           ))}
         </View>
         <View
