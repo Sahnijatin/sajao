@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import os
 import sys
 from collections import Counter
@@ -26,11 +27,21 @@ from sajao_dataset.licenses import (
 from sajao_dataset.manifest import append_records, read_manifest
 from sajao_dataset.prefilter import decide, read_decisions, write_decisions
 from sajao_dataset.queries import ALL_QUERIES, QUERY_SET, category_of
+from sajao_dataset.screen import (
+    MAX_WINDOW_S,
+    kept_segments,
+    plan_screening,
+    read_screening,
+    run_screening,
+    write_segments,
+)
 from sajao_dataset.youtube import DataApiSearch, Search, YtDlpSearch, find
 
 DEFAULT_MANIFEST = Path("data/sources.jsonl")
 DEFAULT_PREFILTER = Path("data/prefilter.jsonl")
 DEFAULT_LICENSES = Path("data/licenses.jsonl")
+DEFAULT_SCREENING = Path("data/screening.jsonl")
+DEFAULT_SEGMENTS = Path("data/segments.jsonl")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -52,6 +63,16 @@ def main(argv: list[str] | None = None) -> int:
     pre_cmd = commands.add_parser("prefilter", help="Drop builder and designer promos")
     pre_cmd.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     pre_cmd.add_argument("--out", type=Path, default=DEFAULT_PREFILTER)
+
+    sc_cmd = commands.add_parser("screen", help="Screen videos with Gemini on Vertex AI")
+    sc_cmd.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
+    sc_cmd.add_argument("--prefilter", type=Path, default=DEFAULT_PREFILTER)
+    sc_cmd.add_argument("--licenses", type=Path, default=DEFAULT_LICENSES)
+    sc_cmd.add_argument("--ledger", type=Path, default=DEFAULT_SCREENING)
+    sc_cmd.add_argument("--segments", type=Path, default=DEFAULT_SEGMENTS)
+    sc_cmd.add_argument("--limit", type=int, default=50, help="Videos to screen this run")
+    sc_cmd.add_argument("--cap-inr", type=float, default=500, help="Run spend cap in rupees")
+    sc_cmd.add_argument("--concurrency", type=int, default=2)
 
     dl_cmd = commands.add_parser("download", help="Download kept segments (run on the PC)")
     dl_cmd.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
@@ -87,6 +108,8 @@ def main(argv: list[str] | None = None) -> int:
         return _prefilter(args)
     if args.command == "licenses":
         return _licenses(args)
+    if args.command == "screen":
+        return _screen(args)
     return 2
 
 
@@ -140,6 +163,36 @@ def _prefilter(args: argparse.Namespace) -> int:
     reasons = Counter(d.reason for d in decisions if not d.keep)
     print(f"{len(kept)} of {len(records)} kept; dropped by reason: {dict(reasons.most_common())}")
     print(f"kept by license: {dict(Counter(r.license for r in kept))}")
+    return 0
+
+
+def _screen(args: argparse.Namespace) -> int:
+    project = os.environ.get("GCP_PROJECT_ID")
+    if not project:
+        sys.exit("Set GCP_PROJECT_ID (and GCP_SA_KEY, or sign in with gcloud ADC).")
+    sources = apply_licenses(read_manifest(args.manifest), read_licenses(args.licenses))
+    todo = plan_screening(
+        sources, read_decisions(args.prefilter), read_screening(args.ledger), limit=args.limit
+    )
+    result = asyncio.run(
+        run_screening(
+            todo,
+            project=project,
+            ledger_path=args.ledger,
+            cap_inr=args.cap_inr,
+            call_log_path=args.ledger.parent / "screen_calls.jsonl",
+            concurrency=args.concurrency,
+        )
+    )
+    s = result.summary
+    written = write_segments(args.segments, kept_segments(sources, read_screening(args.ledger)))
+    print(
+        f"{len(todo)} planned (first {MAX_WINDOW_S // 60} min each): {s.kept} kept, "
+        f"{s.skipped} skipped, {s.failed} failed; answered by {s.by_model}; "
+        f"billed Rs {result.billed_inr:.2f} of the Rs {args.cap_inr:g} cap"
+        + (" (stopped at the cap)" if s.stopped_at_cap else "")
+    )
+    print(f"{written} segments in {args.segments}. Ledger: {args.ledger}")
     return 0
 
 

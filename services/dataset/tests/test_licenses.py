@@ -116,7 +116,7 @@ def test_data_api_videos_never_puts_the_key_in_errors() -> None:
 def test_priority_queries_come_first_and_map_to_their_category() -> None:
     assert ALL_QUERIES[: len(PRIORITY_QUERIES)] == PRIORITY_QUERIES
     assert len(set(ALL_QUERIES)) == len(ALL_QUERIES)
-    assert category_of("empty flat tour") == "empty_new_build"
+    assert category_of("empty flat tour india") == "empty_new_build"
     assert category_of("indian home tour") == "general"
 
 
