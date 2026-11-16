@@ -17,6 +17,8 @@ export async function startCaptureUpload(
   local: LocalCapture,
   device: CaptureDeviceInfo,
 ): Promise<void> {
+  useCaptureStore.getState().setDevice(device);
+  let videoSkipped = false;
   const config = configResult.ok ? configResult.config : null;
   if (!config?.apiUrl || !config.supabase) {
     setStatus({ state: "waiting", finished: 0, total: 0 });
@@ -51,6 +53,9 @@ export async function startCaptureUpload(
       writeText: async (name, text) => writeCacheText(name, text),
       done: finishedUploads,
       onProgress: (finished, total) => setStatus({ state: "uploading", finished, total }),
+      onVideoSkipped: () => {
+        videoSkipped = true;
+      },
       async register(body) {
         const { response } = await client.POST("/v1/captures", {
           body,
@@ -61,7 +66,7 @@ export async function startCaptureUpload(
       },
       mediaId: (captureId) => mediaIdFor(captureId, uuidV4),
     });
-    setStatus({ state: "done", finished: 1, total: 1 });
+    setStatus({ state: "done", finished: 1, total: 1, ...(videoSkipped ? { videoSkipped } : {}) });
   } catch (error) {
     setStatus({
       state: "failed",

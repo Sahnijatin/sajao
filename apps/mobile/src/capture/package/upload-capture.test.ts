@@ -148,3 +148,32 @@ describe("capture upload", () => {
     expect(uuidV4()).not.toBe(uuidV4());
   });
 });
+
+describe("a video over the server's limit", () => {
+  it("is left out and the rest of the scan still registers", async () => {
+    const { FileTooLargeError } = jest.requireActual("@/uploads/resumable-upload");
+    const { value, registered } = deps();
+    let skipped = 0;
+    const tooLarge: CaptureUploadDeps = {
+      ...value,
+      async uploadFile(file) {
+        if (file.kind === "video") throw new FileTooLargeError();
+        return value.uploadFile(file);
+      },
+      onVideoSkipped: () => {
+        skipped += 1;
+      },
+    };
+    const result = await uploadAndRegister(scan(), DEVICE, tooLarge);
+    expect(skipped).toBe(1);
+    expect(result.video).toBeUndefined();
+    expect(result.keyframes).toHaveLength(2);
+    expect(registered).toHaveLength(1);
+  });
+
+  it("any other failure of the video still stops the upload so it can resume", async () => {
+    const { value, registered } = deps("video");
+    await expect(uploadAndRegister(scan(), DEVICE, value)).rejects.toThrow("connection lost");
+    expect(registered).toHaveLength(0);
+  });
+});
