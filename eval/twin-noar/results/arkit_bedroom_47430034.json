@@ -1,0 +1,69 @@
+{
+ "poses_mapanything_apache": {
+  "model": "mapanything_apache",
+  "seconds": 25.6,
+  "views": 120
+ },
+ "scene": "arkit_bedroom_47430034",
+ "score_mapanything_apache": {
+  "ar_poses": null,
+  "ar_translation": {
+   "metrics_seen": null,
+   "pose": {
+    "centre_rmse_cm": 74.4,
+    "rotation_median_deg": 8.13
+   },
+   "scale": 0.6945,
+   "scale_error_pct": 0.0
+  },
+  "method": "mapanything_apache",
+  "model": {
+   "metrics_seen": null,
+   "pose": {
+    "centre_rmse_cm": 85.6,
+    "rotation_median_deg": 8.13
+   },
+   "scale": 1.0,
+   "scale_error_pct": 44.0
+  },
+  "moge3": {
+   "metrics_seen": null,
+   "pose": {
+    "centre_rmse_cm": 78.0,
+    "rotation_median_deg": 8.13
+   },
+   "scale": 0.8648,
+   "scale_error_pct": 24.5
+  },
+  "scene": "arkit_bedroom_47430034",
+  "tape": {
+   "metrics_seen": null,
+   "pose": {
+    "centre_rmse_cm": 78.0,
+    "rotation_median_deg": 8.13
+   },
+   "scale": 0.8648,
+   "scale_error_pct": 24.5
+  },
+  "true_scale": 0.6945,
+  "views": 120
+ },
+ "splat_ar": {
+  "gaussians": 4362631,
+  "gpu": "NVIDIA L40S",
+  "poses": "ar",
+  "psnr_heldout": 20.2,
+  "psnr_heldout_raw": 13.67,
+  "scene": "arkit_bedroom_47430034",
+  "train_seconds": 726.4
+ },
+ "splat_mapanything_apache_moge3": {
+  "gaussians": 2719260,
+  "gpu": "NVIDIA L40S",
+  "poses": "mapanything_apache_moge3",
+  "psnr_heldout": 15.82,
+  "psnr_heldout_raw": 11.0,
+  "scene": "arkit_bedroom_47430034",
+  "train_seconds": 473.7
+ }
+}
