@@ -19,6 +19,11 @@ class FakeProvider:
     modalities: frozenset[Modality] = frozenset({"text", "vision", "image"})
     max_concurrency: int = 4
     estimated_cost_micro_inr: int = 1_000
+    # Optional per-provider limits the gateway honours over its retry policy.
+    timeout_seconds: float | None = None
+    max_attempts: int | None = None
+    # Seconds each call takes, to test timeouts with real time.
+    delay: float = 0.0
     # When set, each call waits here, so tests can hold calls in flight.
     hold: asyncio.Event | None = None
     calls: list[ModelRequest] = field(default_factory=list)
@@ -36,6 +41,8 @@ class FakeProvider:
         try:
             if self.hold is not None:
                 await self.hold.wait()
+            if self.delay:
+                await asyncio.sleep(self.delay)
             if isinstance(step, Exception):
                 raise step
             return step

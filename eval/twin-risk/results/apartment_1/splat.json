@@ -1,0 +1,13 @@
+{
+  "scene": "apartment_1",
+  "train_views": 140,
+  "test_views": 20,
+  "init_points": 166640,
+  "gaussians": 1098597,
+  "steps": 15000,
+  "train_seconds": 241.7,
+  "scene_scale": 0.9351016879081726,
+  "psnr": 37.48294639587402,
+  "ssim": 0.982436728477478,
+  "views": 20
+}

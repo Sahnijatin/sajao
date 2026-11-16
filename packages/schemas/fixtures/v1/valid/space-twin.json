@@ -330,5 +330,21 @@
   "splat": {
     "key": "twins/a1/splat/room.spz",
     "format": "spz"
-  }
+  },
+  "phone_splats": [
+    {
+      "key": "twins/t1/v1/phone_500k.sog",
+      "format": "sog",
+      "tier": "capable",
+      "gaussians": 500000,
+      "bytes": 5971379
+    },
+    {
+      "key": "twins/t1/v1/phone_250k.sog",
+      "format": "sog",
+      "tier": "budget",
+      "gaussians": 250000,
+      "bytes": 3021338
+    }
+  ]
 }

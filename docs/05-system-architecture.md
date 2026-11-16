@@ -50,4 +50,4 @@ flowchart LR
 
 ## Job pipeline
 
-A room is a job of steps. Each step stores its result, retries safely with an idempotency key and resumes where it stopped. A failed render retries only the render and never charges twice. Status reaches the app through Realtime with a polling fallback, and a push notification when renders finish.
+A room is a job of steps. Each step stores its result, retries safely with an idempotency key and resumes where it stopped. A failed render retries only the render and never charges twice. Status reaches the app through Realtime with a polling fallback. A push notification when renders finish comes after launch.
