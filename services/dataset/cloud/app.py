@@ -37,6 +37,7 @@ APP_NAME = "sajao-dataset-cloud"
 # estimate uses the top of that range plus 20 percent for pages, player and retries.
 MAX_HEIGHT = 720
 BYTES_PER_S = 2.5e6 / 8 * 1.2
+FORWARDER = "http://127.0.0.1:8899"
 
 volume = modal.Volume.from_name("sajao-dataset", create_if_missing=True)
 image = (
@@ -48,6 +49,7 @@ image = (
         "httpx==0.28.1",
         "numpy==2.5.5",
         "opencv-python-headless==5.0.0.93",
+        "pproxy==2.7.9",
     )
     .add_local_dir(
         PACKAGE,
@@ -70,6 +72,40 @@ def received_bytes() -> int:
     return total
 
 
+def start_forwarder(proxy: str) -> Any:
+    """A local, credential-free proxy for ffmpeg that forwards to the sticky proxy.
+
+    ffmpeg cannot open HTTPS through an authenticated proxy, so it talks to this
+    forwarder on localhost instead. Credentials go to pproxy as `host:port#user:pass`.
+    """
+    import subprocess
+    import urllib.request
+    from urllib.parse import unquote, urlsplit
+
+    parts = urlsplit(proxy)
+    remote = (
+        f"http://{parts.hostname}:{parts.port}"
+        f"#{unquote(parts.username or '')}:{unquote(parts.password or '')}"
+    )
+    process = subprocess.Popen(  # noqa: S603  fixed arguments, no shell
+        ["pproxy", "-l", FORWARDER, "-r", remote],  # noqa: S607  installed in the image
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    opener = urllib.request.build_opener(
+        urllib.request.ProxyHandler({"http": FORWARDER, "https": FORWARDER})
+    )
+    for _ in range(30):
+        time.sleep(1)
+        try:
+            opener.open("https://ipinfo.io/json", timeout=10).read()
+            return process
+        except OSError:
+            continue
+    process.kill()
+    raise RuntimeError("the local proxy forwarder did not start")
+
+
 def proxy_country(proxy: str) -> str:
     """Country of the proxy's exit address (a few KB through the proxy)."""
     import httpx
@@ -89,7 +125,10 @@ def proxy_country(proxy: str) -> str:
     timeout=6 * 3600,
 )
 def download_and_sample(
-    segments: list[dict[str, Any]], max_gb: float, pause_s: float = 5.0
+    segments: list[dict[str, Any]],
+    max_gb: float,
+    pause_s: float = 5.0,
+    require_country: str = "IN",
 ) -> dict[str, Any]:
     from sajao_dataset.download import Segment, download_all, read_ledger, ytdlp_fetch
     from sajao_dataset.frames import fetch_yunet, sample_all, yunet_faces
@@ -98,12 +137,20 @@ def download_and_sample(
     started = time.time()
     start_rx = received_bytes()
     country = proxy_country(proxy)
+    if require_country and country != require_country:
+        # Spend no proxy data from the wrong place.
+        return {
+            "proxy_country": country,
+            "refused": f"proxy exits in {country}, not {require_country}",
+            "proxy_bytes_received": received_bytes() - start_rx,
+        }
+    forwarder = start_forwarder(proxy)
 
     summary = download_all(
         [Segment.model_validate(s) for s in segments],
         clips_dir=DATA / "clips",
         ledger_path=DATA / "downloads.jsonl",
-        fetch=ytdlp_fetch(max_height=MAX_HEIGHT, proxy=proxy),
+        fetch=ytdlp_fetch(max_height=MAX_HEIGHT, proxy=proxy, ffmpeg_proxy=FORWARDER),
         max_height=MAX_HEIGHT,
         pause_s=pause_s,
         max_bytes=int(max_gb * 1e9),
@@ -112,6 +159,7 @@ def download_and_sample(
         secrets=(proxy,),
     )
     proxy_bytes = received_bytes() - start_rx
+    forwarder.kill()
     volume.commit()
     download_s = time.time() - started
 
@@ -160,6 +208,7 @@ def main(
     max_minutes_per_video: float = 0.0,
     data: str = "services/dataset/data",
     pause_s: float = 5.0,
+    require_country: str = "IN",
 ) -> None:
     from sajao_dataset.download import Segment, plan_screened_segments
     from sajao_dataset.licenses import apply_licenses, read_licenses
@@ -182,7 +231,10 @@ def main(
     print(f"{len(plan)} segments from {len(videos)} videos, {minutes:.1f} min, cap {max_gb} GB")
 
     result = download_and_sample.remote(
-        [s.model_dump() for s in plan], max_gb=max_gb, pause_s=pause_s
+        [s.model_dump() for s in plan],
+        max_gb=max_gb,
+        pause_s=pause_s,
+        require_country=require_country,
     )
     result["videos"] = videos
     result["segment_minutes"] = round(minutes, 1)

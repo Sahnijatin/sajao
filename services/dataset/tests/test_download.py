@@ -208,6 +208,12 @@ def test_ytdlp_options_route_through_the_proxy_only_when_given(tmp_path: Path) -
     assert "proxy" not in ytdlp_options(seg(), tmp_path / "x", max_height=720)
     options = ytdlp_options(seg(), tmp_path / "x", max_height=720, proxy=PROXY)
     assert options["proxy"] == PROXY
+    assert "external_downloader_args" not in options
+    local = "http://127.0.0.1:8899"
+    forwarded = ytdlp_options(
+        seg(), tmp_path / "x", max_height=720, proxy=PROXY, ffmpeg_proxy=local
+    )
+    assert forwarded["external_downloader_args"] == {"ffmpeg_i": ["-http_proxy", local]}
     assert "height<=720" in options["format"]
 
 

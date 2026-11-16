@@ -136,6 +136,7 @@ def ytdlp_options(
     cookies_from_browser: str | None = None,
     ffmpeg_location: str | None = None,
     proxy: str | None = None,
+    ffmpeg_proxy: str | None = None,
 ) -> dict[str, Any]:
     from yt_dlp.utils import download_range_func
 
@@ -160,6 +161,11 @@ def ytdlp_options(
         # yt-dlp also hands the proxy to ffmpeg for range downloads, so the page,
         # the player and the media all leave from the same (sticky) address.
         options["proxy"] = proxy
+    if ffmpeg_proxy:
+        # ffmpeg cannot open HTTPS through an authenticated proxy (it fails with
+        # "End of file"), so range downloads go through a local forwarder that
+        # holds the credentials and exits from the same sticky address.
+        options["external_downloader_args"] = {"ffmpeg_i": ["-http_proxy", ffmpeg_proxy]}
     return options
 
 
@@ -173,6 +179,7 @@ def ytdlp_fetch(
     cookies_from_browser: str | None = None,
     ffmpeg_location: str | None = None,
     proxy: str | None = None,
+    ffmpeg_proxy: str | None = None,
 ) -> Fetch:
     def fetch(segment: Segment, tmp_stem: Path) -> Path:
         import yt_dlp
@@ -184,6 +191,7 @@ def ytdlp_fetch(
             cookies_from_browser=cookies_from_browser,
             ffmpeg_location=ffmpeg_location,
             proxy=proxy,
+            ffmpeg_proxy=ffmpeg_proxy,
         )
         url = f"https://www.youtube.com/watch?v={segment.video_id}"
         with yt_dlp.YoutubeDL(options) as ydl:

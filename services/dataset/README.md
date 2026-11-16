@@ -80,7 +80,7 @@ uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/dataset/cloud
 - **Room segments only**, from screening: Creative Commons videos first, then the priority category. Unavailable videos are skipped.
 - **720p, video only.**
 - **GB cap per run** (`--max-gb`). The job counts the bytes the container receives while downloading (all of it through the proxy) and starts no segment whose estimate (2.5 Mbps plus 20 percent) would pass the cap.
-- **Proxy.** The Modal secret `dataset-proxy` holds `YTDLP_PROXY_URL` (Decodo, India, sticky session). The URL is never printed or logged, and is redacted from error text before it reaches the ledger. Each run reports the exit country.
+- **Proxy.** The Modal secret `dataset-proxy` holds `YTDLP_PROXY_URL` (Decodo, India, sticky session). The URL is never printed or logged, and is redacted from error text before it reaches the ledger. The job checks the exit country first and downloads nothing unless it is India (`--require-country`). ffmpeg cannot open HTTPS through an authenticated proxy, so it goes through a local forwarder (pproxy) inside the container that holds the credentials.
 - **Outputs** on the Modal volume `sajao-dataset`: `clips/`, `frames/`, `downloads.jsonl`, `frames.jsonl`, `frames_done.jsonl`. Reruns skip finished clips and frames. Each run's report is appended to `data/cloud_runs.jsonl` locally; log its proxy GB and spend in Notion Spends.
 
 ## 3. Download kept segments (home PC)
