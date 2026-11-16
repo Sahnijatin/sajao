@@ -27,8 +27,8 @@ On mobile the tokens live in one theme package. Springs use Reanimated with the 
 
 | Moment | iOS | Android |
 | --- | --- | --- |
-| Corner captured | Light tick | Short tick |
-| Level reached (line turns green) | Selection tick | Short tick |
+| Corner captured; scan coverage passes another tenth | Light tick | Short tick |
+| Level reached (line turns green); Done becomes ready on the scan | Selection tick | Short tick |
 | Room verified | Success pattern | Double tick |
 | A new room lands on My home | Soft impact | Short tick |
 | Furniture snaps to a wall | Medium impact | Short tick |
@@ -43,7 +43,7 @@ Android motors vary widely, so patterns stay simple there. Haptics respect syste
 
 | Moment | What you see | Low-end fallback |
 | --- | --- | --- |
-| Scan mesh | A glowing mesh spreads over what the camera has mapped, with a white sweep at its edge; corners tick | Dots and edges |
+| Calm scan | One thin ring fills as the room is covered; a soft tick at every tenth; Done appears inside the ring. The scan mesh is no longer shown while scanning: it is a brief "we got your room" glimpse on the review screen | Same |
 | Tape lock | An animated tape stretches along the wall; dimensions snap in; Verified | Same |
 | Plan draws itself | Floor plan drawn line by line, measurements tick in | Same |
 | Room rises | Walls lift from the plan; camera eases into a dollhouse orbit | Cross-fade |

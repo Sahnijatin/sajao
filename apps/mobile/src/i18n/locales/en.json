@@ -24,7 +24,6 @@
     }
   },
   "capture": {
-    "title": "Mapping your space",
     "close": "Close",
     "torch": "Torch",
     "chips": {
@@ -45,29 +44,8 @@
         "warn": "Glare"
       }
     },
-    "guideTitle": "Cover what you want to change",
-    "guideBody": "A whole room, one corner or the balcony. Tap Done once it's all in.",
     "usePhotos": "Use photos",
     "done": "Done",
-    "pausedTitle": "Paused, nothing lost",
-    "fix": {
-      "light": {
-        "title": "A little more light",
-        "body": "Switch on a lamp or open the curtains, then move slowly. We keep everything mapped so far.",
-        "fixed": "I've turned it on"
-      },
-      "motion": {
-        "title": "A little slower",
-        "body": "Pan slowly and hold the phone steady. We keep everything mapped so far.",
-        "fixed": "I'll go slower"
-      },
-      "glare": {
-        "title": "Too much glare",
-        "body": "Point away from mirrors, windows and bare bulbs, or change your angle. We keep everything mapped so far.",
-        "fixed": "I've moved"
-      }
-    },
-    "scanAnyway": "Scan anyway",
     "permissionTitle": "Sajao needs your camera",
     "permissionBody": "The camera is used only to scan the space you want redone.",
     "permissionAllow": "Allow camera",
@@ -130,15 +108,23 @@
       "chair": "Chair",
       "microwave": "Microwave"
     },
-    "hints": {
-      "doorway": "Finish this space first, then scan the next one",
-      "stepBack": "Step back to fit it all in",
+    "guide": {
+      "move": "Move slowly around the room",
+      "corners": "Get the corners",
+      "slowDown": "A little slower",
+      "stepBack": "Step back a little",
       "walkAround": "Walk around the {{object}}",
-      "coverMore": "Done is ready. Cover a bit more for the best result",
-      "slowDown": "Slow down a little",
-      "walk": "Walk around the space as you scan",
-      "complete": "All covered. Tap Done"
-    }
+      "walk": "Walk around as you go",
+      "doorway": "Stay in this room for now",
+      "almost": "Looking good. Keep going, or tap Done",
+      "complete": "That's everything. Tap Done",
+      "dark": "It's a bit dark. Switch on a light",
+      "fast": "Hold steady and go slower",
+      "glare": "Point away from the bright light"
+    },
+    "keepGoing": "Keep going",
+    "torchOn": "Use the torch",
+    "progress": "Scanning your room"
   },
   "space": {
     "found": "We found",
