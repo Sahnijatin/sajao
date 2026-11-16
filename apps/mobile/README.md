@@ -14,6 +14,7 @@ The Sajao app shell: Expo with Expo Router, four native tabs, English and Hindi,
 | `src/taste` | Taste onboarding: adaptive swipes, the card deck and the onboarding flow. |
 | `src/i18n` | String catalogs (`locales/en.json`, `locales/hi.json`) and language choice. |
 | `src/state` | On-device settings (language, units), saved across launches. |
+| `src/uploads` | Photo resizing and resumable uploads through signed URLs. |
 | `src/utils` | Length and INR formatting. |
 
 ## Rules for screens

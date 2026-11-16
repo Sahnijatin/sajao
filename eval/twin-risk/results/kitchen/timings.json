@@ -1,0 +1,27 @@
+{
+  "prep": {
+    "seconds": 304.12,
+    "gpu": "cpu",
+    "device": "cpu"
+  },
+  "splat_train": {
+    "seconds": 502.62,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "segment_gdino": {
+    "seconds": 108.95,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "segment_yoloe": {
+    "seconds": 44.14,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "phone_export": {
+    "seconds": 25.25,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  }
+}
