@@ -1,0 +1,84 @@
+{
+ "gate": {
+  "triposg": {
+   "counts": {
+    "sofa": {
+     "listings": 18,
+     "unverifiable": 15,
+     "verifiable": 3
+    },
+    "bed": {
+     "listings": 15,
+     "unverifiable": 11,
+     "implausible_listing_dims": 1,
+     "verifiable": 3
+    },
+    "almirah": {
+     "listings": 15,
+     "verifiable": 4,
+     "unverifiable": 7,
+     "implausible_listing_dims": 4
+    },
+    "table": {
+     "listings": 18,
+     "verifiable": 10,
+     "unverifiable": 8
+    },
+    "chair": {
+     "listings": 19,
+     "unverifiable": 13,
+     "verifiable": 5,
+     "no_clean_photo": 1
+    },
+    "lamp": {
+     "listings": 14,
+     "no_clean_photo": 6,
+     "implausible_listing_dims": 1,
+     "unverifiable": 7
+    },
+    "tv_unit": {
+     "listings": 6,
+     "unverifiable": 3,
+     "verifiable": 3
+    },
+    "shelf": {
+     "listings": 6,
+     "unverifiable": 3,
+     "verifiable": 3
+    }
+   },
+   "verifiable_skus": 31,
+   "thresholds": {
+    "iou": 0.7,
+    "de": 10.0,
+    "emb": 0.475
+   },
+   "wrong_sku_pass_rate": 0.03225806451612903,
+   "pass_rate_calibration_half": 0.5625,
+   "pass_rate_held_out_half": 0.4,
+   "pass_rate_all_verifiable": 0.4838709677419355,
+   "by_category": {
+    "almirah": 0.0,
+    "bed": 0.6666666666666666,
+    "chair": 0.6,
+    "shelf": 0.3333333333333333,
+    "sofa": 1.0,
+    "table": 0.4,
+    "tv_unit": 0.6666666666666666
+   },
+   "median_view": {
+    "iou": 0.8215019497672859,
+    "de": 2.4909048364315165,
+    "emb": 0.7250964641571045
+   }
+  },
+  "trellis2": {},
+  "sam3d": {}
+ },
+ "checks": {
+  "qwen": {},
+  "flux2k": {},
+  "gemini": {}
+ },
+ "planted": {}
+}
