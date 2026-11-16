@@ -1,0 +1,862 @@
+[
+ {
+  "id": "ikea_10615526",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 23.4,
+  "faces": 299999,
+  "textured": false
+ },
+ {
+  "id": "ikea_s39620339",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 21.7,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s49482832",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 21.1,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s69615336",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 17.7,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s39270312",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 25.3,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_20619072",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 21.7,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s69449691",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 31.2,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_40551226",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 22.8,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_50646413",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 28.0,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_henry-l-shape-right-arm-corner-sofa-indigo-blue",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 23.7,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 23.2,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_60458755",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 20.1,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s39581837",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 37.8,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_30504631",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 23.4,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_40573681",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 23.9,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s69200643",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 38.7,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s89198465",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 27.1,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s29308527",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 28.0,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_50579055",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 27.9,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_lotus-premium-ash-wood-bed-with-brass-inlay-queen-size-teak-",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 28.0,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_30437241",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 23.3,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s39551722",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 46.3,
+  "faces": 299999,
+  "textured": false
+ },
+ {
+  "id": "ikea_40456917",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 20.7,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s89500966",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 38.1,
+  "faces": 299999,
+  "textured": false
+ },
+ {
+  "id": "ikea_s99502371",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 59.2,
+  "faces": 299999,
+  "textured": false
+ },
+ {
+  "id": "ikea_s79561309",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 36.6,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s89432369",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 41.1,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s09432306",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 40.7,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_emboss-1-door-multi-utility-wardrobe-honey-finish",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 15.8,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_citroen-1-door-multi-utility-wardrobe-walnut-finish",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 14.3,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_holden-1-door-multi-utility-wardrobe-walnut-finish",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 13.7,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_cambrey-1-door-with-3-drawers-wardrobe-walnut-finish",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 14.8,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_adolph-wardrobe-honey-finish",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 19.5,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_charles-2-door-multi-utility-wardrobe-walnut-finish",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 20.1,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_20352987",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 21.5,
+  "faces": 299999,
+  "textured": false
+ },
+ {
+  "id": "ikea_20500407",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 27.5,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_10604349",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 26.0,
+  "faces": 299999,
+  "textured": false
+ },
+ {
+  "id": "ikea_10500356",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 50.1,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_00411997",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 20.6,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_30651392",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 23.0,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_00586553",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 33.2,
+  "faces": 299999,
+  "textured": false
+ },
+ {
+  "id": "ikea_80576319",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 23.8,
+  "faces": 299999,
+  "textured": false
+ },
+ {
+  "id": "ikea_50497583",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 37.7,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_adolph-bedside-table-honey-finish",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 46.6,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_morse-bedside-table-honey-finish",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 44.7,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_ferguson-bedside-table-walnut-finish",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 56.0,
+  "faces": 299999,
+  "textured": false
+ },
+ {
+  "id": "ws_allan-bedside-honey-finish",
+  "model": "triposg",
+  "input_view": 2,
+  "seconds": 39.9,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_denzel-bedside-table-walnut-finish",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 51.9,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_florian-bedside-table-honey-finish",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 36.5,
+  "faces": 299999,
+  "textured": false
+ },
+ {
+  "id": "ws_bryson-bedside-table-walnut-finish",
+  "model": "triposg",
+  "input_view": 2,
+  "seconds": 37.0,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_swirl-bedside-table",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 28.3,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_orwell-round-coffee-table-honey-finish",
+  "model": "triposg",
+  "input_view": 2,
+  "seconds": 42.7,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_70533491",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 36.8,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_80581919",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 46.5,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s19625328",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 30.4,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_10535544",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 40.3,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_30492317",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 38.5,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s39626280",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 47.5,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_90581914",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 38.2,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_70535895",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 27.9,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s99628653",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 71.6,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_udaya-sheesham-wood-arm-chair-green-stripe-teak-finish",
+  "skipped": "no clean view"
+ },
+ {
+  "id": "ws_kelvin-arm-chair-with-cane-cream-robins",
+  "model": "triposg",
+  "input_view": 5,
+  "seconds": 24.6,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_danon-lounge-chair-blue-stripe",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 32.6,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_thrace-lounge-chair-salmon-pink",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 33.1,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_crisper-lounge-chair-cotton-grey-robins",
+  "model": "triposg",
+  "input_view": 4,
+  "seconds": 46.5,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_adire-lounge-chair-cream-robins",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 29.2,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_crisper-lounge-chair-bubble-robins",
+  "model": "triposg",
+  "input_view": 4,
+  "seconds": 44.3,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_20321321",
+  "skipped": "no clean view"
+ },
+ {
+  "id": "ikea_60563577",
+  "skipped": "no clean view"
+ },
+ {
+  "id": "ikea_60459712",
+  "skipped": "no clean view"
+ },
+ {
+  "id": "ikea_20405047",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 9.0,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_50314814",
+  "skipped": "no clean view"
+ },
+ {
+  "id": "ikea_10478124",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 6.4,
+  "faces": 150816,
+  "textured": false
+ },
+ {
+  "id": "ikea_60602041",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 10.9,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_adolph-bed-honey-finish",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 25.2,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_adolph-queen-size-bed-walnut-finish",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 28.3,
+  "faces": 299999,
+  "textured": false
+ },
+ {
+  "id": "ws_walken-queen-size-bed-honey-finish",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 27.9,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish",
+  "model": "triposg",
+  "input_view": 5,
+  "seconds": 32.5,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_knot-floor-lamp",
+  "skipped": "no clean view"
+ },
+ {
+  "id": "ikea_s69510607",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 18.0,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s59536306",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 30.9,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s39585821",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 31.7,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s99613524",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 67.0,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s49395019",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 21.6,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s79627659",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 27.4,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_30638777",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 28.7,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_30437811",
+  "skipped": "no clean view"
+ },
+ {
+  "id": "ikea_20568223",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 61.2,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_80573580",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 30.2,
+  "faces": 299999,
+  "textured": false
+ },
+ {
+  "id": "ikea_60404913",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 6.4,
+  "faces": 228944,
+  "textured": false
+ },
+ {
+  "id": "ikea_70524458",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 13.6,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_00594614",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 24.9,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_30575812",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 59.5,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_00582036",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 20.8,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_00598216",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 33.4,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_30503655",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 38.1,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_20518271",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 13.4,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_40453768",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 13.9,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_50409893",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 19.4,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_50483878",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 22.0,
+  "faces": 299999,
+  "textured": false
+ },
+ {
+  "id": "ikea_80498939",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 17.6,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_melvina-tv-unit-honey-finish",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 14.3,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_radiant-tv-unit-frosty-white-finish",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 12.4,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_harvey-tv-unit-frosty-white",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 21.5,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_00522047",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 17.0,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_s69528344",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 20.0,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ikea_90520355",
+  "model": "triposg",
+  "input_view": 0,
+  "seconds": 23.8,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_juniper-book-shelf-honey",
+  "model": "triposg",
+  "input_view": 1,
+  "seconds": 19.5,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_greta-book-shelf-honey-finish",
+  "model": "triposg",
+  "input_view": 4,
+  "seconds": 36.6,
+  "faces": 300000,
+  "textured": false
+ },
+ {
+  "id": "ws_javier-bookshelf-honey-finish",
+  "model": "triposg",
+  "input_view": 2,
+  "seconds": 23.2,
+  "faces": 300000,
+  "textured": false
+ }
+]
