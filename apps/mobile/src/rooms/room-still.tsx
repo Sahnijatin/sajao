@@ -15,13 +15,20 @@ export interface RoomStillViewProps {
 }
 
 /** A bare room (before) or the same room furnished (after), drawn from theme colours. */
-function DrawnRoom({ look }: { look: "before" | "after" }) {
+function DrawnRoom({ look, view = 0 }: { look: "before" | "after"; view?: 0 | 1 | 2 }) {
   const { tokens } = useTheme();
   const { colors, spacing } = tokens;
   const after = look === "after";
   const soft = { borderRadius: spacing.md, borderCurve: "continuous" } as const;
   return (
-    <View style={{ flex: 1, backgroundColor: after ? colors.daylight : colors.sand }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: after ? colors.daylight : colors.sand,
+        // The same room from the other side, or from closer in.
+        transform: view === 1 ? [{ scaleX: -1 }] : view === 2 ? [{ scale: 1.3 }] : [],
+      }}
+    >
       {/* Window, with daylight. */}
       <View
         style={{
@@ -143,7 +150,7 @@ export function RoomStillView({ still, label, style, testID }: RoomStillViewProp
       {still.kind === "image" ? (
         <Image source={{ uri: still.uri }} resizeMode="cover" style={{ flex: 1 }} />
       ) : (
-        <DrawnRoom look={still.look} />
+        <DrawnRoom look={still.look} view={still.view} />
       )}
     </View>
   );
