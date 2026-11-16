@@ -87,6 +87,9 @@
       },
       "maxItems": 4,
       "description": "Compressed room splats for viewing on the phone, one per device tier. Colour only; built from the room splat."
+    },
+    "inventory": {
+      "$ref": "#/$defs/Inventory"
     }
   },
   "$defs": {
@@ -144,6 +147,13 @@
             "$ref": "#/$defs/ShellSurface"
           },
           "description": "Appearance of each wall, the floor and the ceiling."
+        },
+        "built_ins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BuiltIn"
+          },
+          "description": "Built-in items, kept with the shell."
         }
       }
     },
@@ -285,6 +295,10 @@
           "type": "string",
           "enum": ["keep", "move", "remove", "replace"],
           "description": "keep in a freshly built twin. Edits change it only in a derived view, never in the stored twin."
+        },
+        "object_type": {
+          "$ref": "#/$defs/ObjectType",
+          "description": "What kind of thing it is. Built-ins are not objects: they are in the shell's built_ins."
         }
       }
     },
@@ -690,6 +704,117 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/TwinEdit"
+          }
+        }
+      }
+    },
+    "ObjectType": {
+      "description": "The type of an item in the room.",
+      "type": "string",
+      "enum": ["furniture", "fixture", "wall_item", "textile", "decor"]
+    },
+    "BuiltIn": {
+      "description": "Something built into the room (a fitted wardrobe, a fireplace, a radiator, a kitchen counter). Part of the shell: it stays when the room is redesigned.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "category", "label", "box", "detection"],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/LocalId"
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "box": {
+          "$ref": "#/$defs/OrientedBox"
+        },
+        "detection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "confidence"],
+          "properties": {
+            "source": {
+              "type": "string",
+              "enum": ["live_scan", "server_segmentation", "user"]
+            },
+            "confidence": {
+              "$ref": "common.schema.json#/$defs/UnitScore"
+            }
+          }
+        }
+      }
+    },
+    "InventoryItem": {
+      "description": "An item a vision model listed that could not be placed in 3D. Kept and shown, never dropped silently.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type", "listed_by", "tried", "reason"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "type": {
+          "type": "string",
+          "enum": ["furniture", "fixture", "wall_item", "textile", "decor", "built_in"]
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "listed_by": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "description": "Pinned models that listed it."
+        },
+        "tried": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Detector prompts and models tried to place it."
+        },
+        "reason": {
+          "type": "string",
+          "enum": ["not_detected", "not_seen_in_enough_frames", "no_depth", "implausible_size"]
+        }
+      }
+    },
+    "Inventory": {
+      "description": "The open-vocabulary inventory the objects were found from, and what could not be placed.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["listed_by", "items_listed", "unplaced"],
+      "properties": {
+        "listed_by": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "items_listed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unplaced": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InventoryItem"
           }
         }
       }
