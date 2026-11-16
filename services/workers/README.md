@@ -48,3 +48,7 @@ uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/workers/gpu/a
 uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/workers/gpu/app.py::splat_smoke
 ```
 - **Phone splat** (`sajao_workers.twin.phone_step`): decimate the room splat to 500k Gaussians (capable phones) and 250k (budget Android) and save each as colour-only SOG with PlayCanvas splat-transform on CPU (`compress_splat`, one container). Each variant must be 0.2 to 12 MB and hold exactly its budget. Not a model, so no gateway; the step keeps it durable.
+
+## From capture to frames
+
+`sajao_workers.capture_depth` reads the capture package's SJDEPTH1 depth file (format in `docs/06-room-capture.md`); only high-confidence readings place points. `sajao_workers.twin.capture_frames.frames_manifest` turns a capture package into the frames manifest the objects and splat steps read: AR poses (camera +Y up, -Z forward) become OpenCV cameras, intrinsics become matrices, and depth becomes a millimetre PNG per keyframe. A capture without AR poses is refused (`CaptureError`). Depth from LiDAR keeps the LiDAR error band; ARCore depth uses the wider image band.

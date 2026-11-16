@@ -70,6 +70,18 @@ def decode_depth_mm(png: bytes) -> np.ndarray:
     return np.asarray(Image.open(io.BytesIO(png)), dtype=np.float32) / 1000.0
 
 
+def depth_at(depth: np.ndarray, shape: tuple[int, int]) -> np.ndarray:
+    """Depth resampled to an image size by nearest neighbour (LiDAR depth is about
+    256 x 192; masks are at keyframe resolution). Never blends depths across an edge."""
+    if depth.shape == shape:
+        return depth
+    h, w = shape
+    rows = np.minimum((np.arange(h) * depth.shape[0] / h).astype(int), depth.shape[0] - 1)
+    cols = np.minimum((np.arange(w) * depth.shape[1] / w).astype(int), depth.shape[1] - 1)
+    resampled: np.ndarray = depth[rows[:, None], cols[None, :]]
+    return resampled
+
+
 def decode_mask(png: bytes) -> np.ndarray:
     return np.asarray(Image.open(io.BytesIO(png)).convert("L")) > 127
 
