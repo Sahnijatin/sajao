@@ -1,0 +1,75 @@
+// Uploads a scan's capture package. Each file goes up with the resumable
+// uploader; its storage key is remembered under a stable name, so running
+// this again after a crash or a lost connection skips what already
+// arrived and resumes the rest. Same inputs, same package: idempotent.
+import type { CapturePackage } from "@sajao/schemas";
+import { buildPackage, type PackageFiles, type RecorderState } from "./recorder";
+
+export type PackageFileKind =
+  "keyframe" | "video" | "planes" | "scene_mesh" | "depth" | "sensor_log";
+
+export interface PackageUploadDeps {
+  /** Upload one local file, resuming if it was started before. Resolves with its storage key. */
+  uploadFile(file: {
+    localId: string;
+    uri: string;
+    kind: PackageFileKind;
+  }): Promise<{ key: string }>;
+  /** Write the sensor log to a local file and return its uri. */
+  writeText(name: string, text: string): Promise<string>;
+  /** Remembers finished uploads across app restarts. */
+  done: {
+    get(localId: string): Promise<string | null>;
+    set(localId: string, key: string): Promise<void>;
+  };
+  onProgress?: (finished: number, total: number) => void;
+}
+
+export async function uploadCapturePackage(
+  captureId: string,
+  state: RecorderState,
+  files: PackageFiles,
+  deps: PackageUploadDeps,
+): Promise<CapturePackage> {
+  const sensorUri = await deps.writeText(`${captureId}-sensors.jsonl`, state.sensorLog.join("\n"));
+  // Small files first, the video last: the twin can start from keyframes.
+  const queue: { name: string; uri: string; kind: PackageFileKind }[] = [
+    { name: "sensor_log", uri: sensorUri, kind: "sensor_log" },
+    ...files.keyframes.map((frame) => ({
+      name: `keyframe-${frame.id}`,
+      uri: frame.uri,
+      kind: "keyframe" as const,
+    })),
+    ...(files.planes ? [{ name: "planes", uri: files.planes, kind: "planes" as const }] : []),
+    ...(files.sceneMesh
+      ? [{ name: "scene_mesh", uri: files.sceneMesh, kind: "scene_mesh" as const }]
+      : []),
+    ...(files.depth ? [{ name: "depth", uri: files.depth, kind: "depth" as const }] : []),
+    ...(files.video ? [{ name: "video", uri: files.video, kind: "video" as const }] : []),
+  ];
+
+  const keys: Record<string, string> = {};
+  let finished = 0;
+  for (const item of queue) {
+    const localId = `${captureId}/${item.name}`;
+    const known = await deps.done.get(localId);
+    const key = known ?? (await deps.uploadFile({ localId, uri: item.uri, kind: item.kind })).key;
+    if (!known) await deps.done.set(localId, key);
+    keys[item.name] = key;
+    finished += 1;
+    deps.onProgress?.(finished, queue.length);
+  }
+
+  const sensorLog = keys.sensor_log;
+  if (!sensorLog) throw new Error("Sensor log was not uploaded");
+  return buildPackage(state, {
+    keyframes: Object.fromEntries(
+      files.keyframes.map((frame) => [frame.id, keys[`keyframe-${frame.id}`] ?? ""]),
+    ),
+    sensorLog,
+    ...(keys.video ? { video: keys.video } : {}),
+    ...(keys.planes ? { planes: keys.planes } : {}),
+    ...(keys.scene_mesh ? { sceneMesh: keys.scene_mesh } : {}),
+    ...(keys.depth ? { depth: keys.depth } : {}),
+  });
+}
