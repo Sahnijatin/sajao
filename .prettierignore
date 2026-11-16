@@ -11,3 +11,4 @@ docs
 *.md
 services/api/openapi.json
 supabase/types
+eval/*/results
