@@ -34,3 +34,11 @@ Inputs and outputs are blobs on the `sajao-twin` volume, passed by digest.
 uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/workers/gpu/app.py::smoke
 modal billing report --for today -r h --json   # billed spend per app, reported in each PR
 ```
+
+## Twin steps
+
+- **Objects** (`sajao_workers.twin.objects_step`): detect and segment through the gateway chains, lift each mask with its frame's depth (LiDAR, or the depth step on phones without it), fuse across frames on 5 cm voxels, and fit an upright box by code. Every size is a `Dimension` with source `estimated` and an error band (`ERROR_BANDS`). Boxes are in the capture's world frame; assembly converts them to the space frame.
+
+```bash
+uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/workers/gpu/app.py::objects_smoke
+```
