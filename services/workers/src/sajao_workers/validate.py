@@ -106,3 +106,31 @@ def check_splat() -> Validator:
         )
 
     return validate
+
+
+# LaMa fills agreed with the fine-tuned splat at 23 to 30 dB in the removal comparison.
+MIN_FILL_AGREEMENT_DB = 20.0
+
+
+def check_removal() -> Validator:
+    def validate(result: ProviderResult) -> None:
+        out = result.output
+        _require(DIGEST.match(str(out.get("splat"))) is not None, "splat is a blob digest")
+        gaussians = out.get("gaussians")
+        _require(
+            isinstance(gaussians, int) and 10_000 <= gaussians <= 8_000_000,
+            "gaussian count is plausible",
+        )
+        removed = out.get("gaussians_removed")
+        _require(isinstance(removed, int) and removed > 0, "some Gaussians were removed")
+        inpainted = out.get("frames_inpainted")
+        _require(isinstance(inpainted, int) and inpainted > 0, "some frames were inpainted")
+        agreement = out.get("fill_agreement_psnr")
+        _require(
+            isinstance(agreement, int | float)
+            and math.isfinite(agreement)
+            and agreement >= MIN_FILL_AGREEMENT_DB,
+            f"the fill agrees across views to at least {MIN_FILL_AGREEMENT_DB} dB",
+        )
+
+    return validate
