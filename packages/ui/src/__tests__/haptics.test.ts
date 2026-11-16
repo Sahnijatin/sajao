@@ -23,6 +23,7 @@ describe("haptic map", () => {
         "furnitureSnap",
         "levelReached",
         "priceTick",
+        "roomAdded",
         "roomVerified",
         "swapLands",
       ].sort(),
@@ -32,6 +33,7 @@ describe("haptic map", () => {
   it.each<[HapticMoment, unknown, unknown]>([
     ["cornerCaptured", Haptics.impactAsync, Impact.Light],
     ["roomVerified", Haptics.notificationAsync, Notify.Success],
+    ["roomAdded", Haptics.impactAsync, Impact.Soft],
     ["furnitureSnap", Haptics.impactAsync, Impact.Medium],
     ["collision", Haptics.impactAsync, Impact.Rigid],
     ["swapLands", Haptics.impactAsync, Impact.Soft],

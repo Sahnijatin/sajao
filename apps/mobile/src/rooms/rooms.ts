@@ -1,0 +1,75 @@
+// Rooms on My home. Pure: what a room is, how the list is ordered and what
+// each card says. Rooms live on this phone until the API serves them; the
+// store in state/rooms.ts is the only place that knows that.
+
+/**
+ * A still of a room. `image` is a real picture (a hero view from the twin,
+ * or a render). `placeholder` is a drawn stand-in used until one exists.
+ */
+export type RoomStill =
+  { kind: "image"; uri: string } | { kind: "placeholder"; look: "before" | "after" };
+
+export interface Room {
+  id: string;
+  /** The name you gave it; null shows "Room 2" from its number. */
+  name: string | null;
+  /** 1 for the first room added on this phone, then 2, and so on. */
+  number: number;
+  updatedAtMs: number;
+  designCount: number;
+  still: RoomStill;
+  /** The scan this room came from. */
+  captureId: string | null;
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** Most recently updated first. */
+export function sortRooms(rooms: readonly Room[]): Room[] {
+  return [...rooms].sort((a, b) => b.updatedAtMs - a.updatedAtMs || b.number - a.number);
+}
+
+/** The number for the next room: one more than the highest so far. */
+export function nextRoomNumber(rooms: readonly Room[]): number {
+  return rooms.reduce((highest, room) => Math.max(highest, room.number), 0) + 1;
+}
+
+export function newRoom(
+  rooms: readonly Room[],
+  input: { id: string; captureId: string | null; atMs: number },
+): Room {
+  return {
+    id: input.id,
+    name: null,
+    number: nextRoomNumber(rooms),
+    updatedAtMs: input.atMs,
+    designCount: 0,
+    still: { kind: "placeholder", look: "before" },
+    captureId: input.captureId,
+  };
+}
+
+export interface Label {
+  key: string;
+  values?: Record<string, number>;
+}
+
+/** "Updated today", by calendar day on this phone. A time in the future counts as today. */
+export function updatedLabel(updatedAtMs: number, nowMs: number): Label {
+  const startOfDay = (ms: number) => {
+    const date = new Date(ms);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+  };
+  const days = Math.max(0, Math.round((startOfDay(nowMs) - startOfDay(updatedAtMs)) / DAY_MS));
+  if (days === 0) return { key: "rooms.updated.today" };
+  if (days === 1) return { key: "rooms.updated.yesterday" };
+  if (days < 30) return { key: "rooms.updated.daysAgo", values: { count: days } };
+  if (days < 60) return { key: "rooms.updated.lastMonth" };
+  return { key: "rooms.updated.monthsAgo", values: { count: Math.floor(days / 30) } };
+}
+
+export function designsLabel(designCount: number): Label {
+  return designCount > 0
+    ? { key: "rooms.designs.count", values: { count: designCount } }
+    : { key: "rooms.designs.none" };
+}
