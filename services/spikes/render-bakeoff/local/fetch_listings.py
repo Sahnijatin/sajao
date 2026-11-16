@@ -255,7 +255,7 @@ def grow(out_dir: Path) -> None:
     for item in listings:
         try:
             extra = [u for u in full_gallery(item) if u not in item["images"]]
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             print("gallery skip", item["id"], e)
             continue
         item["images"] = (item["images"] + extra)[: max(MAX_IMAGES, len(item["images"]))]
@@ -265,7 +265,7 @@ def grow(out_dir: Path) -> None:
             if not (d / f"{i}.jpg").exists():
                 try:
                     (d / f"{i}.jpg").write_bytes(get(u))
-                except Exception as e:  # noqa: BLE001
+                except Exception as e:
                     print("image skip", u, e)
         path.write_text(json.dumps(listings, indent=1))
     print("galleries done", flush=True)
@@ -295,7 +295,7 @@ def grow(out_dir: Path) -> None:
             for i, u in enumerate(item["images"]):
                 try:
                     (d / f"{i}.jpg").write_bytes(get(u))
-                except Exception as e:  # noqa: BLE001
+                except Exception as e:
                     print("image skip", u, e)
         listings += new
         have |= {x["id"] for x in new}
