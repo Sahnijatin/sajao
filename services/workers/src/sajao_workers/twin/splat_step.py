@@ -11,12 +11,13 @@ from sajao_workers.steps import Step, StepContext, StepOutput
 from sajao_workers.validate import check_splat
 
 # Bump when this step's logic or the pinned trainer changes.
-VERSION = 1
+VERSION = 2
 STEPS = 15_000
 REPORTED = (
     "gaussians",
     "psnr_heldout",
     "psnr_heldout_raw",
+    "heldout",
     "train_seconds",
     "gaussians_on_objects",
     "objects_with_gaussians",
@@ -30,6 +31,9 @@ def splat_step(gateway: ModelGateway) -> Step:
             "frames": context.inputs["frames"],
             "objects": context.inputs["objects"],
             "steps": STEPS,
+            # "spread" for people's rooms; "split" for golden rooms, which also
+            # score views far from the capture path (splat_inputs.held_out_split).
+            "holdout": context.params.get("holdout", "spread"),
         }
         response = await gateway.call(
             ModelRequest("twin_splat", "vision", "twin_splat@1", payload), validate=check_splat()

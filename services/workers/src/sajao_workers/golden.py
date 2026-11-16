@@ -121,7 +121,10 @@ def _sides(box: Mapping[str, Any]) -> dict[str, tuple[float, float]]:
     return {k: (box[k]["value_m"], box[k]["error_band_m"]) for k in ("width", "depth", "height")}
 
 
-def accuracy_report(twin: Mapping[str, Any], sheet: Sheet) -> dict[str, Any]:
+def accuracy_report(
+    twin: Mapping[str, Any], sheet: Sheet, heldout: Mapping[str, Any] | None = None
+) -> dict[str, Any]:
+    """`heldout` is the splat step's scores on views kept out of training."""
     shell = twin["shell"]
     walls = shell["walls"]
     notes: list[str] = []
@@ -219,8 +222,39 @@ def accuracy_report(twin: Mapping[str, Any], sheet: Sheet) -> dict[str, Any]:
         "ceiling": ceiling_row,
         "openings": opening_rows,
         "furniture": furniture_rows,
+        "render_quality": dict(heldout) if heldout else None,
         "notes": notes,
     }
+
+
+RENDER_ROWS = (
+    ("near", "Near the capture path"),
+    ("far", "Far from the capture path"),
+    ("all", "All held-out views"),
+)
+
+
+def _render_quality(heldout: Mapping[str, Any]) -> list[str]:
+    lines = [
+        "",
+        "## Render quality (held-out keyframes against their photos)",
+        "",
+        "Near means a training camera stood within 30 cm of the view. Higher PSNR and SSIM "
+        "are better; lower LPIPS is better.",
+        "",
+        "| Views | Count | PSNR dB | SSIM | LPIPS |",
+        "| --- | --- | --- | --- | --- |",
+    ]
+    for key, label in RENDER_ROWS:
+        row = heldout[key]
+        if row["views"]:
+            lines.append(
+                f"| {label} | {row['views']} | {row['psnr']:.2f} | {row['ssim']:.3f} "
+                f"| {row['lpips']:.3f} |"
+            )
+        else:
+            lines.append(f"| {label} | 0 | | | |")
+    return lines
 
 
 def _cm(metres: float | None) -> str:
@@ -269,6 +303,8 @@ def markdown(report: Mapping[str, Any]) -> str:
             )
             + f" | {'yes' if f.get('within_band') else 'no'} |"
         )
+    if report.get("render_quality"):
+        lines += _render_quality(report["render_quality"])
     if report["notes"]:
         lines += ["", "## Notes", "", *[f"- {n}" for n in report["notes"]]]
     return "\n".join(lines) + "\n"

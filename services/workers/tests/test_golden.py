@@ -98,3 +98,34 @@ def test_the_summary_gives_the_golden_set_dimension_error() -> None:
     assert summary["walls_within_band"] == "3 of 4"
     text = markdown(report)
     assert "Test bedroom 1" in text and "| W2 | w1 |" in text
+
+
+def test_render_quality_is_reported_near_and_far_from_the_capture_path() -> None:
+    heldout = {
+        "near": {"views": 7, "psnr": 26.41, "ssim": 0.871, "lpips": 0.182},
+        "far": {"views": 5, "psnr": 19.02, "ssim": 0.702, "lpips": 0.413},
+        "all": {"views": 12, "psnr": 23.33, "ssim": 0.801, "lpips": 0.278},
+    }
+
+    report = accuracy_report(twin(), read_sheet(sheet()), heldout)
+    text = markdown(report)
+
+    assert report["render_quality"]["far"]["psnr"] == 19.02
+    assert "| Near the capture path | 7 | 26.41 | 0.871 | 0.182 |" in text
+    assert "| Far from the capture path | 5 | 19.02 | 0.702 | 0.413 |" in text
+
+
+def test_a_split_with_no_far_views_shows_an_empty_row() -> None:
+    heldout = {
+        "near": {"views": 3, "psnr": 25.0, "ssim": 0.8, "lpips": 0.2},
+        "far": {"views": 0},
+        "all": {"views": 3, "psnr": 25.0, "ssim": 0.8, "lpips": 0.2},
+    }
+
+    text = markdown(accuracy_report(twin(), read_sheet(sheet()), heldout))
+
+    assert "| Far from the capture path | 0 | | | |" in text
+
+
+def test_a_report_without_a_splat_score_has_no_render_section() -> None:
+    assert "Render quality" not in markdown(accuracy_report(twin(), read_sheet(sheet())))
