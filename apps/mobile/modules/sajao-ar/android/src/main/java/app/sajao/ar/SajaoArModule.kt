@@ -1,6 +1,7 @@
 package app.sajao.ar
 
 import com.google.ar.core.ArCoreApk
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
@@ -45,7 +46,19 @@ class SajaoArModule : Module() {
     }
 
     View(SajaoArView::class) {
-      Events("onArStatus", "onArPose", "onArDetections", "onArSurfaces")
+      Events("onArStatus", "onArPose", "onArDetections", "onArSurfaces", "onArKeyframe")
+
+      Prop("captureId") { view: SajaoArView, value: String ->
+        view.setCaptureId(value)
+      }
+
+      AsyncFunction("discardKeyframes") { view: SajaoArView, uris: List<String> ->
+        view.discardKeyframes(uris)
+      }
+
+      AsyncFunction("finishCapture") { view: SajaoArView, chosen: List<String>, promise: Promise ->
+        view.finishCapture(chosen) { result -> promise.resolve(result) }
+      }
 
       Prop("active") { view: SajaoArView, value: Boolean ->
         view.setActive(value)

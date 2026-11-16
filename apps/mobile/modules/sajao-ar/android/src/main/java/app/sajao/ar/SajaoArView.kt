@@ -13,6 +13,8 @@ import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
+import com.google.ar.core.CameraConfig
+import com.google.ar.core.CameraConfigFilter
 import com.google.ar.core.Config
 import com.google.ar.core.Frame
 import com.google.ar.core.Plane
@@ -24,6 +26,7 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import java.lang.ref.WeakReference
 import java.nio.FloatBuffer
+import java.util.EnumSet
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicReference
 import javax.microedition.khronos.egl.EGLConfig
@@ -49,6 +52,10 @@ class SajaoArView(context: Context, appContext: AppContext) :
   private val onArPose by EventDispatcher()
   private val onArDetections by EventDispatcher()
   private val onArSurfaces by EventDispatcher()
+  private val onArKeyframe by EventDispatcher()
+  // Records the capture package's native files while a capture id is set.
+  private var recorder: CaptureRecorder? = null
+  private var captureId = ""
 
   var lite = false
   var reducedMotion = false
@@ -203,8 +210,48 @@ class SajaoArView(context: Context, appContext: AppContext) :
     if (wantsActive) resume()
   }
 
+  /** Start recording a capture package into its own folder; an empty id records nothing. */
+  fun setCaptureId(id: String) {
+    if (id == captureId) return
+    captureId = id
+    recorder?.close()
+    recorder = if (id.isEmpty()) {
+      null
+    } else {
+      CaptureRecorder(CaptureRecorder.folder(context.cacheDir, id)) { payload -> post { onArKeyframe(payload) } }
+    }
+  }
+
+  /** Delete keyframe candidates the app's recorder dropped. */
+  fun discardKeyframes(uris: List<String>) {
+    recorder?.discard(uris)
+  }
+
+  /**
+   * End the capture: planes snapshot on the GL thread, then the recorder
+   * writes planes and depth for the chosen keyframes and resolves with the
+   * files' uris.
+   */
+  fun finishCapture(chosen: List<String>, done: (Map<String, Any?>) -> Unit) {
+    val current = recorder ?: return done(mapOf("planes" to null, "depth" to null, "sceneMesh" to null))
+    val session = session
+    if (session == null || !running) {
+      current.finish(org.json.JSONArray(), chosen, done)
+      return
+    }
+    surface.queueEvent {
+      val planes = try {
+        current.snapshotPlanes(session)
+      } catch (_: Throwable) {
+        org.json.JSONArray()
+      }
+      current.finish(planes, chosen, done)
+    }
+  }
+
   fun destroy() {
     pause()
+    recorder?.close()
     session?.close()
     session = null
     detector.close()
@@ -230,6 +277,17 @@ class SajaoArView(context: Context, appContext: AppContext) :
         config.lightEstimationMode = Config.LightEstimationMode.AMBIENT_INTENSITY
         config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
         config.focusMode = Config.FocusMode.AUTO
+        // Keyframes are saved from ARCore's CPU image, 640 by 480 by
+        // default: ask for the largest one up to 1920 wide at 30 fps.
+        try {
+          val filter = CameraConfigFilter(created).setTargetFps(EnumSet.of(CameraConfig.TargetFps.TARGET_FPS_30))
+          created.getSupportedCameraConfigs(filter)
+            .filter { it.imageSize.width <= 1920 }
+            .maxByOrNull { it.imageSize.width * it.imageSize.height }
+            ?.let { created.cameraConfig = it }
+        } catch (_: Throwable) {
+          // The default camera configuration still works.
+        }
         depthSupported = created.isDepthModeSupported(Config.DepthMode.AUTOMATIC)
         if (depthSupported) config.depthMode = Config.DepthMode.AUTOMATIC
         created.configure(config)
@@ -578,16 +636,21 @@ class SajaoArView(context: Context, appContext: AppContext) :
     }
   }
 
-  private fun sendPose(frame: Frame) {
-    val pose = frame.camera.displayOrientedPose
-    val z = pose.zAxis
+  /** Where the camera points: yaw and pitch in degrees, gravity aligned, as the app's pose. */
+  private fun yawPitch(frame: Frame): Pair<Double, Double> {
+    val z = frame.camera.displayOrientedPose.zAxis
     // The camera looks down its -Z axis; +Y is up (gravity aligned).
     val fx = -z[0]
     val fy = -z[1]
     val fz = -z[2]
     val yaw = Math.toDegrees(atan2(-fx, -fz).toDouble())
     val pitch = Math.toDegrees(asin(fy.coerceIn(-1f, 1f).toDouble()))
-    val t = pose.translation
+    return yaw to pitch
+  }
+
+  private fun sendPose(frame: Frame) {
+    val (yaw, pitch) = yawPitch(frame)
+    val t = frame.camera.displayOrientedPose.translation
     val payload = mapOf(
       "yaw" to yaw,
       "pitch" to pitch,
@@ -651,6 +714,10 @@ class SajaoArView(context: Context, appContext: AppContext) :
     }
     brightness = copy.meanBrightness()
     latestSharpness = SurfaceSample.lumaSharpness(copy.y, copy.width, copy.height, copy.yRowStride)
+    recorder?.let { capture ->
+      val (yaw, pitch) = yawPitch(frame)
+      capture.offer(frame, copy, latestSharpness, yaw, pitch)
+    }
     // The camera as it was for this image: rays are built from it, so a
     // result that arrives after the phone moved still lands on its object.
     val camera = try {
