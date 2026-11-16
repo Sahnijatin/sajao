@@ -90,6 +90,11 @@ export interface Detection {
   gap?: number | null;
   /** Distance from the camera to the object point, in metres. */
   range?: number | null;
+  /**
+   * How the native view placed the point: on the floor under the object,
+   * from a plane or tracked points on its ray, or from how tall it looks.
+   */
+  placedBy?: "floor" | "plane" | "points" | "size" | "";
   /** The detection's box in the upright camera image, 0 to 1. */
   box?: { x: number; y: number; width: number; height: number } | null;
 }
@@ -108,6 +113,9 @@ export type RejectReason = "onWall" | "bareFloor" | "ceiling" | "tooFar";
  */
 export function rejectReason(kind: LabelKind, detection: Detection): RejectReason | null {
   if (detection.range != null && detection.range > MAX_RANGE_M) return "tooFar";
+  // A distance estimated from how tall the object looks says nothing about
+  // the wall or floor its ray happens to meet.
+  if (detection.placedBy === "size") return detection.surface === "ceiling" ? "ceiling" : null;
   const surface = detection.surface;
   if (!surface || surface === "none" || surface === "raised") return null;
   if (surface === "ceiling") return "ceiling";

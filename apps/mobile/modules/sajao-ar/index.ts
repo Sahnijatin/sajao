@@ -38,6 +38,8 @@ export interface ArStatusEvent {
   /** Detections returned so far, and how many were placed in the room. */
   detectionsFound?: number;
   detectionsPlaced?: number;
+  /** Placed detections by how they were placed, for example "floor 12 plane 3 points 0 size 40". */
+  placedBy?: string;
   /** Why the detector failed to load; empty when it loaded. */
   detectorError?: string;
 }
@@ -62,6 +64,8 @@ export interface ArDetectionEvent {
     gap?: number;
     /** Metres from the camera to the object point. */
     range?: number;
+    /** How the point was found: floor, plane, points or size. */
+    placedBy?: "floor" | "plane" | "points" | "size" | "";
     /** The detection's box in the upright camera image, 0 to 1. */
     box?: { x: number; y: number; width: number; height: number };
   }[];

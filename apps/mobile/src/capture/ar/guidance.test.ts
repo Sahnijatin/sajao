@@ -118,6 +118,17 @@ describe("one hint at a time", () => {
       id: "walkAround",
       kind: "bed",
     });
+    expect(
+      currentHint({ outside: false, stepBack: false, walkAround: "bed", coverMore: true }),
+    ).toEqual({
+      id: "walkAround",
+      kind: "bed",
+    });
+    expect(
+      currentHint({ outside: false, stepBack: false, walkAround: null, coverMore: true }),
+    ).toEqual({
+      id: "coverMore",
+    });
     expect(currentHint({ outside: false, stepBack: false, walkAround: null })).toBeNull();
   });
 });

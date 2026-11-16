@@ -40,6 +40,7 @@ export function scanDebugLines(debug: ScanDebug, state: ScanState): [string, str
           ["labels", round(debug.ar.labels)],
           ["detectionsFound", round(debug.ar.detectionsFound)],
           ["detectionsPlaced", round(debug.ar.detectionsPlaced)],
+          ["placedBy", debug.ar.placedBy || "-"],
           ["detectorError", debug.ar.detectorError || "-"],
           ["labelsRejected", round(debug.ar.labelsRejected)],
           ["arTurn", round(state.turnRate)],

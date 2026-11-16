@@ -88,6 +88,7 @@
       "labels": "Labels",
       "detectionsFound": "Detections",
       "detectionsPlaced": "Detections placed",
+      "placedBy": "Placed by",
       "detectorError": "Detector error",
       "labelsRejected": "Labels rejected",
       "arTurn": "AR turn deg/s",
@@ -105,7 +106,8 @@
     "hints": {
       "doorway": "Finish this space first, then scan the next one",
       "stepBack": "Step back to fit it all in",
-      "walkAround": "Walk around the {{object}}"
+      "walkAround": "Walk around the {{object}}",
+      "coverMore": "Done is ready. Cover a bit more for the best result"
     }
   },
   "space": {

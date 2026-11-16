@@ -162,6 +162,25 @@ describe("live object labels", () => {
       );
     });
 
+    it("does not judge a size estimate against the wall or floor its ray meets", () => {
+      const sized = {
+        ...seen("refrigerator"),
+        placedBy: "size" as const,
+        surface: "wall" as const,
+        gap: 0,
+      };
+      expect(rejectReason("fridge", sized)).toBeNull();
+      expect(shownLabels(three(sized))).toHaveLength(1);
+      // Placed on the floor under it: the gap to the wall still tells a door from a fridge.
+      const door = {
+        ...seen("refrigerator"),
+        placedBy: "floor" as const,
+        surface: "wall" as const,
+        gap: 0.02,
+      };
+      expect(rejectReason("fridge", door)).toBe("onWall");
+    });
+
     it("keeps sightings from older builds that send no surface", () => {
       expect(rejectReason("fridge", seen("refrigerator"))).toBeNull();
     });
