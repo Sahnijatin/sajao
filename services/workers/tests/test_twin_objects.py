@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
+from sajao_workers.twin.fusion import Observation
 from sajao_workers.twin.objects import (
     ERROR_BANDS,
     FrameMasks,
@@ -143,3 +144,49 @@ def test_yaw_is_in_degrees_within_a_half_turn() -> None:
     sofa = build_objects(frames_seeing_box(), up_axis=1, depth_source="lidar")[0]
     assert 0.0 <= sofa["box"]["yaw_deg"] < 180.0
     assert math.isfinite(sofa["box"]["yaw_deg"])
+
+
+def piece(
+    label: str, x0: float, x1: float, z0: float, z1: float, frames: int = 4
+) -> list[Observation]:
+    """Observations for a box piece filling x0..x1, height 0..0.8, depth z0..z1 (y up)."""
+    from sajao_workers.twin.fusion import voxelize
+
+    pts = [
+        (x, y, z)
+        for x in np.arange(x0, x1, 0.04)
+        for y in np.arange(0.0, 0.8, 0.04)
+        for z in np.arange(z0, z1, 0.04)
+    ]
+    return [Observation(i, label, 0.9, voxelize(pts, 0.05)) for i in range(frames)]
+
+
+def boxes_for(*pieces: list[Observation]) -> list[tuple[str, float]]:
+    from sajao_workers.twin.fusion import fuse
+    from sajao_workers.twin.objects import fitted_objects
+
+    # Each piece is fused on its own, as when views see different arms of a sofa.
+    instances = [inst for p in pieces for inst in fuse(p)]
+    return sorted(
+        (label, round(box.length, 1)) for label, box, _, _ in fitted_objects(instances, 1)
+    )
+
+
+def test_touching_pieces_of_a_sofa_become_one_sofa() -> None:
+    merged = boxes_for(piece("sofa", 0.0, 1.0, 0.0, 0.9), piece("sofa", 1.02, 2.0, 0.0, 0.9))
+    assert merged == [("sofa", 2.0)]
+
+
+def test_two_chairs_side_by_side_stay_two_chairs() -> None:
+    chairs = boxes_for(piece("chair", 0.0, 0.5, 0.0, 0.5), piece("chair", 0.52, 1.0, 0.0, 0.5))
+    assert [label for label, _ in chairs] == ["chair", "chair"]
+
+
+def test_sofas_apart_stay_apart() -> None:
+    sofas = boxes_for(piece("sofa", 0.0, 1.6, 0.0, 0.9), piece("sofa", 2.6, 4.2, 0.0, 0.9))
+    assert len(sofas) == 2
+
+
+def test_pieces_are_not_joined_past_a_plausible_size() -> None:
+    long = boxes_for(piece("sofa", 0.0, 2.0, 0.0, 0.9), piece("sofa", 2.02, 4.0, 0.0, 0.9))
+    assert len(long) == 2  # a 4 m sofa is two sofas, not one

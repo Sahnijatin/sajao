@@ -18,8 +18,8 @@ from typing import Any, Literal
 import numpy as np
 from PIL import Image
 
-from sajao_workers.twin.fusion import Observation, fuse, merge_instances, voxelize
-from sajao_workers.twin.geometry import fit_upright_box
+from sajao_workers.twin.fusion import GROUPS, Instance, Observation, fuse, merge_instances, voxelize
+from sajao_workers.twin.geometry import UprightBox, fit_upright_box, horizontal_axes
 
 DepthSource = Literal["lidar", "image"]
 
@@ -36,6 +36,16 @@ MIN_POINTS_PER_MASK = 50
 MIN_FRAMES = 3
 # A box outside these sizes is not a piece of furniture or decor: a fusion error.
 MIN_SIZE_M, MAX_SIZE_M = 0.15, 4.0
+# Large furniture that views often see in pieces (the arms of an L-shaped sofa).
+# Same-class pieces whose footprints touch are joined while the result stays
+# within these sizes (length, width in metres). Chairs are never joined.
+JOINABLE: dict[str, tuple[float, float]] = {
+    "sofa": (3.5, 2.2),
+    "bed": (2.6, 2.4),
+    "table": (3.2, 1.6),
+    "cabinet": (3.0, 1.0),
+}
+TOUCH_M = 0.10
 
 
 @dataclass(frozen=True)
@@ -108,6 +118,100 @@ def dimension(value_m: float, depth_source: DepthSource) -> dict[str, Any]:
     }
 
 
+@dataclass
+class _Fitted:
+    label: str
+    frames: set[int]
+    keys: list[int]
+    points: np.ndarray  # core points, (N, 3)
+    box: UprightBox
+
+
+def _group(label: str) -> str:
+    key = label.lower().strip()
+    return GROUPS.get(key, key)
+
+
+def _footprint_cells(points: np.ndarray, up_axis: int) -> set[tuple[int, int]]:
+    h = list(horizontal_axes(up_axis))
+    cells = np.floor(points[:, h] / VOXEL_M).astype(int)
+    return {(int(u), int(v)) for u, v in np.unique(cells, axis=0)}
+
+
+def _touching(a: _Fitted, b: _Fitted, up_axis: int) -> bool:
+    """Heights overlap and the footprints come within TOUCH_M of each other."""
+    lo_a, hi_a = a.box.vertical_range()
+    lo_b, hi_b = b.box.vertical_range()
+    if hi_a < lo_b or hi_b < lo_a:
+        return False
+    cells_a = _footprint_cells(a.points, up_axis)
+    reach = math.ceil(TOUCH_M / VOXEL_M)
+    near = range(-reach, reach + 1)
+    return any(
+        (u + du, v + dv) in cells_a
+        for u, v in _footprint_cells(b.points, up_axis)
+        for du in near
+        for dv in near
+    )
+
+
+def _join_pieces(fitted: list[_Fitted], up_axis: int) -> list[_Fitted]:
+    pool = list(fitted)
+    joined = True
+    while joined:
+        joined = False
+        for i in range(len(pool)):
+            for j in range(i + 1, len(pool)):
+                a, b = pool[i], pool[j]
+                group = _group(a.label)
+                if group != _group(b.label) or group not in JOINABLE:
+                    continue
+                if not _touching(a, b, up_axis):
+                    continue
+                points = np.concatenate([a.points, b.points])
+                box = fit_upright_box(points.tolist(), up_axis)
+                max_length, max_width = JOINABLE[group]
+                if box.length > max_length or box.width > max_width:
+                    continue
+                label = a.label if len(a.frames) >= len(b.frames) else b.label
+                pool[i] = _Fitted(label, a.frames | b.frames, a.keys + b.keys, points, box)
+                del pool[j]
+                joined = True
+                break
+            if joined:
+                break
+    return pool
+
+
+def fitted_objects(
+    instances: Sequence[Instance], up_axis: int
+) -> list[tuple[str, UprightBox, int, list[int]]]:
+    """Boxes for instances seen often enough, with touching pieces joined and
+    implausible sizes dropped: (label, box, frames seen, observation keys)."""
+    fitted = []
+    for instance in instances:
+        seen = len(instance.frames)
+        if seen < MIN_FRAMES:
+            continue
+        core = instance.core_points(max(2, math.ceil(0.15 * seen)))
+        if len(core) < 8:
+            continue
+        fitted.append(
+            _Fitted(
+                instance.label,
+                set(instance.frames),
+                sorted(key for _, key in instance.members),
+                np.asarray(core),
+                fit_upright_box(core, up_axis),
+            )
+        )
+    out = []
+    for item in _join_pieces(fitted, up_axis):
+        if MIN_SIZE_M <= max(item.box.length, item.box.height) <= MAX_SIZE_M:
+            out.append((item.label, item.box, len(item.frames), sorted(item.keys)))
+    return out
+
+
 def build_objects(
     frames: Sequence[FrameMasks], up_axis: int, depth_source: DepthSource
 ) -> list[dict[str, Any]]:
@@ -126,21 +230,11 @@ def build_objects(
     scores = {obs.key: obs.score for obs in observations}
 
     objects: list[dict[str, Any]] = []
-    for instance in merge_instances(fuse(observations)):
-        seen = len(instance.frames)
-        if seen < MIN_FRAMES:
-            continue
-        core = instance.core_points(max(2, math.ceil(0.15 * seen)))
-        if len(core) < 8:
-            continue
-        box = fit_upright_box(core, up_axis)
-        if not MIN_SIZE_M <= max(box.length, box.height) <= MAX_SIZE_M:
-            continue
-        keys = sorted(key for _, key in instance.members)
+    for label, box, seen, keys in fitted_objects(merge_instances(fuse(observations)), up_axis):
         objects.append(
             {
-                "category": instance.label,
-                "label": instance.label.capitalize(),
+                "category": label,
+                "label": label.capitalize(),
                 "confidence": round(sum(scores[k] for k in keys) / len(keys), 3),
                 "frames": seen,
                 "up_axis": up_axis,
