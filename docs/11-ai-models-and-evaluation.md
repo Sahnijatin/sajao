@@ -25,6 +25,10 @@ Every model and dataset is listed in the third-party register (`docs/24-third-pa
 
 The twin risk spike (`services/spikes/twin-risk/`, report in `eval/twin-risk/`) compares candidates on public datasets and picks on quality, speed and cost. Every model, library and dataset it uses is listed in the third-party register.
 
+## Indian-home detector dataset
+
+The on-device detector knows COCO classes, not Indian home objects. `services/dataset` builds a labelled set of real Indian rooms in six stages: find YouTube home tours, screen them with Gemini for room segments, download only kept segments, sample frames without near-duplicates or blur, auto-label behind the model gateway with a hand-checked sample, and version the result on Modal storage. Licenses are recorded per source; the set is for internal training only. Property listing photos are added only after the YouTube pilot report.
+
 ## Render bake-off
 
 Real rooms run through Gemini 3 Pro Image, Gemini 3.1 Flash Image, Seedream, FLUX.2 and Qwen-Image-Edit with the same guide and product references, scored blind on excitement, product fidelity and structure. The winner becomes the primary; the cheaper runner-up becomes the fallback in the gateway. The bake-off reruns whenever a candidate model changes.
