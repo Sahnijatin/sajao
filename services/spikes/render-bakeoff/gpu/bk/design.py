@@ -36,7 +36,7 @@ def _cutout_texture(lid: str, out: Path, kind: str) -> tuple[str, float]:
     rgba = cv2.imread(str(root / f"{idx}.png"), cv2.IMREAD_UNCHANGED)
     a = rgba[..., 3] > 127
     ys, xs = np.nonzero(a)
-    crop = rgba[ys.min(): ys.max() + 1, xs.min(): xs.max() + 1]
+    crop = rgba[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1]
     if kind != "billboard":
         crop = crop[..., :3]
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -47,14 +47,25 @@ def _cutout_texture(lid: str, out: Path, kind: str) -> tuple[str, float]:
 def render_item(it: dict, tmp: Path) -> dict:
     lst = _listing(it["listing"])
     dims = lst["dims_cm"]
-    base = {"id": it["id"], "listing": lst["id"], "name": lst["name"], "tier": it["tier"],
-            "position": it["position"], "rotation_deg": it["rotation_deg"], "z": it.get("z", 0.0),
-            "category": lst["category"]}
+    base = {
+        "id": it["id"],
+        "listing": lst["id"],
+        "name": lst["name"],
+        "tier": it["tier"],
+        "position": it["position"],
+        "rotation_deg": it["rotation_deg"],
+        "z": it.get("z", 0.0),
+        "category": lst["category"],
+    }
     if it["tier"] == "mesh":
         d = BK / "assets" / MESH_MODEL / lst["id"]
         meta = json.loads((d / "asset.json").read_text())
-        base.update(asset_path=str(d / "asset.ply"), front_rot_deg=-meta["front_az_deg"],
-                    size_m=meta["size_m"], scale=it.get("scale", 1.0))
+        base.update(
+            asset_path=str(d / "asset.ply"),
+            front_rot_deg=-meta["front_az_deg"],
+            size_m=meta["size_m"],
+            scale=it.get("scale", 1.0),
+        )
     elif it["tier"] == "rug":
         path, _ = _cutout_texture(lst["id"], tmp / f"{it['id']}.png", "rug")
         lng, wid = dims.get("length") or dims.get("width"), dims.get("width") or dims.get("length")
@@ -82,7 +93,9 @@ def plant_error(items: list[dict], kind: str, room_file: dict) -> list[dict]:
     if kind == "swap" and target is not None:
         similar = room_file.get("similar", {}).get(items[target]["listing"])
         if similar:
-            items[target] = render_item({**items[target], "listing": similar, "tier": "mesh"}, Path("/tmp/tex"))
+            items[target] = render_item(
+                {**items[target], "listing": similar, "tier": "mesh"}, Path("/tmp/tex")
+            )
     elif kind == "scale10" and target is not None:
         items[target]["scale"] = 1.10
         items[target]["size_m"] = [s * 1.1 for s in items[target]["size_m"]]
@@ -103,5 +116,11 @@ def load_render_design(room: str, design_id: str, planted: str = "") -> dict:
     items = [render_item(it, tmp) for it in d["items"]]
     if planted:
         items = plant_error(items, planted, rf)
-    return {"id": design_id, "room": room, "hero_frame": rf["hero_frame"], "variant": d["variant"],
-            "render_items": items, "slot": d["slot"]}
+    return {
+        "id": design_id,
+        "room": room,
+        "hero_frame": rf["hero_frame"],
+        "variant": d["variant"],
+        "render_items": items,
+        "slot": d["slot"],
+    }

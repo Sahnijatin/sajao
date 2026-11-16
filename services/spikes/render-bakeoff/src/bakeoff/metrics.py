@@ -33,9 +33,9 @@ def max_edge_shift(a: np.ndarray, b: np.ndarray) -> float:
 def square_crop(mask: np.ndarray, margin: float = 0.05) -> tuple[int, int, int]:
     """Square around the mask's bounding box: (x0, y0, side). May extend past the image."""
     x0, y0, x1, y1 = bbox(mask) or (0, 0, mask.shape[1], mask.shape[0])
-    side = int(round(max(x1 - x0, y1 - y0) * (1 + 2 * margin)))
+    side = round(max(x1 - x0, y1 - y0) * (1 + 2 * margin))
     cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
-    return int(round(cx - side / 2)), int(round(cy - side / 2)), max(side, 1)
+    return round(cx - side / 2), round(cy - side / 2), max(side, 1)
 
 
 def crop_pad(img: np.ndarray, x0: int, y0: int, side: int, fill: float | int = 0) -> np.ndarray:
@@ -57,13 +57,19 @@ def srgb_to_lab(rgb: np.ndarray) -> np.ndarray:
     c = np.asarray(rgb, dtype=np.float64)
     lin = np.where(c <= 0.04045, c / 12.92, ((c + 0.055) / 1.055) ** 2.4)
     m = np.array(
-        [[0.4124564, 0.3575761, 0.1804375], [0.2126729, 0.7151522, 0.0721750], [0.0193339, 0.1191920, 0.9503041]]
+        [
+            [0.4124564, 0.3575761, 0.1804375],
+            [0.2126729, 0.7151522, 0.0721750],
+            [0.0193339, 0.1191920, 0.9503041],
+        ]
     )
     xyz = lin @ m.T / np.array([0.95047, 1.0, 1.08883])
     e = 216 / 24389
     k = 24389 / 27
     f = np.where(xyz > e, np.cbrt(xyz), (k * xyz + 16) / 116)
-    lab = np.stack([116 * f[..., 1] - 16, 500 * (f[..., 0] - f[..., 1]), 200 * (f[..., 1] - f[..., 2])], -1)
+    lab = np.stack(
+        [116 * f[..., 1] - 16, 500 * (f[..., 0] - f[..., 1]), 200 * (f[..., 1] - f[..., 2])], -1
+    )
     return lab
 
 
@@ -88,7 +94,9 @@ def ciede2000(lab1: np.ndarray, lab2: np.ndarray, kl: float = 1.0) -> np.ndarray
     hbp = np.where(
         c1p * c2p == 0,
         hs,
-        np.where(np.abs(h1p - h2p) <= 180, hs / 2, np.where(hs < 360, (hs + 360) / 2, (hs - 360) / 2)),
+        np.where(
+            np.abs(h1p - h2p) <= 180, hs / 2, np.where(hs < 360, (hs + 360) / 2, (hs - 360) / 2)
+        ),
     )
     t = (
         1
@@ -103,12 +111,20 @@ def ciede2000(lab1: np.ndarray, lab2: np.ndarray, kl: float = 1.0) -> np.ndarray
     sc = 1 + 0.045 * cbp
     sh = 1 + 0.015 * cbp * t
     rt = -np.sin(np.radians(2 * dtheta)) * rc
-    return np.sqrt(
-        (dlp / (kl * sl)) ** 2 + (dcp / sc) ** 2 + (dhp / sh) ** 2 + rt * (dcp / sc) * (dhp / sh)
+    return np.asarray(
+        np.sqrt(
+            (dlp / (kl * sl)) ** 2
+            + (dcp / sc) ** 2
+            + (dhp / sh) ** 2
+            + rt * (dcp / sc) * (dhp / sh)
+        ),
+        dtype=np.float64,
     )
 
 
-def mean_color_delta_e(img1: np.ndarray, m1: np.ndarray, img2: np.ndarray, m2: np.ndarray, kl: float = 2.0) -> float:
+def mean_color_delta_e(
+    img1: np.ndarray, m1: np.ndarray, img2: np.ndarray, m2: np.ndarray, kl: float = 2.0
+) -> float:
     """CIEDE2000 between the mean Lab colours of two masked regions (uint8 RGB).
 
     Lightness is down-weighted (kl=2) because renders and photos are lit differently.

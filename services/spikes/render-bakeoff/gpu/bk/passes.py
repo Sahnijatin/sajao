@@ -12,8 +12,11 @@ import time
 import numpy as np
 
 QWEN = ("Qwen/Qwen-Image-Edit-2511", "6f3ccc0b")
-QWEN_LIGHTNING = ("lightx2v/Qwen-Image-Edit-2511-Lightning", "107d238d",
-                  "Qwen-Image-Edit-2511-Lightning-8steps-V1.0-bf16.safetensors")
+QWEN_LIGHTNING = (
+    "lightx2v/Qwen-Image-Edit-2511-Lightning",
+    "107d238d",
+    "Qwen-Image-Edit-2511-Lightning-8steps-V1.0-bf16.safetensors",
+)
 FLUX2K = ("black-forest-labs/FLUX.2-klein-4B", "e7b7dc27")
 
 LIGHT_PROMPT = (
@@ -30,7 +33,9 @@ CLEAN_PROMPT = (
 
 
 def place_prompt(name: str, kind: str) -> str:
-    where = {"rug": "lying flat on the floor", "art": "hanging on the wall"}.get(kind, "standing on the floor")
+    where = {"rug": "lying flat on the floor", "art": "hanging on the wall"}.get(
+        kind, "standing on the floor"
+    )
     return (
         f"Image 1 is a photo of a room with a grey area. Fill the grey area with the {name} shown in image 2, "
         f"{where}, seen from this camera's angle, sized and shaped to fill the grey area exactly. Copy the "
@@ -50,14 +55,20 @@ def pipe(model: str):
     if model == "qwen":
         from diffusers import QwenImageEditPlusPipeline
 
-        p = QwenImageEditPlusPipeline.from_pretrained(QWEN[0], revision=QWEN[1], torch_dtype=torch.bfloat16)
-        p.load_lora_weights(QWEN_LIGHTNING[0], revision=QWEN_LIGHTNING[1], weight_name=QWEN_LIGHTNING[2])
+        p = QwenImageEditPlusPipeline.from_pretrained(
+            QWEN[0], revision=QWEN[1], torch_dtype=torch.bfloat16
+        )
+        p.load_lora_weights(
+            QWEN_LIGHTNING[0], revision=QWEN_LIGHTNING[1], weight_name=QWEN_LIGHTNING[2]
+        )
         p.fuse_lora()
         p.to("cuda")
     elif model == "flux2k":
         from diffusers import Flux2KleinPipeline
 
-        p = Flux2KleinPipeline.from_pretrained(FLUX2K[0], revision=FLUX2K[1], torch_dtype=torch.bfloat16)
+        p = Flux2KleinPipeline.from_pretrained(
+            FLUX2K[0], revision=FLUX2K[1], torch_dtype=torch.bfloat16
+        )
         p.to("cuda")
     else:
         raise ValueError(model)
@@ -79,15 +90,32 @@ def edit(model: str, images: list[np.ndarray], prompt: str, seed: int) -> tuple[
 
     h, w = images[0].shape[:2]
     ow, oh = _fit(w, h)
-    pils = [Image.fromarray(images[0]).resize((ow, oh), Image.LANCZOS)] + [Image.fromarray(i) for i in images[1:]]
+    pils = [Image.fromarray(images[0]).resize((ow, oh), Image.LANCZOS)] + [
+        Image.fromarray(i) for i in images[1:]
+    ]
     g = torch.Generator("cuda").manual_seed(seed)
     t0 = time.time()
     if model == "qwen":
-        out = pipe(model)(image=pils, prompt=prompt, negative_prompt=" ", num_inference_steps=8,
-                          true_cfg_scale=1.0, generator=g, width=ow, height=oh).images[0]
+        out = pipe(model)(
+            image=pils,
+            prompt=prompt,
+            negative_prompt=" ",
+            num_inference_steps=8,
+            true_cfg_scale=1.0,
+            generator=g,
+            width=ow,
+            height=oh,
+        ).images[0]
     elif model == "flux2k":
-        out = pipe(model)(image=pils, prompt=prompt, num_inference_steps=4, guidance_scale=1.0,
-                          generator=g, width=ow, height=oh).images[0]
+        out = pipe(model)(
+            image=pils,
+            prompt=prompt,
+            num_inference_steps=4,
+            guidance_scale=1.0,
+            generator=g,
+            width=ow,
+            height=oh,
+        ).images[0]
     elif model == "gemini":
         from bk.gemini import gemini_edit
 
@@ -115,8 +143,9 @@ def crop_box(mask: np.ndarray, ctx: float = 1.6, min_side: int = 384) -> tuple[i
     return x0, y0, x0 + bw, y0 + bh
 
 
-def region_edit(model: str, img: np.ndarray, region: np.ndarray, prompt: str, refs: list[np.ndarray],
-                seed: int) -> tuple[np.ndarray, float]:
+def region_edit(
+    model: str, img: np.ndarray, region: np.ndarray, prompt: str, refs: list[np.ndarray], seed: int
+) -> tuple[np.ndarray, float]:
     """Grey out `region`, edit a crop around it, paste the result back inside the region only."""
     import cv2
 
@@ -126,14 +155,25 @@ def region_edit(model: str, img: np.ndarray, region: np.ndarray, prompt: str, re
     crop[rc] = GREY
     out, dt = edit(model, [crop, *refs], prompt, seed)
     soft = cv2.GaussianBlur(rc.astype(np.float32), (0, 0), 2.0)
-    soft = np.maximum(soft, cv2.erode(rc.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(np.float32))[..., None]
+    soft = np.maximum(
+        soft, cv2.erode(rc.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(np.float32)
+    )[..., None]
     res = img.copy().astype(np.float32)
     res[y0:y1, x0:x1] = res[y0:y1, x0:x1] * (1 - soft) + out.astype(np.float32) * soft
     return np.clip(res, 0, 255).astype(np.uint8), dt
 
 
-def arm_b(model: str, photo: np.ndarray, clear_region: np.ndarray, items: list[dict], full_masks: np.ndarray,
-          refs: dict, check_item, retries: int = 2, seed0: int = 1) -> dict:
+def arm_b(
+    model: str,
+    photo: np.ndarray,
+    clear_region: np.ndarray,
+    items: list[dict],
+    full_masks: np.ndarray,
+    refs: dict,
+    check_item,
+    retries: int = 2,
+    seed0: int = 1,
+) -> dict:
     """photo: keyframe (uint8, render size). clear_region: removed furniture (bool).
     items: render items; full_masks[i]: item i's silhouette from the composite (the
     layout guide). refs[i]: listing cutout on white. check_item(img, i) -> (passed, score, detail)."""
@@ -143,7 +183,9 @@ def arm_b(model: str, photo: np.ndarray, clear_region: np.ndarray, items: list[d
     img = photo.copy()
     t_total = 0.0
     union = full_masks.any(0) if len(full_masks) else np.zeros(photo.shape[:2], bool)
-    leftover = clear_region & ~cv2.dilate(union.astype(np.uint8), np.ones((5, 5), np.uint8)).astype(bool)
+    leftover = clear_region & ~cv2.dilate(union.astype(np.uint8), np.ones((5, 5), np.uint8)).astype(
+        bool
+    )
     if leftover.sum() > 200:
         img, dt = region_edit(model, img, leftover, CLEAN_PROMPT, [], seed0)
         t_total += dt
@@ -157,21 +199,43 @@ def arm_b(model: str, photo: np.ndarray, clear_region: np.ndarray, items: list[d
         region = cv2.dilate(m.astype(np.uint8), np.ones((9, 9), np.uint8)).astype(bool)
         if items[i]["tier"] != "art":
             # include the old furniture under the new item, if any
-            region |= clear_region & cv2.dilate(m.astype(np.uint8), np.ones((41, 41), np.uint8)).astype(bool)
+            region |= clear_region & cv2.dilate(
+                m.astype(np.uint8), np.ones((41, 41), np.uint8)
+            ).astype(bool)
         attempts = []
         for a in range(retries + 1):
-            cand, dt = region_edit(model, img, region, place_prompt(items[i]["name"], items[i]["tier"]), [refs[i]],
-                                   seed0 + 100 * (a + 1) + i)
+            cand, dt = region_edit(
+                model,
+                img,
+                region,
+                place_prompt(items[i]["name"], items[i]["tier"]),
+                [refs[i]],
+                seed0 + 100 * (a + 1) + i,
+            )
             t_total += dt
             ok, score, detail = check_item(cand, i)
-            attempts.append({"attempt": a, "passed": bool(ok), "score": float(score), "seconds": round(dt, 2),
-                             "detail": detail, "_img": cand})
+            attempts.append(
+                {
+                    "attempt": a,
+                    "passed": bool(ok),
+                    "score": float(score),
+                    "seconds": round(dt, 2),
+                    "detail": detail,
+                    "_img": cand,
+                }
+            )
             if ok:
                 break
         best = max(attempts, key=lambda x: (x["passed"], x["score"]))
         img = best["_img"]
         for x in attempts:
             x.pop("_img")
-        log.append({"step": "place", "item": items[i]["id"], "attempts": attempts,
-                    "passed": best["passed"]})
+        log.append(
+            {
+                "step": "place",
+                "item": items[i]["id"],
+                "attempts": attempts,
+                "passed": best["passed"],
+            }
+        )
     return {"image": img, "log": log, "model_seconds": round(t_total, 1)}

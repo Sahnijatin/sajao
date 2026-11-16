@@ -33,24 +33,71 @@ OUT = REPO / "eval" / "render-bakeoff" / "designs"
 # with room for an armchair (relative to the anchor's right). zone: objects whose
 # centre is inside [xmin, xmax, ymin, ymax] are cleared for Best match and Bold.
 ROOMS = {
-    "frl_apartment_0": {"kind": "living", "back": [-4.2, -3.2], "front_deg": 90, "side": -1, "max_len": 2.8,
-                        "zone": [-6.4, -2.6, -3.5, 0.4]},
-    "arkit_living_47331265": {"kind": "living", "back": [0.1, -2.9], "front_deg": 90, "side": 1, "max_len": 2.3,
-                              "zone": [-1.4, 1.6, -3.1, -0.3]},
-    "arkit_living_41159541": {"kind": "living", "back": [1.95, -0.9], "front_deg": 180, "side": -1,
-                              "max_len": 2.3, "zone": [-0.6, 2.1, -2.6, 0.3]},
-    "arkit_living_41159566": {"kind": "living", "back": [-1.7, 1.5], "front_deg": 0, "side": -1, "max_len": 2.4,
-                              "zone": [-1.9, 0.4, 0.2, 2.9], "hero": 89},
-    "arkit_bedroom_47895350": {"kind": "bedroom", "back": [-0.95, 2.45], "front_deg": 270, "side": -1,
-                               "max_len": 2.2, "zone": [-2.0, 0.2, -0.2, 2.6]},
+    "frl_apartment_0": {
+        "kind": "living",
+        "back": [-4.2, -3.2],
+        "front_deg": 90,
+        "side": -1,
+        "max_len": 2.8,
+        "zone": [-6.4, -2.6, -3.5, 0.4],
+    },
+    "arkit_living_47331265": {
+        "kind": "living",
+        "back": [0.1, -2.9],
+        "front_deg": 90,
+        "side": 1,
+        "max_len": 2.3,
+        "zone": [-1.4, 1.6, -3.1, -0.3],
+    },
+    "arkit_living_41159541": {
+        "kind": "living",
+        "back": [1.95, -0.9],
+        "front_deg": 180,
+        "side": -1,
+        "max_len": 2.3,
+        "zone": [-0.6, 2.1, -2.6, 0.3],
+    },
+    "arkit_living_41159566": {
+        "kind": "living",
+        "back": [-1.7, 1.5],
+        "front_deg": 0,
+        "side": -1,
+        "max_len": 2.4,
+        "zone": [-1.9, 0.4, 0.2, 2.9],
+        "hero": 89,
+    },
+    "arkit_bedroom_47895350": {
+        "kind": "bedroom",
+        "back": [-0.95, 2.45],
+        "front_deg": 270,
+        "side": -1,
+        "max_len": 2.2,
+        "zone": [-2.0, 0.2, -0.2, 2.6],
+    },
 }
-NEVER_CLEAR = ("wardrobe", "shelf", "cabinet", "curtain", "television", "tv", "sink", "refrigerator", "fireplace",
-               "desk", "bathtub", "monitor")
+NEVER_CLEAR = (
+    "wardrobe",
+    "shelf",
+    "cabinet",
+    "curtain",
+    "television",
+    "tv",
+    "sink",
+    "refrigerator",
+    "fireplace",
+    "desk",
+    "bathtub",
+    "monitor",
+)
 
 # Plausible listing sizes by category (cm): (min, max) of the largest horizontal side and of height.
 PLAUSIBLE = {
-    "sofa": ((120, 330), (60, 110)), "bed": ((150, 230), (20, 140)), "almirah": ((60, 260), (120, 240)),
-    "table": ((35, 220), (30, 110)), "chair": ((40, 110), (55, 130)), "lamp": ((10, 70), (20, 210)),
+    "sofa": ((120, 330), (60, 110)),
+    "bed": ((150, 230), (20, 140)),
+    "almirah": ((60, 260), (120, 240)),
+    "table": ((35, 220), (30, 110)),
+    "chair": ((40, 110), (55, 130)),
+    "lamp": ((10, 70), (20, 210)),
 }
 
 
@@ -106,7 +153,11 @@ def pick(cands: list[dict], used: set, bold: bool, sat: dict, fits=lambda x: Tru
 
 
 def by_cat(listings, cat, ready: set, tier_mesh=True):
-    return [x for x in listings if x["category"] == cat and plausible(x) and (not tier_mesh or x["id"] in ready)]
+    return [
+        x
+        for x in listings
+        if x["category"] == cat and plausible(x) and (not tier_mesh or x["id"] in ready)
+    ]
 
 
 def unit(deg):
@@ -118,7 +169,9 @@ def rot_for_front(front_deg: float) -> float:
     return (front_deg + 90.0) % 360.0
 
 
-def plan(room: str, cfg: dict, listings: list[dict], ready: set, sat: dict, slot: str) -> list[dict]:
+def plan(
+    room: str, cfg: dict, listings: list[dict], ready: set, sat: dict, slot: str
+) -> list[dict]:
     """Items for one design. slot: best_value (Refresh), best_match, bold."""
     f = unit(cfg["front_deg"])
     right = np.array([f[1], -f[0]])
@@ -129,12 +182,23 @@ def plan(room: str, cfg: dict, listings: list[dict], ready: set, sat: dict, slot
     items = []
 
     def add(iid, x, tier, pos, rot, z=0.0, **kw):
-        items.append({"id": iid, "listing": x["id"], "tier": tier, "position": [round(float(pos[0]), 3),
-                      round(float(pos[1]), 3)], "rotation_deg": round(rot % 360, 1), "z": round(z, 3), **kw})
+        items.append(
+            {
+                "id": iid,
+                "listing": x["id"],
+                "tier": tier,
+                "position": [round(float(pos[0]), 3), round(float(pos[1]), 3)],
+                "rotation_deg": round(rot % 360, 1),
+                "z": round(z, 3),
+                **kw,
+            }
+        )
 
     rugs = [x for x in listings if x["category"] == "rug"]
     arts = [x for x in listings if x["category"] == "art"]
-    plants = [x for x in listings if x["category"] == "plant" and (x["dims_cm"].get("height") or 0) >= 80]
+    plants = [
+        x for x in listings if x["category"] == "plant" and (x["dims_cm"].get("height") or 0) >= 80
+    ]
     lamps = by_cat(listings, "lamp", ready)
     floor_lamps = [x for x in lamps if x["dims_cm"].get("height", 0) >= 100]
     table_lamps = [x for x in lamps if x["dims_cm"].get("height", 0) < 80]
@@ -150,33 +214,68 @@ def plan(room: str, cfg: dict, listings: list[dict], ready: set, sat: dict, slot
             s = pick(sofas, used, bold, sat, fits=lambda x: size_m(x)[0] <= cfg["max_len"])
             sofa_w, sofa_d, sofa_h = size_m(s)
             add("sofa", s, "mesh", back + f * (sofa_d / 2 + 0.03), rot_for_front(cfg["front_deg"]))
-            coffee = pick(tables, used, bold, sat, fits=lambda x: size_m(x)[2] <= 0.55 and 0.6 <= size_m(x)[0] <= 1.4)
+            coffee = pick(
+                tables,
+                used,
+                bold,
+                sat,
+                fits=lambda x: size_m(x)[2] <= 0.55 and 0.6 <= size_m(x)[0] <= 1.4,
+            )
             if coffee:
-                cw, cd, _ = size_m(coffee)
-                add("coffee_table", coffee, "mesh", back + f * (sofa_d + 0.45 + cd / 2), rot_for_front(cfg["front_deg"]))
-            chair = pick(by_cat(listings, "chair", ready), used, bold, sat, fits=lambda x: size_m(x)[0] >= 0.6)
+                _cw, cd, _ = size_m(coffee)
+                add(
+                    "coffee_table",
+                    coffee,
+                    "mesh",
+                    back + f * (sofa_d + 0.45 + cd / 2),
+                    rot_for_front(cfg["front_deg"]),
+                )
+            chair = pick(
+                by_cat(listings, "chair", ready),
+                used,
+                bold,
+                sat,
+                fits=lambda x: size_m(x)[0] >= 0.6,
+            )
             if chair:
-                aw, ad, _ = size_m(chair)
+                _aw, ad, _ = size_m(chair)
                 pos = back + f * (sofa_d + 0.45 + 0.35) + side * right * (0.5 + 0.45 + ad / 2 + 0.2)
                 face = -side * right
-                add("armchair", chair, "mesh", pos, rot_for_front(math.degrees(math.atan2(face[1], face[0]))))
+                add(
+                    "armchair",
+                    chair,
+                    "mesh",
+                    pos,
+                    rot_for_front(math.degrees(math.atan2(face[1], face[0]))),
+                )
         rug = rugs[(slot_i * 2) % len(rugs)] if rugs else None
         if rug:
             add("rug", rug, "rug", back + f * (sofa_d + 0.45 + 0.25), cfg["front_deg"] + 90)
         if floor_lamps:
             lamp = pick(floor_lamps, used, bold, sat)
             if lamp:
-                add("floor_lamp", lamp, "mesh", back + f * 0.3 - side * right * (sofa_w / 2 + 0.3),
-                    rot_for_front(cfg["front_deg"]))
+                add(
+                    "floor_lamp",
+                    lamp,
+                    "mesh",
+                    back + f * 0.3 - side * right * (sofa_w / 2 + 0.3),
+                    rot_for_front(cfg["front_deg"]),
+                )
     else:  # bedroom
         if slot == "best_value":
-            bed_w, bed_l, bed_h = 1.6, 2.0, 0.5
+            bed_w, bed_l = 1.6, 2.0
         else:
             beds = by_cat(listings, "bed", ready)
             b = pick(beds, used, bold, sat, fits=lambda x: size_m(x)[1] <= 1.7)
-            bed_l, bed_w, bed_h = size_m(b)  # long side runs along the front direction
+            bed_l, bed_w, _bed_h = size_m(b)  # long side runs along the front direction
             add("bed", b, "mesh", back + f * (bed_l / 2 + 0.03), rot_for_front(cfg["front_deg"]))
-            night = pick(tables, used, bold, sat, fits=lambda x: size_m(x)[0] <= 0.6 and 0.35 <= size_m(x)[2] <= 0.7)
+            night = pick(
+                tables,
+                used,
+                bold,
+                sat,
+                fits=lambda x: size_m(x)[0] <= 0.6 and 0.35 <= size_m(x)[2] <= 0.7,
+            )
             if night:
                 nw, nd, nh = size_m(night)
                 pos = back + f * (nd / 2 + 0.05) + (-side) * right * (bed_w / 2 + 0.05 + nw / 2)
@@ -190,12 +289,24 @@ def plan(room: str, cfg: dict, listings: list[dict], ready: set, sat: dict, slot
         if slot == "best_value" and floor_lamps:
             lamp = pick(floor_lamps, used, bold, sat)
             if lamp:
-                add("floor_lamp", lamp, "mesh", back + f * 0.3 + side * right * (bed_w / 2 + 0.35),
-                    rot_for_front(cfg["front_deg"]))
+                add(
+                    "floor_lamp",
+                    lamp,
+                    "mesh",
+                    back + f * 0.3 + side * right * (bed_w / 2 + 0.35),
+                    rot_for_front(cfg["front_deg"]),
+                )
         sofa_w, sofa_h = bed_w, 1.0
     if arts:
         art = arts[(slot_i * 2) % len(arts)]
-        add("wall_art", art, "art", back + f * 0.02, rot_for_front(cfg["front_deg"]), z=round(sofa_h + 0.3, 2))
+        add(
+            "wall_art",
+            art,
+            "art",
+            back + f * 0.02,
+            rot_for_front(cfg["front_deg"]),
+            z=round(sofa_h + 0.3, 2),
+        )
     if plants:
         p = plants[slot_i % len(plants)]
         add("plant", p, "billboard", back + f * 0.35 + side * right * (sofa_w / 2 + 0.35), 0.0)
@@ -230,7 +341,13 @@ def item_box_world(fr, it, listing) -> np.ndarray:
         for sy in (-0.5, 0.5):
             for sz in (0, 1):
                 lx, ly = sx * w, sy * d
-                pts.append([it["position"][0] + c * lx - s * ly, it["position"][1] + s * lx + c * ly, it["z"] + sz * h])
+                pts.append(
+                    [
+                        it["position"][0] + c * lx - s * ly,
+                        it["position"][1] + s * lx + c * ly,
+                        it["z"] + sz * h,
+                    ]
+                )
     return to_world(fr, np.array(pts))
 
 
@@ -250,15 +367,27 @@ def hero_frame(fr, cams: dict, items, lmap) -> tuple[int, dict]:
             if (z < 0.4).any():
                 behind += 1
                 continue
-            ok = (uv[:, 0] >= -0.02 * w) & (uv[:, 0] <= 1.02 * w) & (uv[:, 1] >= -0.02 * h) & (uv[:, 1] <= 1.02 * h)
+            ok = (
+                (uv[:, 0] >= -0.02 * w)
+                & (uv[:, 0] <= 1.02 * w)
+                & (uv[:, 1] >= -0.02 * h)
+                & (uv[:, 1] <= 1.02 * h)
+            )
             inside += wt * ok.mean()
             x0, y0 = np.clip(uv.min(0), 0, [w, h])
             x1, y1 = np.clip(uv.max(0), 0, [w, h])
             area += (x1 - x0) * (y1 - y0) / (w * h)
         score = inside / wsum - 0.5 * behind / len(items) + 0.15 * min(area, 1.0)
         if best is None or score > best[0]:
-            best = (score, i, {"weighted_inside": round(float(inside / wsum), 3), "behind": behind,
-                               "screen_area": round(float(area), 3)})
+            best = (
+                score,
+                i,
+                {
+                    "weighted_inside": round(float(inside / wsum), 3),
+                    "behind": behind,
+                    "screen_area": round(float(area), 3),
+                },
+            )
     return best[1], best[2]
 
 
@@ -267,9 +396,12 @@ def hero_frame(fr, cams: dict, items, lmap) -> tuple[int, dict]:
 
 def product(x: dict) -> dict:
     w, d, h = size_m(x)
-    group = "lighting" if x["category"] == "lamp" else ("decor" if x["category"] in ("rug", "art", "plant") else
-                                                        "furniture")
-    price = int(round((x.get("price_inr") or 0) * 100))
+    group = (
+        "lighting"
+        if x["category"] == "lamp"
+        else ("decor" if x["category"] in ("rug", "art", "plant") else "furniture")
+    )
+    price = round((x.get("price_inr") or 0) * 100)
     dim = lambda v: {"value_m": round(v, 3), "source": "estimated", "error_band_m": 0.02}  # noqa: E731
     return {
         "schema_version": "1.0",
@@ -285,13 +417,19 @@ def product(x: dict) -> dict:
         "checked_at": "2026-11-16T00:00:00Z",
         "images": [u for u in x["images"][:3]],
         "image_use_permitted": True,
-        "routes": [{"kind": "buy", "retailer": x["source"], "url": x["url"],
-                    "price": {"currency": "INR", "amount_minor": price}}],
+        "routes": [
+            {
+                "kind": "buy",
+                "retailer": x["source"],
+                "url": x["url"],
+                "price": {"currency": "INR", "amount_minor": price},
+            }
+        ],
     }
 
 
 def design_object(room: str, slot: str, archetype: str, items: list[dict], lmap: dict) -> dict:
-    total = sum(int(round((lmap[i["listing"]].get("price_inr") or 0) * 100)) for i in items)
+    total = sum(round((lmap[i["listing"]].get("price_inr") or 0) * 100) for i in items)
     return {
         "schema_version": "1.0",
         "id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"bakeoff/{room}/{slot}")),
@@ -300,17 +438,37 @@ def design_object(room: str, slot: str, archetype: str, items: list[dict], lmap:
         "created_at": "2026-11-16T00:00:00Z",
         "slot": slot,
         "archetype": archetype,
-        "items": [{"id": i["id"], "product": product(lmap[i["listing"]]),
-                   "position": {"x_m": i["position"][0], "y_m": i["position"][1]},
-                   "rotation_deg": i["rotation_deg"] % 360, "placed_by": "user"} for i in items],
+        "items": [
+            {
+                "id": i["id"],
+                "product": product(lmap[i["listing"]]),
+                "position": {"x_m": i["position"][0], "y_m": i["position"][1]},
+                "rotation_deg": i["rotation_deg"] % 360,
+                "placed_by": "user",
+            }
+            for i in items
+        ],
         "materials": {},
         "lighting": {"layers": ["ambient", "accent"]},
         "total_cost": {"currency": "INR", "amount_minor": total},
         "relaxations": [],
-        "check_report": {"passed": True, "checked_at": "2026-11-16T00:00:00Z", "budget_ok": True, "stock_ok": True,
-                         "rules": [{"rule": "hand_placed_for_render_bakeoff", "kind": "soft", "passed": True,
-                                    "detail": "Placed by rule for the render bake-off; not run through the solver."}]},
-        "explanations": ["Render bake-off fixture: placed by explicit rules, not by the design engine."],
+        "check_report": {
+            "passed": True,
+            "checked_at": "2026-11-16T00:00:00Z",
+            "budget_ok": True,
+            "stock_ok": True,
+            "rules": [
+                {
+                    "rule": "hand_placed_for_render_bakeoff",
+                    "kind": "soft",
+                    "passed": True,
+                    "detail": "Placed by rule for the render bake-off; not run through the solver.",
+                }
+            ],
+        },
+        "explanations": [
+            "Render bake-off fixture: placed by explicit rules, not by the design engine."
+        ],
     }
 
 
@@ -321,7 +479,11 @@ def main(work: Path) -> None:
 
     listings = load_listings(work)
     lmap = {x["id"]: x for x in listings}
-    ready = set(json.loads((work / "ready.json").read_text())) if (work / "ready.json").exists() else set(lmap)
+    ready = (
+        set(json.loads((work / "ready.json").read_text()))
+        if (work / "ready.json").exists()
+        else set(lmap)
+    )
     sat = {x["id"]: saturation(work, x) for x in listings}
     schemas = REPO / "packages" / "schemas" / "schemas" / "v1"
     reg = Registry()
@@ -330,8 +492,9 @@ def main(work: Path) -> None:
         reg = reg.with_resource(s["$id"], Resource.from_contents(s))
         reg = reg.with_resource(f.name, Resource.from_contents(s))
     design_schema = json.loads((schemas / "design.schema.json").read_text())
-    validator = jsonschema.Draft202012Validator(design_schema, registry=reg,
-                                                format_checker=jsonschema.FormatChecker())
+    validator = jsonschema.Draft202012Validator(
+        design_schema, registry=reg, format_checker=jsonschema.FormatChecker()
+    )
     OUT.mkdir(parents=True, exist_ok=True)
     (work / "overlays").mkdir(exist_ok=True)
     for room, cfg in ROOMS.items():
@@ -339,12 +502,22 @@ def main(work: Path) -> None:
         fr = survey["frame"]
         cams = json.loads((work / "cameras" / f"{room}.json").read_text())
         designs, objs, all_items = [], [], []
-        arche = {"best_value": "refresh", "best_match": "conversation_set" if cfg["kind"] == "living" else
-                 "bed_centred", "bold": "statement"}
+        arche = {
+            "best_value": "refresh",
+            "best_match": "conversation_set" if cfg["kind"] == "living" else "bed_centred",
+            "bold": "statement",
+        }
         for slot in ("best_value", "best_match", "bold"):
             items = plan(room, cfg, listings, ready, sat, slot)
             variant = "original" if slot == "best_value" else "zone"
-            designs.append({"id": f"{room.split('_')[-1]}_{slot}", "slot": slot, "variant": variant, "items": items})
+            designs.append(
+                {
+                    "id": f"{room.split('_')[-1]}_{slot}",
+                    "slot": slot,
+                    "variant": variant,
+                    "items": items,
+                }
+            )
             obj = design_object(room, slot, arche[slot], items, lmap)
             errs = sorted(validator.iter_errors(obj), key=str)
             if errs:
@@ -352,29 +525,55 @@ def main(work: Path) -> None:
             objs.append(obj)
             all_items += items
         hero, why = hero_frame(fr, cams, all_items, lmap)
-        if "hero" in cfg:  # chosen by hand from the top candidates (the best-scoring ones look into a telescope)
+        if (
+            "hero" in cfg
+        ):  # chosen by hand from the top candidates (the best-scoring ones look into a telescope)
             hero, why = cfg["hero"], {"chosen_by_hand": True, "auto_choice": hero, **why}
         zx0, zx1, zy0, zy1 = cfg["zone"]
-        clear_ids = [b["id"] for b in survey["boxes"]
-                     if zx0 <= b["center"][0] <= zx1 and zy0 <= b["center"][1] <= zy1
-                     and not any(k in b["label"] for k in NEVER_CLEAR)]
+        clear_ids = [
+            b["id"]
+            for b in survey["boxes"]
+            if zx0 <= b["center"][0] <= zx1
+            and zy0 <= b["center"][1] <= zy1
+            and not any(k in b["label"] for k in NEVER_CLEAR)
+        ]
         # A similar SKU for the planted "wrong product" error: same category, next in colour order.
         similar = {}
         for it in all_items:
             x = lmap[it["listing"]]
             if it["tier"] == "mesh":
-                pool = sorted([y for y in by_cat(listings, x["category"], ready) if y["id"] != x["id"]],
-                              key=lambda y: abs(sat[y["id"]] - sat[x["id"]]))
+                pool = sorted(
+                    [y for y in by_cat(listings, x["category"], ready) if y["id"] != x["id"]],
+                    key=lambda y: abs(sat[y["id"]] - sat[x["id"]]),
+                )
                 if pool:
                     similar[x["id"]] = pool[0]["id"]
         plant_extra = [p for p in listings if p["category"] == "plant"]
         f = unit(cfg["front_deg"])
         right = np.array([f[1], -f[0]])
-        planted = {"listing": plant_extra[-1]["id"], "tier": "billboard",
-                   "position": (np.array(cfg["back"]) + f * 1.6 + right * 0.9 * -cfg["side"]).round(3).tolist(),
-                   "rotation_deg": 0.0, "scale": 1.0} if plant_extra else None
-        room_file = {"room": room, "hero_frame": hero, "hero_why": why, "clear": {"zone": clear_ids},
-                     "designs": designs, "similar": similar, "planted_plant": planted, "config": cfg}
+        planted = (
+            {
+                "listing": plant_extra[-1]["id"],
+                "tier": "billboard",
+                "position": (np.array(cfg["back"]) + f * 1.6 + right * 0.9 * -cfg["side"])
+                .round(3)
+                .tolist(),
+                "rotation_deg": 0.0,
+                "scale": 1.0,
+            }
+            if plant_extra
+            else None
+        )
+        room_file = {
+            "room": room,
+            "hero_frame": hero,
+            "hero_why": why,
+            "clear": {"zone": clear_ids},
+            "designs": designs,
+            "similar": similar,
+            "planted_plant": planted,
+            "config": cfg,
+        }
         (OUT / f"{room}.json").write_text(json.dumps(room_file, indent=1))
         (OUT / f"{room}.designs.json").write_text(json.dumps(objs, indent=1))
         # Overlay: item boxes projected on the hero keyframe, one colour per design.
@@ -385,8 +584,11 @@ def main(work: Path) -> None:
             for di, d in enumerate(designs):
                 col = [(0, 255, 255), (0, 200, 0), (255, 0, 255)][di]
                 for it in d["items"]:
-                    uv, z = project(np.asarray(fcam["K"]), np.asarray(fcam["c2w"]),
-                                    item_box_world(fr, it, lmap[it["listing"]]))
+                    uv, z = project(
+                        np.asarray(fcam["K"]),
+                        np.asarray(fcam["c2w"]),
+                        item_box_world(fr, it, lmap[it["listing"]]),
+                    )
                     if (z > 0.2).all():
                         hull = cv2.convexHull(uv.astype(np.float32)).astype(np.int32)
                         cv2.polylines(img, [hull], True, col, 1)

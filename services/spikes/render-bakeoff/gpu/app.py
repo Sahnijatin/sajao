@@ -23,7 +23,9 @@ SRC = HERE.parent / "src" / "bakeoff"
 TWIN_GPU = HERE.parent.parent / "twin-risk" / "gpu" / "twin_gpu"
 TWIN_SRC = HERE.parent.parent / "twin-risk" / "src" / "twin_risk"
 # Local paths only matter where the app is defined; inside containers app.py sits in /root.
-GATEWAY_SRC = HERE.parents[2] / "gateway" / "src" / "sajao_gateway" if len(HERE.parents) > 2 else HERE
+GATEWAY_SRC = (
+    HERE.parents[2] / "gateway" / "src" / "sajao_gateway" if len(HERE.parents) > 2 else HERE
+)
 
 MAX_GPUS = 3
 CU124 = "https://download.pytorch.org/whl/cu124"
@@ -38,11 +40,29 @@ twin_vol = modal.Volume.from_name("sajao-twin-risk")
 def _base(py: str = "3.11"):
     return (
         modal.Image.from_registry("nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04", add_python=py)
-        .apt_install("git", "libgl1", "libglib2.0-0", "build-essential", "clang", "libegl1", "libgles2", "ninja-build")
+        .apt_install(
+            "git",
+            "libgl1",
+            "libglib2.0-0",
+            "build-essential",
+            "clang",
+            "libegl1",
+            "libgles2",
+            "ninja-build",
+        )
         .pip_install("torch==2.6.0", "torchvision==0.21.0", index_url=CU124)
-        .run_commands("printf 'torch==2.6.0\\ntorchvision==0.21.0\\nnumpy==1.26.4\\n' > /constraints.txt")
-        .env({"PIP_CONSTRAINT": "/constraints.txt", "TORCH_CUDA_ARCH_LIST": "8.6;8.9;9.0", "MAX_JOBS": "8",
-              "CUDA_HOME": "/usr/local/cuda", "CPATH": "/usr/local/cuda/include"})
+        .run_commands(
+            "printf 'torch==2.6.0\\ntorchvision==0.21.0\\nnumpy==1.26.4\\n' > /constraints.txt"
+        )
+        .env(
+            {
+                "PIP_CONSTRAINT": "/constraints.txt",
+                "TORCH_CUDA_ARCH_LIST": "8.6;8.9;9.0",
+                "MAX_JOBS": "8",
+                "CUDA_HOME": "/usr/local/cuda",
+                "CPATH": "/usr/local/cuda/include",
+            }
+        )
     )
 
 
@@ -81,12 +101,35 @@ asset_image = (
 # Twin image: the SJ-116 spike's pinned torch and gsplat, plus Blender (bpy) for products.
 twin_image = (
     modal.Image.from_registry("nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04", add_python="3.11")
-    .apt_install("git", "libgl1", "libglib2.0-0", "build-essential", "clang", "libegl1", "libxi6", "libxxf86vm1",
-                 "libxfixes3", "libxrender1", "libxkbcommon0", "libsm6", "libx11-6")
+    .apt_install(
+        "git",
+        "libgl1",
+        "libglib2.0-0",
+        "build-essential",
+        "clang",
+        "libegl1",
+        "libxi6",
+        "libxxf86vm1",
+        "libxfixes3",
+        "libxrender1",
+        "libxkbcommon0",
+        "libsm6",
+        "libx11-6",
+    )
     .pip_install("torch==2.4.1", "torchvision==0.19.1", index_url=CU124)
-    .run_commands("printf 'torch==2.4.1\\ntorchvision==0.19.1\\nnumpy==1.26.4\\n' > /constraints.txt")
-    .env({"PIP_CONSTRAINT": "/constraints.txt", "TORCH_CUDA_ARCH_LIST": "8.6;8.9;9.0", "MAX_JOBS": "8"})
-    .pip_install("numpy==1.26.4", "ninja==1.11.1.3", "jaxtyping==0.2.36", "rich==13.9.4", "packaging==24.2")
+    .run_commands(
+        "printf 'torch==2.4.1\\ntorchvision==0.19.1\\nnumpy==1.26.4\\n' > /constraints.txt"
+    )
+    .env(
+        {
+            "PIP_CONSTRAINT": "/constraints.txt",
+            "TORCH_CUDA_ARCH_LIST": "8.6;8.9;9.0",
+            "MAX_JOBS": "8",
+        }
+    )
+    .pip_install(
+        "numpy==1.26.4", "ninja==1.11.1.3", "jaxtyping==0.2.36", "rich==13.9.4", "packaging==24.2"
+    )
     .run_commands("pip install --no-build-isolation gsplat==1.5.3")
     .pip_install(
         "pytorch-msssim==1.0.0",
@@ -96,8 +139,14 @@ twin_image = (
         "pillow==11.2.1",
         "bpy==4.2.0",
     )
-    .env({"PYTHONUNBUFFERED": "1", "PYTHONPATH": "/root", "TORCH_EXTENSIONS_DIR": "/root/torch_extensions",
-          "OPENCV_IO_ENABLE_OPENEXR": "1"})
+    .env(
+        {
+            "PYTHONUNBUFFERED": "1",
+            "PYTHONPATH": "/root",
+            "TORCH_EXTENSIONS_DIR": "/root/torch_extensions",
+            "OPENCV_IO_ENABLE_OPENEXR": "1",
+        }
+    )
     .add_local_dir(SRC, "/root/bakeoff")
     .add_local_dir(TWIN_SRC, "/root/twin_risk")
     .add_local_dir(TWIN_GPU, "/root/twin_gpu")
@@ -181,7 +230,7 @@ def triposg(lids: list[str]) -> list[dict]:
     for lid in lids:
         try:
             out.append(run_triposg(lid))
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             out.append({"id": lid, "error": repr(e)[:400]})
         bk_vol.commit()
     return out
@@ -195,7 +244,7 @@ def gate(model: str, jobs: list[tuple[str, list[str]]]) -> list[dict]:
     for lid, against in jobs:
         try:
             out.append(gate_listing(model, lid, against))
-        except Exception as e:  # noqa: BLE001
+        except Exception:
             import traceback
 
             out.append({"id": lid, "model": model, "error": traceback.format_exc()[-1500:]})
@@ -211,32 +260,42 @@ def prepare_assets(model: str, lids: list[str]) -> list[dict]:
     for lid in lids:
         try:
             out.append(prepare_asset(model, lid))
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             out.append({"id": lid, "error": repr(e)[:400]})
         bk_vol.commit()
     return out
 
 
-@app.function(image=twin_image, gpu="L40S", volumes=TWIN_VOLS, timeout=3600, max_containers=MAX_GPUS)
+@app.function(
+    image=twin_image, gpu="L40S", volumes=TWIN_VOLS, timeout=3600, max_containers=MAX_GPUS
+)
 def compose(room: str, design_id: str, planted: str = "") -> dict:
     """Arm A (splat background) and the C3 base (keyframe background) for one design."""
     import json as _j
 
-    from bk.design import load_render_design
     from bk.compose import composite
+    from bk.design import load_render_design
 
     bk_vol.reload()
     d = load_render_design(room, design_id, planted)
     base = Path("/bk/renders") / room / (design_id + (f"__{planted}" if planted else ""))
     out = {"A": composite(room, d, d["hero_frame"], d["variant"], "splat", out=base / "A")}
     if not planted:
-        out["C3base"] = composite(room, d, d["hero_frame"], d["variant"], "keyframe", out=base / "C3base")
+        out["C3base"] = composite(
+            room, d, d["hero_frame"], d["variant"], "keyframe", out=base / "C3base"
+        )
     bk_vol.commit()
     return _j.loads(_j.dumps(out, default=float))
 
 
-@app.function(image=gen_image, gpu="H100", volumes=TWIN_VOLS, timeout=3600, max_containers=MAX_GPUS,
-              secrets=[modal.Secret.from_dict({"PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True"})])
+@app.function(
+    image=gen_image,
+    gpu="H100",
+    volumes=TWIN_VOLS,
+    timeout=3600,
+    max_containers=MAX_GPUS,
+    secrets=[modal.Secret.from_dict({"PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True"})],
+)
 def generate(room: str, design_id: str, model: str, arms: list[str]) -> dict:
     from bk.run import generate_arms
 
@@ -271,7 +330,11 @@ def _listings(extras: bool = False) -> list[dict]:
 
 def _room_files() -> dict:
     d = Path(__file__).resolve().parents[4] / "eval" / "render-bakeoff" / "designs"
-    return {f.stem: json.loads(f.read_text()) for f in sorted(d.glob("*.json")) if not f.stem.endswith(".designs")}
+    return {
+        f.stem: json.loads(f.read_text())
+        for f in sorted(d.glob("*.json"))
+        if not f.stem.endswith(".designs")
+    }
 
 
 PLANTED = ["swap", "scale10", "move15", "plant"]
@@ -286,10 +349,17 @@ def main(stage: str, model: str = "triposg", only: str = "", limit: int = 0, gen
     out_dir.mkdir(parents=True, exist_ok=True)
     rooms = _room_files()
     if only and stage in ("clear", "compose", "generate", "check", "plant", "pilot"):
-        rooms = {k: v for k, v in rooms.items() if k in only.split(",") or any(
-            d["id"] in only.split(",") for d in v["designs"])}
-    jobs = [(r, d["id"]) for r, rf in rooms.items() for d in rf["designs"]
-            if not only or r in only.split(",") or d["id"] in only.split(",")]
+        rooms = {
+            k: v
+            for k, v in rooms.items()
+            if k in only.split(",") or any(d["id"] in only.split(",") for d in v["designs"])
+        }
+    jobs = [
+        (r, d["id"])
+        for r, rf in rooms.items()
+        for d in rf["designs"]
+        if not only or r in only.split(",") or d["id"] in only.split(",")
+    ]
     if stage == "clear":
         args = [(r, rf["clear"]["zone"], "zone") for r, rf in rooms.items()]
         res = list(clear.starmap(args, return_exceptions=True))
@@ -310,12 +380,18 @@ def main(stage: str, model: str = "triposg", only: str = "", limit: int = 0, gen
         (out_dir / "plant_checks.json").write_text(json.dumps(res, indent=1, default=str))
         return
     if stage == "pilot":
-        res = list(generate.starmap([(r, d, m, ["C1", "C2"]) for r, d in jobs for m in ("qwen", "flux2k")],
-                                    return_exceptions=True))
+        res = list(
+            generate.starmap(
+                [(r, d, m, ["C1", "C2"]) for r, d in jobs for m in ("qwen", "flux2k")],
+                return_exceptions=True,
+            )
+        )
         print(json.dumps(res, default=str)[:3000])
         return
     if stage == "generate":
-        res = list(generate.starmap([(r, d, gen, ARMS_OPEN) for r, d in jobs], return_exceptions=True))
+        res = list(
+            generate.starmap([(r, d, gen, ARMS_OPEN) for r, d in jobs], return_exceptions=True)
+        )
         (out_dir / f"generate_{gen}.json").write_text(json.dumps(res, indent=1, default=str))
         print(json.dumps(res, default=str)[:3000])
         return
@@ -326,7 +402,9 @@ def main(stage: str, model: str = "triposg", only: str = "", limit: int = 0, gen
         return
     if stage == "prepare":
         lids = only.split(",") if only else [x["id"] for x in _listings()]
-        res = [r for rs in prepare_assets.map([model] * MAX_GPUS, _chunks(lids, MAX_GPUS)) for r in rs]
+        res = [
+            r for rs in prepare_assets.map([model] * MAX_GPUS, _chunks(lids, MAX_GPUS)) for r in rs
+        ]
         (out_dir / f"prepare_{model}.json").write_text(json.dumps(res, indent=1, default=float))
         print(sum(1 for r in res if "error" in r), "errors of", len(res))
         return

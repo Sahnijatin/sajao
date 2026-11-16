@@ -16,7 +16,13 @@ from dataclasses import asdict, dataclass
 
 import numpy as np
 
-from bakeoff.metrics import edge_f1, mask_iou, max_edge_shift, mean_color_delta_e, scale_invariant_depth_error
+from bakeoff.metrics import (
+    edge_f1,
+    mask_iou,
+    max_edge_shift,
+    mean_color_delta_e,
+    scale_invariant_depth_error,
+)
 
 SAM = ("facebook/sam2.1-hiera-large", "665f8e2a")
 DINO = ("facebook/dinov2-base", "f9e44c81")
@@ -44,8 +50,10 @@ def sam():
     if "sam" not in _m:
         from transformers import Sam2Model, Sam2Processor
 
-        _m["sam"] = (Sam2Processor.from_pretrained(SAM[0], revision=SAM[1]),
-                     Sam2Model.from_pretrained(SAM[0], revision=SAM[1]).cuda().eval())
+        _m["sam"] = (
+            Sam2Processor.from_pretrained(SAM[0], revision=SAM[1]),
+            Sam2Model.from_pretrained(SAM[0], revision=SAM[1]).cuda().eval(),
+        )
     return _m["sam"]
 
 
@@ -53,8 +61,10 @@ def dino():
     if "dino" not in _m:
         from transformers import AutoImageProcessor, AutoModel
 
-        _m["dino"] = (AutoImageProcessor.from_pretrained(DINO[0], revision=DINO[1]),
-                      AutoModel.from_pretrained(DINO[0], revision=DINO[1]).cuda().eval())
+        _m["dino"] = (
+            AutoImageProcessor.from_pretrained(DINO[0], revision=DINO[1]),
+            AutoModel.from_pretrained(DINO[0], revision=DINO[1]).cuda().eval(),
+        )
     return _m["dino"]
 
 
@@ -83,14 +93,19 @@ def _crop(img, mask, pad=0.08):
     h, w = mask.shape
     x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
     px, py = int((x1 - x0) * pad), int((y1 - y0) * pad)
-    return img[max(0, y0 - py): min(h, y1 + py), max(0, x0 - px): min(w, x1 + px)]
+    return img[max(0, y0 - py) : min(h, y1 + py), max(0, x0 - px) : min(w, x1 + px)]
 
 
 def item_check(final: np.ndarray, ref: np.ndarray, vis: np.ndarray, th: Th) -> dict:
     """One item. `vis` is its visible mask in the composite (the truth)."""
     area = vis.mean()
     if area < th.min_area:
-        return {"present": False, "passed": False, "reason": "not visible in composite", "area": float(area)}
+        return {
+            "present": False,
+            "passed": False,
+            "reason": "not visible in composite",
+            "area": float(area),
+        }
     ys, xs = np.nonzero(vis)
     box = [float(xs.min()), float(ys.min()), float(xs.max() + 1), float(ys.max() + 1)]
     seg = sam_box(final, box)
@@ -102,8 +117,17 @@ def item_check(final: np.ndarray, ref: np.ndarray, vis: np.ndarray, th: Th) -> d
     de = mean_color_delta_e(final, vis, ref, vis)
     pos_ok = iou >= th.iou and shift <= th.edge_px
     rec_ok = emb >= th.emb and de <= th.de
-    return {"present": True, "area": float(area), "iou": iou, "edge_shift_px": shift, "emb": emb, "de": de,
-            "position_ok": bool(pos_ok), "recognisable_ok": bool(rec_ok), "passed": bool(pos_ok and rec_ok)}
+    return {
+        "present": True,
+        "area": float(area),
+        "iou": iou,
+        "edge_shift_px": shift,
+        "emb": emb,
+        "de": de,
+        "position_ok": bool(pos_ok),
+        "recognisable_ok": bool(rec_ok),
+        "passed": bool(pos_ok and rec_ok),
+    }
 
 
 def edges(img: np.ndarray) -> np.ndarray:
@@ -120,14 +144,20 @@ def moge_depth(img: np.ndarray) -> np.ndarray:
         from huggingface_hub import hf_hub_download
         from moge.model.v3 import MoGeModel
 
-        _m["moge"] = MoGeModel.from_pretrained(hf_hub_download(MOGE[0], "model.pt", revision=MOGE[1])).cuda().eval()
+        _m["moge"] = (
+            MoGeModel.from_pretrained(hf_hub_download(MOGE[0], "model.pt", revision=MOGE[1]))
+            .cuda()
+            .eval()
+        )
     x = torch.from_numpy(img).float().cuda().permute(2, 0, 1) / 255
     with torch.no_grad():
         out = _m["moge"].infer(x)
     return out["depth"].float().cpu().numpy()
 
 
-def room_check(final: np.ndarray, ref: np.ndarray, ref_depth: np.ndarray, protect: np.ndarray, th: Th) -> dict:
+def room_check(
+    final: np.ndarray, ref: np.ndarray, ref_depth: np.ndarray, protect: np.ndarray, th: Th
+) -> dict:
     import cv2
 
     valid = ~cv2.dilate(protect.astype(np.uint8), np.ones((15, 15), np.uint8)).astype(bool)
@@ -144,15 +174,47 @@ def detect(img: np.ndarray) -> list[dict]:
         from ultralytics import YOLOE
 
         m = YOLOE("/vol/models/yoloe-26x-seg.pt")
-        names = ["sofa", "chair", "armchair", "table", "coffee table", "bed", "lamp", "potted plant", "rug",
-                 "wardrobe", "shelf", "cabinet", "tv", "picture frame", "vase", "pillow", "curtain", "stool",
-                 "ottoman", "desk", "bench", "mirror", "clock", "basket", "bottle", "book", "person", "dog", "cat"]
+        names = [
+            "sofa",
+            "chair",
+            "armchair",
+            "table",
+            "coffee table",
+            "bed",
+            "lamp",
+            "potted plant",
+            "rug",
+            "wardrobe",
+            "shelf",
+            "cabinet",
+            "tv",
+            "picture frame",
+            "vase",
+            "pillow",
+            "curtain",
+            "stool",
+            "ottoman",
+            "desk",
+            "bench",
+            "mirror",
+            "clock",
+            "basket",
+            "bottle",
+            "book",
+            "person",
+            "dog",
+            "cat",
+        ]
         m.set_classes(names, m.get_text_pe(names))
         _m["yoloe"] = m
     r = _m["yoloe"].predict(img[..., ::-1].copy(), conf=0.2, verbose=False)[0]
     out = []
-    for b, c, k in zip(r.boxes.xyxy.cpu().numpy(), r.boxes.conf.cpu().numpy(), r.boxes.cls.cpu().numpy(),
-                       strict=True):
+    for b, c, k in zip(
+        r.boxes.xyxy.cpu().numpy(),
+        r.boxes.conf.cpu().numpy(),
+        r.boxes.cls.cpu().numpy(),
+        strict=True,
+    ):
         out.append({"box": b.tolist(), "conf": float(c), "label": r.names[int(k)]})
     return out
 
@@ -173,7 +235,7 @@ def invented_check(final: np.ndarray, ref: np.ndarray, product_union: np.ndarray
         if any(_box_iou(d["box"], r["box"]) > 0.3 for r in dr):
             continue
         x0, y0, x1, y1 = (int(v) for v in d["box"])
-        sub = product_union[max(0, y0):y1, max(0, x0):x1]
+        sub = product_union[max(0, y0) : y1, max(0, x0) : x1]
         if sub.size and sub.mean() > 0.5:
             continue
         inv.append(d)
@@ -197,23 +259,43 @@ def aesthetic(img: np.ndarray) -> float:
     if "vlm" not in _m:
         from transformers import AutoModelForImageTextToText, AutoProcessor
 
-        _m["vlm"] = (AutoProcessor.from_pretrained(VLM[0], revision=VLM[1]),
-                     AutoModelForImageTextToText.from_pretrained(VLM[0], revision=VLM[1], torch_dtype=torch.bfloat16)
-                     .cuda().eval())
+        _m["vlm"] = (
+            AutoProcessor.from_pretrained(VLM[0], revision=VLM[1]),
+            AutoModelForImageTextToText.from_pretrained(
+                VLM[0], revision=VLM[1], torch_dtype=torch.bfloat16
+            )
+            .cuda()
+            .eval(),
+        )
     proc, model = _m["vlm"]
-    msgs = [{"role": "user", "content": [{"type": "image", "image": Image.fromarray(img)},
-                                         {"type": "text", "text": AESTHETIC_Q}]}]
-    inp = proc.apply_chat_template(msgs, tokenize=True, add_generation_prompt=True, return_dict=True,
-                                   return_tensors="pt").to("cuda")
+    msgs = [
+        {
+            "role": "user",
+            "content": [
+                {"type": "image", "image": Image.fromarray(img)},
+                {"type": "text", "text": AESTHETIC_Q},
+            ],
+        }
+    ]
+    inp = proc.apply_chat_template(
+        msgs, tokenize=True, add_generation_prompt=True, return_dict=True, return_tensors="pt"
+    ).to("cuda")
     with torch.no_grad():
         out = model.generate(**inp, max_new_tokens=6, do_sample=False)
-    txt = proc.batch_decode(out[:, inp["input_ids"].shape[1]:], skip_special_tokens=True)[0]
+    txt = proc.batch_decode(out[:, inp["input_ids"].shape[1] :], skip_special_tokens=True)[0]
     m = re.search(r"\d+(\.\d+)?", txt)
     return float(m.group()) if m else float("nan")
 
 
-def check_render(final: np.ndarray, ref: np.ndarray, vis_masks: np.ndarray, ref_depth: np.ndarray,
-                 cleared: np.ndarray, th: Th | None = None, with_aesthetic: bool = True) -> dict:
+def check_render(
+    final: np.ndarray,
+    ref: np.ndarray,
+    vis_masks: np.ndarray,
+    ref_depth: np.ndarray,
+    cleared: np.ndarray,
+    th: Th | None = None,
+    with_aesthetic: bool = True,
+) -> dict:
     th = th or Th()
     items = [item_check(final, ref, m, th) for m in vis_masks]
     union = vis_masks.any(0) if len(vis_masks) else np.zeros(final.shape[:2], bool)
@@ -221,10 +303,20 @@ def check_render(final: np.ndarray, ref: np.ndarray, vis_masks: np.ndarray, ref_
     inv = invented_check(final, ref, union, th)
     score = aesthetic(final) if with_aesthetic else float("nan")
     present = [i for i in items if i["present"]]
-    passed = all(i["passed"] for i in present) and room["passed"] and inv["passed"] and \
-        (np.isnan(score) or score >= th.aesthetic)
-    return {"items": items, "room": room, "invented": inv, "aesthetic": score, "passed": bool(passed),
-            "thresholds": asdict(th)}
+    passed = (
+        all(i["passed"] for i in present)
+        and room["passed"]
+        and inv["passed"]
+        and (np.isnan(score) or score >= th.aesthetic)
+    )
+    return {
+        "items": items,
+        "room": room,
+        "invented": inv,
+        "aesthetic": score,
+        "passed": bool(passed),
+        "thresholds": asdict(th),
+    }
 
 
 def dumps(x) -> str:

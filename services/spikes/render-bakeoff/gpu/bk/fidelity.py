@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import json
 import math
-from pathlib import Path
 
 import numpy as np
 from bk.assets import BK, listing, load_mesh, load_rgba, to_listing_size
@@ -74,7 +73,12 @@ def look_at(eye: np.ndarray, target: np.ndarray, up=(0.0, 1.0, 0.0)) -> np.ndarr
 def projection(fov_deg: float, near=0.05, far=50.0) -> np.ndarray:
     t = 1 / math.tan(math.radians(fov_deg) / 2)
     return np.array(
-        [[t, 0, 0, 0], [0, t, 0, 0], [0, 0, -(far + near) / (far - near), -2 * far * near / (far - near)], [0, 0, -1, 0]]
+        [
+            [t, 0, 0, 0],
+            [0, t, 0, 0],
+            [0, 0, -(far + near) / (far - near), -2 * far * near / (far - near)],
+            [0, 0, -1, 0],
+        ]
     )
 
 
@@ -108,7 +112,9 @@ def render(v, f, col, mvps: np.ndarray, res: int, shade=True):
     if shade:
         # Face normals, lit from the camera plus ambient: close to a studio product shot.
         tri = vt[ft.long()]
-        n = torch.nn.functional.normalize(torch.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0], dim=1), dim=1)
+        n = torch.nn.functional.normalize(
+            torch.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0], dim=1), dim=1
+        )
         fid = (rast[..., 3].long() - 1).clamp_min(0)
         nn = n[fid]
         inv = torch.linalg.inv(m)
@@ -144,7 +150,9 @@ def search_pose(v, f, photo_mask_sq: np.ndarray) -> list[tuple[float, float, flo
     res = []
     for s in range(0, len(cands), 120):
         chunk = cands[s : s + 120]
-        _, masks = render(v, f, None, np.stack([orbit(v, *c) for c in chunk]), RES_SEARCH * 2, shade=False)
+        _, masks = render(
+            v, f, None, np.stack([orbit(v, *c) for c in chunk]), RES_SEARCH * 2, shade=False
+        )
         for c, mk in zip(chunk, masks, strict=True):
             _, msq = norm_square(mk.astype(np.float32), mk, RES_SEARCH)
             res.append((mask_iou(msq, photo_mask_sq), *c))
@@ -156,7 +164,9 @@ def search_pose(v, f, photo_mask_sq: np.ndarray) -> list[tuple[float, float, flo
         for da in np.arange(-10, 10.1, 2.5)
         for de in np.arange(-7.5, 7.6, 2.5)
     ]
-    _, masks = render(v, f, None, np.stack([orbit(v, *c) for c in fine]), RES_SEARCH * 2, shade=False)
+    _, masks = render(
+        v, f, None, np.stack([orbit(v, *c) for c in fine]), RES_SEARCH * 2, shade=False
+    )
     for c, mk in zip(fine, masks, strict=True):
         _, msq = norm_square(mk.astype(np.float32), mk, RES_SEARCH)
         res.append((mask_iou(msq, photo_mask_sq), *c))
@@ -189,12 +199,16 @@ def project_photo_colours(v, f, rgba: np.ndarray, pose) -> np.ndarray:
     _, rmask = render(v, f, None, mvp[None], res, shade=False)
     rx0, ry0, rside = square_crop(rmask[0])
     vt = torch.from_numpy(v).cuda().float()
-    clip = (torch.from_numpy(mvp).cuda().float() @ torch.cat([vt, torch.ones_like(vt[:, :1])], 1).T).T
+    clip = (
+        torch.from_numpy(mvp).cuda().float() @ torch.cat([vt, torch.ones_like(vt[:, :1])], 1).T
+    ).T
     ndc = clip[:, :3] / clip[:, 3:]
     px = ((ndc[:, 0] + 1) / 2 * res).cpu().numpy()
     py = ((1 - ndc[:, 1]) / 2 * res).cpu().numpy()
     depth = clip[:, 2].cpu().numpy() / clip[:, 3].cpu().numpy()
-    rast, _ = dr.rasterize(ctx(), clip[None].contiguous(), torch.from_numpy(f).cuda().int(), (res, res))
+    rast, _ = dr.rasterize(
+        ctx(), clip[None].contiguous(), torch.from_numpy(f).cuda().int(), (res, res)
+    )
     zbuf = rast[0, ..., 2].flip(0).cpu().numpy()
     covered = rast[0, ..., 3].flip(0).cpu().numpy() > 0
     xi = np.clip(px.astype(int), 0, res - 1)
@@ -220,7 +234,7 @@ def score_view(v, f, col, rgba: np.ndarray, emb_photo: np.ndarray) -> dict:
     mask = rgba[..., 3] > 127
     rgb = rgba[..., :3].astype(np.float32) / 255
     rgb[~mask] = 1.0
-    ph_img, ph_mask = norm_square(rgb, mask, RES_SEARCH)
+    _ph_img, ph_mask = norm_square(rgb, mask, RES_SEARCH)
     poses = search_pose(v, f, ph_mask)
     ph_img_f, ph_mask_f = norm_square(rgb, mask, RES_FINAL)
     best = None
@@ -233,13 +247,24 @@ def score_view(v, f, col, rgba: np.ndarray, emb_photo: np.ndarray) -> dict:
     for p, (im, msq), e in zip(poses, crops, embs, strict=True):
         iou = mask_iou(msq, ph_mask_f)
         de = mean_color_delta_e(
-            (ph_img_f * 255).astype(np.uint8), ph_mask_f & msq, (im * 255).astype(np.uint8), ph_mask_f & msq
+            (ph_img_f * 255).astype(np.uint8),
+            ph_mask_f & msq,
+            (im * 255).astype(np.uint8),
+            ph_mask_f & msq,
         )
         sim = float(e @ emb_photo)
         key = iou + sim
         if best is None or key > best["_key"]:
-            best = {"_key": key, "iou": iou, "de": de, "emb": sim, "az": p[1], "el": p[2], "fov": p[3],
-                    "_img": im}
+            best = {
+                "_key": key,
+                "iou": iou,
+                "de": de,
+                "emb": sim,
+                "az": p[1],
+                "el": p[2],
+                "fov": p[3],
+                "_img": im,
+            }
     return best
 
 
@@ -253,8 +278,14 @@ def gate_listing(model: str, lid: str, against: list[str]) -> dict:
     item = listing(lid)
     views = json.loads((BK / "cutouts" / lid / "views.json").read_text())
     clean = views["clean"]
-    out = {"id": lid, "model": model, "category": item["category"], "clean_views": clean,
-           "input_view": views["input"], "pairs": []}
+    out = {
+        "id": lid,
+        "model": model,
+        "category": item["category"],
+        "clean_views": clean,
+        "input_view": views["input"],
+        "pairs": [],
+    }
     if not clean:
         out["skipped"] = "no clean view"
         return out
@@ -300,13 +331,22 @@ def gate_listing(model: str, lid: str, against: list[str]) -> dict:
                 rgb[~m] = 1
                 pim, _ = norm_square(rgb, m, 256)
                 strips.append(np.concatenate([pim, cv2.resize(img, (256, 256))], 1))
-        out["pairs"].append({"asset": aid, "true": k == 0, "textured_by_model": textured, "size": size,
-                             "views": per_view})
+        out["pairs"].append(
+            {
+                "asset": aid,
+                "true": k == 0,
+                "textured_by_model": textured,
+                "size": size,
+                "views": per_view,
+            }
+        )
     if strips:
         d = BK / "gate" / model
         d.mkdir(parents=True, exist_ok=True)
-        cv2.imwrite(str(d / f"{lid}.jpg"),
-                    cv2.cvtColor((np.concatenate(strips, 0) * 255).astype(np.uint8), cv2.COLOR_RGB2BGR))
+        cv2.imwrite(
+            str(d / f"{lid}.jpg"),
+            cv2.cvtColor((np.concatenate(strips, 0) * 255).astype(np.uint8), cv2.COLOR_RGB2BGR),
+        )
         (d / f"{lid}.json").write_text(json.dumps(out, indent=1, default=float))
     return out
 
@@ -330,10 +370,19 @@ def prepare_asset(model: str, lid: str) -> dict:
     if not textured:
         col = project_photo_colours(v, f, rgba, pose)
     front_az = float(round(pose[1] / 90.0) * 90.0 % 360)
-    mesh = trimesh.Trimesh(v, f, vertex_colors=(np.clip(col, 0, 1) * 255).astype(np.uint8), process=False)
+    mesh = trimesh.Trimesh(
+        v, f, vertex_colors=(np.clip(col, 0, 1) * 255).astype(np.uint8), process=False
+    )
     d = BK / "assets" / model / lid
     mesh.export(d / "asset.ply")
-    meta = {"id": lid, "model": model, "size_m": size["size_m"], "front_az_deg": front_az,
-            "input_pose_az_el_fov": list(pose[1:]), "input_iou": pose[0], "textured_by_model": textured}
+    meta = {
+        "id": lid,
+        "model": model,
+        "size_m": size["size_m"],
+        "front_az_deg": front_az,
+        "input_pose_az_el_fov": list(pose[1:]),
+        "input_iou": pose[0],
+        "textured_by_model": textured,
+    }
     (d / "asset.json").write_text(json.dumps(meta, indent=1))
     return meta

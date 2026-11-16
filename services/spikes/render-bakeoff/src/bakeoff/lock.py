@@ -16,7 +16,7 @@ def _blur(img: np.ndarray, sigma: float) -> np.ndarray:
 
     if img.ndim == 3:
         return np.stack([gaussian_filter(img[..., c], sigma) for c in range(img.shape[2])], -1)
-    return gaussian_filter(img, sigma)
+    return np.asarray(gaussian_filter(img, sigma))
 
 
 def masked_blur(img: np.ndarray, mask: np.ndarray, sigma: float) -> np.ndarray:
@@ -44,8 +44,12 @@ def lock(
     ratio = (masked_blur(p, m, sigma) + eps) / (masked_blur(c, m, sigma) + eps)
     ratio = np.clip(ratio, *ratio_range)
     inside = np.clip(c * ratio, 0, 1)
-    w = _blur(m.astype(np.float64), feather)[..., None] if feather > 0 else m[..., None].astype(np.float64)
+    w = (
+        _blur(m.astype(np.float64), feather)[..., None]
+        if feather > 0
+        else m[..., None].astype(np.float64)
+    )
     # Keep the mask fully locked: feather only outward.
     w = np.maximum(w, m[..., None])
     out = w * inside + (1 - w) * p
-    return (np.clip(out, 0, 1) * 255 + 0.5).astype(np.uint8)
+    return np.asarray(np.clip(out, 0, 1) * 255 + 0.5, dtype=np.uint8)

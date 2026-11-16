@@ -10,6 +10,7 @@ the wrong-SKU pass rate at or below `max_false_pass` and pass the most true pair
 from __future__ import annotations
 
 import itertools
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 import numpy as np
@@ -21,33 +22,36 @@ class Thresholds:
     de: float
     emb: float
 
-    def view_passes(self, v: dict) -> bool:
-        return v["iou"] >= self.iou and v["de"] <= self.de and v["emb"] >= self.emb
+    def view_passes(self, v: dict[str, float]) -> bool:
+        return bool(v["iou"] >= self.iou and v["de"] <= self.de and v["emb"] >= self.emb)
 
 
-def sku_passes(views: list[dict], th: Thresholds) -> bool:
+def sku_passes(views: list[dict[str, float]], th: Thresholds) -> bool:
     return bool(views) and all(th.view_passes(v) for v in views)
 
 
-def pass_rate(skus: list[list[dict]], th: Thresholds) -> float:
+def pass_rate(skus: list[list[dict[str, float]]], th: Thresholds) -> float:
     return float(np.mean([sku_passes(v, th) for v in skus])) if skus else 0.0
 
 
 def calibrate(
-    true_skus: list[list[dict]],
-    wrong_skus: list[list[dict]],
+    true_skus: list[list[dict[str, float]]],
+    wrong_skus: list[list[dict[str, float]]],
     max_false_pass: float = 0.05,
-    iou_grid=None,
-    de_grid=None,
-    emb_grid=None,
+    iou_grid: Sequence[float] | None = None,
+    de_grid: Sequence[float] | None = None,
+    emb_grid: Sequence[float] | None = None,
 ) -> tuple[Thresholds, float, float]:
     """Grid search. Returns (thresholds, true pass rate, wrong pass rate).
 
     Ties on the true pass rate go to the strictest thresholds.
     """
-    iou_grid = iou_grid if iou_grid is not None else np.round(np.arange(0.60, 0.951, 0.025), 3)
-    de_grid = de_grid if de_grid is not None else np.arange(4.0, 30.1, 2.0)
-    emb_grid = emb_grid if emb_grid is not None else np.round(np.arange(0.40, 0.951, 0.025), 3)
+    if iou_grid is None:
+        iou_grid = [round(float(x), 3) for x in np.arange(0.60, 0.951, 0.025)]
+    if de_grid is None:
+        de_grid = [float(x) for x in np.arange(4.0, 30.1, 2.0)]
+    if emb_grid is None:
+        emb_grid = [round(float(x), 3) for x in np.arange(0.40, 0.951, 0.025)]
     best = None
     for i, d, e in itertools.product(iou_grid, de_grid, emb_grid):
         th = Thresholds(float(i), float(d), float(e))

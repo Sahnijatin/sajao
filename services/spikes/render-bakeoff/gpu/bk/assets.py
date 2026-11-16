@@ -74,7 +74,7 @@ def view_quality(rgb: np.ndarray, alpha: np.ndarray) -> dict:
     if len(xs) == 0:
         return {"clean": False, "reason": "empty", "area": 0.0}
     margin = min(xs.min() / w, ys.min() / h, 1 - (xs.max() + 1) / w, 1 - (ys.max() + 1) / h)
-    n, lab, stats, _ = cv2.connectedComponentsWithStats(m.astype(np.uint8))
+    n, _lab, stats, _ = cv2.connectedComponentsWithStats(m.astype(np.uint8))
     biggest = float(stats[1:, cv2.CC_STAT_AREA].max() / m.sum()) if n > 1 else 0.0
     bg = rgb[~m].astype(np.float64) / 255
     bg_bright = float(bg.mean()) if len(bg) else 0.0
@@ -196,8 +196,14 @@ def run_triposg(lid: str, seed: int = 42) -> dict:
         mesh = trimesh.Trimesh(cm.vertex_matrix(), cm.face_matrix(), process=False)
     dt = time.time() - t0
     mesh.export(out / "raw.glb")
-    meta = {"id": lid, "model": "triposg", "input_view": views["input"], "seconds": round(dt, 1),
-            "faces": int(len(mesh.faces)), "textured": False}
+    meta = {
+        "id": lid,
+        "model": "triposg",
+        "input_view": views["input"],
+        "seconds": round(dt, 1),
+        "faces": len(mesh.faces),
+        "textured": False,
+    }
     (out / "meta.json").write_text(json.dumps(meta))
     return meta
 
@@ -234,13 +240,28 @@ def run_trellis2(lid: str, seed: int = 42) -> dict:
     mesh = _trellis.run(img, seed=seed)[0]
     mesh.simplify(16777216)
     glb = o_voxel.postprocess.to_glb(
-        vertices=mesh.vertices, faces=mesh.faces, attr_volume=mesh.attrs, coords=mesh.coords,
-        attr_layout=mesh.layout, voxel_size=mesh.voxel_size, aabb=[[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]],
-        decimation_target=300_000, texture_size=2048, remesh=True, remesh_band=1, remesh_project=0,
+        vertices=mesh.vertices,
+        faces=mesh.faces,
+        attr_volume=mesh.attrs,
+        coords=mesh.coords,
+        attr_layout=mesh.layout,
+        voxel_size=mesh.voxel_size,
+        aabb=[[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]],
+        decimation_target=300_000,
+        texture_size=2048,
+        remesh=True,
+        remesh_band=1,
+        remesh_project=0,
     )
     dt = time.time() - t0
     glb.export(out / "raw.glb")
-    meta = {"id": lid, "model": "trellis2", "input_view": views["input"], "seconds": round(dt, 1), "textured": True}
+    meta = {
+        "id": lid,
+        "model": "trellis2",
+        "input_view": views["input"],
+        "seconds": round(dt, 1),
+        "textured": True,
+    }
     (out / "meta.json").write_text(json.dumps(meta))
     return meta
 
@@ -269,15 +290,23 @@ def load_mesh(path: Path):
                 if tex is not None:
                     t = np.asarray(tex.convert("RGB"), np.float32) / 255
                     uv = np.asarray(vis.uv, np.float32) % 1.0
-                    px = np.clip((uv[:, 0] * (t.shape[1] - 1)).round().astype(int), 0, t.shape[1] - 1)
-                    py = np.clip(((1 - uv[:, 1]) * (t.shape[0] - 1)).round().astype(int), 0, t.shape[0] - 1)
+                    px = np.clip(
+                        (uv[:, 0] * (t.shape[1] - 1)).round().astype(int), 0, t.shape[1] - 1
+                    )
+                    py = np.clip(
+                        ((1 - uv[:, 1]) * (t.shape[0] - 1)).round().astype(int), 0, t.shape[0] - 1
+                    )
                     col = t[py, px]
                     fac = getattr(mat, "baseColorFactor", None)
                     if fac is not None:
-                        col = col * (np.asarray(fac[:3], np.float32) / 255 if max(fac) > 1 else np.asarray(fac[:3]))
+                        col = col * (
+                            np.asarray(fac[:3], np.float32) / 255
+                            if max(fac) > 1
+                            else np.asarray(fac[:3])
+                        )
             elif getattr(vis, "kind", None) == "vertex":
                 col = np.asarray(vis.vertex_colors[:, :3], np.float32) / 255
-        except Exception:  # noqa: BLE001
+        except Exception:
             col = None
         if col is None:
             col = np.full((len(v), 3), 0.7, np.float32)

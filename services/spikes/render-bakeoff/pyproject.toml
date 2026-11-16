@@ -3,7 +3,7 @@ name = "sajao-render-bakeoff"
 version = "0.0.0"
 description = "Render bake-off (SJ-24): pure metric, lock and gate helpers (GPU jobs live in gpu/)"
 requires-python = ">=3.10"
-dependencies = ["numpy", "scipy"]
+dependencies = ["numpy>=2.1", "scipy>=1.15"]
 
 [build-system]
 requires = ["hatchling"]

@@ -33,7 +33,11 @@ def load_twin(room: str):
     params = load_params(out_dir(room) / "splat.pt")
     lp = out_dir(room) / "labels.npy"
     labels = np.load(lp) if lp.exists() else None
-    edit = json.loads((out_dir(room) / "edit.json").read_text()) if (out_dir(room) / "edit.json").exists() else {}
+    edit = (
+        json.loads((out_dir(room) / "edit.json").read_text())
+        if (out_dir(room) / "edit.json").exists()
+        else {}
+    )
     return scene, params, labels, edit
 
 
@@ -99,9 +103,17 @@ def instance_boxes(params, labels, fr: dict, names: dict) -> list[dict]:
         zlo, zhi = np.percentile(p[:, 2], [2, 98])
         core = p[(p[:, 2] >= zlo) & (p[:, 2] <= zhi)]
         (cx, cy), (w, d), ang = cv2.minAreaRect(core[:, :2].astype(np.float32))
-        out.append({"id": int(oid), "label": names.get(str(int(oid)), "?"), "n": int(sel.sum()),
-                    "center": [float(cx), float(cy)], "size": [float(w), float(d), float(zhi - max(zlo, 0))],
-                    "z": [float(zlo), float(zhi)], "yaw_deg": float(ang)})
+        out.append(
+            {
+                "id": int(oid),
+                "label": names.get(str(int(oid)), "?"),
+                "n": int(sel.sum()),
+                "center": [float(cx), float(cy)],
+                "size": [float(w), float(d), float(zhi - max(zlo, 0))],
+                "z": [float(zlo), float(zhi)],
+                "yaw_deg": float(ang),
+            }
+        )
     return out
 
 
@@ -134,7 +146,9 @@ def survey(room: str) -> dict:
     centre_sp = np.array([(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, 3.0])
     c2w[:3, 3] = to_world(fr, centre_sp)
     vm = torch.linalg.inv(torch.from_numpy(c2w).float().cuda())[None]
-    k = torch.tensor([[[ppm, 0, w / 2], [0, ppm, h / 2], [0, 0, 1]]], dtype=torch.float32, device="cuda")
+    k = torch.tensor(
+        [[[ppm, 0, w / 2], [0, ppm, h / 2], [0, 0, 1]]], dtype=torch.float32, device="cuda"
+    )
     with torch.no_grad():
         rc, _, _ = render(params, vm, k, w, h, mask=keep, camera_model="ortho")
     img = (rc[0].clamp(0, 1).cpu().numpy() * 255).astype(np.uint8)
@@ -153,8 +167,15 @@ def survey(room: str) -> dict:
         rect = ((b["center"][0], b["center"][1]), (b["size"][0], b["size"][1]), b["yaw_deg"])
         pts = np.array([px(p) for p in cv2.boxPoints(rect)], np.int32)
         cv2.polylines(img, [pts], True, (0, 0, 255), 2)
-        cv2.putText(img, f"{b['id']}:{b['label'][:10]}", px(b["center"]), cv2.FONT_HERSHEY_SIMPLEX, 0.45,
-                    (0, 255, 255), 1)
+        cv2.putText(
+            img,
+            f"{b['id']}:{b['label'][:10]}",
+            px(b["center"]),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.45,
+            (0, 255, 255),
+            1,
+        )
     for i in range(0, len(cpos), 10):
         p0 = px(cpos[i])
         d = cdir[i][:2] / max(np.linalg.norm(cdir[i][:2]), 1e-6)
@@ -162,9 +183,22 @@ def survey(room: str) -> dict:
         cv2.putText(img, str(i), p0, cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
     d = room_dir(room)
     cv2.imwrite(str(d / "survey.jpg"), img, [cv2.IMWRITE_JPEG_QUALITY, 88])
-    out = {"room": room, "frame": fr, "extent": [lo.tolist(), hi.tolist()], "ppm": ppm, "boxes": boxes,
-           "cameras": [{"i": i, "pos": cpos[i].tolist(), "dir": cdir[i].tolist(),
-                        "split": scene["frames"][i]["split"]} for i in range(len(cpos))]}
+    out = {
+        "room": room,
+        "frame": fr,
+        "extent": [lo.tolist(), hi.tolist()],
+        "ppm": ppm,
+        "boxes": boxes,
+        "cameras": [
+            {
+                "i": i,
+                "pos": cpos[i].tolist(),
+                "dir": cdir[i].tolist(),
+                "split": scene["frames"][i]["split"],
+            }
+            for i in range(len(cpos))
+        ],
+    }
     (d / "survey.json").write_text(json.dumps(out, indent=1))
     return {"room": room, "boxes": len(boxes), "size_px": [w, h]}
 
@@ -214,21 +248,36 @@ def clear_zone(room: str, remove_ids: list[int], tag: str, finetune_steps: int =
             _, ra, _ = render(params, tvms[j : j + 1], tks[j : j + 1], f["w"], f["h"], mask=rm_t)
         m = ra[0, ..., 0].cpu().numpy() > 0.15
         m = cv2.dilate(m.astype(np.uint8), np.ones((9, 9), np.uint8)) > 0
-        inpainted.append(lama.inpaint(timgs[j].cpu().numpy(), m) if m.any() else timgs[j].cpu().numpy())
+        inpainted.append(
+            lama.inpaint(timgs[j].cpu().numpy(), m) if m.any() else timgs[j].cpu().numpy()
+        )
     inpaint_s = time.time() - t0
     filled = merge(params, keep, {})
     filled = optimise(
-        filled, torch.from_numpy(np.stack(inpainted)).cuda(), tvms, tks, finetune_steps,
-        scene_scale(tvms) * 0.1, refine_stop=int(finetune_steps * 0.6), refine_start=100,
-        reset_every=10**9, log=f"{room} clear {tag}",
+        filled,
+        torch.from_numpy(np.stack(inpainted)).cuda(),
+        tvms,
+        tks,
+        finetune_steps,
+        scene_scale(tvms) * 0.1,
+        refine_stop=int(finetune_steps * 0.6),
+        refine_start=100,
+        reset_every=10**9,
+        log=f"{room} clear {tag}",
     )
     torch.cuda.synchronize()
     d = room_dir(room)
     save_params(filled, d / f"cleared_{tag}.pt")
     np.save(d / f"removed_{tag}.npy", remove)
-    res = {"room": room, "tag": tag, "objects": remove_ids, "gaussians_removed": int(remove.sum()),
-           "inpaint_seconds": round(inpaint_s, 1), "total_seconds": round(time.time() - t_all, 1),
-           "gpu": torch.cuda.get_device_name(0)}
+    res = {
+        "room": room,
+        "tag": tag,
+        "objects": remove_ids,
+        "gaussians_removed": int(remove.sum()),
+        "inpaint_seconds": round(inpaint_s, 1),
+        "total_seconds": round(time.time() - t_all, 1),
+        "gpu": torch.cuda.get_device_name(0),
+    }
     (d / f"cleared_{tag}.json").write_text(json.dumps(res, indent=1))
     _ = out_dir
     return res

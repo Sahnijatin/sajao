@@ -28,7 +28,11 @@ PLAN: dict[str, tuple[list[str], list[str], int]] = {
     "sofa": (["3-seat sofa", "2-seat sofa"], ["fabric-sofas", "wooden-sofa"], 9),
     "bed": (["bed frame"], ["all-beds"], 8),
     "almirah": (["wardrobe"], ["almirah", "wardrobes"], 8),
-    "table": (["coffee table", "dining table", "side table"], ["dining-table-sets", "side-tables", "coffee-tables"], 9),
+    "table": (
+        ["coffee table", "dining table", "side table"],
+        ["dining-table-sets", "side-tables", "coffee-tables"],
+        9,
+    ),
     "chair": (["armchair", "dining chair"], ["arm-chairs", "lounge-chairs"], 9),
     "lamp": (["floor lamp", "table lamp"], ["floor-lamps", "table-lamps"], 7),
 }
@@ -51,12 +55,13 @@ def cm(text: str) -> float | None:
 
 
 def ikea_search(q: str, n: int = 24) -> list[dict]:
-    url = (
-        "https://sik.search.blue.cdtapps.com/in/en/search-result-page?"
-        + urllib.parse.urlencode({"q": q, "size": n, "types": "PRODUCT"})
+    url = "https://sik.search.blue.cdtapps.com/in/en/search-result-page?" + urllib.parse.urlencode(
+        {"q": q, "size": n, "types": "PRODUCT"}
     )
     d = json.loads(get(url))
-    return [i["product"] for i in d["searchResultPage"]["products"]["main"]["items"] if "product" in i]
+    return [
+        i["product"] for i in d["searchResultPage"]["products"]["main"]["items"] if "product" in i
+    ]
 
 
 def ikea_dims(page: str) -> dict:
@@ -65,9 +70,18 @@ def ikea_dims(page: str) -> dict:
     out: dict[str, float] = {}
     if not m:
         return out
-    names = {"Width": "width", "Depth": "depth", "Height": "height", "Length": "length",
-             "Diameter": "diameter", "Shade diameter": "shade_diameter", "Max. height": "height"}
-    for val, unit, name in re.findall(r'"measure":"([\d.]+) (cm|mm|m)\b.*?","name":"([^"]+)"', page[m.start():m.end()]):
+    names = {
+        "Width": "width",
+        "Depth": "depth",
+        "Height": "height",
+        "Length": "length",
+        "Diameter": "diameter",
+        "Shade diameter": "shade_diameter",
+        "Max. height": "height",
+    }
+    for val, unit, name in re.findall(
+        r'"measure":"([\d.]+) (cm|mm|m)\b.*?","name":"([^"]+)"', page[m.start() : m.end()]
+    ):
         key = names.get(name)
         if key and key not in out:
             out[key] = float(val) * {"cm": 1.0, "mm": 0.1, "m": 100.0}[unit]
@@ -77,7 +91,11 @@ def ikea_dims(page: str) -> dict:
 def ikea_gallery(page: str) -> list[str]:
     """Product-gallery photos in order; only studio shots (`_pe` ids)."""
     urls = []
-    for m in re.finditer(r'aria-label="Select product photo \d+ of \d+[^"]*"[^>]*>.*?<img[^>]*?\ssrc="([^"?]+)', page, re.S):
+    for m in re.finditer(
+        r'aria-label="Select product photo \d+ of \d+[^"]*"[^>]*>.*?<img[^>]*?\ssrc="([^"?]+)',
+        page,
+        re.S,
+    ):
         u = m.group(1)
         if "_pe" in u and u not in urls:
             urls.append(u)
@@ -96,7 +114,7 @@ def ikea_listings(cat: str, queries: list[str], want: int, need: str = "height")
             try:
                 raw = get(p["pipUrl"]).decode("utf-8", "ignore")
                 page = html.unescape(raw)
-            except Exception as e:  # noqa: BLE001
+            except Exception as e:
                 print("skip", p["pipUrl"], e)
                 continue
             dims = ikea_dims(page)
@@ -146,7 +164,7 @@ def ws_listings(cat: str, slugs: list[str], want: int) -> list[dict]:
     for slug in slugs:
         try:
             page = get(f"https://www.woodenstreet.com/{slug}").decode("utf-8", "ignore")
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             print("skip", slug, e)
             continue
         for prod in dict.fromkeys(re.findall(r"/product/([a-z0-9-]+)", page)):
@@ -158,14 +176,16 @@ def ws_listings(cat: str, slugs: list[str], want: int) -> list[dict]:
             url = f"https://www.woodenstreet.com/product/{prod}"
             try:
                 s = json.dumps(ws_next(url))
-            except Exception as e:  # noqa: BLE001
+            except Exception as e:
                 print("skip", url, e)
                 continue
             dims = ws_dims(s)
             name_m = re.search(r'"name": "([^"]+)"', s)
             price_m = re.search(r'"price": "([\d.]+)"', s)
             imgs = []
-            for u in re.findall(r"https://images\.woodenstreet\.de/image/cache/data/[^\"\\]+?-810x702\.jpg", s):
+            for u in re.findall(
+                r"https://images\.woodenstreet\.de/image/cache/data/[^\"\\]+?-810x702\.jpg", s
+            ):
                 low = u.lower()
                 if any(k in low for k in ("dimension", "look-", "banner", "logo-")) or u in imgs:
                     continue
@@ -199,7 +219,14 @@ EXTRAS: dict[str, tuple[list[str], int, str]] = {
 
 
 WS_MORE = {
-    "sofa": ["fabric-sofas", "wooden-sofa", "sofa-sets", "blue-sofas", "brown-sofas", "3-1-1-sofa-set"],
+    "sofa": [
+        "fabric-sofas",
+        "wooden-sofa",
+        "sofa-sets",
+        "blue-sofas",
+        "brown-sofas",
+        "3-1-1-sofa-set",
+    ],
     "bed": ["all-beds", "king-size-beds", "queen-size-beds"],
     "almirah": ["almirah", "wardrobes"],
     "table": ["coffee-tables", "bedside-tables", "dining-table-sets", "side-tables"],
@@ -225,7 +252,7 @@ def topup(out_dir: Path) -> None:
             for i, u in enumerate(item["images"]):
                 try:
                     (d / f"{i}.jpg").write_bytes(get(u))
-                except Exception as e:  # noqa: BLE001
+                except Exception as e:
                     print("image skip", u, e)
         listings += new
         have |= {x["id"] for x in new}
@@ -252,7 +279,7 @@ def main(out_dir: Path, extras: bool = False) -> None:
             if not f.exists():
                 try:
                     f.write_bytes(get(u))
-                except Exception as e:  # noqa: BLE001
+                except Exception as e:
                     print("image skip", u, e)
     (out_dir / "listings.json").write_text(json.dumps(listings, indent=1))
     by = {}

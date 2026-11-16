@@ -16,7 +16,7 @@ MODEL = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-3-pro-image-preview")
 USD_INR = 85.0
 # Upper bound per edit (one high-resolution output image plus inputs), in micro-rupees.
 EST_MICRO_INR = int(0.25 * USD_INR * 1_000_000)
-DAILY_CAP_MICRO_INR = int(2000 * 1_000_000)  # Rs 2,000 for the bake-off
+DAILY_CAP_MICRO_INR = 2000 * 1_000_000  # Rs 2,000 for the bake-off
 
 _gw = None
 
@@ -35,8 +35,12 @@ class GeminiImageProvider:
         creds = service_account.Credentials.from_service_account_info(
             info, scopes=["https://www.googleapis.com/auth/cloud-platform"]
         )
-        self._client = genai.Client(vertexai=True, project=info["project_id"],
-                                    location=os.environ.get("GCP_LOCATION", "global"), credentials=creds)
+        self._client = genai.Client(
+            vertexai=True,
+            project=info["project_id"],
+            location=os.environ.get("GCP_LOCATION", "global"),
+            credentials=creds,
+        )
 
     def estimate_cost_micro_inr(self, request) -> int:
         return EST_MICRO_INR
@@ -44,12 +48,17 @@ class GeminiImageProvider:
     async def call(self, request):
         from google.genai import types
         from PIL import Image
+
         from sajao_gateway.types import ProviderResult
 
         parts = [types.Part.from_bytes(data=b, mime_type="image/png") for b in request.blobs]
         parts.append(types.Part.from_text(text=request.payload["prompt"]))
-        cfg = types.GenerateContentConfig(response_modalities=["IMAGE"], seed=int(request.payload["seed"]))
-        resp = await self._client.aio.models.generate_content(model=self.model, contents=parts, config=cfg)
+        cfg = types.GenerateContentConfig(
+            response_modalities=["IMAGE"], seed=int(request.payload["seed"])
+        )
+        resp = await self._client.aio.models.generate_content(
+            model=self.model, contents=parts, config=cfg
+        )
         out = []
         for c in resp.candidates or []:
             for p in (c.content.parts if c.content else []) or []:
@@ -62,7 +71,9 @@ class GeminiImageProvider:
             usd = (usage.prompt_token_count or 0) * 2e-6 + usage.candidates_token_count * 120e-6
             cost = int(usd * USD_INR * 1_000_000)
         sizes = [Image.open(io.BytesIO(b)).size for b in out]
-        return ProviderResult(output={"images": len(out), "sizes": sizes}, blobs=tuple(out), cost_micro_inr=cost)
+        return ProviderResult(
+            output={"images": len(out), "sizes": sizes}, blobs=tuple(out), cost_micro_inr=cost
+        )
 
 
 def gateway():
@@ -74,8 +85,12 @@ def gateway():
 
         _gw = ModelGateway(
             [GeminiImageProvider()],
-            ledger=InMemorySpendLedger(SpendCaps(per_user_daily_micro_inr=DAILY_CAP_MICRO_INR,
-                                                 global_daily_micro_inr=DAILY_CAP_MICRO_INR)),
+            ledger=InMemorySpendLedger(
+                SpendCaps(
+                    per_user_daily_micro_inr=DAILY_CAP_MICRO_INR,
+                    global_daily_micro_inr=DAILY_CAP_MICRO_INR,
+                )
+            ),
             retry=RetryPolicy(max_attempts=3, timeout_seconds=180.0),
         )
     return _gw
@@ -92,6 +107,7 @@ def _validate(resp_output) -> None:
 def gemini_edit(pils, prompt: str, seed: int):
     """Edit pils[0] with references pils[1:]. Returns a PIL image."""
     from PIL import Image
+
     from sajao_gateway.types import ModelRequest
 
     blobs = []
@@ -99,7 +115,12 @@ def gemini_edit(pils, prompt: str, seed: int):
         b = io.BytesIO()
         p.save(b, format="PNG")
         blobs.append(b.getvalue())
-    req = ModelRequest(task="render_bakeoff_arm_b", modality="image", prompt_id="arm_b_region_edit@1",
-                       payload={"prompt": prompt, "seed": seed}, blobs=tuple(blobs))
+    req = ModelRequest(
+        task="render_bakeoff_arm_b",
+        modality="image",
+        prompt_id="arm_b_region_edit@1",
+        payload={"prompt": prompt, "seed": seed},
+        blobs=tuple(blobs),
+    )
     resp = asyncio.run(gateway().call(req, validate=_validate))
     return Image.open(io.BytesIO(resp.blobs[0])).convert("RGB")

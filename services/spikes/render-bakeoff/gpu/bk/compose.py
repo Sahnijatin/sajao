@@ -16,7 +16,7 @@ import time
 from pathlib import Path
 
 import numpy as np
-from bk.twin import BK, load_twin, room_dir, to_space, to_world
+from bk.twin import load_twin, room_dir, to_space, to_world
 
 SCALE = 2  # render at twice the keyframe resolution
 
@@ -72,9 +72,19 @@ def env_map(params, fr: dict, centre_space, res: int = 512) -> np.ndarray:
     rr = np.asarray(fr["R"])
     eye = to_world(fr, np.asarray(centre_space, np.float64))
     # Face directions in space coordinates: +x, -x, +y, -y, +z, -z
-    dirs = [np.array(d, float) for d in ([1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1])]
-    ups = [np.array(u, float) for u in ([0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, -1, 0], [0, 1, 0])]
-    k = torch.tensor([[[res / 2, 0, res / 2], [0, res / 2, res / 2], [0, 0, 1]]], dtype=torch.float32, device="cuda")
+    dirs = [
+        np.array(d, float)
+        for d in ([1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1])
+    ]
+    ups = [
+        np.array(u, float)
+        for u in ([0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, -1, 0], [0, 1, 0])
+    ]
+    k = torch.tensor(
+        [[[res / 2, 0, res / 2], [0, res / 2, res / 2], [0, 0, 1]]],
+        dtype=torch.float32,
+        device="cuda",
+    )
     faces = []
     for d, u in zip(dirs, ups, strict=True):
         z = d
@@ -131,8 +141,8 @@ def _bpy_reset(w: int, h: int, samples: int):
                     d.use = d.type == kind
                 device = "GPU"
                 break
-        except Exception:  # noqa: BLE001
-            continue
+        except Exception as exc:  # this backend is not available here; try the next one
+            print(f"Cycles {kind} unavailable: {exc!r}")
     sc.cycles.device = device
     sc.cycles.samples = samples
     sc.cycles.use_denoising = True
@@ -247,9 +257,34 @@ def _mesh_object(name, verts, faces, colours=None, mat=None, uvs=None):
 def _box(sx, sy, sz):
     """Box centred in x, y with its base at z=0; faces as quads split into triangles; UVs for the top face."""
     x, y = sx / 2, sy / 2
-    v = np.array([[-x, -y, 0], [x, -y, 0], [x, y, 0], [-x, y, 0], [-x, -y, sz], [x, -y, sz], [x, y, sz], [-x, y, sz]])
-    f = np.array([[0, 2, 1], [0, 3, 2], [4, 5, 6], [4, 6, 7], [0, 1, 5], [0, 5, 4], [1, 2, 6], [1, 6, 5],
-                  [2, 3, 7], [2, 7, 6], [3, 0, 4], [3, 4, 7]])
+    v = np.array(
+        [
+            [-x, -y, 0],
+            [x, -y, 0],
+            [x, y, 0],
+            [-x, y, 0],
+            [-x, -y, sz],
+            [x, -y, sz],
+            [x, y, sz],
+            [-x, y, sz],
+        ]
+    )
+    f = np.array(
+        [
+            [0, 2, 1],
+            [0, 3, 2],
+            [4, 5, 6],
+            [4, 6, 7],
+            [0, 1, 5],
+            [0, 5, 4],
+            [1, 2, 6],
+            [1, 6, 5],
+            [2, 3, 7],
+            [2, 7, 6],
+            [3, 0, 4],
+            [3, 4, 7],
+        ]
+    )
     uv = np.array([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0], [1, 0], [1, 1], [0, 1]], float)
     return v, f, uv
 
@@ -281,14 +316,25 @@ def add_item(item: dict, index: int) -> dict:
         col = srgb_to_linear(col)
         rot = place_matrix(0, 0, 0, item.get("front_rot_deg", 0.0))
         v = v @ rot[:3, :3].T
-        ob = _mesh_object(f"item{index}", v, np.asarray(mesh.faces), col, _vertex_colour_material(f"m{index}"))
+        ob = _mesh_object(
+            f"item{index}", v, np.asarray(mesh.faces), col, _vertex_colour_material(f"m{index}")
+        )
         size = v.max(0) - v.min(0)
     elif tier == "rug":
         sx, sy, _ = item["size_m"]
-        v = np.array([[-sx / 2, -sy / 2, 0.006], [sx / 2, -sy / 2, 0.006], [sx / 2, sy / 2, 0.006], [-sx / 2, sy / 2, 0.006]])
+        v = np.array(
+            [
+                [-sx / 2, -sy / 2, 0.006],
+                [sx / 2, -sy / 2, 0.006],
+                [sx / 2, sy / 2, 0.006],
+                [-sx / 2, sy / 2, 0.006],
+            ]
+        )
         f = np.array([[0, 1, 2], [0, 2, 3]])
         uv = np.array([[0, 0], [1, 0], [1, 1], [0, 1]], float)
-        ob = _mesh_object(f"item{index}", v, f, None, _image_material(f"m{index}", item["texture_path"]), uv)
+        ob = _mesh_object(
+            f"item{index}", v, f, None, _image_material(f"m{index}", item["texture_path"]), uv
+        )
         size = np.array([sx, sy, 0.01])
     elif tier == "art":
         # Vertical panel, picture facing local -y (into the room), bottom edge at z0.
@@ -296,14 +342,18 @@ def add_item(item: dict, index: int) -> dict:
         v = np.array([[-sx / 2, 0, 0], [sx / 2, 0, 0], [sx / 2, 0, sz], [-sx / 2, 0, sz]])
         f = np.array([[0, 1, 2], [0, 2, 3]])
         uv = np.array([[0, 0], [1, 0], [1, 1], [0, 1]], float)
-        ob = _mesh_object(f"item{index}", v, f, None, _image_material(f"m{index}", item["texture_path"]), uv)
+        ob = _mesh_object(
+            f"item{index}", v, f, None, _image_material(f"m{index}", item["texture_path"]), uv
+        )
         size = np.array([sx, 0.03, sz])
     elif tier == "billboard":
         sx, _, sz = item["size_m"]
         v = np.array([[-sx / 2, 0, 0], [sx / 2, 0, 0], [sx / 2, 0, sz], [-sx / 2, 0, sz]])
         f = np.array([[0, 1, 2], [0, 2, 3]])
         uv = np.array([[0, 0], [1, 0], [1, 1], [0, 1]], float)
-        ob = _mesh_object(f"item{index}", v, f, None, _image_material(f"m{index}", item["texture_path"], True), uv)
+        ob = _mesh_object(
+            f"item{index}", v, f, None, _image_material(f"m{index}", item["texture_path"], True), uv
+        )
         size = np.array([sx, 0.3, sz])
     else:
         raise ValueError(tier)
@@ -329,7 +379,9 @@ def _add_floor_catcher():
     return ob
 
 
-def blender_render(items: list[dict], k, c2w_space, w, h, env: np.ndarray, samples: int = 96) -> dict:
+def blender_render(
+    items: list[dict], k, c2w_space, w, h, env: np.ndarray, samples: int = 96
+) -> dict:
     """Render products over a transparent film. Returns linear RGBA, shadow-catcher
     multiplier, z depth (inf where empty), object index, and timings."""
     import bpy
@@ -380,15 +432,24 @@ def blender_render(items: list[dict], k, c2w_space, w, h, env: np.ndarray, sampl
         depth = depth[..., 0]
     if index.ndim == 3:
         index = index[..., 0]
-    return {"rgba": img, "shadow": shadow if shadow.ndim == 3 else shadow[..., None].repeat(3, -1),
-            "depth": depth, "index": np.rint(index).astype(np.int32), "footprints": foot, "device": device,
-            "render_seconds": round(t1 - t0, 2)}
+    return {
+        "rgba": img,
+        "shadow": shadow if shadow.ndim == 3 else shadow[..., None].repeat(3, -1),
+        "depth": depth,
+        "index": np.rint(index).astype(np.int32),
+        "footprints": foot,
+        "device": device,
+        "render_seconds": round(t1 - t0, 2),
+    }
 
 
 def floor_depth(k, c2w_world, w, h, fr: dict) -> np.ndarray:
     """Depth along the optical axis where each pixel ray meets the floor (inf if never)."""
     ys, xs = np.mgrid[0:h, 0:w]
-    rays = np.stack([(xs + 0.5 - k[0, 2]) / k[0, 0], (ys + 0.5 - k[1, 2]) / k[1, 1], np.ones_like(xs, float)], -1)
+    rays = np.stack(
+        [(xs + 0.5 - k[0, 2]) / k[0, 0], (ys + 0.5 - k[1, 2]) / k[1, 1], np.ones_like(xs, float)],
+        -1,
+    )
     rw = rays @ c2w_world[:3, :3].T
     rs = rw @ np.asarray(fr["R"]).T
     o = to_space(fr, c2w_world[:3, 3])
@@ -396,13 +457,20 @@ def floor_depth(k, c2w_world, w, h, fr: dict) -> np.ndarray:
     return np.where(t > 0, t, np.inf)
 
 
-def composite(room: str, design: dict, fi: int, variant: str, background: str = "splat",
-              samples: int = 96, out: Path | None = None) -> dict:
+def composite(
+    room: str,
+    design: dict,
+    fi: int,
+    variant: str,
+    background: str = "splat",
+    samples: int = 96,
+    out: Path | None = None,
+) -> dict:
     """Render one design from keyframe `fi`. `background` = splat (arms A, C1, C2) or keyframe (C3)."""
     import cv2
 
     t0 = time.time()
-    scene, _, labels, _ = load_twin(room)
+    scene, _, _labels, _ = load_twin(room)
     params = splat_params(room, variant)
     fr = json.loads((room_dir(room) / "survey.json").read_text())["frame"]
     k, c2w, w, h = camera(scene, fi)
@@ -410,7 +478,9 @@ def composite(room: str, design: dict, fi: int, variant: str, background: str = 
     t_splat = time.time() - t0
     photo = None
     if background == "keyframe":
-        rgb, region, photo = keyframe_background(room, scene, fi, params, variant, k, c2w, w, h, rgb)
+        rgb, region, photo = keyframe_background(
+            room, scene, fi, params, variant, k, c2w, w, h, rgb
+        )
     else:
         region = None
     c2w_space = np.eye(4)
@@ -428,7 +498,9 @@ def composite(room: str, design: dict, fi: int, variant: str, background: str = 
     br = blender_render(design["render_items"], k, c2w_space, w, h, env, samples)
     a = br["rgba"][..., 3]
     pdepth = np.where(a > 0.01, br["depth"], np.inf)
-    visible_px = (a > 0.01) & (pdepth < sdepth + 0.05 + 0.02 * sdepth) | ((a > 0.01) & (salpha < 0.5))
+    visible_px = (a > 0.01) & (pdepth < sdepth + 0.05 + 0.02 * sdepth) | (
+        (a > 0.01) & (salpha < 0.5)
+    )
     fdepth = floor_depth(k, c2w, w, h, fr)
     on_floor = np.abs(fdepth - sdepth) < 0.08 + 0.04 * sdepth
     sh = np.where(on_floor[..., None], np.clip(br["shadow"], 0, 1), 1.0)
@@ -441,24 +513,51 @@ def composite(room: str, design: dict, fi: int, variant: str, background: str = 
     masks_full = {i: (br["index"] == i + 1) for i in range(len(design["render_items"]))}
     masks_vis = {i: m & visible_px for i, m in masks_full.items()}
     depth = np.where(visible_px, pdepth, sdepth)
-    res = {"room": room, "design": design["id"], "frame": fi, "variant": variant, "background": background,
-           "size": [w, h], "device": br["device"], "blender_seconds": br["render_seconds"],
-           "splat_seconds": round(t_splat, 2), "env_seconds": round(t_env, 2),
-           "total_seconds": round(time.time() - t0, 2),
-           "items": [{"index": i, "item_id": it["id"], "visible_px": int(masks_vis[i].sum()),
-                      "full_px": int(masks_full[i].sum()), **br["footprints"][i]}
-                     for i, it in enumerate(design["render_items"])]}
+    res = {
+        "room": room,
+        "design": design["id"],
+        "frame": fi,
+        "variant": variant,
+        "background": background,
+        "size": [w, h],
+        "device": br["device"],
+        "blender_seconds": br["render_seconds"],
+        "splat_seconds": round(t_splat, 2),
+        "env_seconds": round(t_env, 2),
+        "total_seconds": round(time.time() - t0, 2),
+        "items": [
+            {
+                "index": i,
+                "item_id": it["id"],
+                "visible_px": int(masks_vis[i].sum()),
+                "full_px": int(masks_full[i].sum()),
+                **br["footprints"][i],
+            }
+            for i, it in enumerate(design["render_items"])
+        ],
+    }
     if out is not None:
         out.mkdir(parents=True, exist_ok=True)
         cv2.imwrite(str(out / "image.png"), cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
-        np.savez_compressed(out / "masks.npz", vis=np.stack([masks_vis[i] for i in masks_vis]) if masks_vis else
-                            np.zeros((0, h, w), bool), full=np.stack([masks_full[i] for i in masks_full]) if
-                            masks_full else np.zeros((0, h, w), bool), depth=depth.astype(np.float16),
-                            region=region if region is not None else np.zeros((h, w), bool))
+        np.savez_compressed(
+            out / "masks.npz",
+            vis=np.stack([masks_vis[i] for i in masks_vis])
+            if masks_vis
+            else np.zeros((0, h, w), bool),
+            full=np.stack([masks_full[i] for i in masks_full])
+            if masks_full
+            else np.zeros((0, h, w), bool),
+            depth=depth.astype(np.float16),
+            region=region if region is not None else np.zeros((h, w), bool),
+        )
         (out / "meta.json").write_text(json.dumps(res, indent=1))
         if photo is not None:
-            cv2.imwrite(str(out / "photo.png"),
-                        cv2.cvtColor((np.clip(photo, 0, 1) * 255 + 0.5).astype(np.uint8), cv2.COLOR_RGB2BGR))
+            cv2.imwrite(
+                str(out / "photo.png"),
+                cv2.cvtColor(
+                    (np.clip(photo, 0, 1) * 255 + 0.5).astype(np.uint8), cv2.COLOR_RGB2BGR
+                ),
+            )
     return res
 
 

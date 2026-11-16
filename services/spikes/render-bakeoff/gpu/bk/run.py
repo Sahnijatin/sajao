@@ -39,11 +39,14 @@ def _ref_cutout(lid: str) -> np.ndarray:
         if (root / lid).exists():
             v = json.loads((root / lid / "views.json").read_text())
             idx = v["input"] if v["input"] is not None else v["views"][0]["index"]
-            rgba = cv2.cvtColor(cv2.imread(str(root / lid / f"{idx}.png"), cv2.IMREAD_UNCHANGED), cv2.COLOR_BGRA2RGBA)
+            rgba = cv2.cvtColor(
+                cv2.imread(str(root / lid / f"{idx}.png"), cv2.IMREAD_UNCHANGED),
+                cv2.COLOR_BGRA2RGBA,
+            )
             a = rgba[..., 3:4].astype(np.float32) / 255
             rgb = rgba[..., :3] * a + 255 * (1 - a)
             ys, xs = np.nonzero(rgba[..., 3] > 127)
-            return rgb[ys.min(): ys.max() + 1, xs.min(): xs.max() + 1].astype(np.uint8)
+            return rgb[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1].astype(np.uint8)
     raise KeyError(lid)
 
 
@@ -64,8 +67,16 @@ def generate_arms(room: str, design_id: str, model: str, arms: list[str]) -> dic
         union = a_m["vis"].any(0) if len(a_m["vis"]) else np.zeros(a_img.shape[:2], bool)
         t1 = time.time()
         c2 = lock(a_img, p1, union)
-        _write(base / f"C2_{model}", c2, {"arm": "C2", "model": model, "model_seconds": dt,
-                                           "lock_seconds": round(time.time() - t1, 2)})
+        _write(
+            base / f"C2_{model}",
+            c2,
+            {
+                "arm": "C2",
+                "model": model,
+                "model_seconds": dt,
+                "lock_seconds": round(time.time() - t1, 2),
+            },
+        )
         out["C1_seconds"] = round(time.time() - t0, 1)
     if "C3" in arms:
         c3b = _read(base / "C3base" / "image.png")
@@ -73,7 +84,11 @@ def generate_arms(room: str, design_id: str, model: str, arms: list[str]) -> dic
         p3, dt = passes.edit(model, [c3b], passes.LIGHT_PROMPT, seed=13)
         union = m3["vis"].any(0) if len(m3["vis"]) else np.zeros(c3b.shape[:2], bool)
         _write(base / f"C3pass_{model}", p3, {"arm": "C3pass", "model": model, "model_seconds": dt})
-        _write(base / f"C3_{model}", lock(c3b, p3, union), {"arm": "C3", "model": model, "model_seconds": dt})
+        _write(
+            base / f"C3_{model}",
+            lock(c3b, p3, union),
+            {"arm": "C3", "model": model, "model_seconds": dt},
+        )
     if "B" in arms:
         d = load_render_design(room, design_id)
         c3b = _read(base / "C3base" / "image.png")
@@ -89,10 +104,20 @@ def generate_arms(room: str, design_id: str, model: str, arms: list[str]) -> dic
             return r["passed"], r["iou"] + r["emb"], r
 
         t0 = time.time()
-        res = passes.arm_b(model, photo, m3["region"], d["render_items"], m3["full"], refs, check_item)
-        _write(base / f"B_{model}", res["image"], {"arm": "B", "model": model, "log": res["log"],
-                                                     "model_seconds": res["model_seconds"],
-                                                     "total_seconds": round(time.time() - t0, 1)})
+        res = passes.arm_b(
+            model, photo, m3["region"], d["render_items"], m3["full"], refs, check_item
+        )
+        _write(
+            base / f"B_{model}",
+            res["image"],
+            {
+                "arm": "B",
+                "model": model,
+                "log": res["log"],
+                "model_seconds": res["model_seconds"],
+                "total_seconds": round(time.time() - t0, 1),
+            },
+        )
         out["B_seconds"] = round(time.time() - t0, 1)
     return out
 
@@ -121,5 +146,7 @@ def check_arms(room: str, design_id: str, arms: list[str], planted: str = "") ->
         r = check_render(final, ref, m["vis"], m["depth"].astype(np.float32), m["region"])
         r["seconds"] = round(time.time() - t0, 1)
         out[arm] = r
-        (src / f"checks{'_' + planted if planted else ''}.json").write_text(json.dumps(r, indent=1, default=float))
+        (src / f"checks{'_' + planted if planted else ''}.json").write_text(
+            json.dumps(r, indent=1, default=float)
+        )
     return out

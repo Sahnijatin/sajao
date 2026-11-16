@@ -57,16 +57,24 @@ def votes_table(codes: list[str], key: dict) -> dict:
     for arm, rs in sorted(rows.items()):
         a = np.array(rs, float)
         top = (a >= 4).astype(float)
-        out["arms"][arm] = {"n": len(a), "mean": float(a.mean()), "mean_ci": bootstrap(a),
-                            "top2": float(top.mean()), "top2_ci": bootstrap(top)}
+        out["arms"][arm] = {
+            "n": len(a),
+            "mean": float(a.mean()),
+            "mean_ci": bootstrap(a),
+            "top2": float(top.mean()),
+            "top2_ci": bootstrap(top),
+        }
     b_arms = [a for a in out["arms"] if a.startswith("B_")]
     if b_arms:
         best_b = max(b_arms, key=lambda a: out["arms"][a]["top2"])
         out["best_b"] = best_b
         for arm in out["arms"]:
             d = [v[arm] - v[best_b] for v in per.values() if arm in v and best_b in v]
-            out["arms"][arm]["paired_vs_best_b"] = {"n": len(d), "mean": float(np.mean(d)) if d else None,
-                                                    "ci": bootstrap(np.array(d, float)) if d else None}
+            out["arms"][arm]["paired_vs_best_b"] = {
+                "n": len(d),
+                "mean": float(np.mean(d)) if d else None,
+                "ci": bootstrap(np.array(d, float)) if d else None,
+            }
     return out
 
 
@@ -107,15 +115,24 @@ def planted_table() -> dict:
     if f.exists():
         res = [r for r in json.loads(f.read_text()) if isinstance(r, dict) and "A" in r]
         by = defaultdict(list)
-        for r, kind in zip(res, [k for _ in range(len(res) // 4) for k in ("swap", "scale10", "move15", "plant")],
-                           strict=False):
+        for r, kind in zip(
+            res,
+            [k for _ in range(len(res) // 4) for k in ("swap", "scale10", "move15", "plant")],
+            strict=False,
+        ):
             by[kind].append(not r["A"]["passed"])
         out["caught"] = {k: float(np.mean(v)) for k, v in by.items()}
         out["caught_all"] = float(np.mean([x for v in by.values() for x in v])) if by else None
     if good.exists():
         res = json.loads(good.read_text())
-        ok = [d[a]["passed"] for d in res if isinstance(d, dict) for a in d if a in ("A",) or a.startswith("C2_")
-              if isinstance(d[a], dict) and "passed" in d[a]]
+        ok = [
+            d[a]["passed"]
+            for d in res
+            if isinstance(d, dict)
+            for a in d
+            if a in ("A",) or a.startswith("C2_")
+            if isinstance(d[a], dict) and "passed" in d[a]
+        ]
         out["false_fail_good"] = float(1 - np.mean(ok)) if ok else None
     return out
 
@@ -125,7 +142,10 @@ def gate_table(model: str) -> dict:
     if not f.exists():
         return {}
     res = [r for r in json.loads(f.read_text()) if "pairs" in r]
-    listings = {x["id"]: x for x in json.loads((REPO / "eval" / "render-bakeoff" / "listings.json").read_text())}
+    listings = {
+        x["id"]: x
+        for x in json.loads((REPO / "eval" / "render-bakeoff" / "listings.json").read_text())
+    }
     sys.path.insert(0, str(REPO / "services" / "spikes" / "render-bakeoff" / "local"))
     from designs import plausible
 
@@ -148,18 +168,28 @@ def gate_table(model: str) -> dict:
     for v, c in zip(true_, cats, strict=True):
         by_cat[c].append(sku_passes(v, th))
     input_only = [sku_passes([x for x in v if x.get("is_input")] or v[:1], th) for v in true_]
-    return {"skus": len(true_), "implausible_listing_dims": sum(1 for r in res if not plausible(listings[r["id"]])),
-            "thresholds": th.__dict__, "wrong_sku_pass_rate": fp_cal, "pass_rate_calibration_half": tp_cal,
-            "pass_rate_held_out_half": pass_rate(held, th), "pass_rate_all": pass_rate(true_, th),
-            "pass_rate_input_view_only": float(np.mean(input_only)) if input_only else None,
-            "by_category": {c: float(np.mean(v)) for c, v in sorted(by_cat.items())},
-            "median_view": {k: float(np.median([x[k] for v in true_ for x in v])) for k in ("iou", "de", "emb")}}
+    return {
+        "skus": len(true_),
+        "implausible_listing_dims": sum(1 for r in res if not plausible(listings[r["id"]])),
+        "thresholds": th.__dict__,
+        "wrong_sku_pass_rate": fp_cal,
+        "pass_rate_calibration_half": tp_cal,
+        "pass_rate_held_out_half": pass_rate(held, th),
+        "pass_rate_all": pass_rate(true_, th),
+        "pass_rate_input_view_only": float(np.mean(input_only)) if input_only else None,
+        "by_category": {c: float(np.mean(v)) for c, v in sorted(by_cat.items())},
+        "median_view": {
+            k: float(np.median([x[k] for v in true_ for x in v])) for k in ("iou", "de", "emb")
+        },
+    }
 
 
 def main() -> None:
-    summary = {"gate": {m: gate_table(m) for m in ("triposg", "trellis2", "sam3d")},
-               "checks": {g: checks_table(g) for g in ("qwen", "flux2k", "gemini")},
-               "planted": planted_table()}
+    summary = {
+        "gate": {m: gate_table(m) for m in ("triposg", "trellis2", "sam3d")},
+        "checks": {g: checks_table(g) for g in ("qwen", "flux2k", "gemini")},
+        "planted": planted_table(),
+    }
     key_f = REPO / "eval" / "render-bakeoff" / "voting" / "key.json"
     if len(sys.argv) > 1 and key_f.exists():
         codes = [c for c in Path(sys.argv[1]).read_text().split() if c.startswith("R1-")]
