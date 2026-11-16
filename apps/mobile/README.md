@@ -36,3 +36,31 @@ pnpm --filter @sajao/mobile typecheck
 ```
 
 The app uses native tabs and native sheets, so it needs a development build on a device or simulator rather than a browser.
+
+## Builds
+
+The app is linked to the EAS project `@sahniijatinn/sajao`. `eas.json` has three profiles:
+
+| Profile | What it is | App name and id |
+| --- | --- | --- |
+| `development` | Development client, internal distribution | Sajao (Dev), `app.sajao.dev` |
+| `preview` | Release build for testers, internal distribution | Sajao (Preview), `app.sajao.preview` |
+| `production` | Store build | Sajao, `app.sajao` |
+
+```
+eas build --platform android --profile development
+eas build --platform ios --profile development      # needs an Apple Developer account and a registered iPhone
+pnpm --filter @sajao/mobile start                    # then open the development build and connect
+```
+
+Each EAS environment (development, preview, production) holds that environment's `EXPO_PUBLIC_*` values. Nothing secret goes in `EXPO_PUBLIC_*` values: they ship inside the app.
+
+## Updates without a rebuild
+
+Preview and production builds check for a JavaScript update when they start. Each build listens on the channel named after its profile.
+
+```
+eas update --channel preview --environment preview --message "<what changed>"
+```
+
+An update reaches a build only when the app version matches, and it can only change JavaScript, styling and bundled assets. Adding or changing a native package needs a new build, and the app version in `app.json` must be raised with it so older builds do not receive JavaScript they cannot run. On the phone, close the app fully and open it up to twice: the first launch downloads the update, the next one runs it.

@@ -218,5 +218,10 @@
   "area": {
     "m2": "{{value}} m²",
     "sqft": "{{value}} sq ft"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "body": "Sajao hit a problem and could not show this screen. Nothing you saved is lost.",
+    "retry": "Try again"
   }
 }
