@@ -21,6 +21,8 @@ import modal
 
 HERE = Path(__file__).parent
 SRC = HERE.parent / "src" / "sajao_workers"
+GATEWAY = HERE.parent.parent / "gateway" / "src" / "sajao_gateway"
+SPIKE = HERE.parent.parent / "spikes" / "twin-risk"
 MAX_GPUS = 3  # Must match sajao_workers.gpu.MAX_GPUS.
 
 gpu_image = (
@@ -43,8 +45,21 @@ gpu_image = (
     .add_local_dir(SRC, "/root/sajao_workers")
 )
 
+# Orchestration runs on CPU: it calls the GPU function only through the gateway.
+cpu_image = (
+    modal.Image.debian_slim(python_version="3.13")
+    .pip_install("numpy==2.2.6", "pillow==11.3.0", "opencv-python-headless==4.12.0.88")
+    .env({"PYTHONUNBUFFERED": "1"})
+    .add_local_dir(SRC, "/root/sajao_workers")
+    .add_local_dir(GATEWAY, "/root/sajao_gateway")
+    # Ground truth and scoring for the smoke runs only (public datasets, internal evaluation).
+    .add_local_dir(SPIKE / "src" / "twin_risk", "/root/twin_risk")
+    .add_local_dir(SPIKE / "gpu" / "twin_gpu", "/root/twin_gpu")
+)
+
 app = modal.App("sajao-twin-worker")
 vol = modal.Volume.from_name("sajao-twin", create_if_missing=True)
+spike_vol = modal.Volume.from_name("sajao-twin-risk")
 STORE_ROOT = Path("/vol/artifacts")
 
 
@@ -298,3 +313,110 @@ def smoke(scene: str = "arkit_living_47331265", frames: int = 6) -> None:
         )
 
     asyncio.run(main())
+
+
+def volume_invoke(task: str):
+    """Gateway invoke for a CPU orchestrator: share blobs with the GPU function.
+
+    The volume is committed before the call so the GPU sees the inputs, and
+    reloaded after it so the orchestrator sees what the GPU wrote.
+    """
+
+    async def invoke(model: str, payload: Any) -> Any:
+        vol.commit()
+        reply = await run_model.remote.aio(model, task, dict(payload))
+        vol.reload()
+        return reply
+
+    return invoke
+
+
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=4, memory=8192, timeout=3600
+)
+def objects_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
+    """Run the objects step on one ARKitScenes room and score it against its boxes."""
+    import asyncio
+    import json
+    import math
+
+    import numpy as np
+    from twin_gpu.objects import gt_boxes, gt_seen
+
+    from sajao_gateway import InMemorySpendLedger, ModelGateway, SpendCaps
+    from sajao_workers.models import detect_chain, segment_chain
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.objects_step import objects_step
+    from twin_risk.geometry import UprightBox
+    from twin_risk.metrics import LabelledBox, summarise
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    cams = json.loads(Path(f"/vol/scenes/{scene}/cameras.json").read_text())
+    up_axis = int(np.argmax(np.abs(cams["up"])))
+    picks = np.linspace(0, len(cams["frames"]) - 1, keyframes).round().astype(int)
+    frames = []
+    for i in picks:
+        f = cams["frames"][int(i)]
+        base = Path(f"/vol/scenes/{scene}")
+        frames.append(
+            {
+                "keyframe_id": f"kf{int(i):04d}",
+                "image": store.put_blob((base / f["file"]).read_bytes()),
+                "width": f["w"],
+                "height": f["h"],
+                "intrinsics": f["K"],
+                "c2w": f["c2w"],
+                "depth": store.put_blob((base / f["depth"]).read_bytes()),
+            }
+        )
+    manifest = {"up_axis": up_axis, "depth_source": "lidar", "frames": frames}
+    caps = SpendCaps(per_user_daily_micro_inr=10**9, global_daily_micro_inr=10**9)
+    ledger = InMemorySpendLedger(caps)
+    step = objects_step(
+        ModelGateway(detect_chain(volume_invoke("twin_detect")), ledger=ledger),
+        ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger),
+    )
+    result = asyncio.run(
+        StepRunner(store, max_attempts=1).run(
+            step, {"frames": store.put_blob(json.dumps(manifest).encode())}, {}
+        )
+    )
+    vol.commit()
+    objects = json.loads(store.read_blob(result.outputs["objects"]))
+    preds = [
+        LabelledBox(
+            o["category"],
+            UprightBox(
+                tuple(o["box"]["center"]),
+                o["box"]["length"]["value_m"],
+                o["box"]["width"]["value_m"],
+                o["box"]["height"]["value_m"],
+                math.radians(o["box"]["yaw_deg"]),
+                up_axis,
+            ),
+        )
+        for o in objects
+    ]
+    gts = gt_boxes(scene, up_axis)
+    seen = [g for g, ok in zip(gts, gt_seen(scene, gts), strict=True) if ok]
+    return {
+        "scene": scene,
+        "keyframes": keyframes,
+        "objects": len(objects),
+        "cached": result.cached,
+        "meta": dict(result.meta),
+        "charged_micro_inr": result.cost_micro_inr,
+        "metrics_seen": summarise(preds, seen),
+        "all": [
+            {k: o[k] for k in ("category", "frames", "confidence")}
+            | {"size_m": [o["box"][s]["value_m"] for s in ("length", "width", "height")]}
+            for o in objects
+        ],
+    }
+
+
+@app.local_entrypoint()
+def objects_smoke(scene: str = "arkit_living_47331265", keyframes: int = 120) -> None:
+    import json
+
+    print(json.dumps(objects_smoke_cpu.remote(scene, keyframes), indent=1))
