@@ -1,0 +1,231 @@
+{
+  "room": "arkit_living_41159541",
+  "source": "hand inventory from 24 evenly spaced frames; small clutter grouped; scanning-marker posters on the floor excluded",
+  "items": [
+    {
+      "name": "sofa",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "couch"
+      ]
+    },
+    {
+      "name": "armchair",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "recliner"
+      ]
+    },
+    {
+      "name": "dining table",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "table"
+      ]
+    },
+    {
+      "name": "dining chair",
+      "type": "furniture",
+      "count": 7,
+      "aliases": [
+        "chair"
+      ]
+    },
+    {
+      "name": "side table",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "coffee table",
+        "end table"
+      ]
+    },
+    {
+      "name": "tv stand",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "tv unit",
+        "table"
+      ]
+    },
+    {
+      "name": "wooden chest",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "trunk",
+        "chest"
+      ]
+    },
+    {
+      "name": "television",
+      "type": "fixture",
+      "count": 1,
+      "aliases": [
+        "tv"
+      ]
+    },
+    {
+      "name": "soundbar",
+      "type": "fixture",
+      "count": 1,
+      "aliases": [
+        "speaker"
+      ]
+    },
+    {
+      "name": "media player",
+      "type": "fixture",
+      "count": 2,
+      "aliases": [
+        "dvd player",
+        "set top box"
+      ]
+    },
+    {
+      "name": "game console",
+      "type": "fixture",
+      "count": 1,
+      "aliases": [
+        "playstation"
+      ]
+    },
+    {
+      "name": "pedestal fan",
+      "type": "fixture",
+      "count": 1,
+      "aliases": [
+        "fan"
+      ]
+    },
+    {
+      "name": "pendant lamp",
+      "type": "fixture",
+      "count": 2,
+      "aliases": [
+        "ceiling light",
+        "lamp"
+      ]
+    },
+    {
+      "name": "telescope",
+      "type": "decor",
+      "count": 1,
+      "aliases": []
+    },
+    {
+      "name": "laptop",
+      "type": "fixture",
+      "count": 1,
+      "aliases": [
+        "computer"
+      ]
+    },
+    {
+      "name": "power strip",
+      "type": "fixture",
+      "count": 1,
+      "aliases": [
+        "socket",
+        "extension board"
+      ]
+    },
+    {
+      "name": "wall art",
+      "type": "wall_item",
+      "count": 1,
+      "aliases": [
+        "framed picture",
+        "print",
+        "poster"
+      ]
+    },
+    {
+      "name": "rug",
+      "type": "textile",
+      "count": 3,
+      "aliases": [
+        "carpet",
+        "kilim"
+      ]
+    },
+    {
+      "name": "curtain",
+      "type": "textile",
+      "count": 3,
+      "aliases": [
+        "drape"
+      ]
+    },
+    {
+      "name": "throw blanket",
+      "type": "textile",
+      "count": 3,
+      "aliases": [
+        "blanket",
+        "throw"
+      ]
+    },
+    {
+      "name": "tablecloth",
+      "type": "textile",
+      "count": 1,
+      "aliases": []
+    },
+    {
+      "name": "cushion",
+      "type": "textile",
+      "count": 2,
+      "aliases": [
+        "pillow"
+      ]
+    },
+    {
+      "name": "dvd stack",
+      "type": "decor",
+      "count": 1,
+      "aliases": [
+        "dvds",
+        "books"
+      ]
+    },
+    {
+      "name": "books",
+      "type": "decor",
+      "count": 1,
+      "aliases": [
+        "book"
+      ]
+    },
+    {
+      "name": "plates",
+      "type": "decor",
+      "count": 1,
+      "aliases": [
+        "plate"
+      ]
+    },
+    {
+      "name": "built-in cupboards",
+      "type": "built_in",
+      "count": 1,
+      "aliases": [
+        "cupboard",
+        "cabinet",
+        "storage"
+      ]
+    },
+    {
+      "name": "radiator",
+      "type": "built_in",
+      "count": 2,
+      "aliases": [
+        "heater"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,264 @@
+{
+  "room": "arkit_living_41159566",
+  "source": "hand inventory from 24 evenly spaced frames; small clutter grouped; scanning-marker posters on the floor excluded",
+  "items": [
+    {
+      "name": "sofa",
+      "type": "furniture",
+      "count": 2,
+      "aliases": [
+        "couch"
+      ]
+    },
+    {
+      "name": "armchair",
+      "type": "furniture",
+      "count": 2,
+      "aliases": [
+        "chair"
+      ]
+    },
+    {
+      "name": "ottoman",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "footstool",
+        "pouf"
+      ]
+    },
+    {
+      "name": "carved chair",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "chair",
+        "wooden chair"
+      ]
+    },
+    {
+      "name": "wall cabinet",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "cabinet",
+        "cupboard"
+      ]
+    },
+    {
+      "name": "side table",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "end table",
+        "table"
+      ]
+    },
+    {
+      "name": "table lamp",
+      "type": "fixture",
+      "count": 2,
+      "aliases": [
+        "lamp"
+      ]
+    },
+    {
+      "name": "wall light",
+      "type": "fixture",
+      "count": 1,
+      "aliases": [
+        "sconce",
+        "lamp"
+      ]
+    },
+    {
+      "name": "telescope",
+      "type": "decor",
+      "count": 1,
+      "aliases": []
+    },
+    {
+      "name": "light switch",
+      "type": "fixture",
+      "count": 1,
+      "aliases": [
+        "switch",
+        "switchboard"
+      ]
+    },
+    {
+      "name": "framed picture",
+      "type": "wall_item",
+      "count": 10,
+      "aliases": [
+        "picture frame",
+        "painting",
+        "artwork",
+        "framed print",
+        "wall art"
+      ]
+    },
+    {
+      "name": "rug",
+      "type": "textile",
+      "count": 4,
+      "aliases": [
+        "carpet",
+        "kilim"
+      ]
+    },
+    {
+      "name": "sheepskin rug",
+      "type": "textile",
+      "count": 1,
+      "aliases": [
+        "rug",
+        "fur rug"
+      ]
+    },
+    {
+      "name": "curtain",
+      "type": "textile",
+      "count": 3,
+      "aliases": [
+        "drape"
+      ]
+    },
+    {
+      "name": "throw blanket",
+      "type": "textile",
+      "count": 3,
+      "aliases": [
+        "blanket",
+        "throw"
+      ]
+    },
+    {
+      "name": "cushion",
+      "type": "textile",
+      "count": 4,
+      "aliases": [
+        "pillow"
+      ]
+    },
+    {
+      "name": "vase",
+      "type": "decor",
+      "count": 1,
+      "aliases": [
+        "jar",
+        "urn"
+      ]
+    },
+    {
+      "name": "bowl",
+      "type": "decor",
+      "count": 2,
+      "aliases": []
+    },
+    {
+      "name": "potted plant",
+      "type": "decor",
+      "count": 2,
+      "aliases": [
+        "plant"
+      ]
+    },
+    {
+      "name": "candle",
+      "type": "decor",
+      "count": 2,
+      "aliases": [
+        "candle holder"
+      ]
+    },
+    {
+      "name": "bottle",
+      "type": "decor",
+      "count": 1,
+      "aliases": []
+    },
+    {
+      "name": "firewood",
+      "type": "decor",
+      "count": 1,
+      "aliases": [
+        "logs"
+      ]
+    },
+    {
+      "name": "board games",
+      "type": "decor",
+      "count": 1,
+      "aliases": [
+        "games",
+        "boxes"
+      ]
+    },
+    {
+      "name": "cds",
+      "type": "decor",
+      "count": 1,
+      "aliases": [
+        "books"
+      ]
+    },
+    {
+      "name": "picture frame",
+      "type": "decor",
+      "count": 3,
+      "aliases": [
+        "frame",
+        "framed picture"
+      ]
+    },
+    {
+      "name": "fireplace tools",
+      "type": "decor",
+      "count": 1,
+      "aliases": [
+        "fire tools"
+      ]
+    },
+    {
+      "name": "basket",
+      "type": "decor",
+      "count": 1,
+      "aliases": []
+    },
+    {
+      "name": "candle stand",
+      "type": "decor",
+      "count": 1,
+      "aliases": [
+        "candle holder"
+      ]
+    },
+    {
+      "name": "bookshelves",
+      "type": "built_in",
+      "count": 1,
+      "aliases": [
+        "bookshelf",
+        "bookcase",
+        "shelf"
+      ]
+    },
+    {
+      "name": "fireplace",
+      "type": "built_in",
+      "count": 1,
+      "aliases": [
+        "hearth"
+      ]
+    },
+    {
+      "name": "radiator",
+      "type": "built_in",
+      "count": 2,
+      "aliases": [
+        "heater"
+      ]
+    }
+  ]
+}

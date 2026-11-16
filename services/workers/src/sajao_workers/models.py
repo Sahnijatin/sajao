@@ -215,3 +215,32 @@ def removal_chain(invoke: Invoke) -> list[GpuModelProvider]:
             max_attempts=1,
         ),
     ]
+
+
+# The room inventory (eval/twin-inventory): Gemini on Vertex AI lists, Claude cross-checks.
+INVENTORY_PROMPT_ID = "twin_inventory@1"
+INVENTORY_KEYFRAMES = 8
+INVENTORY_MAX_TOKENS = 16000  # output, including the models' thinking
+INVENTORY_PROMPT = """These photos show one room of an Indian home from different directions.
+
+List every distinct physical thing in the room, not only furniture:
+- furniture: sofas, beds, chairs, tables, almirahs, cabinets, racks, shelves that stand free
+- fixture: fixed appliances and fittings, for example gas stove, chimney, water purifier,
+  geyser, AC, cooler, ceiling fan, lights, switchboards, TV
+- wall_item: anything hung on or fixed to a wall, for example paintings, mirrors, clocks,
+  wall shelves, photo frames, calendars
+- textile: curtains, rugs, cushions, bedsheets, blankets, tablecloths
+- decor: plants, vases, idols, showpieces, lamps that stand on a surface, and other small
+  everyday things worth naming
+- built_in: things built into the structure that stay when the room is redone, for example
+  a fitted wardrobe, kitchen counter, built-in shelf, niche, or puja alcove
+
+Rules:
+- One entry per kind of thing. The same sofa seen in three photos is one sofa: count each
+  physical item once across all photos. Give the count of separate items of that kind.
+- Name each thing with a short common noun phrase an object detector would understand
+  (one to three words). Use Indian names where natural (almirah, diwan, puja unit) and put
+  plain English alternatives in "prompts" (up to three; empty if none).
+- Leave out walls, floor, ceiling, doors, windows and people.
+- Do not give sizes, positions or prices.
+"""

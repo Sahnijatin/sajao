@@ -1,0 +1,183 @@
+{
+  "room": "arkit_bedroom_47430034",
+  "source": "hand inventory from 24 evenly spaced frames; small clutter grouped; scanning-marker posters on the floor excluded",
+  "items": [
+    {
+      "name": "bookshelf",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "shelf",
+        "bookcase"
+      ]
+    },
+    {
+      "name": "desk",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "table"
+      ]
+    },
+    {
+      "name": "chair",
+      "type": "furniture",
+      "count": 2,
+      "aliases": [
+        "desk chair"
+      ]
+    },
+    {
+      "name": "chest of drawers",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "drawers",
+        "dresser",
+        "cabinet"
+      ]
+    },
+    {
+      "name": "cube shelf",
+      "type": "furniture",
+      "count": 3,
+      "aliases": [
+        "wall shelf",
+        "shelf"
+      ]
+    },
+    {
+      "name": "loft bed",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "bed",
+        "bunk bed"
+      ]
+    },
+    {
+      "name": "vanity",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "dressing table"
+      ]
+    },
+    {
+      "name": "wardrobe",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "closet",
+        "sliding wardrobe"
+      ]
+    },
+    {
+      "name": "television",
+      "type": "fixture",
+      "count": 1,
+      "aliases": [
+        "tv",
+        "monitor"
+      ]
+    },
+    {
+      "name": "light switch",
+      "type": "fixture",
+      "count": 1,
+      "aliases": [
+        "switch",
+        "switchboard"
+      ]
+    },
+    {
+      "name": "hanging swing",
+      "type": "furniture",
+      "count": 1,
+      "aliases": [
+        "swing",
+        "jhoola",
+        "hanging chair"
+      ]
+    },
+    {
+      "name": "pet cage",
+      "type": "decor",
+      "count": 1,
+      "aliases": [
+        "cage",
+        "hamster cage"
+      ]
+    },
+    {
+      "name": "framed picture",
+      "type": "wall_item",
+      "count": 3,
+      "aliases": [
+        "picture frame",
+        "photo frame",
+        "wall art"
+      ]
+    },
+    {
+      "name": "poster",
+      "type": "wall_item",
+      "count": 2,
+      "aliases": [
+        "chart",
+        "calendar"
+      ]
+    },
+    {
+      "name": "rug",
+      "type": "textile",
+      "count": 1,
+      "aliases": [
+        "carpet"
+      ]
+    },
+    {
+      "name": "curtain",
+      "type": "textile",
+      "count": 2,
+      "aliases": [
+        "drape"
+      ]
+    },
+    {
+      "name": "bean bag",
+      "type": "textile",
+      "count": 1,
+      "aliases": [
+        "beanbag"
+      ]
+    },
+    {
+      "name": "stuffed toy",
+      "type": "decor",
+      "count": 2,
+      "aliases": [
+        "soft toy",
+        "teddy bear",
+        "plush toy",
+        "toy"
+      ]
+    },
+    {
+      "name": "potted plant",
+      "type": "decor",
+      "count": 3,
+      "aliases": [
+        "plant"
+      ]
+    },
+    {
+      "name": "radiator",
+      "type": "built_in",
+      "count": 2,
+      "aliases": [
+        "heater"
+      ]
+    }
+  ]
+}
