@@ -7,6 +7,11 @@ export interface ArStatus {
   brightness: number;
   ambientIntensity: number;
   featurePoints: number;
+  /** Missing from older builds. */
+  planes?: number;
+  meshTriangles?: number;
+  detector?: boolean;
+  detectorError?: string;
 }
 
 /**
@@ -39,9 +44,18 @@ export function arFrameEvent(
     lowLight: platform === "ios" && status.ambientIntensity < IOS_LOW_LIGHT_LUMENS,
     featureCount: Math.max(0, Math.round(status.featurePoints)),
     tracking: trackingOf(status.tracking),
+    signals: {
+      planes: count(status.planes),
+      meshTriangles: count(status.meshTriangles),
+      detector: status.detector === true,
+      detectorFailed: typeof status.detectorError === "string" && status.detectorError !== "",
+    },
     atMs,
   };
 }
+
+const count = (value: unknown) =>
+  typeof value === "number" && Number.isFinite(value) ? Math.max(0, value) : 0;
 
 export function arPoseEvent(
   pose: { yaw: number; pitch: number; tracking: string; x?: number; z?: number },
