@@ -138,10 +138,12 @@ def planted_table() -> dict:
 
 
 def gate_table(model: str) -> dict:
+    """Pass rates on held-out photos only. Listings with a single clean photo are
+    unverifiable and are reported apart, never counted as passes."""
     f = R / f"gate_{model}.json"
     if not f.exists():
         return {}
-    res = [r for r in json.loads(f.read_text()) if "pairs" in r]
+    res = json.loads(f.read_text())
     listings = {
         x["id"]: x
         for x in json.loads((REPO / "eval" / "render-bakeoff" / "listings.json").read_text())
@@ -149,34 +151,49 @@ def gate_table(model: str) -> dict:
     sys.path.insert(0, str(REPO / "services" / "spikes" / "render-bakeoff" / "local"))
     from designs import plausible
 
-    true_, wrong, cats, ids = [], [], [], []
+    counts: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+    true_, wrong, cats = [], [], []
     for r in res:
+        cat = r.get("category") or listings.get(r.get("id"), {}).get("category", "?")
+        c = counts[cat]
+        c["listings"] += 1
+        if "error" in r:
+            c["errors"] += 1
+            continue
+        if r.get("skipped"):
+            c["no_clean_photo"] += 1
+            continue
+        if r.get("unverifiable"):
+            c["unverifiable"] += 1
+            continue
         if not plausible(listings[r["id"]]):
+            c["implausible_listing_dims"] += 1
             continue
         t = [p for p in r["pairs"] if p.get("true") and "views" in p]
         if not t:
+            c["no_asset"] += 1
             continue
+        c["verifiable"] += 1
         true_.append(t[0]["views"])
-        cats.append(r["category"])
-        ids.append(r["id"])
+        cats.append(cat)
         wrong += [p["views"] for p in r["pairs"] if not p.get("true") and "views" in p]
-    # Calibrate on half the SKUs, report on the other half (and on all, for reference).
+    if not true_:
+        return {"counts": counts}
+    # Calibrate on half the verifiable SKUs; report on the other half and on all.
     half = np.arange(len(true_)) % 2 == 0
     th, tp_cal, fp_cal = calibrate([v for v, h in zip(true_, half, strict=True) if h], wrong)
     held = [v for v, h in zip(true_, half, strict=True) if not h]
     by_cat = defaultdict(list)
     for v, c in zip(true_, cats, strict=True):
         by_cat[c].append(sku_passes(v, th))
-    input_only = [sku_passes([x for x in v if x.get("is_input")] or v[:1], th) for v in true_]
     return {
-        "skus": len(true_),
-        "implausible_listing_dims": sum(1 for r in res if not plausible(listings[r["id"]])),
+        "counts": {k: dict(v) for k, v in counts.items()},
+        "verifiable_skus": len(true_),
         "thresholds": th.__dict__,
         "wrong_sku_pass_rate": fp_cal,
         "pass_rate_calibration_half": tp_cal,
         "pass_rate_held_out_half": pass_rate(held, th),
-        "pass_rate_all": pass_rate(true_, th),
-        "pass_rate_input_view_only": float(np.mean(input_only)) if input_only else None,
+        "pass_rate_all_verifiable": pass_rate(true_, th),
         "by_category": {c: float(np.mean(v)) for c, v in sorted(by_cat.items())},
         "median_view": {
             k: float(np.median([x[k] for v in true_ for x in v])) for k in ("iou", "de", "emb")
@@ -225,7 +242,7 @@ def tier_comparison(models=("triposg", "trellis2", "sam3d", "parametric")) -> di
     table: dict[str, dict[str, dict]] = defaultdict(dict)
     for m in models:
         g = gate_table(m)
-        if not g:
+        if not g or not (R / f"gate_{m}.json").exists():
             continue
         costs = build_costs(m)
         res = [r for r in json.loads((R / f"gate_{m}.json").read_text()) if "pairs" in r]
@@ -234,8 +251,12 @@ def tier_comparison(models=("triposg", "trellis2", "sam3d", "parametric")) -> di
             cats[r["category"]].append(r["id"])
         for cat, ids in cats.items():
             c = [costs[i] for i in ids if i in costs]
+            cnt = g.get("counts", {}).get(cat, {})
             table[cat][m] = {
-                "pass_rate": g["by_category"].get(cat),
+                "pass_rate_verifiable": g.get("by_category", {}).get(cat),
+                "verifiable": cnt.get("verifiable", 0),
+                "unverifiable": cnt.get("unverifiable", 0),
+                "no_clean_photo": cnt.get("no_clean_photo", 0),
                 "skus_built": len(c),
                 "skus": len(ids),
                 "median_seconds": float(np.median([x["seconds"] for x in c])) if c else None,
@@ -243,7 +264,9 @@ def tier_comparison(models=("triposg", "trellis2", "sam3d", "parametric")) -> di
             }
     best = {}
     for cat, row in table.items():
-        cands = [(v["pass_rate"] or 0, -(v["median_inr"] or 1e9), m) for m, v in row.items()]
+        cands = [
+            (v["pass_rate_verifiable"] or 0, -(v["median_inr"] or 1e9), m) for m, v in row.items()
+        ]
         if cands:
             best[cat] = max(cands)[2]
     return {"by_category": table, "best_default_tier": best}

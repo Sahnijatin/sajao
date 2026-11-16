@@ -286,8 +286,16 @@ def gate_listing(model: str, lid: str, against: list[str]) -> dict:
         "input_view": views["input"],
         "pairs": [],
     }
-    if not clean:
+    if not clean or views["input"] is None:
         out["skipped"] = "no clean view"
+        return out
+    # Score only on held-out photos: every asset is built from the input photo, so
+    # agreeing with that photo proves little. A listing with no other clean photo
+    # is unverifiable, never a pass.
+    clean = [i for i in clean if i != views["input"]]
+    out["held_out_views"] = clean
+    if not clean:
+        out["unverifiable"] = True
         return out
     photos = {i: load_rgba(lid, i) for i in clean}
     embs = {}
@@ -322,7 +330,7 @@ def gate_listing(model: str, lid: str, against: list[str]) -> dict:
             img = s.pop("_img")
             s.pop("_key")
             s["view"] = i
-            s["is_input"] = i == views["input"] and k == 0
+            s["is_input"] = False
             per_view.append(s)
             if k == 0:
                 ph = photos[i]
