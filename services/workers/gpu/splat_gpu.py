@@ -151,9 +151,18 @@ def optimise(
     reset_every=3000,
     log="",
     cams=None,
+    checkpoint=None,
+    resume=None,
+    interrupt_at=None,
 ):
     """Train Gaussians. With `cams` (from new_camera_params), also refine each
-    camera's pose and a per-image colour gain and bias (exposure)."""
+    camera's pose and a per-image colour gain and bias (exposure).
+
+    `checkpoint(step, state)` is called every CHECKPOINT_EVERY steps with
+    everything needed to continue; `resume` is such a state, and training picks
+    up from its step. `interrupt_at` stops with Interrupted at that step (for
+    the resume test only).
+    """
     import torch
     from gsplat.strategy import DefaultStrategy
     from pytorch_msssim import ssim
@@ -188,8 +197,18 @@ def optimise(
     state = strategy.initialize_state(scene_scale=scale)
     h, w = imgs.shape[1:3]
     gen = torch.Generator(device="cpu").manual_seed(0)
+    first = 0
+    if resume is not None:
+        first = _restore(resume, params, opts, sched, cams, cam_opt, cam_sched, state, gen)
+        print(f"{log} resumed at step {first}", flush=True)
     t0 = time.time()
-    for step in range(steps):
+    for step in range(first, steps):
+        if interrupt_at is not None and step == interrupt_at:
+            raise Interrupted(step)
+        if checkpoint is not None and step > first and step % CHECKPOINT_EVERY == 0:
+            checkpoint(
+                step, _snapshot(step, params, opts, sched, cams, cam_opt, cam_sched, state, gen)
+            )
         i = int(torch.randint(len(imgs), (1,), generator=gen))
         gt = imgs[i].float() / 255.0
         sh_deg = min(step // 1000, 3)
@@ -274,6 +293,56 @@ def evaluate(params, imgs, viewmats, ks, cams=None):
                 float(ssim(pred.permute(2, 0, 1)[None], gt.permute(2, 0, 1)[None], data_range=1.0))
             )
     return {"psnr": float(np.mean(psnrs)), "ssim": float(np.mean(ssims)), "views": len(imgs)}
+
+
+# A checkpoint of a room is about 2 GB (Gaussians plus Adam state), so it is written
+# every 5,000 steps: a preemption loses at most a third of a 15,000-step run.
+CHECKPOINT_EVERY = 5000
+
+
+class Interrupted(Exception):
+    """Training stopped on purpose at a step (the resume test)."""
+
+
+def _snapshot(step, params, opts, sched, cams, cam_opt, cam_sched, state, gen) -> dict:
+    """Everything training needs to continue from `step`, on the CPU."""
+
+    def cpu(value):
+        return value.detach().cpu() if hasattr(value, "detach") else value
+
+    return {
+        "step": step,
+        "params": {k: cpu(v) for k, v in params.items()},
+        "opts": {k: o.state_dict() for k, o in opts.items()},
+        "sched": sched.state_dict(),
+        "cams": {k: cpu(v) for k, v in cams.items()} if cams is not None else None,
+        "cam_opt": cam_opt.state_dict() if cam_opt is not None else None,
+        "cam_sched": cam_sched.state_dict() if cam_sched is not None else None,
+        "strategy": {k: cpu(v) for k, v in state.items()},
+        "generator": gen.get_state(),
+    }
+
+
+def _restore(saved, params, opts, sched, cams, cam_opt, cam_sched, state, gen) -> int:
+    """Load a snapshot into freshly built training objects; returns the next step."""
+    import torch
+
+    for key, value in saved["params"].items():
+        # Densification changes the number of Gaussians: swap in tensors of the saved size.
+        params[key] = torch.nn.Parameter(value.cuda())
+        opts[key].param_groups[0]["params"] = [params[key]]
+        opts[key].load_state_dict(saved["opts"][key])
+    sched.load_state_dict(saved["sched"])
+    if cams is not None and saved["cams"] is not None:
+        with torch.no_grad():
+            for key, value in saved["cams"].items():
+                cams[key].copy_(value.cuda())
+        cam_opt.load_state_dict(saved["cam_opt"])
+        cam_sched.load_state_dict(saved["cam_sched"])
+    for key, value in saved["strategy"].items():
+        state[key] = value.cuda() if hasattr(value, "cuda") else value
+    gen.set_state(saved["generator"])
+    return int(saved["step"])
 
 
 def export_ply(params, path: Path, keep=None, sh_degree: int = 3) -> int:
@@ -370,8 +439,23 @@ def _vote_labels(params, objects, frames, ks, vms, w, h) -> np.ndarray:
     return assign_labels(votes.cpu().numpy(), visible.cpu().numpy())
 
 
-def train(payload: dict, store, steps: int = 15000) -> dict:
-    """Train a splat from a frames manifest and split it by the objects' masks."""
+def train(
+    payload: dict,
+    store,
+    steps: int = 15000,
+    checkpoints: Path | None = None,
+    persist=None,
+    interrupt_at: int | None = None,
+) -> dict:
+    """Train a splat from a frames manifest and split it by the objects' masks.
+
+    With `checkpoints` (a directory on the volume), training state is saved every
+    CHECKPOINT_EVERY steps under a key of the inputs, and `persist()` (the volume
+    commit) makes it durable. A run that is preempted and started again with the
+    same inputs resumes from the last checkpoint instead of from the start.
+    """
+    import hashlib
+
     import cv2
     import torch
 
@@ -408,6 +492,26 @@ def train(payload: dict, store, steps: int = 15000) -> dict:
     params = init_params(points)
     scale = scene_scale(vms_all[train_idx])
     cams = new_camera_params(len(train_idx))
+    saved = resume = None
+    if checkpoints is not None:
+        key = hashlib.sha256(
+            json.dumps([payload["frames"], payload["objects"], steps]).encode()
+        ).hexdigest()
+        saved = checkpoints / f"splat-{key}.pt"
+        if saved.exists():
+            resume = torch.load(saved, map_location="cpu", weights_only=False)
+
+    def checkpoint(step: int, state: dict) -> None:
+        local = Path("/tmp/splat_checkpoint.pt")  # noqa: S108
+        torch.save(state, local)
+        saved.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(local, saved.with_suffix(".part"))
+        saved.with_suffix(".part").rename(saved)  # never a half-written checkpoint
+        local.unlink()
+        if persist is not None:
+            persist()
+        print(f"twin splat checkpoint at step {step}", flush=True)
+
     started = time.time()
     params = optimise(
         params,
@@ -419,6 +523,9 @@ def train(payload: dict, store, steps: int = 15000) -> dict:
         refine_stop=int(steps * 0.66),
         log="twin splat",
         cams=cams,
+        checkpoint=checkpoint if saved is not None else None,
+        resume=resume,
+        interrupt_at=interrupt_at,
     )
     torch.cuda.synchronize()
     train_seconds = time.time() - started
@@ -461,4 +568,10 @@ def train(payload: dict, store, steps: int = 15000) -> dict:
     result["labels"] = store.put_blob(labels_buf.getvalue())
     result["cameras"] = store.put_blob(json.dumps(cameras).encode())
     ply.unlink()
+    if saved is not None and saved.exists():
+        saved.unlink()  # the splat is stored; its checkpoint is no longer needed
+        if persist is not None:
+            persist()
+    if resume is not None:
+        result["resumed_at_step"] = int(resume["step"])
     return result

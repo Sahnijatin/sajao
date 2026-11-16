@@ -177,6 +177,8 @@ app = modal.App("sajao-twin-worker")
 vol = modal.Volume.from_name("sajao-twin", create_if_missing=True)
 spike_vol = modal.Volume.from_name("sajao-twin-risk")
 STORE_ROOT = Path("/vol/artifacts")
+# Splat training state, so a preempted run resumes (see splat_gpu.train).
+CHECKPOINTS = Path("/vol/checkpoints")
 
 
 class InputError(Exception):
@@ -448,7 +450,13 @@ def run_splat(model: str, task: str, payload: dict[str, Any]) -> dict[str, Any]:
     splat_gpu.load_cached_kernels()
     try:
         if task == "twin_splat" and model.startswith("gsplat@"):
-            output = splat_gpu.train(payload, _store(), steps=int(payload.get("steps", 15000)))
+            output = splat_gpu.train(
+                payload,
+                _store(),
+                steps=int(payload.get("steps", 15000)),
+                checkpoints=CHECKPOINTS,
+                persist=vol.commit,
+            )
         elif task == "twin_remove" and model.startswith("big-lama@"):
             output = removal_gpu.remove(
                 payload,
@@ -844,6 +852,80 @@ def splat_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
         }
 
     return asyncio.run(run())
+
+
+@app.function(
+    image=splat_image,
+    gpu=["L40S", "A100-40GB"],
+    volumes={"/vol": vol},
+    timeout=3600,
+    max_containers=1,
+)
+def resume_test_gpu(frames: str, objects: str, steps: int, interrupt_at: int | None) -> Any:
+    """Train with checkpoints, optionally stopping on purpose at `interrupt_at`."""
+    import splat_gpu
+
+    vol.reload()
+    splat_gpu.load_cached_kernels()
+    try:
+        out = splat_gpu.train(
+            {"frames": frames, "objects": objects},
+            _store(),
+            steps=steps,
+            checkpoints=Path("/vol/checkpoints-test"),
+            persist=vol.commit,
+            interrupt_at=interrupt_at,
+        )
+    except splat_gpu.Interrupted as stop:
+        return {"interrupted_at": stop.args[0]}
+    vol.commit()
+    return {k: out.get(k) for k in ("resumed_at_step", "psnr_heldout", "gaussians")}
+
+
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=4, memory=8192, timeout=7200
+)
+def resume_test_cpu(scene: str, keyframes: int, steps: int, interrupt_at: int) -> dict[str, Any]:
+    """A splat run stopped mid-way, then started again: it must resume, not restart."""
+    import asyncio
+    import json
+
+    from sajao_gateway import InMemorySpendLedger, ModelGateway, SpendCaps
+    from sajao_workers.models import detect_chain, segment_chain
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.objects_step import objects_step
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    frames = store.put_blob(json.dumps(_arkit_manifest(store, scene, keyframes)).encode())
+    ledger = InMemorySpendLedger(
+        SpendCaps(per_user_daily_micro_inr=10**9, global_daily_micro_inr=10**9)
+    )
+    objects = asyncio.run(
+        StepRunner(store, max_attempts=1).run(
+            objects_step(
+                ModelGateway(detect_chain(volume_invoke("twin_detect")), ledger=ledger),
+                ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger),
+            ),
+            {"frames": frames},
+            {},
+        )
+    )
+    vol.commit()
+    first = resume_test_gpu.remote(frames, objects.outputs["objects"], steps, interrupt_at)
+    second = resume_test_gpu.remote(frames, objects.outputs["objects"], steps, None)
+    return {"first": first, "second": second}
+
+
+@app.local_entrypoint()
+def resume_test(
+    scene: str = "arkit_living_47331265",
+    keyframes: int = 120,
+    steps: int = 6000,
+    interrupt_at: int = 5500,
+) -> None:
+    import json
+
+    print(json.dumps(resume_test_cpu.remote(scene, keyframes, steps, interrupt_at), indent=1))
 
 
 @app.local_entrypoint()
