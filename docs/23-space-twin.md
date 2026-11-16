@@ -19,7 +19,7 @@ The problem we solve: **any phone, one scan, every object separated, measured, r
 | --- | --- | --- |
 | Capture | Keyframes with camera poses and intrinsics, AR planes, depth and LiDAR scene mesh where present, live detections, sensor log, video | Phone; immutable once uploaded |
 | Shell | Walls, floor, ceiling, doors, windows as editable planes, each with a projected photo texture (objects masked out), material guesses (paint colour, tile size) | AR data plus feed-forward reconstruction; scale cross-checked against anchors |
-| Objects | One record per item: class, name, oriented 3D box with size and error band, masks and best crops from several views, 3D model, splat subset, catalog matches, state (keep, move, remove, replace) | Open-vocabulary segmentation tracked across frames, lifted to 3D; named by a vision-language model |
+| Objects | One record per item: class, name, oriented 3D box with size and error band, masks and best crops from several views, 3D model, splat subset, catalog matches, state (keep, move, remove, replace) | Open-vocabulary detection (YOLOE by default, prompted with general and Indian home object names, behind a swappable interface) and segmentation tracked across frames, lifted to 3D; named by a vision-language model |
 | Appearance | Per-object 3D model at true size; photoreal room splat split by object | Image-to-3D from the object's own crops; Gaussian splat trained on keyframes |
 | Identity | Closest catalog product and same-size replacements per object | Image and text embeddings plus size filter |
 
