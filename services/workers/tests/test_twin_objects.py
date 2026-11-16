@@ -147,7 +147,7 @@ def test_yaw_is_in_degrees_within_a_half_turn() -> None:
 
 
 def piece(
-    label: str, x0: float, x1: float, z0: float, z1: float, frames: int = 4
+    label: str, x0: float, x1: float, z0: float, z1: float, frames: int = 4, first: int = 0
 ) -> list[Observation]:
     """Observations for a box piece filling x0..x1, height 0..0.8, depth z0..z1 (y up)."""
     from sajao_workers.twin.fusion import voxelize
@@ -158,7 +158,7 @@ def piece(
         for y in np.arange(0.0, 0.8, 0.04)
         for z in np.arange(z0, z1, 0.04)
     ]
-    return [Observation(i, label, 0.9, voxelize(pts, 0.05)) for i in range(frames)]
+    return [Observation(first + i, label, 0.9, voxelize(pts, 0.05)) for i in range(frames)]
 
 
 def boxes_for(*pieces: list[Observation]) -> list[tuple[str, float]]:
@@ -173,7 +173,10 @@ def boxes_for(*pieces: list[Observation]) -> list[tuple[str, float]]:
 
 
 def test_touching_pieces_of_a_sofa_become_one_sofa() -> None:
-    merged = boxes_for(piece("sofa", 0.0, 1.0, 0.0, 0.9), piece("sofa", 1.02, 2.0, 0.0, 0.9))
+    # Different views see different arms: the pieces never share a frame.
+    merged = boxes_for(
+        piece("sofa", 0.0, 1.0, 0.0, 0.9), piece("sofa", 1.02, 2.0, 0.0, 0.9, first=4)
+    )
     assert merged == [("sofa", 2.0)]
 
 
@@ -188,5 +191,57 @@ def test_sofas_apart_stay_apart() -> None:
 
 
 def test_pieces_are_not_joined_past_a_plausible_size() -> None:
-    long = boxes_for(piece("sofa", 0.0, 2.0, 0.0, 0.9), piece("sofa", 2.02, 4.0, 0.0, 0.9))
+    long = boxes_for(piece("sofa", 0.0, 2.0, 0.0, 0.9), piece("sofa", 2.02, 4.0, 0.0, 0.9, first=4))
     assert len(long) == 2  # a 4 m sofa is two sofas, not one
+
+
+def side_by_side(frames_seeing_both: int, frames_alone: int = 2) -> list[Observation]:
+    """Two single sofas touching (0..0.95 and 0.97..1.9 m): `frames_seeing_both` frames
+    show them as two masks; other frames each see one, overlapping the other's voxels."""
+    left, right = piece("sofa", 0.0, 0.95, 0.0, 0.9, 1)[0], piece("sofa", 0.97, 1.9, 0.0, 0.9, 1)[0]
+    both = piece("sofa", 0.0, 1.9, 0.0, 0.9, 1)[0]  # a view where the detector saw one box
+    obs = []
+    for f in range(frames_seeing_both):
+        obs += [
+            Observation(f, "sofa", 0.9, left.voxels, key=2 * f),
+            Observation(f, "sofa", 0.9, right.voxels, key=2 * f + 1),
+        ]
+    for f in range(frames_seeing_both, frames_seeing_both + frames_alone):
+        obs.append(Observation(f, "sofa", 0.9, both.voxels, key=100 + f))
+    return obs
+
+
+def objects_from(observations: list[Observation]) -> list[tuple[str, float]]:
+    from sajao_workers.twin.fusion import fuse, merge_instances
+    from sajao_workers.twin.objects import fitted_objects
+
+    fitted = fitted_objects(merge_instances(fuse(observations)), 1)
+    return sorted((label, round(box.length, 1)) for label, box, _, _ in fitted)
+
+
+def test_sofas_seen_as_two_masks_in_several_frames_stay_two() -> None:
+    assert objects_from(side_by_side(frames_seeing_both=3)) == [("sofa", 0.9), ("sofa", 0.9)]
+
+
+def test_one_frame_with_two_masks_is_not_enough_to_split() -> None:
+    # A single double detection is noise: one 1.9 m sofa, not two.
+    assert objects_from(side_by_side(frames_seeing_both=1, frames_alone=4)) == [("sofa", 1.9)]
+
+
+def test_an_observation_never_joins_an_object_already_seen_in_its_frame() -> None:
+    from sajao_workers.twin.fusion import fuse
+
+    left = piece("sofa", 0.0, 1.0, 0.0, 0.9, 1)[0]
+    twice = [
+        Observation(0, "sofa", 0.9, left.voxels, key=0),
+        Observation(0, "sofa", 0.8, left.voxels, key=1),
+    ]
+    assert len(fuse(twice)) == 2
+
+
+def test_fusion_counts_what_it_separated() -> None:
+    from sajao_workers.twin.fusion import fuse, merge_instances
+
+    stats: dict[str, int] = {}
+    merge_instances(fuse(side_by_side(frames_seeing_both=3), stats=stats), stats=stats)
+    assert stats["ambiguous_views_dropped"] == 2

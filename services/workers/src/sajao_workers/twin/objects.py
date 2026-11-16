@@ -18,7 +18,15 @@ from typing import Any, Literal
 import numpy as np
 from PIL import Image
 
-from sajao_workers.twin.fusion import GROUPS, Instance, Observation, fuse, merge_instances, voxelize
+from sajao_workers.twin.fusion import (
+    GROUPS,
+    MIN_SHARED_FRAMES,
+    Instance,
+    Observation,
+    fuse,
+    merge_instances,
+    voxelize,
+)
 from sajao_workers.twin.geometry import UprightBox, fit_upright_box, horizontal_axes
 
 DepthSource = Literal["lidar", "image"]
@@ -155,7 +163,9 @@ def _touching(a: _Fitted, b: _Fitted, up_axis: int) -> bool:
     )
 
 
-def _join_pieces(fitted: list[_Fitted], up_axis: int) -> list[_Fitted]:
+def _join_pieces(
+    fitted: list[_Fitted], up_axis: int, stats: dict[str, int] | None = None
+) -> list[_Fitted]:
     pool = list(fitted)
     joined = True
     while joined:
@@ -166,6 +176,10 @@ def _join_pieces(fitted: list[_Fitted], up_axis: int) -> list[_Fitted]:
                 group = _group(a.label)
                 if group != _group(b.label) or group not in JOINABLE:
                     continue
+                if len(a.frames & b.frames) >= MIN_SHARED_FRAMES:
+                    if stats is not None and _touching(a, b, up_axis):
+                        stats["joins_blocked"] = stats.get("joins_blocked", 0) + 1
+                    continue  # seen as separate objects: two sofas side by side
                 if not _touching(a, b, up_axis):
                     continue
                 points = np.concatenate([a.points, b.points])
@@ -175,6 +189,8 @@ def _join_pieces(fitted: list[_Fitted], up_axis: int) -> list[_Fitted]:
                     continue
                 label = a.label if len(a.frames) >= len(b.frames) else b.label
                 pool[i] = _Fitted(label, a.frames | b.frames, a.keys + b.keys, points, box)
+                if stats is not None:
+                    stats["pieces_joined"] = stats.get("pieces_joined", 0) + 1
                 del pool[j]
                 joined = True
                 break
@@ -184,7 +200,7 @@ def _join_pieces(fitted: list[_Fitted], up_axis: int) -> list[_Fitted]:
 
 
 def fitted_objects(
-    instances: Sequence[Instance], up_axis: int
+    instances: Sequence[Instance], up_axis: int, stats: dict[str, int] | None = None
 ) -> list[tuple[str, UprightBox, int, list[int]]]:
     """Boxes for instances seen often enough, with touching pieces joined and
     implausible sizes dropped: (label, box, frames seen, observation keys)."""
@@ -206,16 +222,24 @@ def fitted_objects(
             )
         )
     out = []
-    for item in _join_pieces(fitted, up_axis):
+    for item in _join_pieces(fitted, up_axis, stats):
         if MIN_SIZE_M <= max(item.box.length, item.box.height) <= MAX_SIZE_M:
             out.append((item.label, item.box, len(item.frames), sorted(item.keys)))
     return out
 
 
 def build_objects(
-    frames: Sequence[FrameMasks], up_axis: int, depth_source: DepthSource
+    frames: Sequence[FrameMasks],
+    up_axis: int,
+    depth_source: DepthSource,
+    stats: dict[str, int] | None = None,
 ) -> list[dict[str, Any]]:
-    """Fuse every frame's masks into objects with boxes, most-seen first."""
+    """Fuse every frame's masks into objects with boxes, most-seen first.
+
+    `stats`, when given, counts how fusion separated and joined objects
+    (ambiguous views dropped, merges and joins blocked, pieces joined), so the
+    golden-set evals can track both kinds of error.
+    """
     views: list[tuple[str, str]] = []
     observations = []
     for index, frame in enumerate(frames):
@@ -230,7 +254,8 @@ def build_objects(
     scores = {obs.key: obs.score for obs in observations}
 
     objects: list[dict[str, Any]] = []
-    for label, box, seen, keys in fitted_objects(merge_instances(fuse(observations)), up_axis):
+    instances = merge_instances(fuse(observations, stats=stats), stats=stats)
+    for label, box, seen, keys in fitted_objects(instances, up_axis, stats):
         objects.append(
             {
                 "category": label,

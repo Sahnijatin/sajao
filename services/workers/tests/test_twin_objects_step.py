@@ -111,7 +111,9 @@ async def test_the_step_finds_the_sofa_and_charges_the_gpu_calls(tmp_path: Path)
     objects = json.loads(runner.store.read_blob(result.outputs["objects"]))
     assert [o["category"] for o in objects] == ["sofa"]
     assert objects[0]["box"]["length"]["value_m"] == pytest.approx(1.0, abs=0.1)
-    assert result.meta == {"objects": 1, "detector": "yoloe", "segmenter": "sam2.1-large"}
+    assert result.meta["objects"] == 1
+    assert (result.meta["detector"], result.meta["segmenter"]) == ("yoloe", "sam2.1-large")
+    assert isinstance(result.meta["fusion"], dict)
     assert result.cost_micro_inr > 0
     assert len(gpu.calls) == 2
 

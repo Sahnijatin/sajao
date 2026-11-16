@@ -21,7 +21,7 @@ from sajao_workers.twin.objects import FrameMasks, build_objects, decode_depth_m
 from sajao_workers.validate import check_detections, check_masks
 
 # Bump when this step's logic, prompts or pinned model chains change.
-VERSION = 2
+VERSION = 3
 
 
 def objects_step(detect: ModelGateway, segment: ModelGateway) -> Step:
@@ -67,13 +67,17 @@ def objects_step(detect: ModelGateway, segment: ModelGateway) -> Step:
                     masks,
                 )
             )
-        objects = build_objects(frame_masks, manifest["up_axis"], manifest["depth_source"])
+        fusion: dict[str, int] = {}
+        objects = build_objects(
+            frame_masks, manifest["up_axis"], manifest["depth_source"], stats=fusion
+        )
         return StepOutput(
             files={"objects": json.dumps(objects, sort_keys=True).encode()},
             meta={
                 "objects": len(objects),
                 "detector": detected.provider,
                 "segmenter": masked.provider,
+                "fusion": fusion,
             },
             cost_micro_inr=detected.cost_micro_inr + masked.cost_micro_inr,
         )
