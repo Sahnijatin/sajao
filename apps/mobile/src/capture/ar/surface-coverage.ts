@@ -113,7 +113,8 @@ function findWall(walls: readonly Wall[], hit: SurfaceHit): number {
   );
 }
 
-function sharpEnough(history: readonly number[], sharpness: number): boolean {
+/** True when a frame is sharp against the same session's recent frames. Shared with the 2D scan. */
+export function sharpEnough(history: readonly number[], sharpness: number): boolean {
   // Too few readings to know this phone's normal: accept.
   if (history.length < 5) return true;
   const sorted = [...history].sort((a, b) => a - b);
@@ -185,7 +186,7 @@ export function addSurfaceSample(
     walls,
     floor,
     sharpness,
-    recent: [...coverage.recent, cause].slice(-RECENT_SAMPLES),
+    recent: pushRecent(coverage.recent, cause),
     accepted: coverage.accepted + (accepted ? 1 : 0),
     rejected: coverage.rejected + (accepted ? 0 : 1),
   };
@@ -218,8 +219,20 @@ export function surfaceFraction(coverage: SurfaceCoverage): number {
 
 /** True when enough recent samples were rejected for moving fast or blur. */
 export function shouldSlowDown(coverage: SurfaceCoverage): boolean {
+  return tooManyRejected(coverage.recent);
+}
+
+/** Enough of the recent samples or frames were rejected for turning fast or blur. */
+export function tooManyRejected(recent: readonly (RejectCause | null)[]): boolean {
   return (
-    coverage.recent.filter((cause) => cause === "turning" || cause === "blurred").length >=
-    SLOW_DOWN_AFTER
+    recent.filter((cause) => cause === "turning" || cause === "blurred").length >= SLOW_DOWN_AFTER
   );
+}
+
+/** Keep the most recent causes, newest last. */
+export function pushRecent(
+  recent: readonly (RejectCause | null)[],
+  cause: RejectCause | null,
+): (RejectCause | null)[] {
+  return [...recent, cause].slice(-RECENT_SAMPLES);
 }

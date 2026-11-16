@@ -7,6 +7,7 @@ import {
   frameFov,
   INITIAL_SCAN,
   mappedShare,
+  shouldShowSlowDown,
   type ScanEvent,
   scanReducer,
   type ScanState,
@@ -213,7 +214,7 @@ describe("scan session", () => {
     expect(mappedShare(state) * 180).toBeGreaterThanOrEqual(DONE_DEGREES);
   });
 
-  it("counts a steady full turn even when every frame is thin", () => {
+  it("gives nothing for a full turn whose frames are thin", () => {
     const t = timeline();
     let state = run(INITIAL_SCAN, [t.motion()]);
     // 30 degrees a second for 12 seconds, frames with no feature points.
@@ -221,19 +222,40 @@ describe("scan session", () => {
       state = run(state, [t.motion({ yawRate: 30, rotationRate: 30 }), t.frame(goodStats, [])]);
     }
     expect(state.pose.yaw).toBeGreaterThan(355);
-    expect(mappedShare(state)).toBe(1);
-    // Done still needs frames that were usable, which these were.
-    expect(canFinish(state)).toBe(true);
+    expect(mappedShare(state)).toBe(0);
+    expect(canFinish(state)).toBe(false);
   });
 
-  it("counts the sweep with no frames at all, but offers Done only with frames", () => {
+  it("gives nothing for facing directions without frames", () => {
     const t = timeline();
     let state = run(INITIAL_SCAN, [t.motion()]);
     for (let step = 0; step < 80; step += 1) {
       state = run(state, [t.motion({ yawRate: 30, rotationRate: 30 })]);
     }
-    expect(mappedShare(state)).toBeGreaterThan(0.5);
+    expect(mappedShare(state)).toBe(0);
     expect(canFinish(state)).toBe(false);
+  });
+
+  it("gives nothing for a pan faster than 30 degrees a second, and asks to slow down", () => {
+    const t = timeline();
+    let state = run(INITIAL_SCAN, [t.motion()]);
+    for (let step = 0; step < 40; step += 1) {
+      state = run(state, [t.motion({ yawRate: 50, rotationRate: 50 }), t.frame()]);
+    }
+    expect(mappedShare(state)).toBe(0);
+    expect(shouldShowSlowDown(state)).toBe(true);
+  });
+
+  it("gives nothing for blurred frames, judged against this scan's sharp ones", () => {
+    const t = timeline();
+    let state = run(INITIAL_SCAN, [t.motion(), ...repeat(8, () => t.frame())]);
+    const before = mappedShare(state);
+    const blurred = { ...goodStats, sharpness: 50 };
+    for (let step = 0; step < 30; step += 1) {
+      state = run(state, [t.motion({ yawRate: 20, rotationRate: 20 }), t.frame(blurred)]);
+    }
+    expect(mappedShare(state)).toBe(before);
+    expect(shouldShowSlowDown(state)).toBe(true);
   });
 
   it("gives nothing for a fast swing", () => {
