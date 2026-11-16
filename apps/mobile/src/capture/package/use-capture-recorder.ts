@@ -15,18 +15,15 @@ import {
   sensorInterval,
 } from "./native-capture";
 import { record, type RecorderEvent, startRecording } from "./recorder";
+import { uuidV4 } from "./upload-capture";
 
 type Detections = Extract<RecorderEvent, { type: "detections" }>["detections"];
 
 const NO_FILES: ArCaptureFiles = { planes: null, sceneMesh: null, depth: null };
 
-/** A capture id that is unique on this phone; it names the local folder. */
-function newCaptureId(): string {
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
-}
-
 export function useCaptureRecorder(ar: CapturePackage["ar"]) {
-  const captureId = useMemo(newCaptureId, []);
+  // A UUID: it names the local folder and is the capture's id on the server.
+  const captureId = useMemo(() => uuidV4(), []);
   const state = useRef(startRecording(Date.now(), ar));
   // Each sensor source is paced on its own, so one never crowds out another.
   const lastSensor = useRef<Record<string, number>>({});
