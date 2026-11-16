@@ -1369,50 +1369,194 @@
  },
  {
   "id": "ikea_50409893",
-  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ikea_50409893/spec.json'\n"
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   1.8,
+   0.41,
+   0.53
+  ],
+  "build_seconds": 1.12,
+  "faces": 54,
+  "textured": false,
+  "input_view": 0
  },
  {
   "id": "ikea_50483878",
-  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ikea_50483878/spec.json'\n"
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   0.9,
+   0.35,
+   0.4
+  ],
+  "build_seconds": 0.07,
+  "faces": 116,
+  "textured": false,
+  "input_view": 0
  },
  {
   "id": "ikea_80498939",
-  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ikea_80498939/spec.json'\n"
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   1.2,
+   0.35,
+   0.36
+  ],
+  "build_seconds": 0.08,
+  "faces": 116,
+  "textured": false,
+  "input_view": 0
  },
  {
   "id": "ws_melvina-tv-unit-honey-finish",
-  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ws_melvina-tv-unit-honey-finish/spec.json'\n"
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   1.702,
+   0.406,
+   0.508
+  ],
+  "build_seconds": 0.07,
+  "faces": 140,
+  "textured": false,
+  "input_view": 1
  },
  {
   "id": "ws_radiant-tv-unit-frosty-white-finish",
-  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ws_radiant-tv-unit-frosty-white-finish/spec.json'\n"
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   1.219,
+   0.305,
+   0.457
+  ],
+  "build_seconds": 0.05,
+  "faces": 12,
+  "textured": false,
+  "input_view": 1
  },
  {
   "id": "ws_harvey-tv-unit-frosty-white",
-  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ws_harvey-tv-unit-frosty-white/spec.json'\n"
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   1.524,
+   0.457,
+   0.508
+  ],
+  "build_seconds": 0.06,
+  "faces": 30,
+  "textured": false,
+  "input_view": 1
  },
  {
   "id": "ikea_00522047",
-  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ikea_00522047/spec.json'\n"
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.24,
+   0.24,
+   0.02
+  ],
+  "build_seconds": 0.06,
+  "faces": 60,
+  "textured": false,
+  "input_view": 0
  },
  {
   "id": "ikea_s69528344",
-  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ikea_s69528344/spec.json'\n"
+  "model": "parametric",
+  "template": "almirah",
+  "category": "shelf",
+  "template_matches_category": false,
+  "size_m": [
+   0.8,
+   0.3,
+   2.02
+  ],
+  "build_seconds": 0.1,
+  "faces": 36,
+  "textured": false,
+  "input_view": 0
  },
  {
   "id": "ikea_90520355",
-  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ikea_90520355/spec.json'\n"
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.6,
+   0.375,
+   1.4
+  ],
+  "build_seconds": 0.06,
+  "faces": 48,
+  "textured": false,
+  "input_view": 0
  },
  {
   "id": "ws_juniper-book-shelf-honey",
-  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ws_juniper-book-shelf-honey/spec.json'\n"
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.43200000000000005,
+   0.22899999999999998,
+   1.422
+  ],
+  "build_seconds": 0.06,
+  "faces": 60,
+  "textured": false,
+  "input_view": 1
  },
  {
   "id": "ws_greta-book-shelf-honey-finish",
-  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ws_greta-book-shelf-honey-finish/spec.json'\n"
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   1.245,
+   0.406,
+   0.914
+  ],
+  "build_seconds": 0.06,
+  "faces": 48,
+  "textured": false,
+  "input_view": 4
  },
  {
   "id": "ws_javier-bookshelf-honey-finish",
-  "error": "Traceback (most recent call last):\n  File \"/root/app.py\", line 433, in build_parametric\n    out.append(build(lid))\n               ^^^^^^^^^^\n  File \"/root/bk/parametric.py\", line 480, in build\n    spec = json.loads((d / \"spec.json\").read_text())[\"spec\"]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/bk/assets/parametric/ws_javier-bookshelf-honey-finish/spec.json'\n"
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.914,
+   0.381,
+   1.829
+  ],
+  "build_seconds": 0.07,
+  "faces": 54,
+  "textured": false,
+  "input_view": 2
  }
 ]

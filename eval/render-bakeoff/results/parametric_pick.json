@@ -3268,50 +3268,398 @@
  },
  {
   "id": "ikea_50409893",
-  "error": "FileNotFoundError(2, 'No such file or directory')"
+  "spec": {
+   "template": "tv_unit",
+   "seats": "n/a",
+   "arms": "n/a",
+   "back": "n/a",
+   "cushions": "n/a",
+   "legs": "hidden",
+   "headboard": "n/a",
+   "footboard": "n/a",
+   "base": "n/a",
+   "doors": "3",
+   "door_style": "glass",
+   "drawers": "none",
+   "open_shelf": "yes",
+   "top_shape": "n/a",
+   "lower_shelf": "n/a",
+   "shelves": "n/a",
+   "back_panel": "n/a",
+   "sides": "n/a",
+   "plinth": "plinth"
+  },
+  "seconds": 4.88,
+  "cost_micro_inr": 1479340,
+  "model": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 3053,
+   "output_tokens": 168,
+   "cache_read_input_tokens": 0,
+   "cache_creation_input_tokens": 0
+  }
  },
  {
   "id": "ikea_50483878",
-  "error": "FileNotFoundError(2, 'No such file or directory')"
+  "spec": {
+   "template": "tv_unit",
+   "seats": "n/a",
+   "arms": "n/a",
+   "back": "n/a",
+   "cushions": "n/a",
+   "legs": "metal",
+   "headboard": "n/a",
+   "footboard": "n/a",
+   "base": "n/a",
+   "doors": "0",
+   "door_style": "n/a",
+   "drawers": "none",
+   "open_shelf": "yes",
+   "top_shape": "n/a",
+   "lower_shelf": "n/a",
+   "shelves": "n/a",
+   "back_panel": "n/a",
+   "sides": "n/a",
+   "plinth": "legs"
+  },
+  "seconds": 2.37,
+  "cost_micro_inr": 1477440,
+  "model": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 3053,
+   "output_tokens": 167,
+   "cache_read_input_tokens": 0,
+   "cache_creation_input_tokens": 0
+  }
  },
  {
   "id": "ikea_80498939",
-  "error": "FileNotFoundError(2, 'No such file or directory')"
+  "spec": {
+   "template": "tv_unit",
+   "seats": "n/a",
+   "arms": "n/a",
+   "back": "n/a",
+   "cushions": "n/a",
+   "legs": "straight",
+   "headboard": "n/a",
+   "footboard": "n/a",
+   "base": "n/a",
+   "doors": "0",
+   "door_style": "n/a",
+   "drawers": "none",
+   "open_shelf": "yes",
+   "top_shape": "n/a",
+   "lower_shelf": "n/a",
+   "shelves": "n/a",
+   "back_panel": "n/a",
+   "sides": "n/a",
+   "plinth": "legs"
+  },
+  "seconds": 2.72,
+  "cost_micro_inr": 1477440,
+  "model": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 3053,
+   "output_tokens": 167,
+   "cache_read_input_tokens": 0,
+   "cache_creation_input_tokens": 0
+  }
  },
  {
   "id": "ws_melvina-tv-unit-honey-finish",
-  "error": "FileNotFoundError(2, 'No such file or directory')"
+  "spec": {
+   "template": "tv_unit",
+   "seats": "n/a",
+   "arms": "n/a",
+   "back": "n/a",
+   "cushions": "n/a",
+   "legs": "tapered",
+   "headboard": "n/a",
+   "footboard": "n/a",
+   "base": "n/a",
+   "doors": "2",
+   "door_style": "hinged_flat",
+   "drawers": "none",
+   "open_shelf": "yes",
+   "top_shape": "n/a",
+   "lower_shelf": "n/a",
+   "shelves": "n/a",
+   "back_panel": "n/a",
+   "sides": "n/a",
+   "plinth": "legs"
+  },
+  "seconds": 2.71,
+  "cost_micro_inr": 1251340,
+  "model": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 2438,
+   "output_tokens": 171,
+   "cache_read_input_tokens": 0,
+   "cache_creation_input_tokens": 0
+  }
  },
  {
   "id": "ws_radiant-tv-unit-frosty-white-finish",
-  "error": "FileNotFoundError(2, 'No such file or directory')"
+  "spec": {
+   "template": "tv_unit",
+   "seats": "n/a",
+   "arms": "n/a",
+   "back": "n/a",
+   "cushions": "n/a",
+   "legs": "hidden",
+   "headboard": "n/a",
+   "footboard": "n/a",
+   "base": "n/a",
+   "doors": "0",
+   "door_style": "n/a",
+   "drawers": "none",
+   "open_shelf": "yes",
+   "top_shape": "n/a",
+   "lower_shelf": "n/a",
+   "shelves": "n/a",
+   "back_panel": "n/a",
+   "sides": "n/a",
+   "plinth": "none"
+  },
+  "seconds": 2.6,
+  "cost_micro_inr": 1243740,
+  "model": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 2438,
+   "output_tokens": 167,
+   "cache_read_input_tokens": 0,
+   "cache_creation_input_tokens": 0
+  }
  },
  {
   "id": "ws_harvey-tv-unit-frosty-white",
-  "error": "FileNotFoundError(2, 'No such file or directory')"
+  "spec": {
+   "template": "tv_unit",
+   "seats": "n/a",
+   "arms": "n/a",
+   "back": "n/a",
+   "cushions": "n/a",
+   "legs": "hidden",
+   "headboard": "n/a",
+   "footboard": "n/a",
+   "base": "n/a",
+   "doors": "1",
+   "door_style": "hinged_flat",
+   "drawers": "none",
+   "open_shelf": "yes",
+   "top_shape": "n/a",
+   "lower_shelf": "n/a",
+   "shelves": "n/a",
+   "back_panel": "n/a",
+   "sides": "n/a",
+   "plinth": "plinth"
+  },
+  "seconds": 2.46,
+  "cost_micro_inr": 1253240,
+  "model": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 2438,
+   "output_tokens": 172,
+   "cache_read_input_tokens": 0,
+   "cache_creation_input_tokens": 0
+  }
  },
  {
   "id": "ikea_00522047",
-  "error": "FileNotFoundError(2, 'No such file or directory')"
+  "spec": {
+   "template": "shelf",
+   "seats": "n/a",
+   "arms": "n/a",
+   "back": "n/a",
+   "cushions": "n/a",
+   "legs": "hidden",
+   "headboard": "n/a",
+   "footboard": "n/a",
+   "base": "n/a",
+   "doors": "n/a",
+   "door_style": "n/a",
+   "drawers": "n/a",
+   "open_shelf": "n/a",
+   "top_shape": "n/a",
+   "lower_shelf": "n/a",
+   "shelves": "6",
+   "back_panel": "yes",
+   "sides": "closed",
+   "plinth": "n/a"
+  },
+  "seconds": 2.23,
+  "cost_micro_inr": 1479340,
+  "model": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 3053,
+   "output_tokens": 168,
+   "cache_read_input_tokens": 0,
+   "cache_creation_input_tokens": 0
+  }
  },
  {
   "id": "ikea_s69528344",
-  "error": "FileNotFoundError(2, 'No such file or directory')"
+  "spec": {
+   "template": "almirah",
+   "seats": "n/a",
+   "arms": "n/a",
+   "back": "n/a",
+   "cushions": "n/a",
+   "legs": "hidden",
+   "headboard": "n/a",
+   "footboard": "n/a",
+   "base": "n/a",
+   "doors": "2",
+   "door_style": "glass",
+   "drawers": "none",
+   "open_shelf": "n/a",
+   "top_shape": "n/a",
+   "lower_shelf": "n/a",
+   "shelves": "n/a",
+   "back_panel": "n/a",
+   "sides": "n/a",
+   "plinth": "plinth"
+  },
+  "seconds": 3.72,
+  "cost_micro_inr": 1783340,
+  "model": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 3053,
+   "output_tokens": 328,
+   "cache_read_input_tokens": 0,
+   "cache_creation_input_tokens": 0
+  }
  },
  {
   "id": "ikea_90520355",
-  "error": "FileNotFoundError(2, 'No such file or directory')"
+  "spec": {
+   "template": "shelf",
+   "seats": "n/a",
+   "arms": "n/a",
+   "back": "n/a",
+   "cushions": "n/a",
+   "legs": "hidden",
+   "headboard": "n/a",
+   "footboard": "n/a",
+   "base": "n/a",
+   "doors": "n/a",
+   "door_style": "n/a",
+   "drawers": "n/a",
+   "open_shelf": "n/a",
+   "top_shape": "n/a",
+   "lower_shelf": "n/a",
+   "shelves": "4",
+   "back_panel": "yes",
+   "sides": "closed",
+   "plinth": "n/a"
+  },
+  "seconds": 2.73,
+  "cost_micro_inr": 1479340,
+  "model": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 3053,
+   "output_tokens": 168,
+   "cache_read_input_tokens": 0,
+   "cache_creation_input_tokens": 0
+  }
  },
  {
   "id": "ws_juniper-book-shelf-honey",
-  "error": "FileNotFoundError(2, 'No such file or directory')"
+  "spec": {
+   "template": "shelf",
+   "seats": "n/a",
+   "arms": "n/a",
+   "back": "n/a",
+   "cushions": "n/a",
+   "legs": "straight",
+   "headboard": "n/a",
+   "footboard": "n/a",
+   "base": "n/a",
+   "doors": "n/a",
+   "door_style": "n/a",
+   "drawers": "n/a",
+   "open_shelf": "n/a",
+   "top_shape": "n/a",
+   "lower_shelf": "n/a",
+   "shelves": "5",
+   "back_panel": "no",
+   "sides": "open_frame",
+   "plinth": "n/a"
+  },
+  "seconds": 2.48,
+  "cost_micro_inr": 1245640,
+  "model": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 2438,
+   "output_tokens": 168,
+   "cache_read_input_tokens": 0,
+   "cache_creation_input_tokens": 0
+  }
  },
  {
   "id": "ws_greta-book-shelf-honey-finish",
-  "error": "FileNotFoundError(2, 'No such file or directory')"
+  "spec": {
+   "template": "shelf",
+   "seats": "n/a",
+   "arms": "n/a",
+   "back": "n/a",
+   "cushions": "n/a",
+   "legs": "straight",
+   "headboard": "n/a",
+   "footboard": "n/a",
+   "base": "n/a",
+   "doors": "n/a",
+   "door_style": "n/a",
+   "drawers": "n/a",
+   "open_shelf": "n/a",
+   "top_shape": "n/a",
+   "lower_shelf": "n/a",
+   "shelves": "3",
+   "back_panel": "no",
+   "sides": "open_frame",
+   "plinth": "n/a"
+  },
+  "seconds": 2.65,
+  "cost_micro_inr": 1245640,
+  "model": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 2438,
+   "output_tokens": 168,
+   "cache_read_input_tokens": 0,
+   "cache_creation_input_tokens": 0
+  }
  },
  {
   "id": "ws_javier-bookshelf-honey-finish",
-  "error": "FileNotFoundError(2, 'No such file or directory')"
+  "spec": {
+   "template": "shelf",
+   "seats": "n/a",
+   "arms": "n/a",
+   "back": "n/a",
+   "cushions": "n/a",
+   "legs": "tapered",
+   "headboard": "n/a",
+   "footboard": "n/a",
+   "base": "n/a",
+   "doors": "n/a",
+   "door_style": "n/a",
+   "drawers": "n/a",
+   "open_shelf": "n/a",
+   "top_shape": "n/a",
+   "lower_shelf": "n/a",
+   "shelves": "5",
+   "back_panel": "yes",
+   "sides": "closed",
+   "plinth": "n/a"
+  },
+  "seconds": 3.1,
+  "cost_micro_inr": 1245640,
+  "model": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 2438,
+   "output_tokens": 168,
+   "cache_read_input_tokens": 0,
+   "cache_creation_input_tokens": 0
+  }
  }
 ]
