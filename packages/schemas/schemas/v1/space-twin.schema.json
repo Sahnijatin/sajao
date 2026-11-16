@@ -79,6 +79,14 @@
     },
     "splat": {
       "$ref": "#/$defs/SplatRef"
+    },
+    "phone_splats": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/PhoneSplat"
+      },
+      "maxItems": 4,
+      "description": "Compressed room splats for viewing on the phone, one per device tier. Colour only; built from the room splat."
     }
   },
   "$defs": {
@@ -425,6 +433,34 @@
         "format": {
           "type": "string",
           "enum": ["ply", "spz", "ksplat"]
+        }
+      }
+    },
+    "PhoneSplat": {
+      "description": "A decimated, compressed room splat for on-device viewing.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "format", "tier", "gaussians", "bytes"],
+      "properties": {
+        "key": {
+          "$ref": "common.schema.json#/$defs/StorageKey"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["sog"]
+        },
+        "tier": {
+          "type": "string",
+          "enum": ["capable", "budget"],
+          "description": "capable: recent phones (500k Gaussians). budget: budget Android (250k)."
+        },
+        "gaussians": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1
         }
       }
     },
