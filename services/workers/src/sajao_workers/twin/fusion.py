@@ -97,30 +97,68 @@ def _group(label: str) -> str:
     return GROUPS.get(key, key)
 
 
-def fuse(observations: Iterable[Observation], min_overlap: float = 0.2) -> list[Instance]:
+# Two instances seen as separate masks in at least this many of the same frames are
+# different objects, however close their points (two single sofas side by side).
+MIN_SHARED_FRAMES = 2
+
+
+def separate(a: Instance, b: Instance, min_shared: int = MIN_SHARED_FRAMES) -> bool:
+    """Whether the detector saw a and b as different objects in enough frames."""
+    return len(a.frames & b.frames) >= min_shared
+
+
+def fuse(
+    observations: Iterable[Observation],
+    min_overlap: float = 0.2,
+    stats: dict[str, int] | None = None,
+) -> list[Instance]:
+    """Join observations into instances by voxel overlap, at most one per frame each.
+
+    Frames where the detector separated same-class objects go first, so those
+    objects start as separate instances. A later observation that straddles two
+    instances already known to be separate (one box drawn over two sofas) is
+    ambiguous and left out.
+    """
+    obs = list(observations)
+    per_frame: dict[tuple[int, str], int] = {}
+    for o in obs:
+        per_frame[(o.frame, _group(o.label))] = per_frame.get((o.frame, _group(o.label)), 0) + 1
+    separating = [o for o in obs if per_frame[(o.frame, _group(o.label))] > 1]
+    rest = [o for o in obs if per_frame[(o.frame, _group(o.label))] == 1]
+
     instances: list[Instance] = []
-    for obs in observations:
-        best, best_overlap = None, 0.0
-        for inst in instances:
-            if _group(inst.label) != _group(obs.label):
-                continue
-            ov = inst.overlap(obs)
-            if ov > best_overlap:
-                best, best_overlap = inst, ov
-        if best is not None and best_overlap >= min_overlap:
-            best.add(obs)
+    for o in separating + rest:
+        matches = [
+            (inst.overlap(o), inst)
+            for inst in instances
+            if _group(inst.label) == _group(o.label) and o.frame not in inst.frames
+        ]
+        matches = [(ov, inst) for ov, inst in matches if ov >= min_overlap]
+        if len(matches) > 1 and any(
+            separate(a, b) for i, (_, a) in enumerate(matches) for _, b in matches[i + 1 :]
+        ):
+            if stats is not None:
+                stats["ambiguous_views_dropped"] = stats.get("ambiguous_views_dropped", 0) + 1
+            continue
+        if matches:
+            max(matches, key=lambda m: m[0])[1].add(o)
         else:
-            inst = Instance(label=obs.label)
-            inst.add(obs)
+            inst = Instance(label=o.label)
+            inst.add(o)
             instances.append(inst)
     return instances
 
 
-def merge_instances(instances: Iterable[Instance], min_overlap: float = 0.3) -> list[Instance]:
+def merge_instances(
+    instances: Iterable[Instance],
+    min_overlap: float = 0.3,
+    stats: dict[str, int] | None = None,
+) -> list[Instance]:
     """Merge same-class instances whose voxels overlap, until none do.
 
     Per-frame fusion can split one object into several instances when early
-    views see different parts; this second pass joins them.
+    views see different parts; this second pass joins them, except instances
+    the detector saw as separate objects.
     """
     pool = list(instances)
     merged = True
@@ -133,6 +171,10 @@ def merge_instances(instances: Iterable[Instance], min_overlap: float = 0.3) -> 
                     continue
                 shared = sum(1 for k in b.hits if k in a.hits)
                 if shared / max(1, min(len(a.hits), len(b.hits))) < min_overlap:
+                    continue
+                if separate(a, b):
+                    if stats is not None:
+                        stats["merges_blocked"] = stats.get("merges_blocked", 0) + 1
                     continue
                 _absorb(a, b)
                 del pool[j]
