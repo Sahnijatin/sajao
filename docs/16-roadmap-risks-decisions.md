@@ -8,7 +8,7 @@ Sprint dates live in Notion. Each phase ends at a gate with numbers; the next ph
 | --- | --- | --- |
 | Setup | Charter, Notion, repo guardrails, CI, accounts, affiliate sign-ups | Charter approved; CI green |
 | Foundations and spikes | Design system and component gallery, app shell, schemas, API skeleton with auth and uploads, render bake-off, geometry spike, Flipkart feed ingestion | Bake-off winner and fallback chosen; geometry error bands measured on tape-measured rooms; cost per room measured |
-| Room and taste | Capture with guides, room understanding pipeline, Room Profile card, adaptive swipes, curation tool, first approved products | Room Profile within targets on the golden set; enough approved products per style |
+| Room and taste | Capture with guides, space understanding pipeline, Space Profile card, adaptive swipes, curation tool, first approved products | Space Profile within targets on the golden set; enough approved products per style |
 | Design engine and commerce | Spec, retrieval, designer, solver, verifier, relaxation, three intents, shopping list, redirect service, 2D plan | Zero verifier failures shown; totals match retailer prices |
 | Render, plan, Vastu | Render pipeline with checks and fallbacks, reveal, plan editing, swap, Vastu tab | Render gates in [assumptions and accuracy](02-assumptions-and-accuracy.md) |
 | Polish and test build | Share reel, save and history, motion and haptics pass, budget Android pass, consent and privacy | Stable build in the Play closed test and TestFlight |
@@ -28,7 +28,7 @@ Sprint dates live in Notion. Each phase ends at a gate with numbers; the next ph
 | Play closed test needs 12 testers for 14 days | Android production access waits | Closed test starts as soon as a stable build exists; testers recruited early |
 | Scope creep | Misses the store date | Notion change protocol; Must tier first, deep before wide |
 | Vastu direction errors | Wrong advice | Averaged compass plus confirmation, approximate flag, consultant-reviewed rules |
-| Model licenses | Legal risk | Recorded and reviewed before use |
+| Model and dataset licenses | Legal risk | Listed in the third-party register; legal team reviews separately |
 | Privacy of home photos | Trust and legal risk | Consent, blurring, raw video deleted after processing |
 
 ## Decision log
@@ -69,10 +69,12 @@ These supersede earlier rows where they conflict; earlier rows are kept as histo
 | Revenue | Affiliate on every buy and rent route plus subscription; entitlements built, off at launch | Founder decision; revenue from day one without a paywall |
 | Cost per room | Best quality at about Rs 30 to 40 | Founder decision |
 | Login | Truecaller, Google, Apple, WhatsApp OTP fallback; guest first, sign-in before generation | Lowest friction in India; protects cost per room |
-| Room types | Living room and bedroom first; all room types before launch only if testing shows accuracy, via a scope change | Founder decision |
+| Spaces | Scan any space at any extent; type and extent are detected and editable, never picked up front. Living room and bedroom are the quality bar; other spaces use a labelled lighter template set until golden-set tests pass | Founder decision: nothing rigid |
+| Scan feedback | Live scan mesh from on-device feature points, drawn with Skia; AR planes where available; dots and edges on low-tier phones | Founder decision: scanning should feel like the space is being mapped in real time, at no server cost |
 | Vastu | Own tab: room-level now; floor plans, expert call and home visit later | Founder decision |
 | Infrastructure | Supabase Postgres, R2, Cloud Run, Modal, one model gateway, durable jobs | Scales from 10 to 1 lakh users without a rebuild |
 | Tracking | Notion is the single tracker; scope changes need founder approval | Prevents drift |
 | Skills in repo | Licensed third-party skills copied into `.claude/skills/` instead of declared as plugins | Cloud sessions do not reliably install plugins; copies are versioned with the code |
+| Third-party register | Engineering may use any model, library or dataset (including for training); all are listed in docs/24 for the legal team, who approve separately | Legal team instruction; speed and best technology first |
 
 Open: final product name after domain, store and trademark checks.

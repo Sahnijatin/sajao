@@ -1,0 +1,8 @@
+{
+  "frames": 175,
+  "masks": 1427,
+  "detector_seconds": 3.0,
+  "sam_seconds": 22.0,
+  "seconds_per_frame": 0.143,
+  "detector": "yoloe"
+}
