@@ -35,6 +35,8 @@ class SourceRecord(BaseModel):
     title: str
     channel: str | None
     channel_id: str | None
+    description: str | None = None
+    """The description, or the snippet of it that search returns."""
     duration_s: int | None = Field(ge=0)
     license: License
     license_evidence: LicenseEvidence

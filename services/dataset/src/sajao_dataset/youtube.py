@@ -44,6 +44,7 @@ class Hit:
     duration_s: int | None
     license: License
     license_evidence: LicenseEvidence
+    description: str | None = None
 
 
 class Search(Protocol):
@@ -85,6 +86,7 @@ class YtDlpSearch:
                     duration_s=int(duration) if duration is not None else None,
                     license="creative_commons" if creative_commons_only else "unknown",
                     license_evidence="cc_search_filter" if creative_commons_only else "none",
+                    description=entry.get("description"),
                 )
             )
         return hits[:limit]
@@ -140,6 +142,7 @@ class DataApiSearch:
                     duration_s=parse_iso_duration(item.get("contentDetails", {}).get("duration")),
                     license=_DATA_API_LICENSE.get(status or "", "unknown"),
                     license_evidence="data_api" if status else "none",
+                    description=snippet.get("description"),
                 )
             )
         return hits
@@ -200,6 +203,7 @@ def find(
                     title=hit.title,
                     channel=hit.channel,
                     channel_id=hit.channel_id,
+                    description=hit.description,
                     duration_s=hit.duration_s,
                     license=hit.license,
                     license_evidence=hit.license_evidence,
