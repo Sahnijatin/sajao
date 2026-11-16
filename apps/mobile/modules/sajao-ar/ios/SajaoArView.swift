@@ -49,6 +49,9 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   /// Detections the detector returned, and how many were placed in the room.
   private var detectionsFound = 0
   private var detectionsPlaced = 0
+  /// Coverage hits from planes and from tracked points, for the overlay.
+  private var surfacePlaneHits = 0
+  private var surfacePointHits = 0
   /// How placed detections were placed: floor, plane, points or size.
   private var placedCounts: [String: Int] = [:]
   private var lastDetectionMs: Double = 0
@@ -285,6 +288,10 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
       "detectorMs": lastDetectionMs,
       "detectionsFound": detectionsFound,
       "detectionsPlaced": detectionsPlaced,
+      "detectorStatus": detector.status,
+      "cameraImage": "\(Int(frame.camera.imageResolution.width))x\(Int(frame.camera.imageResolution.height))",
+      "planeStates": "tracking \(planes)",
+      "surfaceHits": "planes \(surfacePlaneHits) points \(surfacePointHits)",
       "placedBy": ["floor", "plane", "points", "size"].map { "\($0) \(placedCounts[$0] ?? 0)" }.joined(separator: " "),
       "detectorError": detector.loadError ?? "",
     ])
@@ -540,6 +547,7 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   private func sendSurfaces(_ frame: ARFrame) {
     let camera = CaptureCamera(frame.camera)
     var hits: [[String: Any]] = []
+    let cloud = lidar ? [] : Array(pointCloud.values)
     for point in Self.surfaceGrid {
       let ray = camera.ray(throughNormalised: point)
       // Without LiDAR ARKit finds only patches of a plain wall, so each
@@ -553,7 +561,15 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
           return Self.nearPlane(plane, result.worldTransform.columns.3)
         }),
         let plane = hit.anchor as? ARPlaneAnchor
-      else { continue }
+      else {
+        // Few planes found: tracked feature points on the ray still count.
+        if let range = Self.frontOfCone(ray, cloud: cloud), let fromPoints = pointHit(ray, range: range) {
+          surfacePointHits += 1
+          hits.append(fromPoints)
+        }
+        continue
+      }
+      surfacePlaneHits += 1
       let c = hit.worldTransform.columns.3
       let kind = surfaceKind(plane, hitY: c.y, cameraY: ray.origin.y)
       guard kind == "wall" || kind == "floor" else { continue }
@@ -569,6 +585,26 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
     var payload: [String: Any] = ["sharpness": Self.sharpness(frame.capturedImage) ?? 0, "hits": hits]
     if let floorY { payload["floorY"] = Double(floorY) }
     onArSurfaces(payload)
+  }
+
+  /// A coverage hit from tracked feature points, where no plane was found:
+  /// at floor height as floor, otherwise a wall facing the camera; steeply
+  /// up or down and not at the floor counts as nothing. Same as Android's
+  /// `SurfaceSample.pointHit`, which is unit tested.
+  private func pointHit(_ ray: Ray, range: Float) -> [String: Any]? {
+    let p = ray.origin + ray.direction * range
+    let atFloor = floorY.map { p.y <= $0 + 0.15 } ?? (p.y <= ray.origin.y - 1.1)
+    let position: [String: Any] = ["x": Double(p.x), "y": Double(p.y), "z": Double(p.z)]
+    if atFloor {
+      return position.merging(["kind": "floor", "normalYaw": 0.0, "offset": 0.0]) { a, _ in a }
+    }
+    guard abs(ray.direction.y) <= 0.7 else { return nil }
+    let n = SIMD2<Float>(-ray.direction.x, -ray.direction.z)
+    guard simd_length(n) > 1e-3 else { return nil }
+    let unit = simd_normalize(n)
+    let normalYaw = atan2(Double(unit.x), Double(unit.y)) * 180 / .pi
+    let offset = Double(unit.x * p.x + unit.y * p.z)
+    return position.merging(["kind": "wall", "normalYaw": normalYaw, "offset": offset]) { a, _ in a }
   }
 
   /// How far past a plane's found outline a surface sample still counts, in metres.

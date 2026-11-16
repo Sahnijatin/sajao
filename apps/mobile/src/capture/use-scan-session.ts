@@ -3,7 +3,8 @@ import { DeviceMotion } from "expo-sensors";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Platform } from "react-native";
 import { arCountersOf, type ArFrameCounters, arFrameRates, NO_AR_COUNTERS } from "./ar/ar-debug";
-import { arFrameEvent, type ArStatus, arPoseEvent } from "./ar/ar-events";
+import type { ArStatusEvent } from "../../modules/sajao-ar";
+import { arFrameEvent, arPoseEvent } from "./ar/ar-events";
 import {
   currentHint,
   type Hint,
@@ -62,6 +63,11 @@ export interface ArDebug {
   detectionsPlaced: number;
   /** Placed detections by how they were placed. */
   placedBy: string;
+  /** Detector load and self-test result. */
+  detectorStatus: string;
+  cameraImage: string;
+  planeStates: string;
+  surfaceHits: string;
   /** Why the detector failed to load; empty when it loaded. */
   detectorError: string;
   /** Detector sightings dropped as a wall, a door or bare floor. */
@@ -177,22 +183,8 @@ export function useScanSession(active: boolean) {
   const platform = Platform.OS === "ios" ? "ios" : "android";
   const onArStatus = useCallback(
     (
-      status: ArStatus &
-        Omit<
-          ArDebug,
-          | "tracking"
-          | "labelsRejected"
-          | "detectionsFound"
-          | "detectionsPlaced"
-          | "placedBy"
-          | "detectorError"
-        > &
-        Partial<ArFrameCounters> & {
-          detectionsFound?: number;
-          detectionsPlaced?: number;
-          placedBy?: string;
-          detectorError?: string;
-        },
+      // The native view's status event; older builds leave out the newer fields.
+      status: ArStatusEvent,
     ) => {
       counters.current.arCounters = arCountersOf(status);
       counters.current.ar = {
@@ -208,6 +200,10 @@ export function useScanSession(active: boolean) {
         detectionsPlaced: status.detectionsPlaced ?? 0,
         placedBy: status.placedBy ?? "",
         detectorError: status.detectorError ?? "",
+        detectorStatus: status.detectorStatus ?? "",
+        cameraImage: status.cameraImage ?? "",
+        planeStates: status.planeStates ?? "",
+        surfaceHits: status.surfaceHits ?? "",
         labelsRejected: counters.current.labelsRejected,
       };
       dispatch(arFrameEvent(status, platform, Date.now()));

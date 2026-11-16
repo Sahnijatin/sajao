@@ -14,7 +14,7 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 );
 
 const status = (frames: number, detectorRuns: number) => ({
-  tracking: "normal",
+  tracking: "normal" as const,
   lidar: false,
   planes: 2,
   meshTriangles: 0,
