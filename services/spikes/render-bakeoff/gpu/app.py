@@ -278,6 +278,16 @@ sam3d_image = (
     .add_local_dir(HERE / "bk", "/root/bk")
 )
 
+anthropic_secret = modal.Secret.from_name("anthropic-secret", required_keys=["ANTHROPIC_API_KEY"])
+claude_image = (
+    modal.Image.debian_slim(python_version="3.13")
+    .pip_install("anthropic==2.8.0", "pillow==11.2.1", "numpy==2.2.6")
+    .env({"PYTHONUNBUFFERED": "1", "PYTHONPATH": "/root"})
+    .add_local_dir(GATEWAY_SRC, "/root/sajao_gateway")
+    .add_local_dir(SRC, "/root/bakeoff")
+    .add_local_dir(HERE / "bk", "/root/bk")
+)
+
 app = modal.App("sajao-render-bakeoff")
 VOLS = {"/bk": bk_vol}
 TWIN_VOLS = {"/bk": bk_vol, "/vol": twin_vol}
@@ -390,6 +400,40 @@ def generate_gemini(room: str, design_id: str, arms: list[str]) -> dict:
     r = generate_arms(room, design_id, "gemini", arms)
     bk_vol.commit()
     return r
+
+
+@app.function(
+    image=claude_image, volumes=VOLS, timeout=1800, max_containers=4, secrets=[anthropic_secret]
+)
+def pick_templates(lids: list[str]) -> list[dict]:
+    """Parametric tier, step 1: the vision model picks template and options (no sizes)."""
+    from bk.parametric import pick
+
+    out = []
+    for lid in lids:
+        try:
+            out.append(pick(lid))
+        except Exception as e:
+            out.append({"id": lid, "error": repr(e)[:600]})
+        bk_vol.commit()
+    return out
+
+
+@app.function(image=twin_image, volumes=VOLS, timeout=1800, max_containers=4, cpu=4)
+def build_parametric(lids: list[str]) -> list[dict]:
+    """Parametric tier, step 2: code sets the sizes, Blender builds and exports the mesh (CPU)."""
+    from bk.parametric import build
+
+    out = []
+    for lid in lids:
+        try:
+            out.append(build(lid))
+        except Exception:
+            import traceback
+
+            out.append({"id": lid, "error": traceback.format_exc()[-1200:]})
+        bk_vol.commit()
+    return out
 
 
 @app.function(image=asset_image, gpu="L4", volumes=VOLS, timeout=3600, max_containers=MAX_GPUS)

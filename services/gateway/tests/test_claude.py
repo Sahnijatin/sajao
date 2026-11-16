@@ -64,11 +64,11 @@ async def test_builds_request_and_costs_from_usage() -> None:
     assert sent["output_config"]["format"]["type"] == "json_schema"
     assert sent["fallbacks"] == "default"
     assert res.output["json"] == {"order": [2, 1]}
-    # 1000 in at $4/M + 200 out at $20/M = $0.008 = Rs 0.68
+    # 1000 in at $4/M + 200 out at $20/M = $0.008 = Rs 0.76 at Rs 95 per USD
     assert res.cost_micro_inr == cost_micro_inr(
         "claude-opus-5-5", {"input_tokens": 1000, "output_tokens": 200}
     )
-    assert res.cost_micro_inr == 680_000
+    assert res.cost_micro_inr == 760_000
 
 
 async def test_refusal_is_not_retryable() -> None:
@@ -119,5 +119,5 @@ async def test_through_the_gateway_with_spend_tracking() -> None:
 
 
 def test_daily_cap_matches_monthly_budget() -> None:
-    # 100 USD a month at Rs 85 per USD is about Rs 283 a day.
-    assert daily_cap_micro_inr() == round(100 / 30 * 85 * 1_000_000)
+    # 100 USD a month at Rs 95 per USD is about Rs 317 a day.
+    assert daily_cap_micro_inr() == round(100 / 30 * 95 * 1_000_000)

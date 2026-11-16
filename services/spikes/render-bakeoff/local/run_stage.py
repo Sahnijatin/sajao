@@ -90,6 +90,18 @@ def main(stage: str, model: str = "triposg", only: str = "") -> None:
                 "failed or skipped of",
                 len(res),
             )
+        elif stage == "parametric":
+            lids = only.split(",") if only else [x["id"] for x in listings()]
+            chunks = [lids[i : i + 6] for i in range(0, len(lids), 6)]
+            picked = batched_map(A.pick_templates, chunks, batch=4)
+            (OUT / "parametric_pick.json").write_text(json.dumps(picked, indent=1, default=str))
+            built = batched_map(A.build_parametric, chunks, batch=4)
+            (OUT / "assets_parametric.json").write_text(json.dumps(built, indent=1, default=str))
+            print(
+                sum(1 for r in built if "error" in r or "skipped" in r),
+                "failed or skipped of",
+                len(built),
+            )
         elif stage == "gate":
             items = listings()
             rng = random.Random(7)

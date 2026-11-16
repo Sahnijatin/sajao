@@ -32,7 +32,7 @@ PRICES_USD_PER_MTOK: dict[str, tuple[float, float, float]] = {
     "claude-sonnet-5-5": (2.00, 10.00, 0.10),
     "claude-haiku-5-5": (0.10, 0.50, 0.01),
 }
-USD_TO_INR = 85.0
+USD_TO_INR = 95.0  # the Spends ledger rate
 MONTHLY_BUDGET_USD = 100.0
 
 

@@ -367,20 +367,113 @@ def add_item(item: dict, index: int) -> dict:
     return {"corners": corners.tolist(), "height": float(size[2]), "z0": z0}
 
 
-def _add_floor_catcher():
-    import bpy
+CATCHER_INDEX = 100  # pass index of shadow catchers (products use 1..99)
 
+
+def _add_floor_catcher():
     v = np.array([[-30, -30, 0], [30, -30, 0], [30, 30, 0], [-30, 30, 0]], float)
     f = np.array([[0, 1, 2], [0, 2, 3]])
     ob = _mesh_object("floor", v, f, None, None)
     ob.is_shadow_catcher = True
-    ob.pass_index = 0
-    _ = bpy
+    ob.pass_index = CATCHER_INDEX
     return ob
 
 
+def _add_wall_catchers(walls: list[dict]):
+    """Vertical shadow catchers on the twin's wall planes (space frame)."""
+    for i, w in enumerate(walls):
+        (x0, y0), (x1, y1) = w["ends"]
+        v = np.array([[x0, y0, 0], [x1, y1, 0], [x1, y1, 2.6], [x0, y0, 2.6]], float)
+        f = np.array([[0, 1, 2], [0, 2, 3]])
+        ob = _mesh_object(f"wall{i}", v, f, None, None)
+        ob.is_shadow_catcher = True
+        ob.pass_index = CATCHER_INDEX + 1 + i
+
+
+def wall_planes(
+    params, fr: dict, items: list[dict], max_walls: int = 3, seed: int = 0
+) -> list[dict]:
+    """Walls near the design: RANSAC lines on the floor plan of opaque Gaussians 0.3 to 2.2 m up."""
+    import torch
+
+    means = params["means"].detach().cpu().numpy()
+    opac = torch.sigmoid(params["opacities"]).detach().cpu().numpy()
+    sp = to_space(fr, means[opac > 0.5])
+    centre = np.mean([it["position"] for it in items], axis=0) if items else np.zeros(2)
+    sel = (sp[:, 2] > 0.3) & (sp[:, 2] < 2.2) & (np.linalg.norm(sp[:, :2] - centre, axis=1) < 3.5)
+    pts = sp[sel, :2]
+    rng = np.random.default_rng(seed)
+    walls = []
+    for _ in range(max_walls):
+        if len(pts) < 2000:
+            break
+        best = None
+        for _ in range(400):
+            a, b = pts[rng.choice(len(pts), 2, replace=False)]
+            d = b - a
+            if np.linalg.norm(d) < 0.3:
+                continue
+            d = d / np.linalg.norm(d)
+            n = np.array([-d[1], d[0]])
+            inl = np.abs((pts - a) @ n) < 0.03
+            if best is None or inl.sum() > best[0]:
+                best = (int(inl.sum()), a, d, inl)
+        if best is None or best[0] < 1500:
+            break
+        _, a, d, inl = best
+        t = (pts[inl] - a) @ d
+        t0, t1 = np.percentile(t, [1, 99])
+        if t1 - t0 < 0.8:
+            pts = pts[~inl]
+            continue
+        walls.append({"ends": [(a + d * t0).tolist(), (a + d * t1).tolist()], "inliers": best[0]})
+        pts = pts[~inl]
+    return walls
+
+
+def key_light(env: np.ndarray) -> dict | None:
+    """Direction and strength of the brightest part of the twin's environment (a window,
+    a lamp), as a soft sun. Blender equirect convention, z up."""
+    he, we = env.shape[:2]
+    lum = env @ np.array([0.2126, 0.7152, 0.0722])
+    thr = np.percentile(lum, 99.7)
+    m = lum >= thr
+    if lum[m].mean() < 0.8:
+        return None
+    lon = (np.arange(we) + 0.5) / we * 2 * np.pi - np.pi
+    lat = np.pi / 2 - (np.arange(he) + 0.5) / he * np.pi
+    lon, lat = np.meshgrid(lon, lat)
+    d = np.stack([-np.cos(lat) * np.cos(lon), np.cos(lat) * np.sin(lon), np.sin(lat)], -1)
+    v = (d[m] * lum[m, None]).sum(0)
+    v /= np.linalg.norm(v) + 1e-9
+    v[2] = max(v[2], 0.25)  # light from a window still has to reach the floor
+    v /= np.linalg.norm(v)
+    return {"direction": v.tolist(), "strength": float(min(4.0, 1.2 * lum[m].mean()))}
+
+
+def _add_sun(light: dict):
+    import bpy
+    from mathutils import Vector
+
+    sun = bpy.data.lights.new("key", "SUN")
+    sun.energy = light["strength"]
+    sun.angle = np.radians(12)
+    ob = bpy.data.objects.new("key", sun)
+    bpy.context.scene.collection.objects.link(ob)
+    # A sun shines along its local -z; point that away from the bright direction.
+    ob.rotation_euler = Vector(light["direction"]).to_track_quat("Z", "Y").to_euler()
+
+
 def blender_render(
-    items: list[dict], k, c2w_space, w, h, env: np.ndarray, samples: int = 96
+    items: list[dict],
+    k,
+    c2w_space,
+    w,
+    h,
+    env: np.ndarray,
+    samples: int = 96,
+    walls: list[dict] | None = None,
+    light: dict | None = None,
 ) -> dict:
     """Render products over a transparent film. Returns linear RGBA, shadow-catcher
     multiplier, z depth (inf where empty), object index, and timings."""
@@ -391,6 +484,9 @@ def blender_render(
     _set_camera(sc, k, c2w_space, w, h)
     _world_env(env)
     _add_floor_catcher()
+    _add_wall_catchers(walls or [])
+    if light:
+        _add_sun(light)
     foot = [add_item(it, i) for i, it in enumerate(items)]
     # Compositor: write each pass to its own OpenEXR.
     sc.use_nodes = True
@@ -495,15 +591,20 @@ def composite(
     t1 = time.time()
     env = env_map(params, fr, env_centre)
     t_env = time.time() - t1
-    br = blender_render(design["render_items"], k, c2w_space, w, h, env, samples)
+    walls = wall_planes(params, fr, design["render_items"])
+    light = key_light(env)
+    br = blender_render(design["render_items"], k, c2w_space, w, h, env, samples, walls, light)
     a = br["rgba"][..., 3]
     pdepth = np.where(a > 0.01, br["depth"], np.inf)
     visible_px = (a > 0.01) & (pdepth < sdepth + 0.05 + 0.02 * sdepth) | (
         (a > 0.01) & (salpha < 0.5)
     )
+    # Shadows land only where a catcher (floor or wall) is the surface the twin shows there.
     fdepth = floor_depth(k, c2w, w, h, fr)
-    on_floor = np.abs(fdepth - sdepth) < 0.08 + 0.04 * sdepth
-    sh = np.where(on_floor[..., None], np.clip(br["shadow"], 0, 1), 1.0)
+    catcher = br["index"] >= CATCHER_INDEX
+    cdepth = np.where(catcher, br["depth"], fdepth)
+    on_catcher = np.abs(cdepth - sdepth) < 0.08 + 0.04 * sdepth
+    sh = np.where(on_catcher[..., None], np.clip(br["shadow"], 0, 1), 1.0)
     bg_lin = srgb_to_linear(rgb) * sh
     prod = np.clip(br["rgba"][..., :3], 0, None)
     aa = (a * visible_px)[..., None]
@@ -523,6 +624,8 @@ def composite(
         "device": br["device"],
         "blender_seconds": br["render_seconds"],
         "splat_seconds": round(t_splat, 2),
+        "walls": len(walls),
+        "key_light": light,
         "env_seconds": round(t_env, 2),
         "total_seconds": round(time.time() - t0, 2),
         "items": [

@@ -1974,5 +1974,254 @@
    "https://www.ikea.com/in/en/images/products/rakkestad-wardrobe-with-sliding-doors-black-brown__0780376_pe760495_s5.jpg?f=xxl",
    "https://www.ikea.com/in/en/images/products/rakkestad-wardrobe-with-sliding-doors-black-brown__0946835_pe798278_s5.jpg?f=xxl"
   ]
+ },
+ {
+  "id": "ikea_50409893",
+  "source": "IKEA India",
+  "url": "https://www.ikea.com/in/en/p/brimnes-tv-bench-white-50409893/",
+  "name": "BRIMNES TV bench",
+  "category": "tv_unit",
+  "price_inr": 11990.0,
+  "dims_cm": {
+   "width": 180.0,
+   "depth": 41.0,
+   "height": 53.0
+  },
+  "images": [
+   "https://www.ikea.com/in/en/images/products/brimnes-tv-bench-white__0601754_pe681623_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/brimnes-tv-bench-white__1454290_pe991599_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/brimnes-tv-bench-white__1451998_pe990824_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/brimnes-tv-bench-white__1454289_pe991600_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/brimnes-tv-bench-white__0619470_pe689104_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/brimnes-tv-bench-white__1442044_pe986650_s5.jpg?f=xxl"
+  ]
+ },
+ {
+  "id": "ikea_50483878",
+  "source": "IKEA India",
+  "url": "https://www.ikea.com/in/en/p/baggebo-tv-bench-metal-white-50483878/",
+  "name": "BAGGEBO TV bench",
+  "category": "tv_unit",
+  "price_inr": 1790.0,
+  "dims_cm": {
+   "width": 90.0,
+   "depth": 35.0,
+   "height": 40.0
+  },
+  "images": [
+   "https://www.ikea.com/in/en/images/products/baggebo-tv-bench-metal-white__1023961_pe833372_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/baggebo-tv-bench-metal-white__0981572_pe815404_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/baggebo-tv-bench-metal-white__0981573_pe815403_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/baggebo-tv-bench-metal-white__0985038_pe816492_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/baggebo-tv-bench-metal-white__1017406_pe830806_s5.jpg?f=xxl"
+  ]
+ },
+ {
+  "id": "ikea_80498939",
+  "source": "IKEA India",
+  "url": "https://www.ikea.com/in/en/p/lack-tv-bench-black-brown-80498939/",
+  "name": "LACK TV bench",
+  "category": "tv_unit",
+  "price_inr": 4990.0,
+  "dims_cm": {
+   "depth": 35.0,
+   "height": 36.0,
+   "width": 120.0
+  },
+  "images": [
+   "https://www.ikea.com/in/en/images/products/lack-tv-bench-black-brown__0984221_pe816167_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/lack-tv-bench-black-brown__0984222_pe816166_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/lack-tv-bench-black-brown__1120656_pe873916_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/lack-tv-bench-black-brown__1092880_pe863121_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/lack-tv-bench-black-brown__0955260_pe803700_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/lack-tv-bench-black-brown__1083778_pe859098_s5.jpg?f=xxl"
+  ]
+ },
+ {
+  "id": "ws_melvina-tv-unit-honey-finish",
+  "source": "Wooden Street",
+  "url": "https://www.woodenstreet.com/product/melvina-tv-unit-honey-finish",
+  "name": "Melvina Sheesham Wood Tv Unit with Cupboards Drawers and Shelve Storage (Honey Finish)",
+  "category": "tv_unit",
+  "price_inr": 47999.0,
+  "dims_cm": {
+   "width": 170.2,
+   "depth": 40.6,
+   "height": 50.8
+  },
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/tv-units/melvina-tv-unit/revised/honey/updated/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/melvina-tv-unit/revised/honey/updated/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/melvina-tv-unit/revised/honey/updated/new-logo/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/melvina-tv-unit/revised/honey/updated/new-logo/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/melvina-tv-unit/revised/honey/updated/h-810x702.jpg"
+  ]
+ },
+ {
+  "id": "ws_radiant-tv-unit-frosty-white-finish",
+  "source": "Wooden Street",
+  "url": "https://www.woodenstreet.com/product/radiant-tv-unit-frosty-white-finish",
+  "name": "Radiant Engineered Wood Space Saving Tv Unit (Frosty White Finish)",
+  "category": "tv_unit",
+  "price_inr": 7499.0,
+  "dims_cm": {
+   "width": 121.9,
+   "depth": 30.5,
+   "height": 45.7
+  },
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/tv-units-mdf/radiant-tv-unit/Frosty-white-finish/updated/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units-mdf/radiant-tv-unit/Frosty-white-finish/updated/new-logo/9-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units-mdf/radiant-tv-unit/Frosty-white-finish/updated/new-logo/11-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units-mdf/radiant-tv-unit/Frosty-white-finish/updated/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units-mdf/radiant-tv-unit/Frosty-white-finish/updated/new-logo/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units-mdf/radiant-tv-unit/Frosty-white-finish/updated/new-logo/5-810x702.jpg"
+  ]
+ },
+ {
+  "id": "ws_harvey-tv-unit-frosty-white",
+  "source": "Wooden Street",
+  "url": "https://www.woodenstreet.com/product/harvey-tv-unit-frosty-white",
+  "name": "Harvey Tv Unit (Exotic Teak-Frosty White Finish)",
+  "category": "tv_unit",
+  "price_inr": 18999.0,
+  "dims_cm": {
+   "width": 152.4,
+   "depth": 45.7,
+   "height": 50.8
+  },
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/tv-units-mdf/harvey-tv-unit-revised/exotic-teak+frosty-white/updated/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units-mdf/harvey-tv-unit-revised/exotic-teak+frosty-white/updated/new-logo/8-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units-mdf/harvey-tv-unit-revised/exotic-teak+frosty-white/updated/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units-mdf/harvey-tv-unit-revised/exotic-teak+frosty-white/updated/new-logo/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units-mdf/harvey-tv-unit-revised/exotic-teak+frosty-white/updated/new-logo/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units-mdf/harvey-tv-unit-revised/exotic-teak+frosty-white/updated/new-logo/5-810x702.jpg"
+  ]
+ },
+ {
+  "id": "ikea_00522047",
+  "source": "IKEA India",
+  "url": "https://www.ikea.com/in/en/p/billy-bookcase-white-00522047/",
+  "name": "BILLY Bookcase",
+  "category": "shelf",
+  "price_inr": 8990.0,
+  "dims_cm": {
+   "diameter": 24.0,
+   "height": 2.0
+  },
+  "images": [
+   "https://www.ikea.com/in/en/images/products/billy-bookcase-white__1590272_pe1038911_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/billy-bookcase-white__1237507_pe917999_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/billy-bookcase-white__1424760_pe979354_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/billy-bookcase-white__1237435_pe917974_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/billy-bookcase-white__1051924_pe845813_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/billy-bookcase-white__1237565_pe918022_s5.jpg?f=xxl"
+  ]
+ },
+ {
+  "id": "ikea_s69528344",
+  "source": "IKEA India",
+  "url": "https://www.ikea.com/in/en/p/billy-oxberg-bookcase-white-s69528344/",
+  "name": "BILLY / OXBERG Bookcase",
+  "category": "shelf",
+  "price_inr": 17990.0,
+  "dims_cm": {
+   "width": 80.0,
+   "depth": 30.0,
+   "height": 202.0
+  },
+  "images": [
+   "https://www.ikea.com/in/en/images/products/billy-oxberg-bookcase-white__1602132_pe1043224_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/billy-oxberg-bookcase-white__1237474_pe917985_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/billy-oxberg-bookcase-white__1237438_pe917976_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/billy-oxberg-bookcase-white__1237565_pe918022_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/billy-oxberg-bookcase-white__1237556_pe918016_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/billy-oxberg-bookcase-white__0849924_pe711188_s5.jpg?f=xxl"
+  ]
+ },
+ {
+  "id": "ikea_90520355",
+  "source": "IKEA India",
+  "url": "https://www.ikea.com/in/en/p/skruvby-bookcase-black-blue-90520355/",
+  "name": "SKRUVBY Bookcase",
+  "category": "shelf",
+  "price_inr": 7990.0,
+  "dims_cm": {
+   "depth": 37.5,
+   "height": 140.0,
+   "width": 60.0
+  },
+  "images": [
+   "https://www.ikea.com/in/en/images/products/skruvby-bookcase-black-blue__1590303_pe1038942_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/skruvby-bookcase-black-blue__1133238_pe878513_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/skruvby-bookcase-black-blue__1133236_pe878515_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/skruvby-bookcase-black-blue__1133237_pe878514_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/skruvby-bookcase-black-blue__1133235_pe878512_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/skruvby-bookcase-black-blue__1133139_pe878450_s5.jpg?f=xxl"
+  ]
+ },
+ {
+  "id": "ws_juniper-book-shelf-honey",
+  "source": "Wooden Street",
+  "url": "https://www.woodenstreet.com/product/juniper-book-shelf-honey",
+  "name": "Juniper Book Shelf (Honey Finish)",
+  "category": "shelf",
+  "price_inr": 22999.0,
+  "dims_cm": {
+   "width": 43.2,
+   "depth": 22.9,
+   "height": 142.2
+  },
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/juniper-bookshelf-updated/updated/honey-finish/updated/updated/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/juniper-bookshelf-updated/updated/honey-finish/updated/updated/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/juniper-bookshelf-updated/updated/honey-finish/updated/updated/new-logo/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/juniper-bookshelf-updated/updated/honey-finish/updated/updated/new-logo/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/juniper-bookshelf-updated/updated/honey-finish/updated/updated/new-logo/5-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/juniper-bookshelf-updated/updated/honey-finish/updated/updated/new-logo/6-810x702.jpg"
+  ]
+ },
+ {
+  "id": "ws_greta-book-shelf-honey-finish",
+  "source": "Wooden Street",
+  "url": "https://www.woodenstreet.com/product/greta-book-shelf-honey-finish",
+  "name": "Greta Book Shelf (Honey Finish)",
+  "category": "shelf",
+  "price_inr": 46999.0,
+  "dims_cm": {
+   "width": 124.5,
+   "depth": 40.6,
+   "height": 91.4
+  },
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/greta-bookshelf-revised/revised/honey-finish/updated/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/greta-bookshelf-revised/revised/honey-finish/updated/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/greta-bookshelf-revised/revised/honey-finish/updated/new-logo/5-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/greta-bookshelf-revised/revised/honey-finish/updated/new-logo/6-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/greta-bookshelf-revised/revised/honey-finish/updated/new-logo/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/greta-bookshelf-revised/revised/honey-finish/updated/new-logo/4-810x702.jpg"
+  ]
+ },
+ {
+  "id": "ws_javier-bookshelf-honey-finish",
+  "source": "Wooden Street",
+  "url": "https://www.woodenstreet.com/product/javier-bookshelf-honey-finish",
+  "name": "Javier Book Shelves (Honey Finish)",
+  "category": "shelf",
+  "price_inr": 61999.0,
+  "dims_cm": {
+   "width": 91.4,
+   "depth": 38.1,
+   "height": 182.9
+  },
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/javier-bookshelf-revised/updated/honey-finish/updated/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/javier-bookshelf-revised/updated/honey-finish/updated/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/javier-bookshelf-revised/updated/honey-finish/updated/new-logo/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/javier-bookshelf-revised/updated/honey-finish/updated/new-logo/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/javier-bookshelf-revised/updated/honey-finish/updated/new-logo/5-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/book-shelves/javier-bookshelf-revised/updated/honey-finish/updated/new-logo/6-810x702.jpg"
+  ]
  }
 ]
