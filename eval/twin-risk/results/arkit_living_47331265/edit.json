@@ -1,0 +1,258 @@
+{
+  "scene": "arkit_living_47331265",
+  "detector": "gdino",
+  "instances": 49,
+  "instance_labels": {
+    "1": "table",
+    "2": "chair armchair",
+    "3": "chair armchair",
+    "4": "wardrobe",
+    "5": "armchair",
+    "6": "chair armchair",
+    "7": "vase",
+    "8": "chair armchair",
+    "9": "lamp",
+    "10": "wardrobe",
+    "11": "shelf",
+    "12": "table",
+    "13": "chair armchair",
+    "14": "sofa",
+    "15": "chair armchair",
+    "16": "rug",
+    "17": "table",
+    "18": "chair armchair",
+    "19": "lamp",
+    "20": "table",
+    "21": "table",
+    "22": "chair armchair",
+    "23": "sofa",
+    "24": "rug",
+    "25": "table",
+    "26": "armchair",
+    "27": "sofa",
+    "28": "sofa",
+    "29": "pillow",
+    "30": "pillow",
+    "31": "pillow",
+    "32": "lamp",
+    "33": "sofa",
+    "34": "chair",
+    "35": "table",
+    "36": "sofa",
+    "37": "armchair",
+    "38": "pillow",
+    "39": "pillow",
+    "40": "rug",
+    "41": "pillow",
+    "42": "pillow",
+    "43": "potted plant",
+    "44": "chair armchair",
+    "45": "rug",
+    "46": "armchair",
+    "47": "chair armchair",
+    "48": "curtain",
+    "49": "chair"
+  },
+  "gaussians": 2580235,
+  "gaussians_assigned_to_objects": 407190,
+  "split_mask_iou_mean": 0.5187105470977146,
+  "split_mask_iou_by_object": {
+    "lamp#9": 0.4209161624891962,
+    "table#12": 0.017664985571347665,
+    "chair armchair#6": 0.5273416080953093,
+    "chair armchair#18": 0.037689790224797466,
+    "shelf#11": 0.4899241543799725,
+    "chair armchair#13": 0.8161778262873003,
+    "chair armchair#22": 0.6974589426664162,
+    "sofa#27": 0.43684059166423983,
+    "table#25": 0.31165425263876656,
+    "sofa#28": 0.18099834399690173,
+    "rug#24": 0.14603478898254912,
+    "pillow#30": 0.3925831599217318,
+    "lamp#32": 0.9452632610161189,
+    "sofa#36": 0.20424044118802642,
+    "armchair#37": 0.8409264127171766,
+    "rug#40": 0.5872587968217934,
+    "pillow#39": 0.3106999911055768,
+    "table#17": 0.5616790254396142,
+    "armchair#46": 0.41625,
+    "table#1": 0.6555747595835066,
+    "chair armchair#2": 0.7092610930182798,
+    "wardrobe#4": 0.8608207676490747,
+    "vase#7": 0.6438588652148691,
+    "chair armchair#3": 0.8703764900838369,
+    "armchair#5": 0.7579968969975731,
+    "chair armchair#8": 0.6469828167866026
+  },
+  "split_seconds": 11.5,
+  "hidden": {
+    "large": {
+      "kind": "large",
+      "id": 36,
+      "label": "sofa",
+      "box": {
+        "label": "sofa",
+        "class": "sofa",
+        "center": [
+          -0.3434210710685277,
+          2.6389989668640625,
+          -0.7463978319695357
+        ],
+        "length": 0.8989947768315223,
+        "width": 0.7804346273727478,
+        "height": 0.5504531464213094,
+        "yaw": 1.3858698473245563,
+        "frames": 26
+      },
+      "gaussians_voted": 1617,
+      "gaussians_in_box_extra": 56362,
+      "gaussians_cleared_around": 13937,
+      "split_mask_iou": 0.20424044118802642,
+      "fill_a": {
+        "planes": [],
+        "new_gaussians": 0
+      },
+      "fill_b": {
+        "frames_inpainted": 240,
+        "finetune_steps": 5000,
+        "gaussians": 3794709
+      },
+      "views": [
+        {
+          "frame": 121,
+          "alpha_in_hole": {
+            "removed": 0.9467633366584778,
+            "fill_a": 0.9467633366584778,
+            "fill_b": 0.9996293783187866
+          },
+          "detector_score_for_object": {
+            "photo": 0.9172765612602234,
+            "removed": 0.27203598618507385,
+            "fill_a": 0.27203598618507385,
+            "fill_b": 0.3435230255126953
+          }
+        },
+        {
+          "frame": 130,
+          "alpha_in_hole": {
+            "removed": 0.9471002817153931,
+            "fill_a": 0.9471002817153931,
+            "fill_b": 0.9996479153633118
+          },
+          "detector_score_for_object": {
+            "photo": 0.9269483089447021,
+            "removed": 0.25430864095687866,
+            "fill_a": 0.25430864095687866,
+            "fill_b": 0.15312519669532776
+          }
+        }
+      ],
+      "timings": {
+        "fill_a_seconds": 0.0,
+        "fill_b_seconds": 261.8,
+        "fill_b_inpaint_seconds": 6.1
+      }
+    },
+    "small": {
+      "kind": "wall",
+      "id": 8,
+      "label": "chair armchair",
+      "box": {
+        "label": "chair armchair",
+        "class": "chair",
+        "center": [
+          1.3158830731599902,
+          -0.2168344337877742,
+          -0.7939849409245185
+        ],
+        "length": 0.6443653263731952,
+        "width": 0.30333164798143303,
+        "height": 0.7522744321526277,
+        "yaw": 2.891281917419086,
+        "frames": 43
+      },
+      "gaussians_voted": 15266,
+      "gaussians_in_box_extra": 24464,
+      "gaussians_cleared_around": 9197,
+      "split_mask_iou": 0.6469828167866026,
+      "fill_a": {
+        "planes": [
+          {
+            "kind": "wall",
+            "inliers": 12337,
+            "texture_px": [
+              340,
+              512
+            ],
+            "texel": 0.002599345682303723,
+            "hole_px": 45372,
+            "new_gaussians": 45372
+          },
+          {
+            "kind": "wall",
+            "inliers": 9105,
+            "texture_px": [
+              479,
+              512
+            ],
+            "texel": 0.0025993456823037234,
+            "hole_px": 60200,
+            "new_gaussians": 60200
+          },
+          {
+            "kind": "wall",
+            "inliers": 9298,
+            "texture_px": [
+              377,
+              512
+            ],
+            "texel": 0.002599345682303723,
+            "hole_px": 57661,
+            "new_gaussians": 57661
+          }
+        ],
+        "new_gaussians": 163233
+      },
+      "fill_b": {
+        "frames_inpainted": 240,
+        "finetune_steps": 5000,
+        "gaussians": 3828787
+      },
+      "views": [
+        {
+          "frame": 238,
+          "alpha_in_hole": {
+            "removed": 0.8009303212165833,
+            "fill_a": 0.9998090267181396,
+            "fill_b": 0.9984757304191589
+          },
+          "detector_score_for_object": {
+            "photo": 0.46134668588638306,
+            "removed": 0.22547699511051178,
+            "fill_a": 0.28074178099632263,
+            "fill_b": 0.11755618453025818
+          }
+        },
+        {
+          "frame": 229,
+          "alpha_in_hole": {
+            "removed": 0.799052894115448,
+            "fill_a": 0.9986845254898071,
+            "fill_b": 0.9993042945861816
+          },
+          "detector_score_for_object": {
+            "photo": 0.4799349308013916,
+            "removed": 0.31629547476768494,
+            "fill_a": 0.33195021748542786,
+            "fill_b": 0.486147940158844
+          }
+        }
+      ],
+      "timings": {
+        "fill_a_seconds": 4.3,
+        "fill_b_seconds": 258.2,
+        "fill_b_inpaint_seconds": 2.8
+      }
+    }
+  }
+}

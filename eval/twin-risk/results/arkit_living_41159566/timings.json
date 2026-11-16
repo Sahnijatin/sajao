@@ -1,0 +1,42 @@
+{
+  "prep": {
+    "seconds": 334.12,
+    "gpu": "cpu",
+    "device": "cpu"
+  },
+  "splat_train": {
+    "seconds": 938.27,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "segment_gdino": {
+    "seconds": 6.75,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "objects_gdino_refined_lidar_mapanything": {
+    "seconds": 36.46,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "segment_yoloe": {
+    "seconds": 0.01,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "objects_yoloe_refined_lidar_mapanything": {
+    "seconds": 25.11,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "objects_gdino_raw_lidar_mapanything": {
+    "seconds": 25.04,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  },
+  "objects_yoloe_raw_lidar_mapanything": {
+    "seconds": 17.25,
+    "gpu": "L40S",
+    "device": "NVIDIA L40S"
+  }
+}

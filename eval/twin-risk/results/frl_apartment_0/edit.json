@@ -1,0 +1,289 @@
+{
+  "scene": "frl_apartment_0",
+  "detector": "gdino",
+  "instances": 48,
+  "instance_labels": {
+    "1": "table",
+    "2": "chair armchair",
+    "3": "chair armchair",
+    "4": "pillow",
+    "5": "bed",
+    "6": "ottoman",
+    "7": "bed",
+    "8": "table",
+    "9": "ottoman",
+    "10": "shelf",
+    "11": "rug",
+    "12": "toy",
+    "13": "sink",
+    "14": "table",
+    "15": "chair armchair",
+    "16": "shelf",
+    "17": "refrigerator",
+    "18": "lamp",
+    "19": "rug",
+    "20": "chair armchair",
+    "21": "table",
+    "22": "pillow",
+    "23": "chair armchair",
+    "24": "pillow",
+    "25": "sofa",
+    "26": "pillow",
+    "27": "stool",
+    "28": "pillow",
+    "29": "pillow",
+    "30": "lamp",
+    "31": "shelf",
+    "32": "ottoman",
+    "33": "wardrobe",
+    "34": "table stool",
+    "35": "shelf",
+    "36": "curtain",
+    "37": "chair armchair",
+    "38": "chair armchair",
+    "39": "chair armchair",
+    "40": "chair armchair",
+    "41": "shelf",
+    "42": "chair armchair",
+    "43": "pillow",
+    "44": "pillow",
+    "45": "pillow",
+    "46": "shelf",
+    "47": "wardrobe",
+    "48": "vase"
+  },
+  "gaussians": 1213361,
+  "gaussians_assigned_to_objects": 216982,
+  "split_mask_iou_mean": 0.7665905471169255,
+  "split_mask_iou_by_object": {
+    "chair armchair#2": 0.8591257289850146,
+    "chair armchair#3": 0.9289611956189586,
+    "table#1": 0.897083419247323,
+    "table#8": 0.9454944470523451,
+    "sink#13": 0.7183273419738117,
+    "shelf#16": 0.1854602891862309,
+    "chair armchair#20": 0.7165098335171379,
+    "sofa#25": 0.9351121502438938,
+    "pillow#26": 0.9104663359119274,
+    "pillow#28": 0.8665618781833222,
+    "pillow#22": 0.9360278847974317,
+    "chair armchair#23": 0.734245849702238,
+    "shelf#31": 0.8532324112992399,
+    "table#21": 0.6279312937967941,
+    "rug#19": 0.7430714025385973,
+    "pillow#29": 0.605449459264585,
+    "ottoman#9": 0.022918615528531337,
+    "refrigerator#17": 0.9268617587296665,
+    "table#14": 0.5890490392698072,
+    "shelf#41": 0.6165262097842794,
+    "lamp#18": 0.9590565652440269,
+    "lamp#30": 0.9570868263409802,
+    "curtain#36": 0.9225837093327001,
+    "toy#12": 0.9410294852573713
+  },
+  "split_seconds": 76.0,
+  "hidden": {
+    "large": {
+      "kind": "wall",
+      "id": 25,
+      "label": "sofa",
+      "box": {
+        "label": "sofa",
+        "class": "sofa",
+        "center": [
+          5.4908482105643195,
+          -6.421959835058955,
+          -1.1221918764846277
+        ],
+        "length": 2.070553230527726,
+        "width": 0.733885213582524,
+        "height": 0.6031763609585865,
+        "yaw": 1.5693902483346096,
+        "frames": 35
+      },
+      "gaussians_voted": 15790,
+      "gaussians_in_box_extra": 8206,
+      "gaussians_cleared_around": 1670,
+      "split_mask_iou": 0.9351121502438938,
+      "fill_a": {
+        "planes": [
+          {
+            "kind": "support",
+            "inliers": 11486,
+            "texture_px": [
+              512,
+              301
+            ],
+            "texel": 0.006275677940650502,
+            "hole_px": 25912,
+            "new_gaussians": 25912
+          },
+          {
+            "kind": "wall",
+            "inliers": 8144,
+            "texture_px": [
+              512,
+              277
+            ],
+            "texel": 0.006345486169046296,
+            "hole_px": 32802,
+            "new_gaussians": 32802
+          },
+          {
+            "kind": "wall",
+            "inliers": 5835,
+            "texture_px": [
+              512,
+              278
+            ],
+            "texel": 0.006291673675140063,
+            "hole_px": 35700,
+            "new_gaussians": 35700
+          }
+        ],
+        "new_gaussians": 94414
+      },
+      "fill_b": {
+        "frames_inpainted": 140,
+        "finetune_steps": 5000,
+        "gaussians": 1322152
+      },
+      "views": [
+        {
+          "frame": 75,
+          "alpha_in_hole": {
+            "removed": 0.19584205746650696,
+            "fill_a": 0.7887589335441589,
+            "fill_b": 0.99891197681427
+          },
+          "detector_score_for_object": {
+            "photo": 0.8969874978065491,
+            "removed": 0.5072770714759827,
+            "fill_a": 0.3737550675868988,
+            "fill_b": 0.0
+          }
+        },
+        {
+          "frame": 35,
+          "alpha_in_hole": {
+            "removed": 0.31336769461631775,
+            "fill_a": 0.8026609420776367,
+            "fill_b": 0.9989981055259705
+          },
+          "detector_score_for_object": {
+            "photo": 0.902767539024353,
+            "removed": 0.4048216938972473,
+            "fill_a": 0.28940069675445557,
+            "fill_b": 0.0
+          }
+        }
+      ],
+      "timings": {
+        "fill_a_seconds": 5.0,
+        "fill_b_seconds": 156.5,
+        "fill_b_inpaint_seconds": 4.0
+      }
+    },
+    "small": {
+      "kind": "wall",
+      "id": 2,
+      "label": "chair armchair",
+      "box": {
+        "label": "chair armchair",
+        "class": "chair",
+        "center": [
+          5.679729776648156,
+          -1.9967720945063772,
+          -1.1382269619584309
+        ],
+        "length": 0.5769620539417737,
+        "width": 0.4370105172431775,
+        "height": 0.8906208303828067,
+        "yaw": 3.138340662105709,
+        "frames": 32
+      },
+      "gaussians_voted": 8607,
+      "gaussians_in_box_extra": 1754,
+      "gaussians_cleared_around": 597,
+      "split_mask_iou": 0.8591257289850146,
+      "fill_a": {
+        "planes": [
+          {
+            "kind": "support",
+            "inliers": 4040,
+            "texture_px": [
+              449,
+              512
+            ],
+            "texel": 0.0022557953366564745,
+            "hole_px": 2940,
+            "new_gaussians": 2940
+          },
+          {
+            "kind": "wall",
+            "inliers": 2064,
+            "texture_px": [
+              356,
+              512
+            ],
+            "texel": 0.0028673536982288515,
+            "hole_px": 49512,
+            "new_gaussians": 49512
+          },
+          {
+            "kind": "wall",
+            "inliers": 1844,
+            "texture_px": [
+              446,
+              512
+            ],
+            "texel": 0.002910222179170057,
+            "hole_px": 76228,
+            "new_gaussians": 76228
+          }
+        ],
+        "new_gaussians": 128680
+      },
+      "fill_b": {
+        "frames_inpainted": 140,
+        "finetune_steps": 5000,
+        "gaussians": 1331171
+      },
+      "views": [
+        {
+          "frame": 83,
+          "alpha_in_hole": {
+            "removed": 0.2207491397857666,
+            "fill_a": 0.941747784614563,
+            "fill_b": 0.9972089529037476
+          },
+          "detector_score_for_object": {
+            "photo": 0.47684144973754883,
+            "removed": 0.08034361898899078,
+            "fill_a": 0.059104498475790024,
+            "fill_b": 0.0
+          }
+        },
+        {
+          "frame": 83,
+          "alpha_in_hole": {
+            "removed": 0.22052115201950073,
+            "fill_a": 0.9417251348495483,
+            "fill_b": 0.9972079992294312
+          },
+          "detector_score_for_object": {
+            "photo": 0.47684144973754883,
+            "removed": 0.08034361898899078,
+            "fill_a": 0.059104498475790024,
+            "fill_b": 0.0
+          }
+        }
+      ],
+      "timings": {
+        "fill_a_seconds": 0.5,
+        "fill_b_seconds": 109.5,
+        "fill_b_inpaint_seconds": 1.5
+      }
+    }
+  }
+}
