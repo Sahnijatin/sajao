@@ -1145,28 +1145,12 @@ def phone_smoke(scene: str = "arkit_living_47331265", keyframes: int = 120) -> N
     print(json.dumps(phone_smoke_cpu.remote(scene, keyframes), indent=1))
 
 
-@app.function(
-    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=8, memory=16384, timeout=7200
-)
-def twin_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
-    """A whole twin from one ARKitScenes room turned into an AR world (y up), end to end."""
-    import asyncio
-    import json
+def _arkit_capture(scene: str, manifest: dict[str, Any]) -> dict[str, Any]:
+    """A Capture record for an ARKitScenes room (smoke runs only)."""
     import uuid
 
-    from sajao_gateway import InMemorySpendLedger, ModelGateway, SpendCaps
-    from sajao_workers.models import detect_chain, segment_chain, splat_chain
-    from sajao_workers.steps import LocalArtifactStore, StepRunner
-    from sajao_workers.twin.assemble_step import assemble_step
-    from sajao_workers.twin.objects_step import objects_step
-    from sajao_workers.twin.phone_step import phone_splat_step
-    from sajao_workers.twin.splat_step import splat_step
-
-    store = LocalArtifactStore(Path("/work/artifacts"))
-    manifest = _arkit_manifest(store, scene, keyframes, y_up=True)
-    capture_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"arkitscenes/{scene}"))
-    capture = {
-        "id": capture_id,
+    return {
+        "id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"arkitscenes/{scene}")),
         # ARKitScenes has no compass reading: a declared test heading, not a measurement.
         "compass": {"mean_heading_deg": 0.0, "sample_count": 1},
         "package": {
@@ -1184,52 +1168,93 @@ def twin_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
             "sensor_log": f"arkitscenes/{scene}/none.jsonl",
         },
     }
-    ledger = InMemorySpendLedger(
+
+
+async def _compress(payload: Any) -> Any:
+    vol.commit()
+    reply = await compress_splat.remote.aio(dict(payload))
+    vol.reload()
+    return reply
+
+
+async def _build_twin(
+    store: Any, runner: Any, ledger: Any, capture: dict[str, Any], manifest: dict[str, Any]
+) -> dict[str, Any]:
+    """Objects, splat, phone splats and the twin, each a durable step (stored results reused)."""
+    import json
+    import uuid
+
+    from sajao_gateway import ModelGateway
+    from sajao_workers.models import detect_chain, segment_chain, splat_chain
+    from sajao_workers.twin.assemble_step import assemble_step
+    from sajao_workers.twin.objects_step import objects_step
+    from sajao_workers.twin.phone_step import phone_splat_step
+    from sajao_workers.twin.splat_step import splat_step
+
+    frames = store.put_blob(json.dumps(manifest).encode())
+    objects = await runner.run(
+        objects_step(
+            ModelGateway(detect_chain(volume_invoke("twin_detect")), ledger=ledger),
+            ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger),
+        ),
+        {"frames": frames},
+        {},
+    )
+    splat = await runner.run(
+        splat_step(
+            ModelGateway(splat_chain(volume_invoke("twin_splat", run_splat)), ledger=ledger)
+        ),
+        {"frames": frames, "objects": objects.outputs["objects"]},
+        {},
+    )
+    phone = await runner.run(phone_splat_step(_compress), {"splat": splat.outputs["splat"]}, {})
+    twin = await runner.run(
+        assemble_step(),
+        {
+            "capture": store.put_blob(json.dumps(capture).encode()),
+            "frames": frames,
+            "objects": objects.outputs["objects"],
+            "splat": splat.outputs["splat"],
+            "phone": store.put_blob(json.dumps(dict(phone.meta)).encode()),
+            **phone.outputs,
+        },
+        {
+            "twin_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"twin/{capture['id']}")),
+            "version": 1,
+            "created_at": "2026-11-16T00:00:00Z",
+        },
+    )
+    vol.commit()
+    return {"frames": frames, "objects": objects, "splat": splat, "phone": phone, "twin": twin}
+
+
+def _ledger() -> Any:
+    from sajao_gateway import InMemorySpendLedger, SpendCaps
+
+    return InMemorySpendLedger(
         SpendCaps(per_user_daily_micro_inr=10**9, global_daily_micro_inr=10**9)
     )
-    runner = StepRunner(store, max_attempts=1)
-    frames = store.put_blob(json.dumps(manifest).encode())
 
-    async def compress(payload: Any) -> Any:
-        vol.commit()
-        reply = await compress_splat.remote.aio(dict(payload))
-        vol.reload()
-        return reply
+
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=8, memory=16384, timeout=7200
+)
+def twin_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
+    """A whole twin from one ARKitScenes room turned into an AR world (y up), end to end."""
+    import asyncio
+    import json
+
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    manifest = _arkit_manifest(store, scene, keyframes, y_up=True)
+    runner = StepRunner(store, max_attempts=1)
 
     async def run() -> dict[str, Any]:
-        objects = await runner.run(
-            objects_step(
-                ModelGateway(detect_chain(volume_invoke("twin_detect")), ledger=ledger),
-                ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger),
-            ),
-            {"frames": frames},
-            {},
+        built = await _build_twin(
+            store, runner, _ledger(), _arkit_capture(scene, manifest), manifest
         )
-        splat = await runner.run(
-            splat_step(
-                ModelGateway(splat_chain(volume_invoke("twin_splat", run_splat)), ledger=ledger)
-            ),
-            {"frames": frames, "objects": objects.outputs["objects"]},
-            {},
-        )
-        phone = await runner.run(phone_splat_step(compress), {"splat": splat.outputs["splat"]}, {})
-        twin = await runner.run(
-            assemble_step(),
-            {
-                "capture": store.put_blob(json.dumps(capture).encode()),
-                "frames": frames,
-                "objects": objects.outputs["objects"],
-                "splat": splat.outputs["splat"],
-                "phone": store.put_blob(json.dumps(dict(phone.meta)).encode()),
-                **phone.outputs,
-            },
-            {
-                "twin_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"twin/{capture_id}")),
-                "version": 1,
-                "created_at": "2026-11-16T00:00:00Z",
-            },
-        )
-        vol.commit()
+        objects, splat, phone, twin = (built[k] for k in ("objects", "splat", "phone", "twin"))
         doc = json.loads(store.read_blob(twin.outputs["twin"]))
         return {
             "scene": scene,
@@ -1250,6 +1275,106 @@ def twin_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
         }
 
     return asyncio.run(run())
+
+
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=8, memory=16384, timeout=7200
+)
+def edit_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
+    """Edits on one ARKitScenes room's twin: move and turn the largest sofa, remove a
+    chair, replace a table; then phone splats of the edited room."""
+    import asyncio
+    import json
+
+    from sajao_gateway import ModelGateway
+    from sajao_workers.models import removal_chain
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.edit_step import edit_step, with_phone_splats
+    from sajao_workers.twin.phone_step import phone_splat_step
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    manifest = _arkit_manifest(store, scene, keyframes, y_up=True)
+    runner = StepRunner(store, max_attempts=1)
+    ledger = _ledger()
+
+    async def run() -> dict[str, Any]:
+        built = await _build_twin(store, runner, ledger, _arkit_capture(scene, manifest), manifest)
+        twin = json.loads(store.read_blob(built["twin"].outputs["twin"]))
+
+        def largest(category: str) -> dict[str, Any] | None:
+            found = [o for o in twin["objects"] if o["category"] == category]
+            volume = lambda o: o["box"]["width"]["value_m"] * o["box"]["depth"]["value_m"]  # noqa: E731
+            return max(found, key=volume) if found else None
+
+        sofa, chair, table = largest("sofa"), largest("chair"), largest("table")
+        edits: list[dict[str, Any]] = []
+        if sofa:
+            c = sofa["box"]["center"]
+            to = {**c, "x_m": round(c["x_m"] + 0.8, 3)}
+            edits.append(
+                {"id": "e1", "op": "move", "by": "user", "object_id": sofa["id"], "to": to}
+            )
+            yaw = (sofa["box"]["yaw_deg"] + 90) % 360
+            edits.append(
+                {"id": "e2", "op": "rotate", "by": "user", "object_id": sofa["id"], "yaw_deg": yaw}
+            )
+        if chair:
+            edits.append({"id": "e3", "op": "remove", "by": "user", "object_id": chair["id"]})
+        if table:
+            dim = lambda v: {"value_m": v, "source": "measured", "error_band_m": 0.01}  # noqa: E731
+            size = {"width": dim(1.2), "depth": dim(0.6), "height": dim(0.45)}
+            edits.append(
+                {"id": "e4", "op": "replace", "by": "user", "object_id": table["id"],
+                 "product_id": "smoke-coffee-table", "product_size": size}
+            )  # fmt: skip
+        reference = {"twin_id": twin["id"], "twin_version": twin["version"], "edits": edits}
+        splat = built["splat"]
+        edited = await runner.run(
+            edit_step(
+                ModelGateway(removal_chain(volume_invoke("twin_remove", run_splat)), ledger=ledger)
+            ),
+            {
+                "twin": built["twin"].outputs["twin"],
+                "frames": built["frames"],
+                "objects": built["objects"].outputs["objects"],
+                **{k: splat.outputs[k] for k in ("splat", "labels", "cameras")},
+            },
+            {"reference": reference, "preview": True},
+        )
+        phone = await runner.run(
+            phone_splat_step(_compress), {"splat": edited.outputs["splat"]}, {}
+        )
+        variants = [
+            {"budget": int(tag.rstrip("k")) * 1000, "sog": phone.outputs[f"sog_{tag}"], **v}
+            for tag, v in phone.meta["variants"].items()
+        ]
+        view = with_phone_splats(json.loads(store.read_blob(edited.outputs["view"])), variants)
+        preview = None
+        if "preview" in edited.outputs:
+            preview = f"/work/previews/{scene}_edits.jpg"
+            await asyncio.to_thread(_save, preview, store.read_blob(edited.outputs["preview"]))
+        vol.commit()
+        return {
+            "scene": scene,
+            "edits": edits,
+            "edit": dict(edited.meta),
+            "objects_by_state": {
+                state: [o["id"] for o in view["objects"] if o["state"] == state]
+                for state in ("move", "remove", "replace")
+            },
+            "phone_mb": {k: round(v["bytes"] / 1e6, 2) for k, v in phone.meta["variants"].items()},
+            "preview": preview,
+            "charged_micro_inr": edited.cost_micro_inr + phone.cost_micro_inr,
+        }
+
+    return asyncio.run(run())
+
+
+@app.local_entrypoint()
+def edit_smoke(scene: str = "arkit_living_47331265", keyframes: int = 120) -> None:
+    import json
+
+    print(json.dumps(edit_smoke_cpu.remote(scene, keyframes), indent=1))
 
 
 def _save(path: str, data: bytes) -> None:
