@@ -205,6 +205,7 @@ async def test_the_inventory_names_what_is_looked_for_and_every_object_gets_its_
     assert geyser["name"] == "geyser" and geyser["reason"] == "not_detected"
     assert geyser["tried"] == ["yoloe: geyser", "yoloe: water heater (min score 0.1)"]
     assert result.meta["unplaced"] == 1
+    assert result.meta["dedupe"] == {"merged": 0, "capped": 0}
 
 
 async def test_built_ins_are_kept_apart_for_the_shell(tmp_path: Path) -> None:

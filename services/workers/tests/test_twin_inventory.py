@@ -193,3 +193,80 @@ def test_built_ins_go_to_the_shell_and_objects_get_their_type() -> None:
         ("sofa", "furniture"),
         ("rug", "textile"),
     ]
+
+
+def obj(
+    category: str, x: float, size: float = 1.0, frames: int = 10, conf: float = 0.8
+) -> dict[str, Any]:
+    dim = {"value_m": size, "source": "estimated", "error_band_m": 0.05}
+    return {"category": category, "confidence": conf, "frames": frames, "up_axis": 2,
+            "box": {"center": [x, 0.0, size / 2], "yaw_deg": 0.0,
+                    "length": dim, "width": dim, "height": dim}}  # fmt: skip
+
+
+def test_overlapping_boxes_merge_but_every_listed_item_keeps_its_best_box() -> None:
+    from sajao_workers.twin.inventory import dedupe
+
+    items = merge_inventories(
+        {"m": [item("painting", "wall_item", 2), item("photo frame", "wall_item")]}
+    )
+    objects = [
+        obj("painting", 0.05, frames=12),
+        obj("photo frame", 0.0, frames=4),  # the best photo frame: kept, as listed
+        obj("painting", 0.02, frames=6),  # the same painting seen again: merged
+        obj("photo frame", 0.03, frames=3),  # merged
+    ]
+
+    kept, stats = dedupe(objects, items)
+
+    assert sorted((o["category"], o["frames"]) for o in kept) == [
+        ("painting", 12),
+        ("photo frame", 4),
+    ]
+    assert stats == {"merged": 2, "capped": 0}
+
+
+def test_a_small_thing_on_a_big_one_is_not_merged_into_it() -> None:
+    from sajao_workers.twin.inventory import dedupe
+
+    items = merge_inventories({"m": [item("sofa", "furniture"), item("cushion", "textile", 2)]})
+    sofa = obj("sofa", 0.0, size=2.0, frames=20)
+    cushions = [obj("cushion", -0.5, size=0.4, frames=8), obj("cushion", 0.5, size=0.4, frames=7)]
+
+    kept, _ = dedupe([sofa, *cushions], items, min_volume_ratio=0.5)
+
+    assert sorted(o["category"] for o in kept) == ["cushion", "cushion", "sofa"]
+
+
+def test_separate_things_side_by_side_are_both_kept() -> None:
+    from sajao_workers.twin.inventory import dedupe
+
+    items = merge_inventories({"m": [item("chair", "furniture", 2)]})
+    kept, _ = dedupe([obj("chair", 0.0), obj("chair", 1.2)], items)
+
+    assert len(kept) == 2
+
+
+def test_each_item_keeps_about_as_many_as_were_listed_the_best_seen_first() -> None:
+    from sajao_workers.twin.inventory import dedupe
+
+    items = merge_inventories({"m": [item("book", "decor", 1)]})
+    books = [obj("book", 2.0 * i, size=0.3, frames=3 + i) for i in range(6)]
+
+    kept, stats = dedupe(books, items, slack=1, min_relative_support=0.0)
+
+    assert sorted(o["frames"] for o in kept) == [7, 8]  # listed 1, plus one of slack
+    assert stats == {"merged": 0, "capped": 4}
+
+
+def test_boxes_seen_far_less_than_the_best_of_their_label_are_dropped() -> None:
+    from sajao_workers.twin.inventory import dedupe
+
+    items = merge_inventories({"m": [item("book", "decor", 1)]})
+    books = [obj("book", 0.0, 0.3, frames=20), obj("book", 2.0, 0.3, frames=12),
+             obj("book", 4.0, 0.3, frames=3)]  # fmt: skip
+
+    kept, stats = dedupe(books, items)
+
+    assert sorted(o["frames"] for o in kept) == [12, 20]
+    assert stats == {"merged": 0, "capped": 1}

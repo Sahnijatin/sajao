@@ -24,7 +24,12 @@ import numpy as np
 from sajao_gateway import ModelGateway, ModelRequest
 from sajao_workers.models import SHELL_VOCABULARY, VOCABULARY, prompts_for
 from sajao_workers.steps import NonRetryableStepError, Step, StepContext, StepOutput
-from sajao_workers.twin.inventory import retry_vocabulary, split_built_ins, unplaced_items
+from sajao_workers.twin.inventory import (
+    dedupe,
+    retry_vocabulary,
+    split_built_ins,
+    unplaced_items,
+)
 from sajao_workers.twin.objects import (
     FrameMasks,
     build_objects,
@@ -35,7 +40,7 @@ from sajao_workers.twin.objects import (
 from sajao_workers.validate import check_detections, check_masks
 
 # Bump when this step's logic, prompts or pinned model chains change.
-VERSION = 7
+VERSION = 8
 # The retry for listed items not placed: other names and a lower score threshold.
 RETRY_MIN_SCORE = 0.1
 # Listed items of these types may be small (a clock, a switchboard, an idol).
@@ -176,6 +181,8 @@ def objects_step(detect: ModelGateway, segment: ModelGateway) -> Step:
         meta: dict[str, Any] = {"detector": detector, "segmenter": segmenter, "fusion": fusion}
         built_ins: list[dict[str, Any]] = []
         if inventory is not None:
+            objects, merged = dedupe(objects, items)
+            meta["dedupe"] = merged
             objects, built_ins = split_built_ins(items, objects)
             unplaced = [
                 {**u, "tried": tried[u["name"]]}

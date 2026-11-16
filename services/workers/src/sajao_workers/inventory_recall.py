@@ -46,8 +46,10 @@ def match_items(
                 if index in used:
                     continue
                 candidates = _names(f, "prompts")
-                hit = bool(names & candidates) if exact else any(
-                    _contained(a, b) for a in names for b in candidates
+                hit = (
+                    bool(names & candidates)
+                    if exact
+                    else any(_contained(a, b) for a in names for b in candidates)
                 )
                 if hit:
                     pairs[str(t["name"])] = str(f["name"])

@@ -1524,8 +1524,14 @@ def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
             depth_meta = dict(estimated.meta)
         built = await _build_twin(store, runner, ledger, capture, manifest)
         twin = json.loads(store.read_blob(built["twin"].outputs["twin"]))
-        report = accuracy_report(twin, read_sheet(sheet))
-        charged = sum(built[k].cost_micro_inr for k in ("objects", "splat", "phone"))
+        truth, to_space = None, None
+        if (root / "ground_truth.json").is_file():  # an annotated dataset room
+            from sajao_workers.twin.edits import space_transform
+
+            truth = json.loads((root / "ground_truth.json").read_text())
+            to_space = space_transform(twin["keyframes"], manifest["frames"])
+        report = accuracy_report(twin, read_sheet(sheet), truth=truth, to_space=to_space)
+        charged = sum(built[k].cost_micro_inr for k in ("inventory", "objects", "splat", "phone"))
         return {
             "twin": twin,
             "report": report,
@@ -1638,6 +1644,21 @@ def golden_fixture_cpu(scene: str, keyframes: int) -> str:
     }
     Capture.model_validate(capture)
     (root / "capture.json").write_text(json.dumps(capture, indent=1))
+    # Annotated boxes the capture saw, in its AR world: for box size errors (golden.py).
+    from twin_gpu.objects import gt_boxes, gt_seen
+
+    up_axis = int(np.argmax(np.abs(np.asarray(cams["up"], dtype=np.float64))))
+    gts = gt_boxes(scene, up_axis)
+    truth = [
+        {
+            "label": g.label,
+            "center": [round(float(v), 4) for v in turn @ np.asarray(g.box.center)],
+            "size_m": [round(g.box.length, 3), round(g.box.width, 3), round(g.box.height, 3)],
+        }
+        for g, seen in zip(gts, gt_seen(scene, gts), strict=True)
+        if seen
+    ]
+    (root / "ground_truth.json").write_text(json.dumps(truth, indent=1))
     vol.commit()
     return str(root)
 
@@ -1879,6 +1900,15 @@ def inventory_eval_cpu(
 
     listed = read(inventory, "inventory")
     placed, built_ins = read(objects, "objects"), read(objects, "built_ins")
+    from twin_gpu.objects import gt_boxes, gt_seen
+
+    gts = gt_boxes(scene, manifest["up_axis"])
+    truth = [
+        {"label": g.label, "center": list(g.box.center), "yaw": g.box.yaw,
+         "size_m": [g.box.length, g.box.width, g.box.height]}
+        for g, seen in zip(gts, gt_seen(scene, gts), strict=True)
+        if seen
+    ]  # fmt: skip
     return {
         "scene": scene,
         "detectors": detectors or "default",
@@ -1900,6 +1930,7 @@ def inventory_eval_cpu(
             for o in placed
         ]
         + [{k: b[k] for k in ("category", "confidence", "frames", "box")} for b in built_ins],
+        "ground_truth": truth,
         "inventory_meta": dict(inventory.meta),
         "objects_meta": dict(objects.meta),
         "charged_micro_inr": inventory.cost_micro_inr + objects.cost_micro_inr,

@@ -10,6 +10,7 @@ in the twin's inventory with the reason, never dropped silently.
 No model sets a size here: sizes come from the lifted, fused geometry.
 """
 
+import math
 import re
 from collections.abc import Mapping, Sequence
 from typing import Any
@@ -243,3 +244,90 @@ def split_built_ins(
         else:
             kept.append({**obj, "object_type": kind})
     return kept, built_ins
+
+
+def _upright(obj: Mapping[str, Any]) -> Any:
+    from sajao_workers.twin.geometry import UprightBox
+
+    box = obj["box"]
+    return UprightBox(
+        tuple(box["center"]),
+        box["length"]["value_m"],
+        box["width"]["value_m"],
+        box["height"]["value_m"],
+        math.radians(box["yaw_deg"]),
+        int(obj["up_axis"]),
+    )
+
+
+def _support(obj: Mapping[str, Any]) -> float:
+    return float(obj["frames"]) * float(obj["confidence"])
+
+
+def dedupe(
+    objects: Sequence[Mapping[str, Any]],
+    items: Sequence[Mapping[str, Any]],
+    *,
+    contain: float = 0.6,
+    iou: float = 0.3,
+    min_volume_ratio: float = 0.3,
+    min_relative_support: float = 0.35,
+    slack: int | None = None,
+    same_label: bool = False,
+) -> tuple[list[dict[str, Any]], dict[str, int]]:
+    """One object per real thing (defaults tuned in eval/twin-inventory).
+
+    1. Boxes that overlap are one thing, whatever their labels: IoU at least
+       `iou`, or at least `contain` of the smaller inside the larger when their
+       volumes are within `min_volume_ratio` (a cushion on a sofa is not the
+       sofa). The best-seen box (frames times confidence) stays. The best box of
+       each label is never merged away, so every listed item keeps one object.
+    2. Boxes seen far less than the best box of their label (below
+       `min_relative_support` of it) are dropped: a common name (book, box) gets
+       put on many things in a few frames each.
+    3. With `slack`, each item keeps at most its listed count plus `slack`.
+    """
+    from sajao_workers.twin.geometry import box_overlap
+
+    ranked = sorted(objects, key=_support, reverse=True)
+    boxes = [_upright(o) for o in ranked]
+    kept: list[int] = []
+    merged = 0
+
+    def same_thing(i: int, k: int) -> bool:
+        if same_label and ranked[i]["category"] != ranked[k]["category"]:
+            return False
+        overlap_iou, contained = box_overlap(boxes[i], boxes[k])
+        small, large = sorted((boxes[i].volume(), boxes[k].volume()))
+        similar = large > 0 and small / large >= min_volume_ratio
+        return overlap_iou >= iou or (contained >= contain and similar)
+
+    # The best-seen box of each label is never merged away: a listed item keeps
+    # at least one object, even where two names fit the same thing.
+    first: dict[str, int] = {}
+    for i, o in enumerate(ranked):
+        first.setdefault(o["category"], i)
+    protected = set(first.values())
+    for i in range(len(boxes)):
+        if i not in protected and any(same_thing(i, k) for k in kept):
+            merged += 1
+            continue
+        kept.append(i)
+    big = 10**9
+    limit = {str(i["name"]): int(i["count"]) + (big if slack is None else slack) for i in items}
+    best: dict[str, float] = {}
+    for i in kept:
+        best.setdefault(ranked[i]["category"], _support(ranked[i]))
+    counts: dict[str, int] = {}
+    out, capped = [], 0
+    for i in kept:
+        name = ranked[i]["category"]
+        if _support(ranked[i]) < min_relative_support * best[name]:
+            capped += 1
+            continue
+        counts[name] = counts.get(name, 0) + 1
+        if counts[name] > limit.get(name, big):
+            capped += 1
+            continue
+        out.append(dict(ranked[i]))
+    return out, {"merged": merged, "capped": capped}
