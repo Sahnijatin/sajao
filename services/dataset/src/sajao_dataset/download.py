@@ -393,7 +393,9 @@ def ytdlp_cli_args(
     args = [
         "yt-dlp",
         "-f",
-        f"bv*[height<={h}][ext=mp4]/bv*[height<={h}]/b[height<={h}]/bv*/b",
+        # MP4 only: ffmpeg seeks inside it with range requests. A WebM fallback was
+        # read from the start, using far more data than the range needs.
+        f"bv*[height<={h}][ext=mp4]/bv*[height<=480][ext=mp4]",
         "--download-sections",
         f"*{segment.start_s:g}-{segment.end_s:g}",
         "--remux-video",

@@ -376,6 +376,8 @@ def test_ytdlp_cli_args_keep_the_proxy_out_of_the_command(tmp_path: Path) -> Non
     assert "*30-50" in joined and "height<=720" in joined
     assert "ffmpeg_i:-http_proxy http://127.0.0.1:8899" in args
     assert "--proxy" not in args
+    fmt = args[args.index("-f") + 1]
+    assert "webm" not in fmt and all("ext=mp4" in part for part in fmt.split("/"))
 
 
 def test_is_blocked_spots_the_bot_check_and_rate_limits() -> None:

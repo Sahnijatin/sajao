@@ -48,6 +48,9 @@ MAX_ROTATIONS = 3
 # before its download is killed, so one segment can never run through the cap.
 SEGMENT_BUDGET_FACTOR = 3
 SEGMENT_MIN_BUDGET = 4_000_000
+# After this many budget kills on one video, its remaining segments are skipped
+# for the run: the video does not seek and every segment would waste a budget.
+MAX_KILLS_PER_VIDEO = 2
 
 volume = modal.Volume.from_name("sajao-dataset", create_if_missing=True)
 image = (
@@ -249,18 +252,26 @@ def download_and_sample(
             "proxy_bytes_received": used(),
         }
 
+    kills: dict[str, int] = {}
+
     def fetch_once(segment: Segment, tmp_stem: Path) -> Path:
+        if kills.get(segment.video_id, 0) >= MAX_KILLS_PER_VIDEO:
+            raise RuntimeError("skipped: this video went over its budget twice in this run")
         estimate = (segment.end_s - segment.start_s) * BYTES_PER_S
         budget = int(min(max(SEGMENT_MIN_BUDGET, SEGMENT_BUDGET_FACTOR * estimate), cap - used()))
         if budget <= 0:
             raise BudgetExceededError("the run cap is used up")
         env = dict(os.environ, HTTPS_PROXY=sessions.proxy, HTTP_PROXY=sessions.proxy)
-        code, err = run_with_byte_budget(
-            ytdlp_cli_args(segment, tmp_stem, max_height=MAX_HEIGHT, ffmpeg_proxy=FORWARDER),
-            budget_bytes=budget,
-            used_bytes=used,
-            env=env,
-        )
+        try:
+            code, err = run_with_byte_budget(
+                ytdlp_cli_args(segment, tmp_stem, max_height=MAX_HEIGHT, ffmpeg_proxy=FORWARDER),
+                budget_bytes=budget,
+                used_bytes=used,
+                env=env,
+            )
+        except BudgetExceededError:
+            kills[segment.video_id] = kills.get(segment.video_id, 0) + 1
+            raise
         produced = tmp_stem.with_name(f"{tmp_stem.name}.mp4")
         if code != 0 or not produced.exists():
             lines = [line for line in err.splitlines() if "ERROR" in line] or [err[-300:]]
