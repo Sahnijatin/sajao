@@ -1,6 +1,6 @@
 import CoreImage
 import Foundation
-import MediaPipeTasksVision
+@_implementationOnly import MediaPipeTasksVision
 import UIKit
 
 /// One detection in the upright camera image. The box is normalised, 0 to 1.

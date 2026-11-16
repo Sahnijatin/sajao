@@ -837,6 +837,22 @@ depth: Dimension
 height: Dimension
 }
 /**
+ * A decimated, compressed room splat for on-device viewing.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "PhoneSplat".
+ */
+export interface PhoneSplat {
+key: StorageKey
+format: "sog"
+/**
+ * capable: recent phones (500k Gaussians). budget: budget Android (250k).
+ */
+tier: ("capable" | "budget")
+gaussians: number
+bytes: number
+}
+/**
  * Spatial view: the dimensioned 2D plan derived from one design and its space profile.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -1138,6 +1154,12 @@ keyframes: [Keyframe, ...(Keyframe)[]]
 scale: ScaleEvidence
 direction: SpaceDirection
 splat?: SplatRef
+/**
+ * Compressed room splats for viewing on the phone, one per device tier. Colour only; built from the room splat.
+ * 
+ * @maxItems 4
+ */
+phone_splats?: []|[PhoneSplat]|[PhoneSplat, PhoneSplat]|[PhoneSplat, PhoneSplat, PhoneSplat]|[PhoneSplat, PhoneSplat, PhoneSplat, PhoneSplat]
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema

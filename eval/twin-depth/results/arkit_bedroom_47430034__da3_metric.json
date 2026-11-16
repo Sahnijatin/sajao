@@ -1,0 +1,17 @@
+{
+  "scene": "arkit_bedroom_47430034",
+  "model": "da3_metric",
+  "objects_seen": null,
+  "depth": {
+    "frames": 270,
+    "abs_rel": 0.1191,
+    "delta_1_25": 0.8403,
+    "median_scale_ratio": 0.954,
+    "coverage_of_lidar_pixels": 1.0
+  },
+  "predict": {
+    "model": "da3_metric",
+    "frames": 270,
+    "seconds": 6.3
+  }
+}
