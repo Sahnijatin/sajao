@@ -117,6 +117,8 @@ class SajaoArView(context: Context, appContext: AppContext) :
   // the room: tells "detector sees nothing" apart from "nothing to hit".
   private var detectionsFound = 0
   private var detectionsPlaced = 0
+  // How placed detections were placed: floor, points, plane or size.
+  private val placedCounts = HashMap<String, Int>()
   @Volatile private var lastDetectionMs = 0.0
   // Detections waiting for the next drawn frame to be hit-tested. Calling
   // session.update() anywhere but onDrawFrame takes a camera frame away from
@@ -564,14 +566,15 @@ class SajaoArView(context: Context, appContext: AppContext) :
     }
     val vertical = outline.vertical
     val fill = if (vertical) Palette.wallFill else Palette.floorFill
+    // The fill is one triangle fan: cheap enough for every phone.
+    shapes.draw(viewProjection, triangles, corners * 3, GLES20.GL_TRIANGLES, fill, false)
     if (!lite) {
-      shapes.draw(viewProjection, triangles, corners * 3, GLES20.GL_TRIANGLES, fill, false)
       shapes.draw(viewProjection, lines, corners * 4, GLES20.GL_LINES, scaled(Palette.glow, boost), true, lineWidth = 6f)
     }
     shapes.draw(viewProjection, lines, corners * 4, GLES20.GL_LINES, scaled(Palette.edge, boost), true, lineWidth = 2f)
     if (outline.grid.isNotEmpty()) {
       val grid = outline.gridBuffer()
-      shapes.draw(viewProjection, grid, outline.grid.size / 3, GLES20.GL_LINES, scaled(Palette.link, boost), true, lineWidth = 1f)
+      shapes.draw(viewProjection, grid, outline.grid.size / 3, GLES20.GL_LINES, scaled(Palette.grid, boost), true, lineWidth = 1.5f)
     }
   }
 
@@ -652,6 +655,7 @@ class SajaoArView(context: Context, appContext: AppContext) :
         "detectorMs" to lastDetectionMs,
         "detectionsFound" to detectionsFound,
         "detectionsPlaced" to detectionsPlaced,
+        "placedBy" to listOf("floor", "plane", "points", "size").joinToString(" ") { "$it ${placedCounts[it] ?: 0}" },
         "detectorError" to (detector.loadError ?: ""),
       ),
     )
@@ -709,10 +713,13 @@ class SajaoArView(context: Context, appContext: AppContext) :
     val hits = ArrayList<Map<String, Any>>(SurfaceSample.GRID.size)
     for ((x, y) in SurfaceSample.GRID) {
       val (origin, direction) = camera.ray(x, y)
+      // Without depth ARCore finds only patches of a plain wall, so each
+      // plane counts a little beyond its found outline: a frame then counts
+      // toward every wall it sees.
       val hit = try {
         frame.hitTest(origin, 0, direction, 0).firstOrNull { result ->
           val plane = result.trackable as? Plane
-          plane != null && plane.isPoseInPolygon(result.hitPose)
+          plane != null && plane.subsumedBy == null && nearPlane(plane, result.hitPose.translation)
         }
       } catch (_: Throwable) {
         null
@@ -745,6 +752,16 @@ class SajaoArView(context: Context, appContext: AppContext) :
     payload["hits"] = hits
     floorY?.let { payload["floorY"] = it.toDouble() }
     post { onArSurfaces(payload) }
+  }
+
+  /** True when a point on a plane's extension is within reach of the part ARCore found. */
+  private fun nearPlane(plane: Plane, point: FloatArray): Boolean {
+    val centre = plane.centerPose.translation
+    val dx = point[0] - centre[0]
+    val dy = point[1] - centre[1]
+    val dz = point[2] - centre[2]
+    val distance = kotlin.math.sqrt(dx * dx + dy * dy + dz * dz)
+    return distance <= maxOf(plane.extentX, plane.extentZ) / 2 + PLANE_REACH_M
   }
 
   /**
@@ -782,15 +799,39 @@ class SajaoArView(context: Context, appContext: AppContext) :
         val plane = hit.trackable as? Plane
         plane != null && plane.isPoseInPolygon(hit.hitPose)
       }
-      // The object's own point: a feature or depth point ARCore hit on the
-      // ray, else the front of the tracked feature points around the ray,
-      // else the plane (the label rules then judge whether that is a wall).
-      val objectRange = hits.firstOrNull { it.trackable !is Plane }?.let { rangeOf(it.hitPose.translation) }
-        ?: frontOfCone(origin, direction, pointCloud.values)
-        ?: planeHit?.let { rangeOf(it.hitPose.translation) }
+      // Where the object is, in order: its footprint on the floor (a
+      // standing object whose box bottom meets the floor plane), a depth or
+      // feature point ARCore hit on the ray, a plane, the front of the
+      // tracked points around the ray, and last how tall it looks.
+      var placedBy = ""
+      val footprint = if (detection.detectorClass in Placement.STANDS_ON_FLOOR) {
+        floorY?.let { floor ->
+          val (bottomOrigin, bottomDirection) =
+            pending.camera.ray(detection.top + detection.height, 1f - detection.centreX)
+          Placement.floorRange(bottomOrigin, bottomDirection, floor)?.let { t ->
+            val horizontal = t * kotlin.math.sqrt(
+              bottomDirection[0] * bottomDirection[0] + bottomDirection[2] * bottomDirection[2],
+            )
+            Placement.rangeAtHorizontal(direction, horizontal)
+          }
+        }
+      } else {
+        null
+      }
+      val objectRange = footprint?.also { placedBy = "floor" }
+        ?: hits.firstOrNull { it.trackable !is Plane }?.let { rangeOf(it.hitPose.translation) }?.also { placedBy = "points" }
+        ?: planeHit?.let { rangeOf(it.hitPose.translation) }?.also { placedBy = "plane" }
+        ?: frontOfCone(origin, direction, pointCloud.values)?.also { placedBy = "points" }
+        ?: Placement.rangeFromSize(
+          detection.detectorClass,
+          detection.height * pending.camera.widthPx,
+          pending.camera.focalX,
+        )?.also { placedBy = "size" }
       detectionsFound += 1
       if (objectRange != null) {
         detectionsPlaced += 1
+        placedCounts[placedBy] = (placedCounts[placedBy] ?: 0) + 1
+        entry["placedBy"] = placedBy
         val t = FloatArray(3) { origin[it] + direction[it] * objectRange }
         entry["world"] = mapOf("x" to t[0].toDouble(), "y" to t[1].toDouble(), "z" to t[2].toDouble())
         entry["range"] = objectRange.toDouble()
@@ -854,3 +895,6 @@ class PlaneOutline(
 
 /** Detector results with the camera they were captured from, waiting for the next drawn frame. */
 class PendingDetections(val found: List<UprightDetection>, val camera: CaptureCamera)
+
+/** How far past a plane's found outline a surface sample still counts, in metres. Same as iOS. */
+private const val PLANE_REACH_M = 1.5f

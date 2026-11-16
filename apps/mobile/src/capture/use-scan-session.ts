@@ -24,7 +24,7 @@ import {
 import type { SurfaceHit } from "./ar/surface-coverage";
 import { motionSample } from "./pose";
 import type { AnalysedFrame, CameraDiagnostics } from "./scan-camera";
-import { INITIAL_SCAN, mappedShare, scanReducer } from "./scan-session";
+import { canFinish, INITIAL_SCAN, mappedShare, scanReducer } from "./scan-session";
 
 const MOTION_INTERVAL_MS = 100;
 const DEBUG_WINDOW_MS = 1000;
@@ -60,6 +60,8 @@ export interface ArDebug {
   /** Detections returned so far, and how many were placed in the room. */
   detectionsFound: number;
   detectionsPlaced: number;
+  /** Placed detections by how they were placed. */
+  placedBy: string;
   /** Why the detector failed to load; empty when it loaded. */
   detectorError: string;
   /** Detector sightings dropped as a wall, a door or bare floor. */
@@ -178,11 +180,17 @@ export function useScanSession(active: boolean) {
       status: ArStatus &
         Omit<
           ArDebug,
-          "tracking" | "labelsRejected" | "detectionsFound" | "detectionsPlaced" | "detectorError"
+          | "tracking"
+          | "labelsRejected"
+          | "detectionsFound"
+          | "detectionsPlaced"
+          | "placedBy"
+          | "detectorError"
         > &
         Partial<ArFrameCounters> & {
           detectionsFound?: number;
           detectionsPlaced?: number;
+          placedBy?: string;
           detectorError?: string;
         },
     ) => {
@@ -198,6 +206,7 @@ export function useScanSession(active: boolean) {
         featurePoints: status.featurePoints,
         detectionsFound: status.detectionsFound ?? 0,
         detectionsPlaced: status.detectionsPlaced ?? 0,
+        placedBy: status.placedBy ?? "",
         detectorError: status.detectorError ?? "",
         labelsRejected: counters.current.labelsRejected,
       };
@@ -242,6 +251,7 @@ export function useScanSession(active: boolean) {
     outside: state.doorway.outside,
     stepBack: Date.now() < stepBackUntil,
     walkAround: walkAroundTarget(trackedObjects(labels), views.current, mappedShare(state)),
+    coverMore: state.surfacesSeen && canFinish(state) && mappedShare(state) < 1,
   });
   useEffect(() => {
     counters.current.labelsRejected = labels.rejected;

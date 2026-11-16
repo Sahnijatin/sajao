@@ -10,8 +10,8 @@
 // This is guidance for the person scanning, not a measurement: it never sets
 // a dimension.
 
-/** Turning faster than this blurs AR frames; such samples do not count. */
-export const MAX_TURN_DEG_PER_S = 30;
+/** Turning faster than this blurs AR frames; such samples do not count. A slow pan is 20 to 40. */
+export const MAX_TURN_DEG_PER_S = 45;
 /** Cell size on walls and floor, in metres. */
 export const CELL_M = 0.5;
 /** Accepted samples a cell needs before it counts as mapped. */
@@ -33,7 +33,7 @@ export const FLOOR_TARGET_CELLS = 16;
 /** Walls that make a full scan: standing in a doorway you face three. */
 export const WALLS_FOR_FULL = 3;
 /** A frame is blurred when its sharpness is under this share of the session's recent best. */
-export const SHARP_SHARE = 0.55;
+export const SHARP_SHARE = 0.45;
 /** Recent sharpness readings kept to judge what "sharp" means on this phone and in this light. */
 const SHARPNESS_WINDOW = 40;
 /** Recent samples kept to decide whether to ask the person to slow down. */

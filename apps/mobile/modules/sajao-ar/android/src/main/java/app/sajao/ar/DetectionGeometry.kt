@@ -16,6 +16,12 @@ class CaptureCamera(
   private val principal: FloatArray,
   private val size: IntArray,
 ) {
+  /** Focal length along the sensor image's x axis, in pixels. */
+  val focalX: Float get() = focal[0]
+
+  /** Sensor image width in pixels. */
+  val widthPx: Int get() = size[0]
+
   /** World-space origin and unit direction through a sensor image point, normalised 0 to 1 with y down. */
   fun ray(normalisedX: Float, normalisedY: Float): Pair<FloatArray, FloatArray> {
     val u = normalisedX * size[0]
@@ -130,5 +136,50 @@ object SurfaceSample {
       }
     }
     return sum / (columns * rows)
+  }
+}
+
+/**
+ * Placing a detection without LiDAR, where most rays hit nothing: from the
+ * floor under a standing object, or from how tall the object looks. Used
+ * for live labels only; nothing here sets a dimension. Same as Swift.
+ */
+object Placement {
+  /** Typical heights of the large objects the scan names, in metres: only for placing labels. */
+  val TYPICAL_HEIGHT_M = mapOf(
+    "couch" to 0.85f,
+    "bed" to 0.6f,
+    "dining table" to 0.76f,
+    "refrigerator" to 1.7f,
+    "tv" to 0.6f,
+  )
+
+  /** Objects that stand on the floor: their footprint can be found from the floor plane. */
+  val STANDS_ON_FLOOR = setOf("couch", "bed", "dining table", "refrigerator")
+
+  private const val MIN_RANGE_M = 0.3f
+  private const val MAX_RANGE_M = 8f
+
+  /** Distance along a ray to where it meets the floor, or null when it points up or meets it out of range. */
+  fun floorRange(origin: FloatArray, direction: FloatArray, floorY: Float): Float? {
+    if (direction[1] > -0.02f) return null
+    val t = (floorY - origin[1]) / direction[1]
+    return if (t in MIN_RANGE_M..MAX_RANGE_M) t else null
+  }
+
+  /** Distance along a ray at which it is `horizontal` metres away on the floor plan. */
+  fun rangeAtHorizontal(direction: FloatArray, horizontal: Float): Float? {
+    val flat = sqrt(direction[0] * direction[0] + direction[2] * direction[2])
+    if (flat < 0.05f) return null
+    val t = horizontal / flat
+    return if (t in MIN_RANGE_M..MAX_RANGE_M) t else null
+  }
+
+  /** Distance from how tall the object looks: focal length times typical height over its height in pixels. */
+  fun rangeFromSize(detectorClass: String, heightPx: Float, focalPx: Float): Float? {
+    val height = TYPICAL_HEIGHT_M[detectorClass] ?: return null
+    if (heightPx < 8f) return null
+    val t = focalPx * height / heightPx
+    return if (t in MIN_RANGE_M..MAX_RANGE_M) t else null
   }
 }

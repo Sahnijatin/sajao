@@ -259,6 +259,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
                 surface: detection.surface,
                 gap: detection.gap ?? null,
                 range: detection.range ?? null,
+                placedBy: detection.placedBy,
                 box: detection.box ?? null,
               })),
             );

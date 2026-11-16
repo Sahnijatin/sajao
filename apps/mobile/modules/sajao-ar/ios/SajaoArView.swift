@@ -53,6 +53,8 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   /// Detections the detector returned, and how many were placed in the room.
   private var detectionsFound = 0
   private var detectionsPlaced = 0
+  /// How placed detections were placed: floor, plane, points or size.
+  private var placedCounts: [String: Int] = [:]
   private var lastDetectionMs: Double = 0
   private var lastPointsAt: TimeInterval = 0
   private var lastBrightnessAt: TimeInterval = 0
@@ -331,6 +333,7 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
       "detectorMs": lastDetectionMs,
       "detectionsFound": detectionsFound,
       "detectionsPlaced": detectionsPlaced,
+      "placedBy": ["floor", "plane", "points", "size"].map { "\($0) \(placedCounts[$0] ?? 0)" }.joined(separator: " "),
       "detectorError": detector.loadError ?? "",
     ])
   }
@@ -376,7 +379,12 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
         let upright = CGPoint(x: detection.box.midX, y: detection.box.midY)
         let sensor = CGPoint(x: upright.y, y: 1 - upright.x)
         let ray = camera.ray(throughNormalised: sensor)
-        let sighting = self.locate(ray, cloud: cloud)
+        let bottom = camera.ray(throughNormalised: CGPoint(x: detection.box.maxY, y: 1 - upright.x))
+        // The box's upright height runs along the sensor image's x axis.
+        let sighting = self.locate(
+          ray, cloud: cloud, detectorClass: detection.detectorClass, bottom: bottom,
+          heightPx: Float(detection.box.height * camera.resolution.width),
+          focalPx: camera.intrinsics.columns.0.x)
         var entry: [String: Any] = [
           "detectorClass": detection.detectorClass,
           "score": Double(detection.score),
@@ -390,6 +398,8 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
         self.detectionsFound += 1
         if let point = sighting.point {
           self.detectionsPlaced += 1
+          self.placedCounts[sighting.placedBy, default: 0] += 1
+          entry["placedBy"] = sighting.placedBy
           entry["world"] = ["x": Double(point.x), "y": Double(point.y), "z": Double(point.z)]
           entry["range"] = Double(sighting.range)
         }
@@ -405,6 +415,29 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
     var range: Float = 0
     var surface = "none"
     var gap: Float?
+    /// floor, points, plane or size: how the point was found.
+    var placedBy = ""
+  }
+
+  /// Typical heights of the large objects the scan names, in metres: only for placing labels. Same as Android.
+  private static let typicalHeight: [String: Float] = [
+    "couch": 0.85, "bed": 0.6, "dining table": 0.76, "refrigerator": 1.7, "tv": 0.6,
+  ]
+  private static let standsOnFloor: Set<String> = ["couch", "bed", "dining table", "refrigerator"]
+
+  /// Distance along a ray to where it meets the floor, or nil when it points up or meets it out of range.
+  private static func floorRange(_ ray: Ray, floorY: Float) -> Float? {
+    guard ray.direction.y < -0.02 else { return nil }
+    let t = (floorY - ray.origin.y) / ray.direction.y
+    return (0.3...maxRange).contains(t) ? t : nil
+  }
+
+  /// Distance along a ray at which it is `horizontal` metres away on the floor plan.
+  private static func rangeAtHorizontal(_ ray: Ray, _ horizontal: Float) -> Float? {
+    let flat = simd_length(SIMD2(ray.direction.x, ray.direction.z))
+    guard flat >= 0.05 else { return nil }
+    let t = horizontal / flat
+    return (0.3...maxRange).contains(t) ? t : nil
   }
 
   private static let maxRange: Float = 8
@@ -415,10 +448,25 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
   /// LiDAR phones, tracked feature points elsewhere, an estimated plane as a
   /// last resort), plus the plane the same ray meets and the gap between
   /// them. A gap near zero means the "object" is the wall or floor itself.
-  private func locate(_ ray: Ray, cloud: [SIMD3<Float>]) -> Sighting {
+  private func locate(
+    _ ray: Ray, cloud: [SIMD3<Float>], detectorClass: String, bottom: Ray, heightPx: Float, focalPx: Float
+  ) -> Sighting {
     var sighting = Sighting()
     var objectRange: Float?
-    if lidar && !lite {
+    // A standing object: its footprint where the box bottom meets the floor,
+    // so a fridge is placed in front of the wall, not on it.
+    if Self.standsOnFloor.contains(detectorClass), let floorY,
+      let t = Self.floorRange(bottom, floorY: floorY)
+    {
+      let horizontal = t * simd_length(SIMD2(bottom.direction.x, bottom.direction.z))
+      if let range = Self.rangeAtHorizontal(ray, horizontal) {
+        objectRange = range
+        sighting.placedBy = "floor"
+      }
+    }
+    if objectRange != nil {
+      // Placed from the floor.
+    } else if lidar && !lite {
       let end = ray.origin + ray.direction * Self.maxRange
       let hits = sceneView.scene.rootNode.hitTestWithSegment(
         from: SCNVector3(ray.origin.x, ray.origin.y, ray.origin.z),
@@ -435,8 +483,22 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
         }
         .filter { $0 > 0.1 }
         .min()
-    } else if !cloud.isEmpty {
-      objectRange = Self.frontOfCone(ray, cloud: cloud)
+      if objectRange != nil { sighting.placedBy = "points" }
+    }
+    // Without LiDAR: detected planes, then tracked points around the ray,
+    // then ARKit's estimated planes, then how tall the object looks.
+    if objectRange == nil {
+      let query = ARRaycastQuery(
+        origin: ray.origin, direction: ray.direction, allowing: .existingPlaneGeometry, alignment: .any)
+      if let hit = sceneView.session.raycast(query).first {
+        let c = hit.worldTransform.columns.3
+        objectRange = simd_dot(SIMD3<Float>(c.x, c.y, c.z) - ray.origin, ray.direction)
+        sighting.placedBy = "plane"
+      }
+    }
+    if objectRange == nil, !cloud.isEmpty, let range = Self.frontOfCone(ray, cloud: cloud) {
+      objectRange = range
+      sighting.placedBy = "points"
     }
     if objectRange == nil {
       let query = ARRaycastQuery(
@@ -444,6 +506,14 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
       if let hit = sceneView.session.raycast(query).first {
         let c = hit.worldTransform.columns.3
         objectRange = simd_dot(SIMD3<Float>(c.x, c.y, c.z) - ray.origin, ray.direction)
+        sighting.placedBy = "plane"
+      }
+    }
+    if objectRange == nil, let height = Self.typicalHeight[detectorClass], heightPx >= 8 {
+      let t = focalPx * height / heightPx
+      if (0.3...Self.maxRange).contains(t) {
+        objectRange = t
+        sighting.placedBy = "size"
       }
     }
     if let range = objectRange {
@@ -520,9 +590,16 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
     var hits: [[String: Any]] = []
     for point in Self.surfaceGrid {
       let ray = camera.ray(throughNormalised: point)
+      // Without LiDAR ARKit finds only patches of a plain wall, so each
+      // plane counts a little beyond its found outline: a frame then counts
+      // toward every wall it sees.
       let query = ARRaycastQuery(
-        origin: ray.origin, direction: ray.direction, allowing: .existingPlaneGeometry, alignment: .any)
-      guard let hit = sceneView.session.raycast(query).first(where: { $0.anchor is ARPlaneAnchor }),
+        origin: ray.origin, direction: ray.direction, allowing: .existingPlaneInfinite, alignment: .any)
+      guard
+        let hit = sceneView.session.raycast(query).first(where: { result in
+          guard let plane = result.anchor as? ARPlaneAnchor else { return false }
+          return Self.nearPlane(plane, result.worldTransform.columns.3)
+        }),
         let plane = hit.anchor as? ARPlaneAnchor
       else { continue }
       let c = hit.worldTransform.columns.3
@@ -540,6 +617,17 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
     var payload: [String: Any] = ["sharpness": sharpness, "hits": hits]
     if let floorY { payload["floorY"] = Double(floorY) }
     onArSurfaces(payload)
+  }
+
+  /// How far past a plane's found outline a surface sample still counts, in metres.
+  private static let planeReach: Float = 1.5
+
+  /// True when a point on a plane's infinite extension is within reach of the part ARKit found.
+  private static func nearPlane(_ plane: ARPlaneAnchor, _ point: SIMD4<Float>) -> Bool {
+    let local = plane.transform.inverse * SIMD4(point.x, point.y, point.z, 1)
+    let centre = plane.center
+    let distance = simd_length(SIMD2(local.x - centre.x, local.z - centre.z))
+    return distance <= max(plane.planeExtent.width, plane.planeExtent.height) / 2 + planeReach
   }
 
   /// Mean squared Laplacian of the luma on a 40 by 30 grid of pixels: motion

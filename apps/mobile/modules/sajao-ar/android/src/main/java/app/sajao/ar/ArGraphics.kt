@@ -171,9 +171,12 @@ internal class WorldShapes {
 internal object Palette {
   val edge = floatArrayOf(0.30f, 0.90f, 1.0f, 0.90f)
   val glow = floatArrayOf(0.30f, 0.90f, 1.0f, 0.22f)
-  val wallFill = floatArrayOf(0.35f, 0.85f, 1.0f, 0.09f)
-  val floorFill = floatArrayOf(0.30f, 0.70f, 1.0f, 0.07f)
+  // A soft filled glow, clearly visible on white walls and tiled floors.
+  val wallFill = floatArrayOf(0.35f, 0.85f, 1.0f, 0.20f)
+  val floorFill = floatArrayOf(0.30f, 0.70f, 1.0f, 0.18f)
   val dot = floatArrayOf(0.85f, 0.98f, 1.0f, 0.95f)
   /** Grid lines on planes and links between tracked points: fainter than plane edges. */
   val link = floatArrayOf(0.40f, 0.92f, 1.0f, 0.45f)
+  /** Grid lines on planes: clearly visible, so found walls and floor read at a glance. */
+  val grid = floatArrayOf(0.40f, 0.92f, 1.0f, 0.75f)
 }

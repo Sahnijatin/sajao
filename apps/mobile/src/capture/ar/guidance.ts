@@ -142,16 +142,23 @@ export function walkAroundTarget(
 }
 
 export type Hint =
-  { id: "doorway" } | { id: "stepBack" } | { id: "walkAround"; kind: LabelKind } | null;
+  | { id: "doorway" }
+  | { id: "stepBack" }
+  | { id: "walkAround"; kind: LabelKind }
+  | { id: "coverMore" }
+  | null;
 
-/** One hint at a time: a doorway first, then step back, then walk around. */
+/** One hint at a time: a doorway first, then step back, walk around, and last cover a bit more. */
 export function currentHint(input: {
   outside: boolean;
   stepBack: boolean;
   walkAround: LabelKind | null;
+  /** Done is on but the space is not fully covered yet. */
+  coverMore?: boolean;
 }): Hint {
   if (input.outside) return { id: "doorway" };
   if (input.stepBack) return { id: "stepBack" };
   if (input.walkAround) return { id: "walkAround", kind: input.walkAround };
+  if (input.coverMore) return { id: "coverMore" };
   return null;
 }

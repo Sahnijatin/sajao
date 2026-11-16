@@ -397,8 +397,8 @@ function turnRateAfter(state: ScanState, pose: { yaw: number; pitch: number; atM
 
 /** Steady frames needed before Done, on top of coverage. */
 export const MIN_USABLE_FRAMES = 15;
-/** Done is offered at this share of walls and floor: a corner, two walls and some floor. */
-export const SURFACE_DONE_SHARE = 0.45;
+/** Done is offered at this share of walls and floor; "cover a bit more" shows until 100%. */
+export const SURFACE_DONE_SHARE = 0.7;
 
 /** Enough has been mapped for "Done" to make sense. */
 export function canFinish(state: ScanState): boolean {
