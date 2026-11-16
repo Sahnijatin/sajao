@@ -15,7 +15,7 @@ Inputs come from the cloud stages run beforehand (find, licenses, prefilter,
 screen): `data/sources.jsonl`, `data/licenses.jsonl` and `data/segments.jsonl`.
 
     uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/dataset/cloud/app.py \\
-        --limit-videos 5 --max-gb 0.5
+        --limit-videos 5 --max-gb 0.3 --max-minutes-per-video 2   # the 5-video check
 """
 
 from __future__ import annotations
@@ -157,6 +157,7 @@ def download_and_sample(
 def main(
     limit_videos: int = 5,
     max_gb: float = 0.5,
+    max_minutes_per_video: float = 0.0,
     data: str = "services/dataset/data",
     pause_s: float = 5.0,
 ) -> None:
@@ -170,7 +171,12 @@ def main(
     )
     with (root / "segments.jsonl").open(encoding="utf-8") as f:
         screened = [Segment.model_validate_json(line) for line in f if line.strip()]
-    plan = plan_screened_segments(screened, sources, limit_videos=limit_videos)
+    plan = plan_screened_segments(
+        screened,
+        sources,
+        limit_videos=limit_videos,
+        max_s_per_video=max_minutes_per_video * 60 or None,
+    )
     videos = sorted({s.video_id for s in plan})
     minutes = sum(s.end_s - s.start_s for s in plan) / 60
     print(f"{len(plan)} segments from {len(videos)} videos, {minutes:.1f} min, cap {max_gb} GB")

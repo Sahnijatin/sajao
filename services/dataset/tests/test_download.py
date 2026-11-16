@@ -300,3 +300,13 @@ def test_plan_screened_segments_takes_creative_commons_videos_first() -> None:
         ("bbbbbbbbbbb", 60),
         ("aaaaaaaaaaa", 0),  # standard license, priority category
     ]
+
+
+def test_plan_screened_segments_caps_seconds_per_video() -> None:
+    sources = [source("aaaaaaaaaaa", "creative_commons", 600)]
+    segments = [
+        Segment(video_id="aaaaaaaaaaa", start_s=start, end_s=start + 50, origin="screening")
+        for start in (0, 100, 200)
+    ]
+    plan = plan_screened_segments(segments, sources, limit_videos=1, max_s_per_video=120)
+    assert [(s.start_s, s.end_s) for s in plan] == [(0, 50), (100, 150), (200, 220)]

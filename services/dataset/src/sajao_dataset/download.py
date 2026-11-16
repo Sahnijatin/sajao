@@ -92,11 +92,14 @@ def plan_screened_segments(
     sources: Iterable[SourceRecord],
     *,
     limit_videos: int,
+    max_s_per_video: float | None = None,
 ) -> list[Segment]:
     """Screened room segments for up to `limit_videos` videos: Creative Commons
     videos first, then the priority category, then manifest order. Segments of
     videos missing from `sources` (unavailable, or not in this manifest) are
-    dropped, as are segments that did not come from screening."""
+    dropped, as are segments that did not come from screening. With
+    `max_s_per_video`, each video contributes at most that many seconds (its
+    earliest segments, the last one shortened), for checks on a small budget."""
     order = {
         s.video_id: (s.license != "creative_commons", *rank(s), i) for i, s in enumerate(sources)
     }
@@ -105,7 +108,19 @@ def plan_screened_segments(
         if segment.origin == "screening" and segment.video_id in order:
             by_video.setdefault(segment.video_id, []).append(segment)
     chosen = sorted(by_video, key=lambda v: order[v])[:limit_videos]
-    return [seg for v in chosen for seg in sorted(by_video[v], key=lambda g: g.start_s)]
+    plan: list[Segment] = []
+    for video in chosen:
+        budget = max_s_per_video
+        for segment in sorted(by_video[video], key=lambda g: g.start_s):
+            if budget is not None:
+                if budget <= 0:
+                    break
+                length = segment.end_s - segment.start_s
+                if length > budget:
+                    segment = segment.model_copy(update={"end_s": segment.start_s + budget})
+                budget -= min(length, budget)
+            plan.append(segment)
+    return plan
 
 
 def clip_relpath(segment: Segment) -> str:
