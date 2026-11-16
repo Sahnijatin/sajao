@@ -25,7 +25,7 @@ Sprint dates live in Notion. Each phase ends at a gate with numbers; the next ph
 | Amazon Creators API needs qualifying sales first | Fewer Amazon items early | Manual Amazon links until eligible; Flipkart and networks carry the launch |
 | Affiliate attribution leaks in retailer apps | Lower revenue | Deeplinks that track in apps, coupon codes, controlled browser tab |
 | Cost spike after marketing | Budget overrun | Gateway caps, cheaper preview tier, per-user soft limits, funding |
-| Play closed test needs 12 testers for 14 days | Android production access waits | Closed test starts as soon as a stable build exists; testers recruited early |
+| Play closed test needs 12 testers for 14 days | Android production access waits | The closed track opens at least three weeks before submission with the build of the day and takes updates through the test; the last week tests the final build; testers recruited early. An organization developer account, which skips the rule, stays an option |
 | Scope creep | Misses the store date | Notion change protocol; Must tier first, deep before wide |
 | Vastu direction errors | Wrong advice | Averaged compass plus confirmation, approximate flag, consultant-reviewed rules |
 | Model and dataset licenses | Legal risk | Listed in the third-party register; legal team reviews separately |
