@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import type { Hint } from "@/capture/ar/guidance";
 import { INITIAL_SCAN, type ScanState } from "@/capture/scan-session";
 import "@/i18n";
-import { CaptureScreen } from "@/screens/capture";
+import { CaptureScreen, RESCAN_NUDGE_MS } from "@/screens/capture";
 
 jest.mock("expo-keep-awake", () => ({ useKeepAwake: jest.fn() }));
 jest.mock("react-native-vision-camera", () => ({
@@ -75,7 +75,39 @@ jest.mock("@/capture/ar/labels", () => ({
   shownLabels: () => [],
 }));
 
-const handlers = { onClose: jest.fn(), onDone: jest.fn(), onUsePhotos: jest.fn() };
+// The AR view and the recorder are the capture module's too. `mockAr` turns
+// the AR scan on, so a finished scan produces a capture to hand on.
+let mockAr = false;
+const mockFinish = jest.fn(async () => ({ captureId: "capture-1", state: {}, files: [] }));
+jest.mock("../../modules/sajao-ar", () => {
+  const { View } = jest.requireActual("react-native");
+  return {
+    getArCapabilities: () => ({
+      platform: "ios",
+      arSupported: mockAr,
+      lidar: false,
+      depth: false,
+    }),
+    getArView: () => (mockAr ? () => <View testID="ar-view" /> : null),
+  };
+});
+jest.mock("@/capture/package/use-capture-recorder", () => ({
+  useCaptureRecorder: () => ({
+    viewRef: { current: null },
+    captureId: "capture-1",
+    onKeyframe: jest.fn(),
+    onSensor: jest.fn(),
+    onDetections: jest.fn(),
+    finish: mockFinish,
+  }),
+}));
+
+const handlers = {
+  onClose: jest.fn(),
+  onDone: jest.fn(),
+  onUsePhotos: jest.fn(),
+  onCaptured: jest.fn(),
+};
 const ui = () => (
   <ThemeProvider tier="standard" reducedMotion>
     <CaptureScreen {...handlers} />
@@ -85,6 +117,7 @@ const ui = () => (
 beforeEach(() => {
   jest.clearAllMocks();
   mockPreview = true;
+  mockAr = false;
   Object.assign(mockScan, { share: 0, ready: false, hint: null, state: INITIAL_SCAN });
 });
 
@@ -122,9 +155,7 @@ describe("the calm scan screen", () => {
     mockScan.ready = true;
     await view.rerender(ui());
     expect(screen.getByText("Looking good. Keep going, or tap Done")).toBeTruthy();
-    await fireEvent.press(screen.getByRole("button", { name: "Done" }));
-    expect(mockHaptic).toHaveBeenCalledWith("roomVerified");
-    expect(handlers.onDone).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("button", { name: "Done" })).toBeTruthy();
   });
 
   it("does not finish before there is enough", async () => {
@@ -192,6 +223,112 @@ describe("the debug flag", () => {
     await render(ui());
     await act(tripleTap);
     expect(screen.queryByTestId("scan-debug-layer")).toBeNull();
+    expect(screen.queryByTestId("scan-mesh")).toBeNull();
+  });
+});
+
+describe("review before upload", () => {
+  const openReview = async (share = 0.8) => {
+    mockScan.share = share;
+    mockScan.ready = true;
+    const view = await render(ui());
+    await fireEvent.press(screen.getByRole("button", { name: "Done" }));
+    return view;
+  };
+
+  it("Done opens the review; nothing is finished or handed on yet", async () => {
+    mockAr = true;
+    await openReview();
+    expect(screen.getByTestId("scan-review")).toBeTruthy();
+    expect(screen.getByRole("header", { name: "We got your room" })).toBeTruthy();
+    expect(screen.getByText("80% of your room is in")).toBeTruthy();
+    expect(screen.getByText("Nothing. Every side is in.")).toBeTruthy();
+    expect(screen.getByText("We'll measure it from your scan")).toBeTruthy();
+    // The scan's own controls step aside while the review is open.
+    expect(screen.queryByTestId("scan-instruction")).toBeNull();
+    expect(screen.queryByTestId("scan-done")).toBeNull();
+    expect(mockFinish).not.toHaveBeenCalled();
+    expect(handlers.onCaptured).not.toHaveBeenCalled();
+    expect(handlers.onDone).not.toHaveBeenCalled();
+    expect(mockHaptic).not.toHaveBeenCalledWith("roomVerified");
+  });
+
+  it("Looks good finishes the scan and hands the capture on, once", async () => {
+    mockAr = true;
+    await openReview();
+    await fireEvent.press(screen.getByRole("button", { name: "Looks good" }));
+    expect(mockHaptic).toHaveBeenCalledWith("roomVerified");
+    expect(mockFinish).toHaveBeenCalledTimes(1);
+    expect(handlers.onCaptured).toHaveBeenCalledTimes(1);
+    expect(handlers.onCaptured).toHaveBeenCalledWith(
+      expect.objectContaining({ captureId: "capture-1" }),
+      { platform: "ios", tier: "standard", has_ar: true },
+    );
+    expect(handlers.onDone).toHaveBeenCalledTimes(1);
+    // Both buttons are off while it finishes, so a second tap does nothing.
+    expect(
+      screen.getByRole("button", { name: "Looks good" }).props.accessibilityState.disabled,
+    ).toBe(true);
+  });
+
+  it("calls out what is missing and a rough size, in the chosen units", async () => {
+    const wall = (normalYaw: number, offset: number, covered: boolean) => ({
+      normalYaw,
+      offset,
+      minAlong: 0,
+      maxAlong: 5,
+      cells: covered
+        ? Object.fromEntries(
+            Array.from({ length: 24 }, (_, i) => [`${i % 6},${Math.floor(i / 6)}`, 5]),
+          )
+        : {},
+    });
+    mockScan.state = {
+      ...INITIAL_SCAN,
+      surfacesSeen: true,
+      surfaces: {
+        ...INITIAL_SCAN.surfaces,
+        walls: [
+          wall(0, -2.06, true),
+          wall(180, -2.06, true),
+          wall(90, -1.2, false),
+          wall(270, -2.18, false),
+        ],
+      },
+    };
+    await openReview(0.72);
+    expect(screen.getByRole("header", { name: "Nearly there" })).toBeTruthy();
+    expect(screen.getByText("One or more walls")).toBeTruthy();
+    expect(screen.getByText("The floor")).toBeTruthy();
+    expect(screen.getByText("About 410 cm by 340 cm")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Rescan this part" })).toBeTruthy();
+  });
+
+  it("Rescan this part returns to the same scan and points at the missing part", async () => {
+    jest.useFakeTimers();
+    try {
+      mockScan.state = { ...INITIAL_SCAN, surfacesSeen: true };
+      await openReview(0.72);
+      await fireEvent.press(screen.getByRole("button", { name: "Rescan this part" }));
+      expect(screen.queryByTestId("scan-review")).toBeNull();
+      expect(screen.getByText("Show the walls you missed")).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Done" })).toBeTruthy();
+      expect(handlers.onDone).not.toHaveBeenCalled();
+      // The pointer goes away by itself and the usual instruction returns.
+      await act(async () => {
+        jest.advanceTimersByTime(RESCAN_NUDGE_MS + 1);
+      });
+      expect(screen.queryByText("Show the walls you missed")).toBeNull();
+      expect(screen.getByText("Looking good. Keep going, or tap Done")).toBeTruthy();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it("shows the mesh for a moment on the review, and not during the scan", async () => {
+    await openReview();
+    expect(screen.getByTestId("scan-mesh")).toBeTruthy();
+    await fireEvent.press(screen.getByRole("button", { name: "Scan a bit more" }));
     expect(screen.queryByTestId("scan-mesh")).toBeNull();
   });
 });

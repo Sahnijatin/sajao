@@ -8,6 +8,8 @@ You scan whatever you want redone: a whole room, a corner, a balcony or any area
 
 **Scan screen.** The person scanning sees the camera, one thin progress ring and one plain instruction at a time; the pieces below are how it works underneath. The mesh, guardrail chips, compass map and live labels are diagnostics behind the debug flag (three taps on the camera in a development or preview build). On AR phones the native view still draws its mesh until it takes a prop to hide it.
 
+**Review before upload.** Done opens a review over the scan, which stays open underneath. The review reads the scan's own coverage: the share covered, the sides, walls or floor still missing, and a rough size from two pairs of facing walls (rounded to 10 cm, shown as "about", never stored or sent). "Rescan this part" returns to the same scan; only "Looks good" finishes the capture and starts the upload. The camera keeps running during the review, so the recorder may keep a few frames from it.
+
 **Live scan mesh.** While you pan, a frame processor finds real feature points in the camera frames on the phone (no AI, no server cost). They are triangulated and drawn with Skia as a glowing mesh that spreads over what has been mapped. Phones with ARKit or ARCore also use their detected planes. Low-tier phones draw dots and edges instead. The mesh is feedback only: nothing from it is stored or used for dimensions.
 
 **Guardrails.** Light, speed and shake, phone level, and mirrors and glare are watched all the time. When one fails the scan pauses softly with a plain nudge ("It's a bit dark. Switch on a light") and keeps everything mapped so far; you can also keep going anyway. Never a hard error.

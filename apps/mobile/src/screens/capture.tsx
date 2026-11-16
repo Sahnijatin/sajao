@@ -24,6 +24,8 @@ import { ScanRing } from "@/components/scan-ring";
 import { previewScreensEnabled } from "@/preview-screens";
 import { CaptureDebugLayer } from "./capture-debug";
 import { coverageStep, scanInstruction, shouldTick } from "./capture-guide";
+import { Review } from "./review";
+import { type MissingArea, type ScanSummary, scanSummary } from "./review-summary";
 
 export interface CaptureScreenProps {
   onClose: () => void;
@@ -114,7 +116,8 @@ function DoneRing({
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
       onPress={() => {
-        void playHaptic("roomVerified");
+        // A light tick as the review rises; the success pattern waits for "Looks good".
+        void playHaptic("cornerCaptured");
         onPress();
       }}
       style={{
@@ -156,12 +159,19 @@ function DoneRing({
   );
 }
 
+/** After "Rescan this part", the scan points at the missing part for this long. */
+export const RESCAN_NUDGE_MS = 8000;
+
 /**
  * The scan screen: the camera, full screen, with one thin ring and one plain
  * instruction at a time. Coverage ticks softly under your fingers as it
  * grows. A nudge appears only when something needs fixing. Chips, the
  * compass map, live labels and the scan mesh are diagnostics: they show only
  * with the debug flag. There is no room-type picker.
+ *
+ * Done opens the review over the scan, which stays open underneath: "Rescan
+ * this part" carries on the same scan, and only "Looks good" finishes it and
+ * hands the capture on to be uploaded.
  */
 export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: CaptureScreenProps) {
   // A scan is hands-on but touch-free: without this the screen dims and locks mid-scan.
@@ -252,8 +262,26 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
   }, []);
   const pausedFor = state.pause.paused ? state.pause.reason : null;
   const instruction = scanInstruction({ pausedFor, hint, share, ready });
-  const instructionText =
-    instruction.id === "walkAround" && instruction.kind
+  // The review, while it is open, and the part to rescan just after it closes.
+  const [review, setReview] = useState<ScanSummary | null>(null);
+  const [rescanFor, setRescanFor] = useState<MissingArea | null>(null);
+  useEffect(() => {
+    if (!rescanFor) return;
+    const timer = setTimeout(() => setRescanFor(null), RESCAN_NUDGE_MS);
+    return () => clearTimeout(timer);
+  }, [rescanFor]);
+  const onRescan = useCallback(() => {
+    setRescanFor(review?.missing[0] ?? null);
+    setReview(null);
+  }, [review]);
+  // A pause to fix something always comes first.
+  const pointAt = instruction.tone === "fix" ? null : rescanFor;
+  const instructionId = pointAt
+    ? `rescan:${pointAt}`
+    : `${instruction.id}:${instruction.kind ?? ""}`;
+  const instructionText = pointAt
+    ? t(`capture.rescan.${pointAt}`)
+    : instruction.id === "walkAround" && instruction.kind
       ? t("capture.guide.walkAround", {
           object: t(`capture.labels.${instruction.kind}`).toLowerCase(),
         })
@@ -372,7 +400,8 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
             onExposure={onExposure}
             onDiagnostics={onDiagnostics}
           />
-          {showDebug ? (
+          {/* The mesh shows for a moment on the review: "we got your room". */}
+          {showDebug || review ? (
             <MeshEffect
               style={StyleSheet.absoluteFill}
               width={window.width}
@@ -423,48 +452,56 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
         />
       ) : null}
 
-      {/* Bottom: one instruction, a way on when the scan is paused, and the ring. */}
-      <View
-        pointerEvents="box-none"
-        style={{
-          position: "absolute",
-          left: spacing.gutter,
-          right: spacing.gutter,
-          bottom: insets.bottom + spacing.sheetBottom,
-          alignItems: "center",
-          gap: spacing.gutter,
-        }}
-      >
-        <ScanInstruction
-          id={`${instruction.id}:${instruction.kind ?? ""}`}
-          text={instructionText}
+      {review ? (
+        <Review
+          summary={review}
+          busy={finishing}
+          onRescan={onRescan}
+          onConfirm={() => void finishScan()}
         />
-        {instruction.tone === "fix" ? (
-          // The scan resumes by itself once the reading is good again.
-          <View style={{ flexDirection: "row", gap: spacing.lg }}>
-            {pausedFor === "light" && !torch ? (
-              <Button
-                label={t("capture.torchOn")}
-                variant="outline"
-                size="small"
-                onPress={() => setTorch(true)}
-              />
+      ) : (
+        <>
+          {/* Bottom: one instruction, a way on when the scan is paused, and the ring. */}
+          <View
+            pointerEvents="box-none"
+            style={{
+              position: "absolute",
+              left: spacing.gutter,
+              right: spacing.gutter,
+              bottom: insets.bottom + spacing.sheetBottom,
+              alignItems: "center",
+              gap: spacing.gutter,
+            }}
+          >
+            <ScanInstruction id={instructionId} text={instructionText} />
+            {instruction.tone === "fix" ? (
+              // The scan resumes by itself once the reading is good again.
+              <View style={{ flexDirection: "row", gap: spacing.lg }}>
+                {pausedFor === "light" && !torch ? (
+                  <Button
+                    label={t("capture.torchOn")}
+                    variant="outline"
+                    size="small"
+                    onPress={() => setTorch(true)}
+                  />
+                ) : null}
+                <Button
+                  label={t("capture.keepGoing")}
+                  variant="outline"
+                  size="small"
+                  onPress={scanAnyway}
+                />
+              </View>
             ) : null}
-            <Button
-              label={t("capture.keepGoing")}
-              variant="outline"
-              size="small"
-              onPress={scanAnyway}
+            <DoneRing
+              progress={share}
+              ready={ready}
+              busy={finishing}
+              onPress={() => setReview(scanSummary(state))}
             />
           </View>
-        ) : null}
-        <DoneRing
-          progress={share}
-          ready={ready}
-          busy={finishing}
-          onPress={() => void finishScan()}
-        />
-      </View>
+        </>
+      )}
     </View>
   );
 }

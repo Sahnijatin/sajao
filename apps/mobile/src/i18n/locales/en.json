@@ -124,7 +124,38 @@
     },
     "keepGoing": "Keep going",
     "torchOn": "Use the torch",
-    "progress": "Scanning your room"
+    "progress": "Scanning your room",
+    "rescan": {
+      "floor": "Point down at the floor",
+      "walls": "Show the walls you missed",
+      "walk": "Walk to the far side of the room",
+      "ahead": "Scan what's in front of you",
+      "left": "Turn to your left",
+      "behind": "Turn around",
+      "right": "Turn to your right"
+    }
+  },
+  "review": {
+    "titleComplete": "We got your room",
+    "titleMissing": "Nearly there",
+    "covered": "{{percent}}% of your room is in",
+    "missingTitle": "Still missing",
+    "nothingMissing": "Nothing. Every side is in.",
+    "missing": {
+      "floor": "The floor",
+      "walls": "One or more walls",
+      "walk": "The far side of the room",
+      "ahead": "The side in front of you",
+      "left": "The side on your left",
+      "behind": "The side behind you",
+      "right": "The side on your right"
+    },
+    "sizeTitle": "Rough size",
+    "size": "About {{long}} by {{short}}",
+    "sizeLater": "We'll measure it from your scan",
+    "rescan": "Rescan this part",
+    "scanMore": "Scan a bit more",
+    "confirm": "Looks good"
   },
   "space": {
     "found": "We found",
