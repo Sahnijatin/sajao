@@ -6,8 +6,60 @@
     "profile": "Profile"
   },
   "home": {
-    "tagline": "Scan your room. See it redone. Buy what fits.",
-    "intro": "Share a few photos or a short video of a room and get three redesigns built from real products that fit."
+    "headline": "Any corner, redone.",
+    "intro": "Scan a whole room, a corner or a balcony. See three ways it could look, built from real products that fit.",
+    "start": "Start scanning",
+    "worksWith": "Works with whole rooms, corners and balconies"
+  },
+  "capture": {
+    "title": "Mapping your space",
+    "close": "Close",
+    "torch": "Torch",
+    "chips": {
+      "light": {
+        "good": "Light good",
+        "warn": "Too dark"
+      },
+      "motion": {
+        "good": "Steady",
+        "warn": "Moving fast"
+      },
+      "level": {
+        "good": "Level",
+        "warn": "Tilted"
+      },
+      "glare": {
+        "good": "No glare",
+        "warn": "Glare"
+      }
+    },
+    "guideTitle": "Cover what you want to change",
+    "guideBody": "A whole room, one corner or the balcony. Tap Done once it's all in.",
+    "usePhotos": "Use photos",
+    "done": "Done",
+    "pausedTitle": "Paused, nothing lost",
+    "fix": {
+      "light": {
+        "title": "A little more light",
+        "body": "Switch on a lamp or open the curtains, then move slowly. We keep everything mapped so far.",
+        "fixed": "I've turned it on"
+      },
+      "motion": {
+        "title": "A little slower",
+        "body": "Pan slowly and hold the phone steady. We keep everything mapped so far.",
+        "fixed": "I'll go slower"
+      },
+      "glare": {
+        "title": "Too much glare",
+        "body": "Point away from mirrors, windows and bare bulbs, or change your angle. We keep everything mapped so far.",
+        "fixed": "I've moved"
+      }
+    },
+    "scanAnyway": "Scan anyway",
+    "permissionTitle": "Sajao needs your camera",
+    "permissionBody": "The camera is used only to scan the space you want redone.",
+    "permissionAllow": "Allow camera",
+    "noCamera": "No camera was found on this phone. You can use photos instead."
   },
   "rooms": {
     "title": "My rooms",

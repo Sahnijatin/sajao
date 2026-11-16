@@ -43,6 +43,7 @@ export default function RootLayout() {
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="capture" options={{ presentation: "fullScreenModal" }} />
         <Stack.Protected guard={__DEV__}>
           <Stack.Screen name="gallery" options={{ headerShown: true, title: "Gallery" }} />
         </Stack.Protected>
