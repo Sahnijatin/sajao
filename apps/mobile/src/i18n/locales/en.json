@@ -112,6 +112,78 @@
     "apply": "Snap it in",
     "showIdeas": "Show me ideas"
   },
+  "taste": {
+    "contextTitle": "A little about you",
+    "ageTitle": "Your age",
+    "ageBands": {
+      "18_24": "18 to 24",
+      "25_34": "25 to 34",
+      "35_44": "35 to 44",
+      "45_54": "45 to 54",
+      "55_plus": "55 or more"
+    },
+    "householdTitle": "Who lives here?",
+    "household": {
+      "alone": "Just me",
+      "couple": "A couple",
+      "family_with_kids": "Family with kids",
+      "parents": "Parents",
+      "pets": "Pets"
+    },
+    "tenureTitle": "Is the home yours?",
+    "tenure": {
+      "owned": "Owned",
+      "rented": "Rented"
+    },
+    "continue": "Continue",
+    "back": "Back",
+    "progress": "{{current}} of {{total}}",
+    "question": "Would you live here?",
+    "love": "Love it",
+    "no": "Not for me",
+    "unsure": "Not sure",
+    "soFar": "Your taste so far",
+    "styles": {
+      "modern_indian": "Modern Indian",
+      "warm_luxe": "Warm Luxe",
+      "japandi": "Japandi",
+      "warm_maximalist": "Warm Maximalist",
+      "eclectic_retro": "Eclectic Retro",
+      "minimal_wabi_sabi": "Minimal Wabi-sabi"
+    },
+    "traits": {
+      "warm_tones": "Warm tones",
+      "cool_tones": "Cool tones",
+      "natural_wood": "Natural wood",
+      "low_clutter": "Low clutter",
+      "layered": "Layered",
+      "bold_colour": "Bold colour",
+      "soft_neutrals": "Soft neutrals",
+      "brass": "Brass",
+      "pattern": "Pattern",
+      "handmade": "Handmade",
+      "vintage": "Vintage",
+      "plants": "Plants"
+    },
+    "budgetTitle": "What is your budget?",
+    "flexibility": {
+      "strict": "Keep to it",
+      "stretch_10": "Can stretch 10%"
+    },
+    "mustHavesTitle": "Anything you must have?",
+    "mustHaves": {
+      "sofa": "Sofa",
+      "bed": "Bed",
+      "rug": "Rug",
+      "lighting": "Lighting",
+      "storage": "Storage",
+      "desk": "Desk",
+      "plants": "Plants",
+      "art": "Art"
+    },
+    "vastu": "Consider Vastu",
+    "finish": "Done"
+  },
   "rooms": {
     "title": "My rooms",
     "emptyTitle": "No rooms yet",
@@ -132,7 +204,8 @@
     "unitsFtIn": "Feet and inches",
     "unitsExample": "A 3.4 m wall shows as {{length}}",
     "gallery": "Component gallery",
-    "spacePreview": "Space Profile preview"
+    "spacePreview": "Space Profile preview",
+    "tastePreview": "Taste preview"
   },
   "languages": {
     "en": "English",

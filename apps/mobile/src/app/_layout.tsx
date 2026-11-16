@@ -47,6 +47,7 @@ export default function RootLayout() {
         <Stack.Protected guard={__DEV__}>
           <Stack.Screen name="gallery" options={{ headerShown: true, title: "Gallery" }} />
           <Stack.Screen name="space-preview" />
+          <Stack.Screen name="taste-preview" />
         </Stack.Protected>
       </Stack>
     </ThemeProvider>

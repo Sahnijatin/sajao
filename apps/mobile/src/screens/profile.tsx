@@ -72,6 +72,11 @@ export function ProfileScreen() {
             variant="outline"
             onPress={() => router.push("/space-preview")}
           />
+          <Button
+            label={t("profile.tastePreview")}
+            variant="outline"
+            onPress={() => router.push("/taste-preview")}
+          />
         </>
       ) : null}
     </Screen>

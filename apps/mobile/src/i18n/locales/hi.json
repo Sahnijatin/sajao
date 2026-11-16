@@ -112,6 +112,78 @@
     "apply": "नाप जोड़ें",
     "showIdeas": "मुझे सुझाव दिखाएँ"
   },
+  "taste": {
+    "contextTitle": "थोड़ा आपके बारे में",
+    "ageTitle": "आपकी उम्र",
+    "ageBands": {
+      "18_24": "18 से 24",
+      "25_34": "25 से 34",
+      "35_44": "35 से 44",
+      "45_54": "45 से 54",
+      "55_plus": "55 या ज़्यादा"
+    },
+    "householdTitle": "यहाँ कौन रहता है?",
+    "household": {
+      "alone": "सिर्फ़ मैं",
+      "couple": "दो लोग",
+      "family_with_kids": "बच्चों वाला परिवार",
+      "parents": "माता-पिता",
+      "pets": "पालतू जानवर"
+    },
+    "tenureTitle": "क्या घर आपका अपना है?",
+    "tenure": {
+      "owned": "अपना",
+      "rented": "किराये का"
+    },
+    "continue": "आगे बढ़ें",
+    "back": "पीछे",
+    "progress": "{{total}} में से {{current}}",
+    "question": "क्या आप यहाँ रहना चाहेंगे?",
+    "love": "बहुत पसंद",
+    "no": "पसंद नहीं",
+    "unsure": "पक्का नहीं",
+    "soFar": "अब तक आपकी पसंद",
+    "styles": {
+      "modern_indian": "मॉडर्न इंडियन",
+      "warm_luxe": "वॉर्म लक्स",
+      "japandi": "जपांडी",
+      "warm_maximalist": "वॉर्म मैक्सिमलिस्ट",
+      "eclectic_retro": "इक्लेक्टिक रेट्रो",
+      "minimal_wabi_sabi": "मिनिमल वाबी-साबी"
+    },
+    "traits": {
+      "warm_tones": "गर्म रंग",
+      "cool_tones": "ठंडे रंग",
+      "natural_wood": "प्राकृतिक लकड़ी",
+      "low_clutter": "कम सामान",
+      "layered": "कई परतें",
+      "bold_colour": "गहरे रंग",
+      "soft_neutrals": "हल्के सादे रंग",
+      "brass": "पीतल",
+      "pattern": "डिज़ाइनदार",
+      "handmade": "हाथ का बना",
+      "vintage": "पुराने अंदाज़ का",
+      "plants": "पौधे"
+    },
+    "budgetTitle": "आपका बजट कितना है?",
+    "flexibility": {
+      "strict": "इसी में रखें",
+      "stretch_10": "10% तक बढ़ सकता है"
+    },
+    "mustHavesTitle": "कुछ ऐसा जो ज़रूर चाहिए?",
+    "mustHaves": {
+      "sofa": "सोफ़ा",
+      "bed": "बिस्तर",
+      "rug": "कालीन",
+      "lighting": "लाइट",
+      "storage": "अलमारी",
+      "desk": "मेज़",
+      "plants": "पौधे",
+      "art": "कलाकृति"
+    },
+    "vastu": "वास्तु का ध्यान रखें",
+    "finish": "हो गया"
+  },
   "rooms": {
     "title": "मेरे कमरे",
     "emptyTitle": "अभी कोई कमरा नहीं",
@@ -132,7 +204,8 @@
     "unitsFtIn": "फ़ुट और इंच",
     "unitsExample": "3.4 मीटर की दीवार {{length}} दिखेगी",
     "gallery": "कंपोनेंट गैलरी",
-    "spacePreview": "स्पेस प्रोफ़ाइल प्रीव्यू"
+    "spacePreview": "स्पेस प्रोफ़ाइल प्रीव्यू",
+    "tastePreview": "पसंद प्रीव्यू"
   },
   "languages": {
     "en": "English",

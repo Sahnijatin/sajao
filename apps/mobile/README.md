@@ -10,6 +10,8 @@ The Sajao app shell: Expo with Expo Router, four native tabs, English and Hindi,
 | `src/screens` | Screen bodies the route files render. |
 | `src/components` | Shared building blocks for screens. Design system components come from `@sajao/ui`. |
 | `src/capture` | Scan logic, all unit-tested: frame statistics, feature points, triangulation, mesh tracking, guardrails and the scan session. `scan-camera.tsx` is the only file that touches the camera library. |
+| `src/space` | Space Profile card logic: what was found, user edits, tape re-fit, plan geometry. |
+| `src/taste` | Taste onboarding: adaptive swipes, the card deck and the onboarding flow. |
 | `src/i18n` | String catalogs (`locales/en.json`, `locales/hi.json`) and language choice. |
 | `src/state` | On-device settings (language, units), saved across launches. |
 | `src/uploads` | Photo resizing and resumable uploads through signed URLs. |
