@@ -1,0 +1,17 @@
+{
+  "scene": "arkit_bedroom_47430034",
+  "model": "moge3",
+  "objects_seen": null,
+  "depth": {
+    "frames": 270,
+    "abs_rel": 0.1034,
+    "delta_1_25": 0.8799,
+    "median_scale_ratio": 0.98,
+    "coverage_of_lidar_pixels": 1.0
+  },
+  "predict": {
+    "model": "moge3",
+    "frames": 270,
+    "seconds": 78.8
+  }
+}

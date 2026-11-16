@@ -25,8 +25,9 @@ RULES: list[tuple[str, re.Pattern[str]]] = [
     ),
 ]
 
-# Repository paths that hold agent configuration are allowed as references.
-PATHS = re.compile(r"\.claude/[\w./-]*|\bCLAUDE\.md\b")
+# Repository paths that hold agent configuration are allowed as references, and so are
+# third-party projects whose name contains a flagged word and must be credited by name.
+PATHS = re.compile(r"\.claude/[\w./-]*|\bCLAUDE\.md\b|\bbradautomates/claude-video\b")
 
 
 def main() -> int:
