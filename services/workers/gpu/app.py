@@ -144,6 +144,7 @@ splat_image = (
     splat_base.add_local_dir(SRC, "/root/sajao_workers")
     .add_local_file(HERE / "splat_gpu.py", "/root/splat_gpu.py")
     .add_local_file(HERE / "removal_gpu.py", "/root/removal_gpu.py")
+    .add_local_file(HERE / "review_gpu.py", "/root/review_gpu.py")
 )
 
 # Phone splats: PlayCanvas splat-transform on CPU, pinned as in the SJ-116 spike.
@@ -164,6 +165,7 @@ cpu_image = (
     modal.Image.debian_slim(python_version="3.13")
     .pip_install("numpy==2.2.6", "pillow==11.3.0", "opencv-python-headless==4.12.0.88")
     .pip_install("pydantic==2.14.3")
+    .pip_install("imageio==2.37.0", "imageio-ffmpeg==0.6.0")  # review videos
     .env({"PYTHONUNBUFFERED": "1"})
     .add_local_dir(SRC, "/root/sajao_workers")
     .add_local_dir(GATEWAY, "/root/sajao_gateway")
@@ -491,6 +493,10 @@ def run_splat(model: str, task: str, payload: dict[str, Any]) -> dict[str, Any]:
                 lama_sha256=model.split("@", 1)[1],
                 steps=int(payload.get("steps", 5000)),
             )
+        elif task == "twin_review" and model.startswith("gsplat@"):
+            import review_gpu
+
+            output = review_gpu.review(payload, _store())
         else:
             return {"error": f"unknown splat task {task} for {model}"}
     except splat_gpu.InputError as error:
@@ -1461,6 +1467,13 @@ def removal_smoke_cpu(scene: str, keyframes: int, category: str) -> dict[str, An
             "removal": dict(removed.meta),
             "preview": preview,
             "charged_micro_inr": removed.cost_micro_inr,
+            "inputs": {
+                "splat": splat.outputs["splat"],
+                "removed": removed.outputs["splat"],
+                "cameras": splat.outputs["cameras"],
+                "frames": frames,
+                "objects": objects.outputs["objects"],
+            },
         }
 
     return asyncio.run(run())
@@ -1542,3 +1555,91 @@ def twin_smoke(scene: str = "arkit_living_47331265", keyframes: int = 120) -> No
     import json
 
     print(json.dumps(twin_smoke_cpu.remote(scene, keyframes), indent=1))
+
+
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=8, memory=16384, timeout=7200
+)
+def review_pack_cpu(scene: str, keyframes: int, category: str) -> dict[str, Any]:
+    """A visual review of one room's twin: renders from the splat (see review_gpu).
+
+    The objects, splat and removal steps are the removal smoke's, so stored results are
+    reused; only the renders are new GPU work."""
+    import io
+    import json
+
+    import imageio.v2 as imageio
+    import numpy as np
+    from PIL import Image
+
+    from sajao_workers.models import GSPLAT
+    from sajao_workers.steps import LocalArtifactStore
+
+    smoke = removal_smoke_cpu.local(scene, keyframes, category)
+    if "error" in smoke:
+        return smoke
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    vol.reload()
+    payload = {**smoke["inputs"], "removed_index": int(smoke["object"][1:])}
+    reply = run_splat.remote(GSPLAT, "twin_review", payload)
+    if "error" in reply:
+        return {"scene": scene, "error": reply["error"]}
+    vol.reload()
+    out = reply["output"]
+    video = io.BytesIO()
+    with imageio.get_writer(
+        video, format="mp4", fps=out["fps"], codec="libx264", quality=8, macro_block_size=8
+    ) as writer:
+        for digest in out["video_frames"]:
+            writer.append_data(np.asarray(Image.open(io.BytesIO(store.read_blob(digest)))))
+    files: dict[str, bytes] = {"flythrough.mp4": video.getvalue()}
+    for still in [*out["stills"], *out["extremes"]]:
+        files[f"{still['name']}.jpg"] = store.read_blob(still["image"])
+    files["boxes.jpg"] = store.read_blob(out["boxes"]["image"])
+    files["control_photo_vs_render.jpg"] = store.read_blob(out["control"])
+    for view, pair in out["removal"].items():
+        before = Image.open(io.BytesIO(store.read_blob(pair["before"])))
+        after = Image.open(io.BytesIO(store.read_blob(pair["after"])))
+        side = Image.new("RGB", (before.width * 2 + 8, before.height), "white")
+        side.paste(before, (0, 0))
+        side.paste(after, (before.width + 8, 0))
+        buf = io.BytesIO()
+        side.save(buf, format="JPEG", quality=92)
+        files[f"removal_{view}_before_after.jpg"] = buf.getvalue()
+    summary = {
+        "scene": scene,
+        "removed": {"object": smoke["object"], "category": category, **smoke["removal"]},
+        "stills": [
+            {k: v for k, v in s.items() if k not in ("image", "c2w")}
+            for s in [*out["stills"], *out["extremes"]]
+        ],
+        "candidate_scores": out["candidate_scores"],
+        "video_nearest_training_camera_m": out["video_nearest_m"],
+        "boxes": {"from": out["boxes"]["from"], "labels": out["boxes"]["labels"]},
+        "removal_views": {
+            v: {k: x for k, x in p.items() if k not in ("before", "after")}
+            for v, p in out["removal"].items()
+        },
+        "room": out["room"],
+        "gpu_seconds": reply["gpu_seconds"],
+    }
+    files["summary.json"] = (json.dumps(summary, indent=1) + "\n").encode()
+    return {"files": files, "summary": summary}
+
+
+@app.local_entrypoint()
+def review_pack(
+    scene: str = "arkit_living_47331265",
+    keyframes: int = 120,
+    category: str = "sofa",
+    out: str = "review-pack",
+) -> None:
+    result = review_pack_cpu.remote(scene, keyframes, category)
+    if "files" not in result:
+        print(result)
+        return
+    target = Path(out)
+    target.mkdir(parents=True, exist_ok=True)
+    for name, data in result["files"].items():
+        (target / name).write_bytes(data)
+    print(result["files"]["summary.json"].decode())
