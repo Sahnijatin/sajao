@@ -1,7 +1,11 @@
 import { NativeTabs } from "expo-router/unstable-native-tabs";
 import { useTranslation } from "react-i18next";
 
+export { RouteErrorBoundary as ErrorBoundary } from "@/components/route-error-boundary";
+
 // The platform's own tab bar: Material 3 on Android, the system bar on iOS.
+// The Android icons (`md`) are drawn by the expo-symbols package, which must
+// be installed: without it this layout throws on Android.
 // Tabs are peers, so switching between them never slides.
 export default function TabsLayout() {
   const { t } = useTranslation();

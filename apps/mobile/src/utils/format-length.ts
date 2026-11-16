@@ -20,3 +20,11 @@ export function formatLength(metres: number, units: LengthUnits, t: Translate): 
   if (units === "cm") return t("length.cm", { value: toCentimetres(metres) });
   return t("length.ftIn", toFeetAndInches(metres));
 }
+
+const SQUARE_FEET_PER_SQUARE_METRE = 10.7639;
+
+/** Floor area in the user's units: whole square metres or whole square feet. */
+export function formatArea(squareMetres: number, units: LengthUnits, t: Translate): string {
+  if (units === "cm") return t("area.m2", { value: Math.round(squareMetres) });
+  return t("area.sqft", { value: Math.round(squareMetres * SQUARE_FEET_PER_SQUARE_METRE) });
+}
