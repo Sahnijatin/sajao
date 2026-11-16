@@ -22,6 +22,7 @@ import modal
 HERE = Path(__file__).parent
 SRC = HERE.parent / "src" / "sajao_workers"
 GATEWAY = HERE.parent.parent / "gateway" / "src" / "sajao_gateway"
+SCHEMAS = HERE.parent.parent.parent / "packages" / "schemas" / "python" / "sajao_schemas"
 SPIKE = HERE.parent.parent / "spikes" / "twin-risk"
 MAX_GPUS = 3  # Must match sajao_workers.gpu.MAX_GPUS: model and splat functions share it.
 MODEL_GPUS = 2
@@ -120,9 +121,11 @@ compress_image = (
 cpu_image = (
     modal.Image.debian_slim(python_version="3.13")
     .pip_install("numpy==2.2.6", "pillow==11.3.0", "opencv-python-headless==4.12.0.88")
+    .pip_install("pydantic==2.14.3")
     .env({"PYTHONUNBUFFERED": "1"})
     .add_local_dir(SRC, "/root/sajao_workers")
     .add_local_dir(GATEWAY, "/root/sajao_gateway")
+    .add_local_dir(SCHEMAS, "/root/sajao_schemas")
     # Ground truth and scoring for the smoke runs only (public datasets, internal evaluation).
     .add_local_dir(SPIKE / "src" / "twin_risk", "/root/twin_risk")
     .add_local_dir(SPIKE / "gpu" / "twin_gpu", "/root/twin_gpu")
@@ -511,14 +514,33 @@ def volume_invoke(task: str, function: Any = None):
     return invoke
 
 
-def _arkit_manifest(store: Any, scene: str, keyframes: int) -> dict[str, Any]:
-    """A frames manifest from an ARKitScenes room on the spike volume (smoke runs only)."""
+def _y_up(up: Any) -> Any:
+    """Rotation that turns a dataset's up vector into +y, as in an AR session's world."""
+    import numpy as np
+
+    a = np.asarray(up, dtype=np.float64) / np.linalg.norm(up)
+    b = np.array([0.0, 1.0, 0.0])
+    v, c = np.cross(a, b), float(a @ b)
+    vx = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
+    return np.eye(3) + vx + vx @ vx / (1.0 + c)
+
+
+def _arkit_manifest(store: Any, scene: str, keyframes: int, y_up: bool = False) -> dict[str, Any]:
+    """A frames manifest from an ARKitScenes room on the spike volume (smoke runs only).
+
+    With `y_up`, the room is turned into an AR session's world (y up), as a phone
+    capture package delivers it.
+    """
     import json
 
     import numpy as np
 
     cams = json.loads(Path(f"/vol/scenes/{scene}/cameras.json").read_text())
     up_axis = int(np.argmax(np.abs(cams["up"])))
+    turn = np.eye(4)
+    if y_up:
+        turn[:3, :3] = _y_up(cams["up"])
+        up_axis = 1
     picks = np.linspace(0, len(cams["frames"]) - 1, keyframes).round().astype(int)
     frames = []
     for i in picks:
@@ -531,7 +553,7 @@ def _arkit_manifest(store: Any, scene: str, keyframes: int) -> dict[str, Any]:
                 "width": f["w"],
                 "height": f["h"],
                 "intrinsics": f["K"],
-                "c2w": f["c2w"],
+                "c2w": (turn @ np.asarray(f["c2w"])).tolist(),
                 "depth": store.put_blob((base / f["depth"]).read_bytes()),
             }
         )
@@ -731,3 +753,117 @@ def phone_smoke(scene: str = "arkit_living_47331265", keyframes: int = 120) -> N
     import json
 
     print(json.dumps(phone_smoke_cpu.remote(scene, keyframes), indent=1))
+
+
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=8, memory=16384, timeout=7200
+)
+def twin_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
+    """A whole twin from one ARKitScenes room turned into an AR world (y up), end to end."""
+    import asyncio
+    import json
+    import uuid
+
+    from sajao_gateway import InMemorySpendLedger, ModelGateway, SpendCaps
+    from sajao_workers.models import detect_chain, segment_chain, splat_chain
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.assemble_step import assemble_step
+    from sajao_workers.twin.objects_step import objects_step
+    from sajao_workers.twin.phone_step import phone_splat_step
+    from sajao_workers.twin.splat_step import splat_step
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    manifest = _arkit_manifest(store, scene, keyframes, y_up=True)
+    capture_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"arkitscenes/{scene}"))
+    capture = {
+        "id": capture_id,
+        # ARKitScenes has no compass reading: a declared test heading, not a measurement.
+        "compass": {"mean_heading_deg": 0.0, "sample_count": 1},
+        "package": {
+            "ar": {"tracking": "arkit", "lidar": True, "depth": True},
+            "keyframes": [
+                {
+                    "id": f["keyframe_id"],
+                    "image": f"arkitscenes/{scene}/{f['keyframe_id']}.jpg",
+                    "captured_at_ms": 500 * i,
+                    "sharpness": 1.0,
+                }
+                for i, f in enumerate(manifest["frames"])
+            ],
+            "detections": [],
+            "sensor_log": f"arkitscenes/{scene}/none.jsonl",
+        },
+    }
+    ledger = InMemorySpendLedger(
+        SpendCaps(per_user_daily_micro_inr=10**9, global_daily_micro_inr=10**9)
+    )
+    runner = StepRunner(store, max_attempts=1)
+    frames = store.put_blob(json.dumps(manifest).encode())
+
+    async def compress(payload: Any) -> Any:
+        vol.commit()
+        reply = await compress_splat.remote.aio(dict(payload))
+        vol.reload()
+        return reply
+
+    async def run() -> dict[str, Any]:
+        objects = await runner.run(
+            objects_step(
+                ModelGateway(detect_chain(volume_invoke("twin_detect")), ledger=ledger),
+                ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger),
+            ),
+            {"frames": frames},
+            {},
+        )
+        splat = await runner.run(
+            splat_step(
+                ModelGateway(splat_chain(volume_invoke("twin_splat", run_splat)), ledger=ledger)
+            ),
+            {"frames": frames, "objects": objects.outputs["objects"]},
+            {},
+        )
+        phone = await runner.run(phone_splat_step(compress), {"splat": splat.outputs["splat"]}, {})
+        twin = await runner.run(
+            assemble_step(),
+            {
+                "capture": store.put_blob(json.dumps(capture).encode()),
+                "frames": frames,
+                "objects": objects.outputs["objects"],
+                "splat": splat.outputs["splat"],
+                "phone": store.put_blob(json.dumps(dict(phone.meta)).encode()),
+                **phone.outputs,
+            },
+            {
+                "twin_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"twin/{capture_id}")),
+                "version": 1,
+                "created_at": "2026-11-16T00:00:00Z",
+            },
+        )
+        vol.commit()
+        doc = json.loads(store.read_blob(twin.outputs["twin"]))
+        return {
+            "scene": scene,
+            "cached": {
+                "objects": objects.cached,
+                "splat": splat.cached,
+                "phone": phone.cached,
+                "twin": twin.cached,
+            },
+            "twin": dict(twin.meta),
+            "splat": {k: splat.meta.get(k) for k in ("psnr_heldout", "gaussians", "gpu")},
+            "phone_mb": {k: round(v["bytes"] / 1e6, 2) for k, v in phone.meta["variants"].items()},
+            "twin_bytes": len(store.read_blob(twin.outputs["twin"])),
+            "first_object": doc["objects"][0] if doc["objects"] else None,
+            "charged_micro_inr": objects.cost_micro_inr
+            + splat.cost_micro_inr
+            + phone.cost_micro_inr,
+        }
+
+    return asyncio.run(run())
+
+
+@app.local_entrypoint()
+def twin_smoke(scene: str = "arkit_living_47331265", keyframes: int = 120) -> None:
+    import json
+
+    print(json.dumps(twin_smoke_cpu.remote(scene, keyframes), indent=1))
