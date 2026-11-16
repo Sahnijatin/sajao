@@ -272,6 +272,43 @@ def tier_comparison(models=("triposg", "trellis2", "sam3d", "parametric")) -> di
     return {"by_category": table, "best_default_tier": best}
 
 
+def verifiability_by_retailer() -> dict:
+    """Share of listings with at least two clean photos (one to build from, one to check
+    against), per retailer: studio cutouts only, and after recovering room shots."""
+    listings = {
+        x["id"]: x
+        for x in json.loads((REPO / "eval" / "render-bakeoff" / "listings.json").read_text())
+    }
+    first = {
+        r["id"]: len(r.get("clean", []))
+        for r in json.loads((R / "cutouts.json").read_text())
+        if "id" in r
+    }
+    after = dict(first)
+    if (R / "recut.json").exists():
+        for r in json.loads((R / "recut.json").read_text()):
+            if "clean" in r:
+                after[r["id"]] = r["clean"]
+    out: dict[str, dict] = defaultdict(lambda: defaultdict(int))
+    for lid, item in listings.items():
+        if lid not in first:
+            continue
+        src = out[item["source"]]
+        src["listings"] += 1
+        src["photos"] += len(item["images"])
+        src["verifiable_studio_only"] += first[lid] >= 2
+        src["verifiable_with_room_shots"] += after.get(lid, 0) >= 2
+        src["no_clean_photo"] += after.get(lid, 0) == 0
+    return {
+        k: {
+            **v,
+            "share_studio_only": v["verifiable_studio_only"] / v["listings"],
+            "share_with_room_shots": v["verifiable_with_room_shots"] / v["listings"],
+        }
+        for k, v in out.items()
+    }
+
+
 def main() -> None:
     summary = {
         "gate": {m: gate_table(m) for m in ("triposg", "trellis2", "sam3d")},

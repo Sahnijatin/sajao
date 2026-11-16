@@ -71,6 +71,12 @@ def main(stage: str, model: str = "triposg", only: str = "") -> None:
             print(
                 sum(1 for r in res if r.get("clean")), "of", len(res), "listings have a clean view"
             )
+        elif stage == "recut":
+            items = listings()
+            jobs = [(x["id"], x["category"]) for x in items]
+            res = batched_map(A.recut, [jobs[i : i + 10] for i in range(0, len(jobs), 10)], batch=3)
+            (OUT / "recut.json").write_text(json.dumps(res, indent=1, default=str))
+            print(sum(r.get("recovered", 0) for r in res), "room shots recovered")
         elif stage == "triposg":
             lids = only.split(",") if only else [x["id"] for x in listings()]
             res = batched_map(A.triposg, [lids[i : i + 5] for i in range(0, len(lids), 5)], batch=2)

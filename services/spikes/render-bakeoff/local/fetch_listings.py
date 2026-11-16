@@ -88,8 +88,9 @@ def ikea_dims(page: str) -> dict:
     return out
 
 
-def ikea_gallery(page: str) -> list[str]:
-    """Product-gallery photos in order; only studio shots (`_pe` ids)."""
+def ikea_gallery(page: str, lifestyle: bool = False) -> list[str]:
+    """Product-gallery photos in order: studio shots (`_pe` ids), plus room shots
+    (`_ph` ids) when `lifestyle` is set."""
     urls = []
     for m in re.finditer(
         r'aria-label="Select product photo \d+ of \d+[^"]*"[^>]*>.*?<img[^>]*?\ssrc="([^"?]+)',
@@ -97,7 +98,7 @@ def ikea_gallery(page: str) -> list[str]:
         re.S,
     ):
         u = m.group(1)
-        if "_pe" in u and u not in urls:
+        if ("_pe" in u or (lifestyle and "_ph" in u)) and u not in urls:
             urls.append(u)
     return [u + "?f=xxl" for u in urls]
 
@@ -159,6 +160,21 @@ def ws_dims(s: str) -> dict:
     return out
 
 
+def ws_images(s: str, lifestyle: bool = False) -> list[str]:
+    """Product photos on a Wooden Street page; room shots ("look-") when `lifestyle` is set."""
+    imgs: list[str] = []
+    for u in re.findall(
+        r"https://images\.woodenstreet\.de/image/cache/data/[^\"\\]+?-810x702\.jpg", s
+    ):
+        low = u.lower()
+        if any(k in low for k in ("dimension", "banner", "logo-")) or u in imgs:
+            continue
+        if "look-" in low and not lifestyle:
+            continue
+        imgs.append(u)
+    return imgs
+
+
 def ws_listings(cat: str, slugs: list[str], want: int) -> list[dict]:
     out, seen = [], set()
     for slug in slugs:
@@ -216,6 +232,76 @@ EXTRAS: dict[str, tuple[list[str], int, str]] = {
     "plant": (["artificial potted plant"], 4, "height"),
     "cushion": (["cushion cover"], 0, "length"),
 }
+
+
+MAX_IMAGES = 12
+GROW_TARGET = 30  # listings per category
+
+
+def full_gallery(item: dict) -> list[str]:
+    """Every product photo on the listing page, studio and room shots."""
+    raw = get(item["url"]).decode("utf-8", "ignore")
+    if item["source"] == "IKEA India":
+        return ikea_gallery(raw, lifestyle=True)
+    m = re.search(r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', raw, re.S)
+    return ws_images(json.dumps(json.loads(m.group(1))), lifestyle=True) if m else []
+
+
+def grow(out_dir: Path) -> None:
+    """Add every product photo to each listing (existing images keep their index),
+    then top each category up to GROW_TARGET listings."""
+    path = out_dir / "listings.json"
+    listings = json.loads(path.read_text())
+    for item in listings:
+        try:
+            extra = [u for u in full_gallery(item) if u not in item["images"]]
+        except Exception as e:  # noqa: BLE001
+            print("gallery skip", item["id"], e)
+            continue
+        item["images"] = (item["images"] + extra)[: max(MAX_IMAGES, len(item["images"]))]
+        d = out_dir / item["id"]
+        d.mkdir(exist_ok=True)
+        for i, u in enumerate(item["images"]):
+            if not (d / f"{i}.jpg").exists():
+                try:
+                    (d / f"{i}.jpg").write_bytes(get(u))
+                except Exception as e:  # noqa: BLE001
+                    print("image skip", u, e)
+        path.write_text(json.dumps(listings, indent=1))
+    print("galleries done", flush=True)
+    have = {x["id"] for x in listings}
+    names = {x["name"] for x in listings}
+    queries = {
+        **{c: q for c, (q, _, _) in PLAN.items()},
+        "tv_unit": ["TV bench", "TV storage combination"],
+        "shelf": ["bookcase", "shelving unit", "wall shelf"],
+    }
+    slugs = {**WS_MORE, "tv_unit": ["tv-units"], "shelf": ["bookshelves", "wall-shelves"]}
+    for cat in [*PLAN, "tv_unit", "shelf"]:
+        need = GROW_TARGET - sum(1 for x in listings if x["category"] == cat)
+        if need <= 0:
+            continue
+        cand = [x for x in ws_listings(cat, slugs[cat], need // 2 + 10) if x["id"] not in have]
+        cand += [
+            x
+            for x in ikea_listings(cat, queries[cat] + [cat], need + 10)
+            if x["id"] not in have and x["name"] not in names
+        ]
+        new = cand[:need]
+        for item in new:
+            item["images"] = full_gallery(item)[:MAX_IMAGES] or item["images"]
+            d = out_dir / item["id"]
+            d.mkdir(exist_ok=True)
+            for i, u in enumerate(item["images"]):
+                try:
+                    (d / f"{i}.jpg").write_bytes(get(u))
+                except Exception as e:  # noqa: BLE001
+                    print("image skip", u, e)
+        listings += new
+        have |= {x["id"] for x in new}
+        names |= {x["name"] for x in new}
+        path.write_text(json.dumps(listings, indent=1))
+        print(cat, "added", len(new), flush=True)
 
 
 WS_MORE = {
@@ -290,7 +376,9 @@ def main(out_dir: Path, extras: bool = False) -> None:
 
 
 if __name__ == "__main__":
-    if "--topup" in sys.argv:
+    if "--grow" in sys.argv:
+        grow(Path(sys.argv[1]))
+    elif "--topup" in sys.argv:
         topup(Path(sys.argv[1]))
     else:
         main(Path(sys.argv[1]), extras="--extras" in sys.argv)

@@ -102,15 +102,20 @@ def view_quality(rgb: np.ndarray, alpha: np.ndarray) -> dict:
 
 
 def make_cutouts(lid: str) -> dict:
+    """BiRefNet cutouts for every listing photo not yet cut. The input photo (the one
+    assets are built from) never changes once chosen."""
     import cv2
 
     src = BK / "listings" / lid
     dst = BK / "cutouts" / lid
-    if (dst / "views.json").exists():
-        return json.loads((dst / "views.json").read_text())
     dst.mkdir(parents=True, exist_ok=True)
+    prev = json.loads((dst / "views.json").read_text()) if (dst / "views.json").exists() else None
+    done = {v["index"]: v for v in (prev or {}).get("views", [])}
     views = []
     for f in sorted(src.glob("*.jpg"), key=lambda p: int(p.stem)):
+        if int(f.stem) in done:
+            views.append(done[int(f.stem)])
+            continue
         bgr = cv2.imread(str(f), cv2.IMREAD_COLOR)
         if bgr is None:
             continue
@@ -122,11 +127,113 @@ def make_cutouts(lid: str) -> dict:
         q = view_quality(rgb, a)
         rgba = np.dstack([rgb, (a * 255).astype(np.uint8)])
         cv2.imwrite(str(dst / f"{f.stem}.png"), cv2.cvtColor(rgba, cv2.COLOR_RGBA2BGRA))
-        views.append({"index": int(f.stem), **q})
+        views.append({"index": int(f.stem), "method": "birefnet", **q})
     clean = [v["index"] for v in views if v["clean"]]
-    out = {"id": lid, "views": views, "clean": clean, "input": clean[0] if clean else None}
+    inp = prev["input"] if prev and prev.get("input") is not None else (clean[0] if clean else None)
+    out = {"id": lid, "views": views, "clean": clean, "input": inp}
     (dst / "views.json").write_text(json.dumps(out, indent=1))
     return out
+
+
+CATEGORY_PROMPT = {
+    "sofa": "a sofa.",
+    "bed": "a bed.",
+    "almirah": "a wardrobe.",
+    "table": "a table.",
+    "chair": "a chair.",
+    "lamp": "a lamp.",
+    "tv_unit": "a tv cabinet.",
+    "shelf": "a bookshelf.",
+}
+GDINO = ("IDEA-Research/grounding-dino-base", "12bdfa31")
+SAM21 = ("facebook/sam2.1-hiera-large", "665f8e2a")
+_det: dict = {}
+
+
+def product_mask(rgb: np.ndarray, category: str) -> tuple[np.ndarray | None, float]:
+    """Room shot: find the product by its category name (Grounding DINO), mask it (SAM 2.1)."""
+    import torch
+    from PIL import Image
+
+    if "gd" not in _det:
+        from transformers import (
+            AutoModelForZeroShotObjectDetection,
+            AutoProcessor,
+            Sam2Model,
+            Sam2Processor,
+        )
+
+        _det["gd"] = (
+            AutoProcessor.from_pretrained(GDINO[0], revision=GDINO[1]),
+            AutoModelForZeroShotObjectDetection.from_pretrained(GDINO[0], revision=GDINO[1])
+            .cuda()
+            .eval(),
+        )
+        _det["sam"] = (
+            Sam2Processor.from_pretrained(SAM21[0], revision=SAM21[1]),
+            Sam2Model.from_pretrained(SAM21[0], revision=SAM21[1]).cuda().eval(),
+        )
+    proc, model = _det["gd"]
+    img = Image.fromarray(rgb)
+    inp = proc(
+        images=img, text=CATEGORY_PROMPT.get(category, "furniture."), return_tensors="pt"
+    ).to("cuda")
+    with torch.no_grad():
+        out = model(**inp)
+    res = proc.post_process_grounded_object_detection(
+        out, inp.input_ids, threshold=0.35, text_threshold=0.3, target_sizes=[rgb.shape[:2]]
+    )[0]
+    if len(res["scores"]) == 0:
+        return None, 0.0
+    i = int(res["scores"].argmax())
+    box = res["boxes"][i].tolist()
+    sp, sm = _det["sam"]
+    si = sp(images=img, input_boxes=[[box]], return_tensors="pt").to("cuda")
+    with torch.no_grad():
+        so = sm(**si, multimask_output=False)
+    m = (
+        sp.post_process_masks(so.pred_masks.cpu(), si["original_sizes"].cpu())[0][0, 0].numpy()
+        > 0.5
+    )
+    return m, float(res["scores"][i])
+
+
+def recut_with_detector(lid: str, category: str) -> dict:
+    """Second pass for photos BiRefNet could not isolate (room shots, props): detector
+    plus SAM 2.1. A photo becomes a held-out view only if the product mask is whole,
+    single and away from the frame edge."""
+    import cv2
+
+    dst = BK / "cutouts" / lid
+    vj = json.loads((dst / "views.json").read_text())
+    changed = 0
+    for v in vj["views"]:
+        if v["clean"] or v.get("method") == "detector_sam":
+            continue
+        f = BK / "listings" / lid / f"{v['index']}.jpg"
+        bgr = cv2.imread(str(f), cv2.IMREAD_COLOR)
+        if bgr is None:
+            continue
+        s = 1400 / max(bgr.shape[:2])
+        if s < 1:
+            bgr = cv2.resize(bgr, None, fx=s, fy=s, interpolation=cv2.INTER_AREA)
+        rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+        m, score = product_mask(rgb, category)
+        v["detector_score"] = round(score, 3)
+        if m is None:
+            continue
+        q = view_quality(rgb, m.astype(np.float32))
+        reasons = [r for r in q["reason"].split(",") if r and r != "busy_background"]
+        if reasons:
+            v["detector_reason"] = ",".join(reasons)
+            continue
+        rgba = np.dstack([rgb, m.astype(np.uint8) * 255])
+        cv2.imwrite(str(dst / f"{v['index']}.png"), cv2.cvtColor(rgba, cv2.COLOR_RGBA2BGRA))
+        v.update({**q, "clean": True, "reason": "", "method": "detector_sam", "room_shot": True})
+        changed += 1
+    vj["clean"] = [v["index"] for v in vj["views"] if v["clean"]]
+    (dst / "views.json").write_text(json.dumps(vj, indent=1))
+    return {"id": lid, "recovered": changed, "clean": len(vj["clean"])}
 
 
 def load_rgba(lid: str, idx: int) -> np.ndarray:
