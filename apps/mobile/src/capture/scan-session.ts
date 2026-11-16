@@ -18,6 +18,12 @@ import {
   addSurfaceSample,
   CELL_M,
   EMPTY_SURFACE_COVERAGE,
+  MAX_TURN_DEG_PER_S,
+  pushRecent,
+  type RejectCause,
+  sharpEnough,
+  shouldSlowDown,
+  tooManyRejected,
   type SurfaceCoverage,
   surfaceFraction,
   type SurfaceHit,
@@ -93,6 +99,10 @@ export interface ScanState {
    * beyond a wall (through a doorway) nothing counts until you come back.
    */
   doorway: DoorwayState;
+  /** 2D scan: recent frame sharpness, to judge blur on this phone and in this light. */
+  frameSharpness: readonly number[];
+  /** 2D scan: why recent frames did not count (null when they did), newest last. */
+  recentFrames: readonly (RejectCause | null)[];
 }
 
 export const INITIAL_SCAN: ScanState = {
@@ -117,6 +127,8 @@ export const INITIAL_SCAN: ScanState = {
   lastArPose: null,
   position: null,
   doorway: NO_DOORWAY,
+  frameSharpness: [],
+  recentFrames: [],
 };
 
 export type ScanEvent =
@@ -236,14 +248,9 @@ export function scanReducer(tier: "standard" | "low") {
           clockMs: atMs,
           motionMs: atMs,
         };
-        const judged = judge(next, stepMs(state, atMs));
-        // Holding steady while facing a direction counts towards coverage,
-        // even when frames are thin. A swing or a pause does not.
-        const steady =
-          !arPose && sample.hasGyro && judged.guardrails.motion === "good" && !judged.pause.paused;
-        return steady
-          ? { ...judged, coverage: addSweep(judged.coverage, judged.pose.yaw) }
-          : judged;
+        // Facing a direction earns nothing by itself: coverage comes from
+        // sharp frames taken while turning slowly (the "frame" event).
+        return judge(next, stepMs(state, atMs));
       }
       case "arPose": {
         const judged = judge(
@@ -348,12 +355,26 @@ export function scanReducer(tier: "standard" | "low") {
           wrapDegrees(judged.pose.yaw - judged.meshPose.yaw) / fov.across,
           (judged.pose.pitch - judged.meshPose.pitch) / fov.down,
         );
+        // Coverage counts only a frame taken turning slowly that is sharp
+        // against this scan's recent frames: a fast pan or a blurred frame
+        // earns nothing, and asks you to slow down.
+        const cause: RejectCause | null =
+          judged.motion.rotationRate > MAX_TURN_DEG_PER_S
+            ? "turning"
+            : !sharpEnough(judged.frameSharpness, stats.sharpness)
+              ? "blurred"
+              : null;
         return {
           ...judged,
           mesh: updateMesh(moved, points, tracker),
           meshPose: judged.pose,
-          coverage: addFrame(judged.coverage, judged.pose.yaw, points.length),
-          usableFrames: judged.usableFrames + 1,
+          coverage:
+            cause === null
+              ? addFrame(judged.coverage, judged.pose.yaw, points.length)
+              : judged.coverage,
+          usableFrames: judged.usableFrames + (cause === null ? 1 : 0),
+          frameSharpness: [...judged.frameSharpness, stats.sharpness].slice(-40),
+          recentFrames: pushRecent(judged.recentFrames, cause),
         };
       }
     }
@@ -385,6 +406,11 @@ export function canFinish(state: ScanState): boolean {
     ? surfaceFraction(state.surfaces) >= SURFACE_DONE_SHARE
     : enoughCoverage(state.coverage, state.hasGyro);
   return covered && state.usableFrames >= MIN_USABLE_FRAMES;
+}
+
+/** Recent samples (AR) or frames (2D) were rejected for turning fast or blur. */
+export function shouldShowSlowDown(state: ScanState): boolean {
+  return state.surfacesSeen ? shouldSlowDown(state.surfaces) : tooManyRejected(state.recentFrames);
 }
 
 /** 0 to 1, shown as the share mapped. */

@@ -9,7 +9,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCameraPermission } from "react-native-vision-camera";
 import { getArCapabilities, getArView } from "../../modules/sajao-ar";
 import { shownLabels } from "@/capture/ar/labels";
-import { shouldSlowDown } from "@/capture/ar/surface-coverage";
 import { mappedSectors } from "@/capture/coverage";
 import { DebugOverlay } from "@/capture/debug-overlay";
 import type { GuardrailId, GuardrailStatus } from "@/capture/guardrails";
@@ -17,7 +16,7 @@ import { toScreen } from "@/capture/mesh-tracker";
 import { MiniMap } from "@/capture/mini-map";
 import { ScanHint } from "@/capture/scan-hint";
 import { ScanCamera } from "@/capture/scan-camera";
-import { canFinish, mappedShare } from "@/capture/scan-session";
+import { canFinish, mappedShare, shouldShowSlowDown } from "@/capture/scan-session";
 import { useScanSession } from "@/capture/use-scan-session";
 
 export interface CaptureScreenProps {
@@ -162,7 +161,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
   // Glare has no chip of its own until it is a problem.
   const chips = state.guardrails.glare === "warn" ? [...CHIPS, "glare" as const] : CHIPS;
   // AR scan: frames rejected for turning fast or blur also ask you to slow down.
-  const slowDown = state.surfacesSeen && shouldSlowDown(state.surfaces);
+  const slowDown = shouldShowSlowDown(state);
   const chipStatus = (id: GuardrailId): GuardrailStatus =>
     id === "motion" && slowDown ? "warn" : state.guardrails[id];
 
