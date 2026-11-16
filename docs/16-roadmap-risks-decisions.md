@@ -46,7 +46,7 @@ Sprint dates live in Notion. Each phase ends at a gate with numbers; the next ph
 | Attribution | Coupon codes first, tracked links second | Codes survive app switching and delayed purchases |
 | Vastu | Room-level in v1, whole-home next | Room-level needs only the scanned room; whole-home needs plan reading |
 | Own trained models | Next tier | Need vote and curation data that does not exist yet |
-| Design system | LiveMap tokens, motion and haptics | Proven premium look; consistent across products |
+| Design system | LiveMap structure, motion and haptics with a warm palette (ivory, sand, wood, terracotta accent) | Proven premium structure; the warm palette fits Indian homes and keeps the app calm |
 | 3D renderer | react-native-filament | Native performance on budget phones |
 | Launch | Public on both stores, free, no invites, then marketing | Founder decision: maximum reach from day one; testing groups run separately through store tools |
 | Fallbacks | Gateway chain down to degraded mode | The app must never stop suddenly |
