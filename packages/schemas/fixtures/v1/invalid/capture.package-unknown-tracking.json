@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "id": "00000000-0000-4000-8000-000000000001",
+  "user_id": "00000000-0000-4000-8000-000000000100",
+  "created_at": "2026-01-05T10:00:00Z",
+  "media": [
+    {
+      "id": "00000000-0000-4000-8000-000000000011",
+      "kind": "photo",
+      "origin": "camera",
+      "storage_key": "captures/1/photo-1.jpg",
+      "width_px": 1600,
+      "height_px": 1200,
+      "sharpness": 0.82,
+      "has_ar_pose": false,
+      "compass_heading_deg": 92.5
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000012",
+      "kind": "video",
+      "origin": "gallery",
+      "storage_key": "captures/1/walk.mp4",
+      "width_px": 1920,
+      "height_px": 1080,
+      "duration_s": 18.5,
+      "has_ar_pose": true
+    }
+  ],
+  "device": {
+    "platform": "android",
+    "tier": "low",
+    "has_ar": false
+  },
+  "compass": {
+    "mean_heading_deg": 91.0,
+    "sample_count": 24
+  },
+  "tape_measurements": [
+    {
+      "target": "wall_length",
+      "value_m": 4.2,
+      "note": "window wall"
+    }
+  ],
+  "package": {
+    "ar": {
+      "tracking": "webxr",
+      "lidar": true,
+      "depth": true
+    },
+    "video": "captures/c1/scan.mp4",
+    "keyframes": [
+      {
+        "id": "k1",
+        "image": "captures/c1/keyframes/k1.jpg",
+        "captured_at_ms": 1200,
+        "sharpness": 420,
+        "pose": {
+          "position": {
+            "x_m": 0.1,
+            "y_m": 1.4,
+            "z_m": -0.2
+          },
+          "rotation": [0, 0.38, 0, 0.92]
+        },
+        "intrinsics": {
+          "fx": 1450,
+          "fy": 1450,
+          "cx": 960,
+          "cy": 720,
+          "width_px": 1920,
+          "height_px": 1440
+        }
+      },
+      {
+        "id": "k2",
+        "image": "captures/c1/keyframes/k2.jpg",
+        "captured_at_ms": 2600,
+        "sharpness": 390
+      }
+    ],
+    "planes": "captures/c1/planes.json",
+    "scene_mesh": "captures/c1/mesh.ply",
+    "depth": "captures/c1/depth.zip",
+    "detections": [
+      {
+        "detector_class": "refrigerator",
+        "score": 0.82,
+        "at_ms": 1500,
+        "world": {
+          "x_m": 1.2,
+          "y_m": 0.9,
+          "z_m": -2.1
+        }
+      },
+      {
+        "detector_class": "chair",
+        "score": 0.6,
+        "at_ms": 1800
+      }
+    ],
+    "sensor_log": "captures/c1/sensors.jsonl"
+  }
+}

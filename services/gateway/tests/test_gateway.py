@@ -151,6 +151,32 @@ async def test_a_slow_provider_times_out_and_falls_back() -> None:
     assert log.entries[0].error == "timeout"
 
 
+async def test_a_provider_can_declare_a_longer_timeout_than_the_default() -> None:
+    # A GPU job that takes minutes must not be cut off by the default timeout.
+    slow = FakeProvider("gpu", [GOOD], delay=0.2, timeout_seconds=5.0)
+    gateway = ModelGateway(
+        [slow],
+        ledger=InMemorySpendLedger(ROOMY),
+        retry=RetryPolicy(max_attempts=1, timeout_seconds=0.05),
+    )
+
+    response = await gateway.call(request(), validate=accept)
+
+    assert response.provider == "gpu"
+
+
+async def test_a_provider_can_limit_its_own_retries() -> None:
+    # An expensive job is not retried inside the gateway; the durable step retries it.
+    expensive = FakeProvider("gpu", [DOWN], max_attempts=1)
+    fallback = FakeProvider("fallback", [OTHER])
+    h = Harness(expensive, fallback, retry=RetryPolicy(max_attempts=5))
+
+    response = await h.gateway.call(request(), validate=accept)
+
+    assert response.provider == "fallback"
+    assert len(expensive.calls) == 1
+
+
 async def test_providers_that_cannot_do_the_modality_are_skipped() -> None:
     text_only = FakeProvider("text-only", [GOOD], modalities=frozenset({"text"}))
     image = FakeProvider("image", [OTHER], modalities=frozenset({"image"}))

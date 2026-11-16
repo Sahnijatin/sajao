@@ -1,0 +1,7 @@
+{
+  "model": "qwen",
+  "frames": 44,
+  "load_seconds": 236.6,
+  "inpaint_seconds": 90.1,
+  "seconds_per_frame": 2.05
+}

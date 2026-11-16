@@ -12,7 +12,7 @@ response = await gateway.call(request, validate=check_spec, degraded=rules_spec)
 1. **Cache.** The same content (task, prompt version, payload, images, pinned models) is answered from the cache at no cost. The user is not part of the key.
 2. **Circuit breaker.** A provider that keeps failing is skipped, then probed with one trial call after a cooldown.
 3. **Spend caps.** The estimated cost is reserved against the per-user daily cap and the global daily cap before the call, and settled to the real cost after it. A cheaper fallback is tried when the primary would pass a cap.
-4. **Limits and retries.** Per-provider concurrency limit, a timeout, and retries with exponential backoff and jitter. Errors marked not retryable move straight to the next provider.
+4. **Limits and retries.** Per-provider concurrency limit, a timeout, and retries with exponential backoff and jitter. A provider may declare its own `timeout_seconds` (a GPU job that runs for minutes) and `max_attempts` (an expensive job its durable step retries instead). Errors marked not retryable move straight to the next provider.
 5. **Validation.** `validate` is required. An output that fails it is treated as a failure and is never returned or cached.
 6. **Call log.** Every attempt is recorded with provider, pinned model, outcome, latency and cost. Prompts, payloads and outputs are never logged; only the content hash is.
 7. **Degraded mode.** When every provider fails, the optional `degraded` step answers (rules instead of a model, a 3D render instead of a photo render), marked `degraded=True`, so the app never stops suddenly.
