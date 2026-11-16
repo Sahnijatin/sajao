@@ -126,3 +126,8 @@ def write_decisions(path: Path, decisions: Iterable[Decision]) -> None:
         for decision in decisions:
             f.write(decision.model_dump_json() + "\n")
     tmp.replace(path)
+
+
+def read_decisions(path: Path) -> list[Decision]:
+    with path.open(encoding="utf-8") as f:
+        return [Decision.model_validate_json(line) for line in f if line.strip()]
