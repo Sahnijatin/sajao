@@ -10,7 +10,7 @@ We ingest widely and show narrowly: thousands of products come in from feeds, an
 | Amazon India | Creators API (replaced PA-API) | Reported to need qualifying sales before access; until then, links added by hand from the Associates dashboard |
 | Affiliate networks | Cuelinks, EarnKaro, vCommission, INRDeals deeplink APIs | Per-campaign rules on app traffic must be checked |
 | D2C brands | Direct deals: feed or CSV, coupon codes | Coupons survive app switching; best attribution |
-| Rental | Furlenco via Cuelinks; other rental platforms by direct outreach | "Rent instead: Rs X/month" shown beside buy prices |
+| Rental | Furlenco via Cuelinks; other rental platforms by direct outreach | After launch: "Rent instead: Rs X/month" shown beside buy prices |
 
 Each source is a row in the Notion "Catalog sources" database with its route, app traffic rule, image permission and status.
 

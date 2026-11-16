@@ -1,0 +1,13 @@
+{
+  "scene": "counter",
+  "train_views": 210,
+  "test_views": 30,
+  "init_points": 155767,
+  "gaussians": 1294810,
+  "steps": 15000,
+  "train_seconds": 318.8,
+  "scene_scale": 5.062385559082031,
+  "psnr": 28.721623293558757,
+  "ssim": 0.9083503107229869,
+  "views": 30
+}

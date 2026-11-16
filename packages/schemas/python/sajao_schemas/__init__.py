@@ -20,6 +20,7 @@ from sajao_schemas.generated.v1 import (
     Render,
     ShoppingList,
     SpaceProfile,
+    SpaceTwin,
     TasteProfile,
 )
 
@@ -30,6 +31,7 @@ OBJECTS: dict[str, type[BaseModel]] = {
     for model in (
         Capture,
         SpaceProfile,
+        SpaceTwin,
         TasteProfile,
         Brief,
         Product,

@@ -25,7 +25,7 @@ Every stage of the journey is one schema object, so the stages cannot drift apar
 8. **Design detail.** Render, "why this works", plan tab, shopping list tab, Vastu points, swap per item.
 9. **Plan.** Dimensioned 2D plan; drag and rotate re-run the verifier live with haptic snaps.
 10. **Shopping list.** Total, breakdown by category, cheaper alternative and rent option per item, grouped by retailer, buy links through our redirect.
-11. **Share.** Before and after reel, 9:16, with a link that opens the web viewer for people without the app.
+11. **Share.** Before and after reel, 9:16, with a link that opens the design in the app, or the landing page for people without it (a web viewer comes after launch).
 12. **Vastu tab.** Direction, room scorecard, guidance; deeper help later.
 13. **My rooms.** Saved rooms and designs, history.
 
