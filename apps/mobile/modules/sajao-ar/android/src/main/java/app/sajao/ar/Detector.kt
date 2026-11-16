@@ -110,7 +110,7 @@ class Detector(context: Context) {
       .setBaseOptions(BaseOptions.builder().setModelAssetBuffer(buffer).build())
       .setRunningMode(RunningMode.IMAGE)
       .setMaxResults(10)
-      .setScoreThreshold(0.4f)
+      .setScoreThreshold(0.3f)
       .build()
     ObjectDetector.createFromOptions(context, options)
   } catch (error: Throwable) {

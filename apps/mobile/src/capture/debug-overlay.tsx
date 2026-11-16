@@ -41,6 +41,7 @@ export function scanDebugLines(debug: ScanDebug, state: ScanState): [string, str
           ["detectionsFound", round(debug.ar.detectionsFound)],
           ["detectionsPlaced", round(debug.ar.detectionsPlaced)],
           ["detectorError", debug.ar.detectorError || "-"],
+          ["labelsRejected", round(debug.ar.labelsRejected)],
         ] as [string, string][])
       : []),
   ];

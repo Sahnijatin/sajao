@@ -88,25 +88,15 @@
       "labels": "Labels",
       "detectionsFound": "Detections",
       "detectionsPlaced": "Detections placed",
-      "detectorError": "Detector error"
+      "detectorError": "Detector error",
+      "labelsRejected": "Labels rejected"
     },
     "labels": {
       "fridge": "Fridge",
       "sofa": "Sofa",
-      "chair": "Chair",
       "table": "Table",
       "bed": "Bed",
-      "tv": "TV",
-      "microwave": "Microwave",
-      "oven": "Oven",
-      "sink": "Sink",
-      "toilet": "Toilet",
-      "plant": "Plant",
-      "laptop": "Laptop",
-      "clock": "Clock",
-      "vase": "Vase",
-      "bench": "Bench",
-      "toaster": "Toaster"
+      "tv": "TV"
     }
   },
   "space": {

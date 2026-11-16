@@ -13,7 +13,6 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import com.google.ar.core.Config
-import com.google.ar.core.Coordinates2d
 import com.google.ar.core.Frame
 import com.google.ar.core.Plane
 import com.google.ar.core.Session
@@ -103,7 +102,9 @@ class SajaoArView(context: Context, appContext: AppContext) :
   // Detections waiting for the next drawn frame to be hit-tested. Calling
   // session.update() anywhere but onDrawFrame takes a camera frame away from
   // the renderer, so results wait here instead.
-  private val pendingDetections = AtomicReference<List<UprightDetection>?>(null)
+  private val pendingDetections = AtomicReference<PendingDetections?>(null)
+  // Height of the lowest upward-facing plane: the floor.
+  private var floorY: Float? = null
   private var brightness = 128.0
   private var pixelIntensity = 1.0
   private var featureCount = 0
@@ -293,8 +294,8 @@ class SajaoArView(context: Context, appContext: AppContext) :
         lastStatusAt = now
         sendStatus(session)
       }
-      pendingDetections.getAndSet(null)?.let { found ->
-        if (camera.trackingState == TrackingState.TRACKING) hitTestDetections(frame, found)
+      pendingDetections.getAndSet(null)?.let { pending ->
+        if (camera.trackingState == TrackingState.TRACKING) hitTestDetections(frame, pending)
       }
       // The detector is fed from ARCore's own camera images: ARCore owns the
       // camera during the scan. Only a new image counts; update() can return
@@ -353,18 +354,25 @@ class SajaoArView(context: Context, appContext: AppContext) :
     // ARCore stops tracking keeps its last outline, so mapped surfaces stay
     // on screen for the whole scan; a plane merged into another is dropped,
     // because the plane it merged into now covers it.
+    var lowest: Float? = null
     for (plane in session.getAllTrackables(Plane::class.java)) {
       if (plane.subsumedBy != null) {
         planeOutlines.remove(plane)
         continue
       }
       if (plane.trackingState != TrackingState.TRACKING) continue
+      if (plane.type == Plane.Type.HORIZONTAL_UPWARD_FACING) {
+        val y = plane.centerPose.ty()
+        lowest = minOf(lowest ?: y, y)
+      }
       outlineOf(plane)?.let { planeOutlines[plane] = it }
     }
     for ((plane, outline) in planeOutlines) {
       drawOutline(plane, outline, now)
     }
     planeCount = planeOutlines.size
+    // The lowest tracked upward plane is the floor; keep the last one seen.
+    if (lowest != null) floorY = lowest
   }
 
   /** A plane's polygon in world space, or null while it has fewer than three corners. */
@@ -513,36 +521,76 @@ class SajaoArView(context: Context, appContext: AppContext) :
       return
     }
     brightness = copy.meanBrightness()
+    // The camera as it was for this image: rays are built from it, so a
+    // result that arrives after the phone moved still lands on its object.
+    val camera = try {
+      val pose = frame.camera.pose
+      val rotation = FloatArray(4)
+      pose.getRotationQuaternion(rotation, 0)
+      val intrinsics = frame.camera.imageIntrinsics
+      CaptureCamera(rotation, pose.translation, intrinsics.focalLength, intrinsics.principalPoint, intrinsics.imageDimensions)
+    } catch (_: Throwable) {
+      return
+    }
     detector.detect(copy) { found, milliseconds ->
       detectionsDone += 1
       lastDetectionMs = milliseconds
-      pendingDetections.set(found)
+      pendingDetections.set(PendingDetections(found, camera))
     }
   }
 
-  /** Runs inside onDrawFrame with the frame it just drew. */
-  private fun hitTestDetections(frame: Frame, found: List<UprightDetection>) {
+  /**
+   * Runs inside onDrawFrame with the frame it just drew. For each detection:
+   * the nearest thing on its ray (depth or feature points, else a plane) is
+   * the object; the plane the same ray meets says whether that is really a
+   * wall or the floor. The label rules in JavaScript use both.
+   */
+  private fun hitTestDetections(frame: Frame, pending: PendingDetections) {
     if (!running) return
-    val payload = ArrayList<Map<String, Any>>(found.size)
-    for (detection in found) {
-      // Upright image point back to the sensor image (turned 90 degrees
-      // clockwise), then to view pixels.
-      val sensor = floatArrayOf(detection.centreY, 1f - detection.centreX)
-      val viewPoint = FloatArray(2)
-      frame.transformCoordinates2d(Coordinates2d.IMAGE_NORMALIZED, sensor, Coordinates2d.VIEW, viewPoint)
+    val payload = ArrayList<Map<String, Any>>(pending.found.size)
+    for (detection in pending.found) {
+      // Upright image point back to the sensor image (turned 90 degrees clockwise).
+      val (origin, direction) = pending.camera.ray(detection.centreY, 1f - detection.centreX)
       val entry = HashMap<String, Any>()
       entry["detectorClass"] = detection.detectorClass
       entry["score"] = detection.score.toDouble()
-      val hit = try {
-        frame.hitTest(viewPoint[0], viewPoint[1]).firstOrNull()
+      entry["surface"] = Surface.NONE
+      val hits = try {
+        frame.hitTest(origin, 0, direction, 0)
       } catch (_: Throwable) {
-        null
+        emptyList()
       }
+      fun rangeOf(position: FloatArray) =
+        (position[0] - origin[0]) * direction[0] + (position[1] - origin[1]) * direction[1] +
+          (position[2] - origin[2]) * direction[2]
+      val planeHit = hits.firstOrNull { hit ->
+        val plane = hit.trackable as? Plane
+        plane != null && plane.isPoseInPolygon(hit.hitPose)
+      }
+      // The object's own point: a feature or depth point ARCore hit on the
+      // ray, else the front of the tracked feature points around the ray,
+      // else the plane (the label rules then judge whether that is a wall).
+      val objectRange = hits.firstOrNull { it.trackable !is Plane }?.let { rangeOf(it.hitPose.translation) }
+        ?: frontOfCone(origin, direction, pointCloud.values)
+        ?: planeHit?.let { rangeOf(it.hitPose.translation) }
       detectionsFound += 1
-      if (hit != null) {
+      if (objectRange != null) {
         detectionsPlaced += 1
-        val t = hit.hitPose.translation
+        val t = FloatArray(3) { origin[it] + direction[it] * objectRange }
         entry["world"] = mapOf("x" to t[0].toDouble(), "y" to t[1].toDouble(), "z" to t[2].toDouble())
+        entry["range"] = objectRange.toDouble()
+        if (planeHit != null) {
+          val plane = planeHit.trackable as Plane
+          val p = planeHit.hitPose.translation
+          entry["surface"] = Surface.kind(
+            vertical = plane.type == Plane.Type.VERTICAL,
+            facingDown = plane.type == Plane.Type.HORIZONTAL_DOWNWARD_FACING,
+            longestSide = maxOf(plane.extentX, plane.extentZ),
+            hitY = p[1],
+            floorY = floorY,
+          )
+          entry["gap"] = Surface.gap(objectRange, rangeOf(p)).toDouble()
+        }
       }
       payload.add(entry)
     }
@@ -576,3 +624,6 @@ class SajaoArView(context: Context, appContext: AppContext) :
 
 /** A plane's polygon in world space as last tracked, with what drawing it needs. */
 class PlaneOutline(val world: FloatArray, val centre: FloatArray, val vertical: Boolean, val area: Float)
+
+/** Detector results with the camera they were captured from, waiting for the next drawn frame. */
+class PendingDetections(val found: List<UprightDetection>, val camera: CaptureCamera)

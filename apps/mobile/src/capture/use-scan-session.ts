@@ -43,6 +43,8 @@ export interface ArDebug {
   detectionsPlaced: number;
   /** Why the detector failed to load; empty when it loaded. */
   detectorError: string;
+  /** Detector sightings dropped as a wall, a door or bare floor. */
+  labelsRejected: number;
 }
 
 const EMPTY_DEBUG: ScanDebug = {
@@ -71,6 +73,7 @@ export function useScanSession(active: boolean) {
     ar: null as ArDebug | null,
     arCounters: NO_AR_COUNTERS as ArFrameCounters,
     arWindowStart: NO_AR_COUNTERS as ArFrameCounters,
+    labelsRejected: 0,
   });
   const [labels, setLabels] = useState<LabelState>(EMPTY_LABELS);
 
@@ -154,7 +157,10 @@ export function useScanSession(active: boolean) {
   const onArStatus = useCallback(
     (
       status: ArStatus &
-        Omit<ArDebug, "tracking" | "detectionsFound" | "detectionsPlaced" | "detectorError"> &
+        Omit<
+          ArDebug,
+          "tracking" | "labelsRejected" | "detectionsFound" | "detectionsPlaced" | "detectorError"
+        > &
         Partial<ArFrameCounters> & {
           detectionsFound?: number;
           detectionsPlaced?: number;
@@ -174,6 +180,7 @@ export function useScanSession(active: boolean) {
         detectionsFound: status.detectionsFound ?? 0,
         detectionsPlaced: status.detectionsPlaced ?? 0,
         detectorError: status.detectorError ?? "",
+        labelsRejected: counters.current.labelsRejected,
       };
       dispatch(arFrameEvent(status, platform, Date.now()));
     },
@@ -187,6 +194,9 @@ export function useScanSession(active: boolean) {
   const onArDetections = useCallback((detections: Detection[]) => {
     setLabels((current) => updateLabels(current, detections, Date.now()));
   }, []);
+  useEffect(() => {
+    counters.current.labelsRejected = labels.rejected;
+  }, [labels.rejected]);
 
   return {
     state,
