@@ -252,11 +252,15 @@ def download_and_sample(
             "proxy_bytes_received": used(),
         }
 
+    # Budget kills count across runs: a video that would not seek before is skipped.
     kills: dict[str, int] = {}
+    for row in read_ledger(DATA / "downloads.jsonl"):
+        if row.status == "failed" and (row.error or "").startswith("stopped after"):
+            kills[row.video_id] = kills.get(row.video_id, 0) + 1
 
     def fetch_once(segment: Segment, tmp_stem: Path) -> Path:
         if kills.get(segment.video_id, 0) >= MAX_KILLS_PER_VIDEO:
-            raise RuntimeError("skipped: this video went over its budget twice in this run")
+            raise RuntimeError("skipped: this video went over its budget twice")
         estimate = (segment.end_s - segment.start_s) * BYTES_PER_S
         budget = int(min(max(SEGMENT_MIN_BUDGET, SEGMENT_BUDGET_FACTOR * estimate), cap - used()))
         if budget <= 0:
