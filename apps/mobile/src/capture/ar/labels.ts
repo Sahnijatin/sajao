@@ -90,6 +90,8 @@ export interface Detection {
   gap?: number | null;
   /** Distance from the camera to the object point, in metres. */
   range?: number | null;
+  /** The detection's box in the upright camera image, 0 to 1. */
+  box?: { x: number; y: number; width: number; height: number } | null;
 }
 
 /** Objects that hang flat on a wall: a label on the wall is right for these. */

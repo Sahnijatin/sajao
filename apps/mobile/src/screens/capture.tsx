@@ -15,6 +15,7 @@ import { DebugOverlay } from "@/capture/debug-overlay";
 import type { GuardrailId, GuardrailStatus } from "@/capture/guardrails";
 import { toScreen } from "@/capture/mesh-tracker";
 import { MiniMap } from "@/capture/mini-map";
+import { ScanHint } from "@/capture/scan-hint";
 import { ScanCamera } from "@/capture/scan-camera";
 import { canFinish, mappedShare } from "@/capture/scan-session";
 import { useScanSession } from "@/capture/use-scan-session";
@@ -116,6 +117,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
     state,
     debug,
     labels,
+    hint,
     onFrame,
     onExposure,
     onDiagnostics,
@@ -222,6 +224,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
                 surface: detection.surface,
                 gap: detection.gap ?? null,
                 range: detection.range ?? null,
+                box: detection.box ?? null,
               })),
             )
           }
@@ -312,6 +315,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
           </View>
           <MiniMap mapped={mapped} yaw={state.pose.yaw} />
         </View>
+        <ScanHint hint={hint} />
       </View>
 
       <GlassSurface

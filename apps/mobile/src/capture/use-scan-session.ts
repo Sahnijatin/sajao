@@ -4,14 +4,32 @@ import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "r
 import { Platform } from "react-native";
 import { arCountersOf, type ArFrameCounters, arFrameRates, NO_AR_COUNTERS } from "./ar/ar-debug";
 import { arFrameEvent, type ArStatus, arPoseEvent } from "./ar/ar-events";
-import { type Detection, EMPTY_LABELS, type LabelState, updateLabels } from "./ar/labels";
+import {
+  currentHint,
+  type Hint,
+  isCutOff,
+  updateViews,
+  type ViewBins,
+  walkAroundTarget,
+} from "./ar/guidance";
+import {
+  type Detection,
+  EMPTY_LABELS,
+  labelKindOf,
+  type LabelState,
+  MIN_SCORE,
+  trackedObjects,
+  updateLabels,
+} from "./ar/labels";
 import type { SurfaceHit } from "./ar/surface-coverage";
 import { motionSample } from "./pose";
 import type { AnalysedFrame, CameraDiagnostics } from "./scan-camera";
-import { INITIAL_SCAN, scanReducer } from "./scan-session";
+import { INITIAL_SCAN, mappedShare, scanReducer } from "./scan-session";
 
 const MOTION_INTERVAL_MS = 100;
 const DEBUG_WINDOW_MS = 1000;
+/** "Step back" stays up this long after the last cut-off large object. */
+const STEP_BACK_MS = 2500;
 
 /** Numbers for the hidden debug overlay, refreshed about once a second. */
 export interface ScanDebug {
@@ -187,9 +205,24 @@ export function useScanSession(active: boolean) {
     },
     [platform],
   );
+  // Capture guidance: which directions each large object has been seen
+  // from, and when a large object last filled the frame edge to edge.
+  const views = useRef<ViewBins>({});
+  const labelsRef = useRef(labels);
+  labelsRef.current = labels;
+  const [stepBackUntil, setStepBackUntil] = useState(0);
   const onArPose = useCallback(
-    (pose: { yaw: number; pitch: number; tracking: string }) =>
-      dispatch(arPoseEvent(pose, Date.now())),
+    (pose: { yaw: number; pitch: number; tracking: string; x?: number; z?: number }) => {
+      const event = arPoseEvent(pose, Date.now());
+      if (event.position && event.tracking === "normal") {
+        views.current = updateViews(
+          views.current,
+          trackedObjects(labelsRef.current),
+          event.position,
+        );
+      }
+      dispatch(event);
+    },
     [],
   );
   const onArSurfaces = useCallback(
@@ -198,8 +231,18 @@ export function useScanSession(active: boolean) {
     [],
   );
   const onArDetections = useCallback((detections: Detection[]) => {
-    setLabels((current) => updateLabels(current, detections, Date.now()));
+    const now = Date.now();
+    setLabels((current) => updateLabels(current, detections, now));
+    const cutOff = detections.some(
+      (d) => d.score >= MIN_SCORE && labelKindOf(d.detectorClass) && d.box && isCutOff(d.box),
+    );
+    if (cutOff) setStepBackUntil(now + STEP_BACK_MS);
   }, []);
+  const hint: Hint = currentHint({
+    outside: state.doorway.outside,
+    stepBack: Date.now() < stepBackUntil,
+    walkAround: walkAroundTarget(trackedObjects(labels), views.current, mappedShare(state)),
+  });
   useEffect(() => {
     counters.current.labelsRejected = labels.rejected;
   }, [labels.rejected]);
@@ -208,6 +251,7 @@ export function useScanSession(active: boolean) {
     state,
     debug,
     labels,
+    hint,
     onFrame,
     onExposure,
     onDiagnostics,

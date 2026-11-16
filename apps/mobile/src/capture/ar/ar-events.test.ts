@@ -27,7 +27,11 @@ describe("AR events", () => {
       yaw: 10,
       pitch: -5,
       tracking: "normal",
+      position: null,
       atMs: 7,
     });
+    expect(
+      arPoseEvent({ yaw: 0, pitch: 0, tracking: "normal", x: 1.5, z: -2 }, 8).position,
+    ).toEqual({ x: 1.5, z: -2 });
   });
 });

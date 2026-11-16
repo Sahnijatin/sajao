@@ -12,8 +12,17 @@ import java.nio.ByteOrder
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
-/** One detection in the upright camera image; the box centre is normalised, 0 to 1. */
-data class UprightDetection(val detectorClass: String, val score: Float, val centreX: Float, val centreY: Float)
+/** One detection in the upright camera image; the box is normalised, 0 to 1. */
+data class UprightDetection(
+  val detectorClass: String,
+  val score: Float,
+  val centreX: Float,
+  val centreY: Float,
+  val left: Float,
+  val top: Float,
+  val width: Float,
+  val height: Float,
+)
 
 /** A copy of a camera image's planes, so the image can be closed at once. */
 class YuvCopy(
@@ -140,6 +149,10 @@ class Detector(context: Context) {
               category.score(),
               box.centerX() / bitmap.width,
               box.centerY() / bitmap.height,
+              box.left / bitmap.width,
+              box.top / bitmap.height,
+              box.width() / bitmap.width,
+              box.height() / bitmap.height,
             ),
           )
         }

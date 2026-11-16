@@ -44,14 +44,19 @@ export function arFrameEvent(
 }
 
 export function arPoseEvent(
-  pose: { yaw: number; pitch: number; tracking: string },
+  pose: { yaw: number; pitch: number; tracking: string; x?: number; z?: number },
   atMs: number,
 ): Extract<ScanEvent, { type: "arPose" }> {
+  const position =
+    Number.isFinite(pose.x) && Number.isFinite(pose.z)
+      ? { x: pose.x as number, z: pose.z as number }
+      : null;
   return {
     type: "arPose",
     yaw: pose.yaw,
     pitch: pose.pitch,
     tracking: trackingOf(pose.tracking),
+    position,
     atMs,
   };
 }

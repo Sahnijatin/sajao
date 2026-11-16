@@ -101,6 +101,11 @@
       "table": "Table",
       "bed": "Bed",
       "tv": "TV"
+    },
+    "hints": {
+      "doorway": "Finish this space first, then scan the next one",
+      "stepBack": "Step back to fit it all in",
+      "walkAround": "Walk around the {{object}}"
     }
   },
   "space": {

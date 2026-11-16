@@ -13,8 +13,10 @@ import {
   EMPTY_COVERAGE,
   enoughCoverage,
 } from "./coverage";
+import { type DoorwayState, NO_DOORWAY, type Point2, updateDoorway } from "./ar/guidance";
 import {
   addSurfaceSample,
+  CELL_M,
   EMPTY_SURFACE_COVERAGE,
   type SurfaceCoverage,
   surfaceFraction,
@@ -84,6 +86,13 @@ export interface ScanState {
   turnRate: number;
   /** The previous AR pose, to measure the turn. */
   lastArPose: { yaw: number; pitch: number; atMs: number } | null;
+  /** Camera position on the floor plan, from AR tracking; null without AR. */
+  position: Point2 | null;
+  /**
+   * Which side of the mapped walls the camera is on. One space per scan:
+   * beyond a wall (through a doorway) nothing counts until you come back.
+   */
+  doorway: DoorwayState;
 }
 
 export const INITIAL_SCAN: ScanState = {
@@ -106,6 +115,8 @@ export const INITIAL_SCAN: ScanState = {
   surfacesSeen: false,
   turnRate: 0,
   lastArPose: null,
+  position: null,
+  doorway: NO_DOORWAY,
 };
 
 export type ScanEvent =
@@ -124,6 +135,8 @@ export type ScanEvent =
       yaw: number;
       pitch: number;
       tracking: ArTracking;
+      /** Camera position on the floor plan, metres; null from older builds. */
+      position?: Point2 | null;
       atMs: number;
     }
   | {
@@ -244,6 +257,11 @@ export function scanReducer(tier: "standard" | "low") {
             clockMs: event.atMs,
             turnRate: turnRateAfter(state, event),
             lastArPose: { yaw: event.yaw, pitch: event.pitch, atMs: event.atMs },
+            position: event.position ?? state.position,
+            doorway:
+              event.position && event.tracking === "normal"
+                ? updateDoorway(state.doorway, state.surfaces.walls, event.position, CELL_M)
+                : state.doorway,
           },
           stepMs(state, event.atMs),
         );
@@ -258,8 +276,8 @@ export function scanReducer(tier: "standard" | "low") {
         return steady ? { ...judged, coverage: addSweep(judged.coverage, event.yaw) } : judged;
       }
       case "arSurfaces": {
-        // Nothing counts while paused; what was mapped stays.
-        if (state.pause.paused) return { ...state, surfacesSeen: true };
+        // Nothing counts while paused or beyond a doorway; what was mapped stays.
+        if (state.pause.paused || state.doorway.outside) return { ...state, surfacesSeen: true };
         const sample = { sharpness: event.sharpness, hits: event.hits, floorY: event.floorY };
         const surfaces = addSurfaceSample(
           state.surfaces,
