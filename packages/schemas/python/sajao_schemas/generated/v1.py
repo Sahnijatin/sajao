@@ -872,6 +872,33 @@ class OrientedBox(BaseModel):
     height: Dimension
 
 
+class PhoneSplat(BaseModel):
+    """
+    A decimated, compressed room splat for on-device viewing.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    key: Annotated[
+        str,
+        Field(
+            description="Object key in the media store. Never a public URL; clients receive signed URLs.",
+            max_length=512,
+            min_length=1,
+        ),
+    ]
+    format: Literal["sog"]
+    tier: Annotated[
+        Literal["capable", "budget"],
+        Field(
+            description="capable: recent phones (500k Gaussians). budget: budget Android (250k)."
+        ),
+    ]
+    gaussians: Annotated[int, Field(ge=1)]
+    bytes: Annotated[int, Field(ge=1)]
+
+
 class PlanOpening(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -1772,3 +1799,10 @@ class SpaceTwin(BaseModel):
     scale: ScaleEvidence
     direction: SpaceDirection
     splat: SplatRef | None = None
+    phone_splats: Annotated[
+        list[PhoneSplat] | None,
+        Field(
+            description="Compressed room splats for viewing on the phone, one per device tier. Colour only; built from the room splat.",
+            max_length=4,
+        ),
+    ] = None
