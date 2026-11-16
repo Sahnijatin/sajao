@@ -4,6 +4,7 @@
 import { Text } from "@sajao/ui";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
+import { headingShare } from "./motion-coverage";
 import type { ScanState } from "./scan-session";
 import type { ScanDebug } from "./use-scan-session";
 
@@ -34,6 +35,13 @@ export function scanDebugLines(
     ["gyro", state.hasGyro ? "1" : "0"],
     ["usable", round(state.usableFrames)],
     ["error", debug.diagnostics.lastError ?? "-"],
+    ["mode", `${state.mode.mode}${state.mode.reason ? ` (${state.mode.reason})` : ""}`],
+    ["heading", `${round(headingShare(state.motionCoverage) * 100)}%`],
+    ["moved", `${round(state.motionCoverage.pathM, 1)} m`],
+    [
+      "motionSamples",
+      `${state.motionCoverage.accepted} / ${state.motionCoverage.rejected} rejected`,
+    ],
     ...(arStartError ? ([["arStart", arStartError]] as [string, string][]) : []),
     ...(debug.ar
       ? ([

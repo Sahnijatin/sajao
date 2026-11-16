@@ -28,6 +28,7 @@ import {
   surfaceFraction,
   type SurfaceHit,
 } from "./ar/surface-coverage";
+import { initialMode, modeAfter, type ModeSignals, type ModeState } from "./capture-mode";
 import type { FeaturePoint } from "./feature-points";
 import type { FrameStats } from "./frame-stats";
 import {
@@ -49,6 +50,13 @@ import {
   shiftMesh,
   updateMesh,
 } from "./mesh-tracker";
+import {
+  addMotionSample,
+  EMPTY_MOTION_COVERAGE,
+  type MotionCoverage,
+  motionDone,
+  motionFraction,
+} from "./motion-coverage";
 import { type MotionSample, wrapDegrees } from "./pose";
 
 /** AR tracking quality as the native session reports it. */
@@ -99,10 +107,21 @@ export interface ScanState {
    * beyond a wall (through a doorway) nothing counts until you come back.
    */
   doorway: DoorwayState;
-  /** 2D scan: recent frame sharpness, to judge blur on this phone and in this light. */
+  /** Recent frame sharpness, to judge blur on this phone and in this light. */
   frameSharpness: readonly number[];
   /** 2D scan: why recent frames did not count (null when they did), newest last. */
   recentFrames: readonly (RejectCause | null)[];
+  /** Full or simple scan, and why. */
+  mode: ModeState;
+  /**
+   * Coverage from how the camera turned and moved. Counted in both modes,
+   * so a scan that turns simple at ten seconds keeps what it earned.
+   */
+  motionCoverage: MotionCoverage;
+  /** Whether the latest AR camera frame was sharp, and when it was judged. */
+  sharp: { ok: boolean; atMs: number } | null;
+  /** Since when AR tracking has seen too little to track well; null while it sees enough. */
+  lowDetailSinceMs: number | null;
 }
 
 export const INITIAL_SCAN: ScanState = {
@@ -129,7 +148,16 @@ export const INITIAL_SCAN: ScanState = {
   doorway: NO_DOORWAY,
   frameSharpness: [],
   recentFrames: [],
+  mode: initialMode("ios"),
+  motionCoverage: EMPTY_MOTION_COVERAGE,
+  sharp: null,
+  lowDetailSinceMs: null,
 };
+
+/** The starting state on a platform: Android starts in the simple scan. */
+export function initialScan(platform: "ios" | "android" | "none"): ScanState {
+  return { ...INITIAL_SCAN, mode: initialMode(platform) };
+}
 
 export type ScanEvent =
   | {
@@ -161,6 +189,8 @@ export type ScanEvent =
       /** Feature points the tracker sees in this frame. */
       featureCount: number;
       tracking: ArTracking;
+      /** Planes and detector state, to decide between the full and the simple scan. */
+      signals?: ModeSignals;
       atMs: number;
     }
   | {
@@ -215,7 +245,11 @@ export function scanReducer(tier: "standard" | "low") {
   return (state: ScanState, event: ScanEvent): ScanState => {
     switch (event.type) {
       case "reset":
-        return INITIAL_SCAN;
+        // Android stays in the simple scan after a reset.
+        return {
+          ...INITIAL_SCAN,
+          mode: state.mode.reason === "android" ? state.mode : INITIAL_SCAN.mode,
+        };
       case "scanAnyway":
         return { ...state, pause: scanAnyway(state.pause) };
       case "exposure":
@@ -228,7 +262,9 @@ export function scanReducer(tier: "standard" | "low") {
             : Math.min(MAX_STEP_MS, Math.max(0, atMs - state.motionMs)) / 1000;
         const smooth = (previous: number, next: number) =>
           previous + (next - previous) * MOTION_SMOOTHING;
-        const arPose = state.poseSource === "ar";
+        // AR drives the pose only while it tracks; when tracking is lost the
+        // gyroscope carries the heading on from the last AR pose.
+        const arPose = state.poseSource === "ar" && state.tracking === "normal";
         const next: ScanState = {
           ...state,
           motion: {
@@ -250,9 +286,42 @@ export function scanReducer(tier: "standard" | "low") {
         };
         // Facing a direction earns nothing by itself: coverage comes from
         // sharp frames taken while turning slowly (the "frame" event).
-        return judge(next, stepMs(state, atMs));
+        const judged = judge(next, stepMs(state, atMs));
+        // An AR scan whose tracking is lost still counts motion coverage, from the gyroscope.
+        if (state.poseSource !== "ar" || state.tracking === "normal" || !sample.hasGyro) {
+          return judged;
+        }
+        return {
+          ...judged,
+          motionCoverage: addMotionSample(judged.motionCoverage, {
+            yaw: judged.pose.yaw,
+            pitch: judged.pose.pitch,
+            turnDegPerS: judged.motion.rotationRate,
+            steady: judged.guardrails.motion === "good" && !judged.pause.paused,
+            sharp: sharpNow(judged, atMs),
+            position: null,
+            atMs,
+          }),
+        };
       }
       case "arPose": {
+        const tracked = event.tracking === "normal";
+        if (!tracked) {
+          // A pose from a session that is not tracking is stale: the
+          // gyroscope carries the heading until tracking returns.
+          return judge(
+            {
+              ...state,
+              poseSource: "ar",
+              tracking: event.tracking,
+              hasGyro: true,
+              clockMs: event.atMs,
+              lastArPose: null,
+            },
+            stepMs(state, event.atMs),
+          );
+        }
+        const turnRate = turnRateAfter(state, event);
         const judged = judge(
           {
             ...state,
@@ -262,27 +331,51 @@ export function scanReducer(tier: "standard" | "low") {
             tracking: event.tracking,
             hasGyro: true,
             clockMs: event.atMs,
-            turnRate: turnRateAfter(state, event),
+            turnRate,
             lastArPose: { yaw: event.yaw, pitch: event.pitch, atMs: event.atMs },
             position: event.position ?? state.position,
-            doorway:
-              event.position && event.tracking === "normal"
-                ? updateDoorway(state.doorway, state.surfaces.walls, event.position, CELL_M)
-                : state.doorway,
+            doorway: event.position
+              ? updateDoorway(state.doorway, state.surfaces.walls, event.position, CELL_M)
+              : state.doorway,
           },
           stepMs(state, event.atMs),
         );
+        const still = judged.guardrails.motion === "good" && !judged.pause.paused;
+        const withMotion: ScanState = {
+          ...judged,
+          motionCoverage: addMotionSample(judged.motionCoverage, {
+            yaw: event.yaw,
+            pitch: event.pitch,
+            turnDegPerS: turnRate,
+            steady: still,
+            sharp: sharpNow(judged, event.atMs),
+            position: event.position ?? null,
+            atMs: event.atMs,
+          }),
+        };
         // Facing a direction earns nothing by itself; coverage comes from
         // sharp, slow frames that land on walls and floor (arSurfaces). Older
         // builds without surface samples still count steady directions.
-        const steady =
-          !state.surfacesSeen &&
-          event.tracking === "normal" &&
-          judged.guardrails.motion === "good" &&
-          !judged.pause.paused;
-        return steady ? { ...judged, coverage: addSweep(judged.coverage, event.yaw) } : judged;
+        const steady = !state.surfacesSeen && still;
+        return steady
+          ? { ...withMotion, coverage: addSweep(withMotion.coverage, event.yaw) }
+          : withMotion;
       }
       case "arSurfaces": {
+        // Every sample says how sharp the camera frame is, in both modes.
+        const judgedSharp: ScanState = Number.isFinite(event.sharpness)
+          ? {
+              ...state,
+              sharp: {
+                ok: sharpEnough(state.frameSharpness, event.sharpness),
+                atMs: event.atMs,
+              },
+              frameSharpness: [...state.frameSharpness, event.sharpness].slice(-40),
+            }
+          : state;
+        // The simple scan counts nothing from surfaces.
+        if (state.mode.mode === "simple") return judgedSharp;
+        state = judgedSharp;
         // Nothing counts while paused or beyond a doorway; what was mapped stays.
         if (state.pause.paused || state.doorway.outside) return { ...state, surfacesSeen: true };
         const sample = { sharpness: event.sharpness, hits: event.hits, floorY: event.floorY };
@@ -317,10 +410,15 @@ export function scanReducer(tier: "standard" | "low") {
             isoRatio: event.lowLight ? 1 : 0,
             tracking: event.tracking,
             clockMs: event.atMs,
+            mode: event.signals ? modeAfter(state.mode, event.signals, event.atMs) : state.mode,
+            lowDetailSinceMs: lowDetail(event.tracking, event.featureCount)
+              ? (state.lowDetailSinceMs ?? event.atMs)
+              : null,
           },
           stepMs(state, event.atMs),
         );
         if (
+          judged.mode.mode === "simple" ||
           state.surfacesSeen ||
           event.tracking !== "normal" ||
           !shouldUseFrame(judged.pause, judged.guardrails)
@@ -402,6 +500,7 @@ export const SURFACE_DONE_SHARE = 0.7;
 
 /** Enough has been mapped for "Done" to make sense. */
 export function canFinish(state: ScanState): boolean {
+  if (isSimple(state)) return motionDone(state.motionCoverage);
   const covered = state.surfacesSeen
     ? surfaceFraction(state.surfaces) >= SURFACE_DONE_SHARE
     : enoughCoverage(state.coverage, state.hasGyro);
@@ -410,12 +509,46 @@ export function canFinish(state: ScanState): boolean {
 
 /** Recent samples (AR) or frames (2D) were rejected for turning fast or blur. */
 export function shouldShowSlowDown(state: ScanState): boolean {
+  if (isSimple(state)) return tooManyRejected(state.motionCoverage.recent);
   return state.surfacesSeen ? shouldSlowDown(state.surfaces) : tooManyRejected(state.recentFrames);
 }
 
 /** 0 to 1, shown as the share mapped. */
 export function mappedShare(state: ScanState): number {
+  if (isSimple(state)) return motionFraction(state.motionCoverage);
   return state.surfacesSeen
     ? surfaceFraction(state.surfaces)
     : coverageFraction(state.coverage, state.hasGyro);
+}
+
+/** The scan counts coverage from camera motion, not from planes or the detector. */
+export function isSimple(state: ScanState): boolean {
+  return state.mode.mode === "simple" && state.poseSource === "ar";
+}
+
+/** A sharpness verdict older than this says nothing about the frame now. */
+const SHARP_FRESH_MS = 1000;
+
+/** Whether the camera frame is sharp now; true when there is no recent verdict. */
+function sharpNow(state: ScanState, atMs: number): boolean {
+  return !state.sharp || atMs - state.sharp.atMs > SHARP_FRESH_MS ? true : state.sharp.ok;
+}
+
+/** AR tracking with fewer feature points than this is looking at too little: a blank wall, close up. */
+export const MIN_TRACKED_FEATURES = 15;
+/** Too little detail for this long asks the person to step back. */
+export const STEP_BACK_AFTER_MS = 1500;
+
+function lowDetail(tracking: ArTracking, featureCount: number): boolean {
+  return tracking === "limited" || (tracking === "normal" && featureCount < MIN_TRACKED_FEATURES);
+}
+
+/** AR tracking has seen too little for a while in good light: step back to show it more. */
+export function shouldStepBack(state: ScanState): boolean {
+  return (
+    state.lowDetailSinceMs !== null &&
+    state.clockMs !== null &&
+    state.clockMs - state.lowDetailSinceMs >= STEP_BACK_AFTER_MS &&
+    state.guardrails.light === "good"
+  );
 }

@@ -14,10 +14,13 @@ import { DebugOverlay } from "@/capture/debug-overlay";
 import type { GuardrailId, GuardrailStatus } from "@/capture/guardrails";
 import { toScreen } from "@/capture/mesh-tracker";
 import { MiniMap } from "@/capture/mini-map";
+import { imuReading } from "@/capture/package/imu";
 import { useCaptureRecorder } from "@/capture/package/use-capture-recorder";
+import type { RawMotion } from "@/capture/pose";
+import { ProgressRing } from "@/capture/progress-ring";
 import { ScanHint } from "@/capture/scan-hint";
 import { ScanCamera } from "@/capture/scan-camera";
-import { canFinish, mappedShare, shouldShowSlowDown } from "@/capture/scan-session";
+import { canFinish, isSimple, mappedShare, shouldShowSlowDown } from "@/capture/scan-session";
 import { useScanSession } from "@/capture/use-scan-session";
 
 export interface CaptureScreenProps {
@@ -113,6 +116,23 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
   const window = useWindowDimensions();
   const permission = useCameraPermission();
   const [torch, setTorch] = useState(false);
+  // AR-anchored scan where the phone supports it; otherwise the 2D scan.
+  const capabilities = useMemo(() => getArCapabilities(), []);
+  // The capture package: video, keyframes with poses, depth, planes, detections, sensor log.
+  const capture = useCaptureRecorder({
+    tracking: capabilities.platform === "ios" ? "arkit" : "arcore",
+    lidar: capabilities.lidar,
+    depth: false,
+  });
+  const captureSensor = capture.onSensor;
+  // Motion sensor readings go into the package's sensor log in every mode.
+  const onImu = useCallback(
+    (reading: RawMotion) => {
+      const line = imuReading(reading);
+      if (line) captureSensor(line);
+    },
+    [captureSensor],
+  );
   const {
     state,
     debug,
@@ -126,19 +146,11 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
     onArDetections,
     onArSurfaces,
     scanAnyway,
-  } = useScanSession(permission.hasPermission);
-  // AR-anchored scan where the phone supports it; otherwise the 2D scan.
-  const capabilities = useMemo(() => getArCapabilities(), []);
+  } = useScanSession(permission.hasPermission, onImu);
   const ArView = useMemo(() => getArView(), []);
   // The native error when the AR session could not start; the 2D scan takes over.
   const [arStartError, setArStartError] = useState<string | null>(null);
   const arMode = capabilities.arSupported && ArView !== null && arStartError === null;
-  // The capture package: keyframes with poses, depth, planes, detections, sensor log.
-  const capture = useCaptureRecorder({
-    tracking: capabilities.platform === "ios" ? "arkit" : "arcore",
-    lidar: capabilities.lidar,
-    depth: false,
-  });
   const [finishing, setFinishing] = useState(false);
   const finishScan = useCallback(async () => {
     setFinishing(true);
@@ -159,7 +171,10 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
   const aspect = state.frame?.aspect ?? 9 / 16;
   const points = useMemo(() => toScreen(state.mesh, window, aspect), [state.mesh, window, aspect]);
   const mapped = useMemo(() => mappedSectors(state.coverage), [state.coverage]);
-  const percent = Math.round(mappedShare(state) * 100);
+  const share = mappedShare(state);
+  const percent = Math.round(share * 100);
+  // The simple scan shows one progress ring instead of the map of directions.
+  const simple = arMode && isSimple(state);
   const [showDebug, setShowDebug] = useState(false);
   const taps = useRef<number[]>([]);
   // Hidden debug overlay: three taps on the camera within a second.
@@ -352,7 +367,11 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
               <DebugOverlay debug={debug} state={state} arStartError={arStartError} />
             ) : null}
           </View>
-          <MiniMap mapped={mapped} yaw={state.pose.yaw} />
+          {simple ? (
+            <ProgressRing progress={share} ready={canFinish(state)} />
+          ) : (
+            <MiniMap mapped={mapped} yaw={state.pose.yaw} />
+          )}
         </View>
         <ScanHint hint={hint} />
       </View>

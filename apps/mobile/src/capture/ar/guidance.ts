@@ -143,9 +143,12 @@ export function walkAroundTarget(
 
 export type Hint =
   | { id: "doorway" }
+  | { id: "slowDown" }
   | { id: "stepBack" }
   | { id: "walkAround"; kind: LabelKind }
+  | { id: "walk" }
   | { id: "coverMore" }
+  | { id: "complete" }
   | null;
 
 /** One hint at a time: a doorway first, then step back, walk around, and last cover a bit more. */
@@ -160,5 +163,30 @@ export function currentHint(input: {
   if (input.stepBack) return { id: "stepBack" };
   if (input.walkAround) return { id: "walkAround", kind: input.walkAround };
   if (input.coverMore) return { id: "coverMore" };
+  return null;
+}
+
+/**
+ * The simple scan's hint, from camera motion alone: slow down, step back,
+ * walk, then Done. A large object seen from one side still asks to be walked
+ * around when the phone happens to have labels; nothing here needs them.
+ */
+export function simpleHint(input: {
+  slowDown: boolean;
+  stepBack: boolean;
+  walkAround: LabelKind | null;
+  /** Enough turning, too little walking. */
+  walk: boolean;
+  /** Done is on. */
+  doneReady: boolean;
+  /** Everything the ring counts is covered. */
+  complete: boolean;
+}): Hint {
+  if (input.slowDown) return { id: "slowDown" };
+  if (input.stepBack) return { id: "stepBack" };
+  if (input.walkAround) return { id: "walkAround", kind: input.walkAround };
+  if (input.complete) return { id: "complete" };
+  if (input.walk) return { id: "walk" };
+  if (input.doneReady) return { id: "coverMore" };
   return null;
 }

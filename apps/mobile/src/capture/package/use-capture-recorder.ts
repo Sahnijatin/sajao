@@ -12,6 +12,7 @@ import {
   type LocalCapture,
   localCapture,
   sensorDue,
+  sensorInterval,
 } from "./native-capture";
 import { record, type RecorderEvent, startRecording } from "./recorder";
 
@@ -27,7 +28,8 @@ function newCaptureId(): string {
 export function useCaptureRecorder(ar: CapturePackage["ar"]) {
   const captureId = useMemo(newCaptureId, []);
   const state = useRef(startRecording(Date.now(), ar));
-  const lastSensor = useRef<number | null>(null);
+  // Each sensor source is paced on its own, so one never crowds out another.
+  const lastSensor = useRef<Record<string, number>>({});
   const viewRef = useRef<SajaoArViewRef>(null);
   const setLast = useCaptureStore((store) => store.setLast);
 
@@ -43,8 +45,9 @@ export function useCaptureRecorder(ar: CapturePackage["ar"]) {
 
   const onSensor = useCallback((reading: Record<string, number | string | boolean>) => {
     const now = Date.now();
-    if (!sensorDue(lastSensor.current, now)) return;
-    lastSensor.current = now;
+    const source = String(reading.source ?? "");
+    if (!sensorDue(lastSensor.current[source] ?? null, now, sensorInterval(source))) return;
+    lastSensor.current[source] = now;
     state.current = record(state.current, { type: "sensor", atMs: now, reading });
   }, []);
 
