@@ -47,6 +47,7 @@ known-first-party = ["sajao_api", "sajao_gateway", "sajao_schemas", "sajao_worke
 "services/spikes/twin-risk/gpu/**" = ["S603", "S607", "S108", "E501"]
 "services/spikes/twin-removal/gpu/**" = ["E501"]
 "services/spikes/twin-depth/gpu/**" = ["E501"]
+"services/spikes/twin-noar/gpu/**" = ["E501"]
 
 [tool.mypy]
 python_version = "3.13"
@@ -58,6 +59,7 @@ exclude = [
     "services/spikes/twin-risk/gpu/",
     "services/spikes/twin-removal/gpu/",
     "services/spikes/twin-depth/gpu/",
+    "services/spikes/twin-noar/gpu/",
     "services/workers/gpu/",
 ]
 
