@@ -40,6 +40,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     plugins: [
       ...(config.plugins ?? []),
       ["expo-build-properties", { android: { buildArchs: variant.androidArchs } }],
+      "./plugins/with-mediapipe-ios",
     ],
   };
 };

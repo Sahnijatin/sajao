@@ -2,6 +2,8 @@ import { useTheme } from "@sajao/ui";
 import { DeviceMotion } from "expo-sensors";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Platform } from "react-native";
+import { arFrameEvent, type ArStatus, arPoseEvent } from "./ar/ar-events";
+import { type Detection, EMPTY_LABELS, type LabelState, updateLabels } from "./ar/labels";
 import { motionSample } from "./pose";
 import type { AnalysedFrame, CameraDiagnostics } from "./scan-camera";
 import { INITIAL_SCAN, scanReducer } from "./scan-session";
@@ -21,6 +23,18 @@ export interface ScanDebug {
   /** Seconds since the screen opened with no frame received; 0 once frames arrive. */
   waitingSeconds: number;
   diagnostics: CameraDiagnostics;
+  /** AR scan numbers, when the AR view is running. */
+  ar: ArDebug | null;
+}
+
+export interface ArDebug {
+  tracking: string;
+  lidar: boolean;
+  planes: number;
+  meshTriangles: number;
+  mappedPoints: number;
+  detector: boolean;
+  labels: number;
 }
 
 const EMPTY_DEBUG: ScanDebug = {
@@ -30,6 +44,7 @@ const EMPTY_DEBUG: ScanDebug = {
   analysisMs: 0,
   waitingSeconds: 0,
   diagnostics: { dropped: 0, lastError: null },
+  ar: null,
 };
 
 /** Scan state driven by analysed camera frames and the phone's motion sensors. */
@@ -45,7 +60,9 @@ export function useScanSession(active: boolean) {
     lastSeen: 0,
     last: null as AnalysedFrame | null,
     diagnostics: EMPTY_DEBUG.diagnostics,
+    ar: null as ArDebug | null,
   });
+  const [labels, setLabels] = useState<LabelState>(EMPTY_LABELS);
 
   useEffect(() => {
     if (!active) return;
@@ -74,6 +91,7 @@ export function useScanSession(active: boolean) {
         analysisMs: w.last?.analysisMs ?? 0,
         waitingSeconds: w.last ? 0 : Math.round((now - opened) / 1000),
         diagnostics: w.diagnostics,
+        ar: w.ar,
       });
       w.startMs = now;
       w.analysed = 0;
@@ -105,5 +123,42 @@ export function useScanSession(active: boolean) {
   }, []);
   const scanAnyway = useCallback(() => dispatch({ type: "scanAnyway" }), []);
 
-  return { state, debug, onFrame, onExposure, onDiagnostics, scanAnyway };
+  // AR scan: the native view reports status, pose and detections.
+  const platform = Platform.OS === "ios" ? "ios" : "android";
+  const onArStatus = useCallback(
+    (status: ArStatus & Omit<ArDebug, "tracking">) => {
+      counters.current.ar = {
+        tracking: status.tracking,
+        lidar: status.lidar,
+        planes: status.planes,
+        meshTriangles: status.meshTriangles,
+        mappedPoints: status.mappedPoints,
+        detector: status.detector,
+        labels: status.labels,
+      };
+      dispatch(arFrameEvent(status, platform, Date.now()));
+    },
+    [platform],
+  );
+  const onArPose = useCallback(
+    (pose: { yaw: number; pitch: number; tracking: string }) =>
+      dispatch(arPoseEvent(pose, Date.now())),
+    [],
+  );
+  const onArDetections = useCallback((detections: Detection[]) => {
+    setLabels((current) => updateLabels(current, detections, Date.now()));
+  }, []);
+
+  return {
+    state,
+    debug,
+    labels,
+    onFrame,
+    onExposure,
+    onDiagnostics,
+    onArStatus,
+    onArPose,
+    onArDetections,
+    scanAnyway,
+  };
 }

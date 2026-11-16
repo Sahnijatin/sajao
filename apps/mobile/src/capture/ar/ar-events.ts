@@ -1,0 +1,57 @@
+// Turns the native AR view's events into scan session events. Pure, so the
+// thresholds are tested without a phone.
+import type { ArTracking, ScanEvent } from "../scan-session";
+
+export interface ArStatus {
+  tracking: string;
+  brightness: number;
+  ambientIntensity: number;
+  featurePoints: number;
+}
+
+/**
+ * ARKit's light estimate in lumens: about 1000 in a well-lit room. Below
+ * this the room is dim even when auto exposure keeps the picture bright,
+ * like the camera ISO check in the 2D scan. Android reports no such value.
+ */
+export const IOS_LOW_LIGHT_LUMENS = 150;
+
+export function trackingOf(name: string): ArTracking {
+  switch (name) {
+    case "normal":
+    case "initializing":
+    case "limited":
+    case "notAvailable":
+      return name;
+    default:
+      return "none";
+  }
+}
+
+export function arFrameEvent(
+  status: ArStatus,
+  platform: "ios" | "android",
+  atMs: number,
+): Extract<ScanEvent, { type: "arFrame" }> {
+  return {
+    type: "arFrame",
+    brightness: Number.isFinite(status.brightness) ? status.brightness : 128,
+    lowLight: platform === "ios" && status.ambientIntensity < IOS_LOW_LIGHT_LUMENS,
+    featureCount: Math.max(0, Math.round(status.featurePoints)),
+    tracking: trackingOf(status.tracking),
+    atMs,
+  };
+}
+
+export function arPoseEvent(
+  pose: { yaw: number; pitch: number; tracking: string },
+  atMs: number,
+): Extract<ScanEvent, { type: "arPose" }> {
+  return {
+    type: "arPose",
+    yaw: pose.yaw,
+    pitch: pose.pitch,
+    tracking: trackingOf(pose.tracking),
+    atMs,
+  };
+}

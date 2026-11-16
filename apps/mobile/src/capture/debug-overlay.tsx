@@ -29,6 +29,17 @@ export function scanDebugLines(debug: ScanDebug, state: ScanState): [string, str
     ["gyro", state.hasGyro ? "1" : "0"],
     ["usable", round(state.usableFrames)],
     ["error", debug.diagnostics.lastError ?? "-"],
+    ...(debug.ar
+      ? ([
+          ["tracking", debug.ar.tracking],
+          ["lidar", debug.ar.lidar ? "1" : "0"],
+          ["planes", round(debug.ar.planes)],
+          ["meshTriangles", round(debug.ar.meshTriangles)],
+          ["mappedPoints", round(debug.ar.mappedPoints)],
+          ["detector", debug.ar.detector ? "1" : "0"],
+          ["labels", round(debug.ar.labels)],
+        ] as [string, string][])
+      : []),
   ];
 }
 

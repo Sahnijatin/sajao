@@ -78,7 +78,32 @@
       "yaw": "दिशा डिग्री",
       "gyro": "जाइरोस्कोप",
       "usable": "काम के फ़्रेम",
-      "error": "आख़िरी गड़बड़ी"
+      "error": "आख़िरी गड़बड़ी",
+      "tracking": "AR ट्रैकिंग",
+      "lidar": "LiDAR सेंसर",
+      "planes": "सतहें",
+      "meshTriangles": "मेश त्रिकोण",
+      "mappedPoints": "मैप पॉइंट",
+      "detector": "पहचान मॉडल",
+      "labels": "लेबल"
+    },
+    "labels": {
+      "fridge": "फ़्रिज",
+      "sofa": "सोफ़ा",
+      "chair": "कुर्सी",
+      "table": "मेज़",
+      "bed": "पलंग",
+      "tv": "टीवी",
+      "microwave": "माइक्रोवेव",
+      "oven": "ओवन",
+      "sink": "सिंक",
+      "toilet": "शौचालय",
+      "plant": "पौधा",
+      "laptop": "लैपटॉप",
+      "clock": "घड़ी",
+      "vase": "फूलदान",
+      "bench": "बेंच",
+      "toaster": "टोस्टर"
     }
   },
   "space": {
