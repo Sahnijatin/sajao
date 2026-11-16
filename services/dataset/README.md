@@ -8,8 +8,8 @@ Builds a labelled set of real Indian rooms for the on-device detector. Every sta
 | 1a. Record each video's license (YouTube Data API) | `licenses` | Ready |
 | 1b. Drop builder and designer promos | `prefilter` | Ready |
 | 2. Screen with Gemini on Vertex AI (keep or skip, room timestamps) | `screen` | Ready |
-| 3. Download kept segments (Windows) | `download` | Ready |
-| 4. Sample frames, drop near-duplicates and blur, blur faces | `frames` | Ready |
+| 3. Download kept room segments (Modal, through the proxy; or a home PC) | `cloud/app.py`, `download` | Ready |
+| 4. Sample frames, drop near-duplicates and blur, blur faces | `cloud/app.py`, `frames` | Ready |
 | 5. Auto-label and hand-check | | Next |
 | 6. Version the dataset on Modal | | Next |
 
@@ -69,9 +69,23 @@ Gemini on Vertex AI reads each public YouTube URL directly, so screening runs an
 - **Outputs.** `data/screening.jsonl` (one line per video, latest wins; reruns skip videos already answered by this `SCREEN_VERSION`), `data/segments.jsonl` (the kept room segments for `download --segments`, rewritten every run) and `data/screen_calls.jsonl` (the gateway's call log: outcomes, cost and latency, never prompts, URLs or keys).
 - Credentials are read from the environment and never printed or logged.
 
-## 3. Download kept segments (Windows PC)
+## 3 and 4 in the cloud: download and frames on Modal
 
-YouTube blocks downloads from cloud servers, so this stage runs on a home PC.
+YouTube blocks downloads from cloud addresses (a plain Modal test failed on 5 of 5 videos with "Sign in to confirm you're not a bot"), so the cloud job sends yt-dlp, and the ffmpeg it drives, through a residential proxy. Find, licenses, prefilter and screen run first, anywhere, and leave `data/sources.jsonl`, `data/licenses.jsonl` and `data/segments.jsonl`.
+
+```sh
+uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/dataset/cloud/app.py --limit-videos 5 --max-gb 0.5
+```
+
+- **Room segments only**, from screening: Creative Commons videos first, then the priority category. Unavailable videos are skipped.
+- **720p, video only.**
+- **GB cap per run** (`--max-gb`). The job counts the bytes the container receives while downloading (all of it through the proxy) and starts no segment whose estimate (2.5 Mbps plus 20 percent) would pass the cap.
+- **Proxy.** The Modal secret `dataset-proxy` holds `YTDLP_PROXY_URL` (Decodo, India, sticky session). The URL is never printed or logged, and is redacted from error text before it reaches the ledger. Each run reports the exit country.
+- **Outputs** on the Modal volume `sajao-dataset`: `clips/`, `frames/`, `downloads.jsonl`, `frames.jsonl`, `frames_done.jsonl`. Reruns skip finished clips and frames. Each run's report is appended to `data/cloud_runs.jsonl` locally; log its proxy GB and spend in Notion Spends.
+
+## 3. Download kept segments (home PC)
+
+A personal PC on a home connection needs no proxy. Company-managed machines are not used.
 
 ### One-time setup (PowerShell)
 

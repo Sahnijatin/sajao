@@ -12,7 +12,9 @@ from sajao_dataset.download import (
     clip_relpath,
     download_all,
     plan_head_segments,
+    plan_screened_segments,
     read_ledger,
+    redact,
     ytdlp_options,
 )
 from sajao_dataset.manifest import SourceRecord
@@ -197,3 +199,104 @@ def test_check_clip_rejects_truncated_and_empty_clips(tmp_path: Path) -> None:
     empty.write_bytes(b"\x00" * 262)  # what yt-dlp left behind on a failed seek
     with pytest.raises(RuntimeError, match="clip check failed"):
         check_clip(empty, seg(start=30, end=50), ffprobe="ffprobe")
+
+
+PROXY = "http://user-sp1-country-in-session-abc:S3cretPass@gate.example.com:10001"
+
+
+def test_ytdlp_options_route_through_the_proxy_only_when_given(tmp_path: Path) -> None:
+    assert "proxy" not in ytdlp_options(seg(), tmp_path / "x", max_height=720)
+    options = ytdlp_options(seg(), tmp_path / "x", max_height=720, proxy=PROXY)
+    assert options["proxy"] == PROXY
+    assert "height<=720" in options["format"]
+
+
+def test_redact_removes_the_proxy_and_any_credentials() -> None:
+    text = f"Unable to connect to proxy {PROXY}; also https://u:p@other.example/x"
+    clean = redact(text, PROXY)
+    assert "S3cretPass" not in clean and "user-sp1" not in clean
+    assert ":p@" not in clean and "[proxy]" in clean and "https://***@other.example" in clean
+    assert redact("no secrets here", None) == "no secrets here"
+
+
+def test_failed_downloads_never_store_the_proxy(tmp_path: Path) -> None:
+    def fetch(segment: Segment, tmp_stem: Path) -> Path:
+        raise RuntimeError(f"ProxyError: {PROXY} refused")
+
+    download_all(
+        [seg()],
+        clips_dir=tmp_path / "clips",
+        ledger_path=tmp_path / "d.jsonl",
+        fetch=fetch,
+        max_height=720,
+        pause_s=0,
+        secrets=(PROXY,),
+        sleep=lambda _: None,
+    )
+    stored = (tmp_path / "d.jsonl").read_text()
+    assert "S3cretPass" not in stored and "user-sp1" not in stored
+
+
+def test_download_stops_before_the_byte_cap(tmp_path: Path) -> None:
+    used = [0]
+
+    def fetch(segment: Segment, tmp_stem: Path) -> Path:
+        used[0] += 400  # what the network really carried for this segment
+        produced = tmp_stem.with_name(tmp_stem.name + ".mp4")
+        produced.write_bytes(b"x" * 100)
+        return produced
+
+    segments = [seg(start=i * 100, end=i * 100 + 10) for i in range(5)]
+    summary = download_all(
+        segments,
+        clips_dir=tmp_path / "clips",
+        ledger_path=tmp_path / "d.jsonl",
+        fetch=fetch,
+        max_height=720,
+        pause_s=0,
+        max_bytes=1000,
+        used_bytes=lambda: used[0],
+        bytes_per_s=10,  # 100 bytes estimated per 10 s segment
+        sleep=lambda _: None,
+    )
+    # 0+100, 400+100, 800+100 fit; 1200 used would not.
+    assert summary.downloaded == 3
+    assert summary.stopped_at_cap
+    assert len(read_ledger(tmp_path / "d.jsonl")) == 3
+
+
+def test_plan_screened_segments_takes_creative_commons_videos_first() -> None:
+    sources = [
+        source("aaaaaaaaaaa", "standard", 600).model_copy(update={"category": "empty_new_build"}),
+        source("bbbbbbbbbbb", "creative_commons", 600),
+        source("ccccccccccc", "standard", 600),
+        source("ddddddddddd", "creative_commons", 600).model_copy(
+            update={"category": "empty_new_build"}
+        ),
+    ]
+
+    def screened(video_id: str, start: float) -> Segment:
+        return Segment(
+            video_id=video_id,
+            start_s=start,
+            end_s=start + 20,
+            room_type="kitchen",
+            origin="screening",
+        )
+
+    segments = [
+        screened("aaaaaaaaaaa", 0),
+        screened("bbbbbbbbbbb", 60),
+        screened("bbbbbbbbbbb", 10),
+        screened("ccccccccccc", 0),
+        screened("ddddddddddd", 0),
+        screened("eeeeeeeeeee", 0),  # not in the manifest (unavailable): dropped
+        seg("ccccccccccc"),  # a head segment, not screened: dropped
+    ]
+    plan = plan_screened_segments(segments, sources, limit_videos=3)
+    assert [(s.video_id, s.start_s) for s in plan] == [
+        ("ddddddddddd", 0),  # Creative Commons and priority category
+        ("bbbbbbbbbbb", 10),  # Creative Commons, segments in time order
+        ("bbbbbbbbbbb", 60),
+        ("aaaaaaaaaaa", 0),  # standard license, priority category
+    ]

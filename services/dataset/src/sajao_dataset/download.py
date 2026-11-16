@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 import time
@@ -86,6 +87,27 @@ def plan_head_segments(
     return segments
 
 
+def plan_screened_segments(
+    segments: Iterable[Segment],
+    sources: Iterable[SourceRecord],
+    *,
+    limit_videos: int,
+) -> list[Segment]:
+    """Screened room segments for up to `limit_videos` videos: Creative Commons
+    videos first, then the priority category, then manifest order. Segments of
+    videos missing from `sources` (unavailable, or not in this manifest) are
+    dropped, as are segments that did not come from screening."""
+    order = {
+        s.video_id: (s.license != "creative_commons", *rank(s), i) for i, s in enumerate(sources)
+    }
+    by_video: dict[str, list[Segment]] = {}
+    for segment in segments:
+        if segment.origin == "screening" and segment.video_id in order:
+            by_video.setdefault(segment.video_id, []).append(segment)
+    chosen = sorted(by_video, key=lambda v: order[v])[:limit_videos]
+    return [seg for v in chosen for seg in sorted(by_video[v], key=lambda g: g.start_s)]
+
+
 def clip_relpath(segment: Segment) -> str:
     _, start, end = segment.key
     return f"{segment.video_id}/{start:05d}-{end:05d}.mp4"
@@ -98,6 +120,7 @@ def ytdlp_options(
     max_height: int,
     cookies_from_browser: str | None = None,
     ffmpeg_location: str | None = None,
+    proxy: str | None = None,
 ) -> dict[str, Any]:
     from yt_dlp.utils import download_range_func
 
@@ -118,6 +141,10 @@ def ytdlp_options(
         options["cookiesfrombrowser"] = (cookies_from_browser,)
     if ffmpeg_location:
         options["ffmpeg_location"] = ffmpeg_location
+    if proxy:
+        # yt-dlp also hands the proxy to ffmpeg for range downloads, so the page,
+        # the player and the media all leave from the same (sticky) address.
+        options["proxy"] = proxy
     return options
 
 
@@ -126,7 +153,11 @@ Fetch = Callable[[Segment, Path], Path]
 
 
 def ytdlp_fetch(
-    *, max_height: int, cookies_from_browser: str | None, ffmpeg_location: str | None
+    *,
+    max_height: int,
+    cookies_from_browser: str | None = None,
+    ffmpeg_location: str | None = None,
+    proxy: str | None = None,
 ) -> Fetch:
     def fetch(segment: Segment, tmp_stem: Path) -> Path:
         import yt_dlp
@@ -137,6 +168,7 @@ def ytdlp_fetch(
             max_height=max_height,
             cookies_from_browser=cookies_from_browser,
             ffmpeg_location=ffmpeg_location,
+            proxy=proxy,
         )
         url = f"https://www.youtube.com/watch?v={segment.video_id}"
         with yt_dlp.YoutubeDL(options) as ydl:
@@ -203,6 +235,18 @@ class Summary:
     skipped: int = 0
     failed: int = 0
     bytes: int = 0
+    stopped_at_cap: bool = False
+
+
+_CREDENTIALS = re.compile(r"(://)[^/@\s:]+:[^/@\s]+@")
+
+
+def redact(text: str, *secrets: str | None) -> str:
+    """Remove proxy URLs and any `user:password@` from error text before it is stored."""
+    for secret in secrets:
+        if secret:
+            text = text.replace(secret, "[proxy]")
+    return _CREDENTIALS.sub(r"\1***@", text)
 
 
 def read_ledger(path: Path) -> list[ClipRecord]:
@@ -220,9 +264,20 @@ def download_all(
     fetch: Fetch,
     max_height: int,
     pause_s: float,
+    max_bytes: int | None = None,
+    used_bytes: Callable[[], int] | None = None,
+    bytes_per_s: float = 0.0,
+    secrets: tuple[str | None, ...] = (),
     sleep: Callable[[float], None] = time.sleep,
     now: Callable[[], datetime] = lambda: datetime.now(UTC),
 ) -> Summary:
+    """Fetch each segment not already done.
+
+    With `max_bytes`, no segment starts once the bytes used so far plus this
+    segment's estimate (`bytes_per_s` times its length) would pass the cap.
+    `used_bytes` reports what the run has really transferred (for example the
+    container's received bytes); without it the clips' sizes are used.
+    """
     done = {
         (r.video_id, int(r.start_s), int(r.end_s))
         for r in read_ledger(ledger_path)
@@ -236,6 +291,11 @@ def download_all(
         if segment.key in done:
             summary.skipped += 1
             continue
+        if max_bytes is not None:
+            used = max(summary.bytes, used_bytes() if used_bytes else 0)
+            if used + (segment.end_s - segment.start_s) * bytes_per_s > max_bytes:
+                summary.stopped_at_cap = True
+                break
         if not first:
             sleep(pause_s)  # rate limit: one request burst per segment
         first = False
@@ -252,7 +312,8 @@ def download_all(
             summary.downloaded += 1
             summary.bytes += size
         except Exception as error:  # one bad video never stops the batch
-            record = _record(segment, "failed", None, None, None, max_height, str(error), now())
+            message = redact(str(error), *secrets)
+            record = _record(segment, "failed", None, None, None, max_height, message, now())
             summary.failed += 1
         finally:
             for leftover in tmp_dir.glob(f"{tmp_stem.name}*"):
