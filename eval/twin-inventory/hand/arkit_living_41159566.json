@@ -6,70 +6,49 @@
       "name": "sofa",
       "type": "furniture",
       "count": 2,
-      "aliases": [
-        "couch"
-      ]
+      "aliases": ["couch"]
     },
     {
       "name": "armchair",
       "type": "furniture",
       "count": 2,
-      "aliases": [
-        "chair"
-      ]
+      "aliases": ["chair"]
     },
     {
       "name": "ottoman",
       "type": "furniture",
       "count": 1,
-      "aliases": [
-        "footstool",
-        "pouf"
-      ]
+      "aliases": ["footstool", "pouf"]
     },
     {
       "name": "carved chair",
       "type": "furniture",
       "count": 1,
-      "aliases": [
-        "chair",
-        "wooden chair"
-      ]
+      "aliases": ["chair", "wooden chair"]
     },
     {
       "name": "wall cabinet",
       "type": "furniture",
       "count": 1,
-      "aliases": [
-        "cabinet",
-        "cupboard"
-      ]
+      "aliases": ["cabinet", "cupboard"]
     },
     {
       "name": "side table",
       "type": "furniture",
       "count": 1,
-      "aliases": [
-        "end table",
-        "table"
-      ]
+      "aliases": ["end table", "table"]
     },
     {
       "name": "table lamp",
       "type": "fixture",
       "count": 2,
-      "aliases": [
-        "lamp"
-      ]
+      "aliases": ["lamp"]
     },
     {
       "name": "wall light",
       "type": "fixture",
       "count": 1,
-      "aliases": [
-        "sconce",
-        "lamp"
-      ]
+      "aliases": ["sconce", "lamp"]
     },
     {
       "name": "telescope",
@@ -81,74 +60,49 @@
       "name": "light switch",
       "type": "fixture",
       "count": 1,
-      "aliases": [
-        "switch",
-        "switchboard"
-      ]
+      "aliases": ["switch", "switchboard"]
     },
     {
       "name": "framed picture",
       "type": "wall_item",
       "count": 10,
-      "aliases": [
-        "picture frame",
-        "painting",
-        "artwork",
-        "framed print",
-        "wall art"
-      ]
+      "aliases": ["picture frame", "painting", "artwork", "framed print", "wall art"]
     },
     {
       "name": "rug",
       "type": "textile",
       "count": 4,
-      "aliases": [
-        "carpet",
-        "kilim"
-      ]
+      "aliases": ["carpet", "kilim"]
     },
     {
       "name": "sheepskin rug",
       "type": "textile",
       "count": 1,
-      "aliases": [
-        "rug",
-        "fur rug"
-      ]
+      "aliases": ["rug", "fur rug"]
     },
     {
       "name": "curtain",
       "type": "textile",
       "count": 3,
-      "aliases": [
-        "drape"
-      ]
+      "aliases": ["drape"]
     },
     {
       "name": "throw blanket",
       "type": "textile",
       "count": 3,
-      "aliases": [
-        "blanket",
-        "throw"
-      ]
+      "aliases": ["blanket", "throw"]
     },
     {
       "name": "cushion",
       "type": "textile",
       "count": 4,
-      "aliases": [
-        "pillow"
-      ]
+      "aliases": ["pillow"]
     },
     {
       "name": "vase",
       "type": "decor",
       "count": 1,
-      "aliases": [
-        "jar",
-        "urn"
-      ]
+      "aliases": ["jar", "urn"]
     },
     {
       "name": "bowl",
@@ -160,17 +114,13 @@
       "name": "potted plant",
       "type": "decor",
       "count": 2,
-      "aliases": [
-        "plant"
-      ]
+      "aliases": ["plant"]
     },
     {
       "name": "candle",
       "type": "decor",
       "count": 2,
-      "aliases": [
-        "candle holder"
-      ]
+      "aliases": ["candle holder"]
     },
     {
       "name": "bottle",
@@ -182,43 +132,31 @@
       "name": "firewood",
       "type": "decor",
       "count": 1,
-      "aliases": [
-        "logs"
-      ]
+      "aliases": ["logs"]
     },
     {
       "name": "board games",
       "type": "decor",
       "count": 1,
-      "aliases": [
-        "games",
-        "boxes"
-      ]
+      "aliases": ["games", "boxes"]
     },
     {
       "name": "cds",
       "type": "decor",
       "count": 1,
-      "aliases": [
-        "books"
-      ]
+      "aliases": ["books"]
     },
     {
       "name": "picture frame",
       "type": "decor",
       "count": 3,
-      "aliases": [
-        "frame",
-        "framed picture"
-      ]
+      "aliases": ["frame", "framed picture"]
     },
     {
       "name": "fireplace tools",
       "type": "decor",
       "count": 1,
-      "aliases": [
-        "fire tools"
-      ]
+      "aliases": ["fire tools"]
     },
     {
       "name": "basket",
@@ -230,35 +168,25 @@
       "name": "candle stand",
       "type": "decor",
       "count": 1,
-      "aliases": [
-        "candle holder"
-      ]
+      "aliases": ["candle holder"]
     },
     {
       "name": "bookshelves",
       "type": "built_in",
       "count": 1,
-      "aliases": [
-        "bookshelf",
-        "bookcase",
-        "shelf"
-      ]
+      "aliases": ["bookshelf", "bookcase", "shelf"]
     },
     {
       "name": "fireplace",
       "type": "built_in",
       "count": 1,
-      "aliases": [
-        "hearth"
-      ]
+      "aliases": ["hearth"]
     },
     {
       "name": "radiator",
       "type": "built_in",
       "count": 2,
-      "aliases": [
-        "heater"
-      ]
+      "aliases": ["heater"]
     }
   ]
 }

@@ -12,125 +12,85 @@
       "name": "desk",
       "type": "furniture",
       "count": 1,
-      "aliases": [
-        "table"
-      ]
+      "aliases": ["table"]
     },
     {
       "name": "office chair",
       "type": "furniture",
       "count": 1,
-      "aliases": [
-        "chair",
-        "desk chair"
-      ]
+      "aliases": ["chair", "desk chair"]
     },
     {
       "name": "wooden chair",
       "type": "furniture",
       "count": 1,
-      "aliases": [
-        "chair"
-      ]
+      "aliases": ["chair"]
     },
     {
       "name": "table",
       "type": "furniture",
       "count": 1,
-      "aliases": [
-        "dining table",
-        "desk"
-      ]
+      "aliases": ["dining table", "desk"]
     },
     {
       "name": "wall shelf",
       "type": "furniture",
       "count": 1,
-      "aliases": [
-        "shelf",
-        "bookshelf"
-      ]
+      "aliases": ["shelf", "bookshelf"]
     },
     {
       "name": "chest of drawers",
       "type": "furniture",
       "count": 1,
-      "aliases": [
-        "drawers",
-        "cabinet",
-        "dresser"
-      ]
+      "aliases": ["drawers", "cabinet", "dresser"]
     },
     {
       "name": "glass cabinet",
       "type": "furniture",
       "count": 1,
-      "aliases": [
-        "terrarium",
-        "display cabinet",
-        "cabinet"
-      ]
+      "aliases": ["terrarium", "display cabinet", "cabinet"]
     },
     {
       "name": "pet hutch",
       "type": "decor",
       "count": 1,
-      "aliases": [
-        "cage",
-        "hutch"
-      ]
+      "aliases": ["cage", "hutch"]
     },
     {
       "name": "monitor",
       "type": "fixture",
       "count": 2,
-      "aliases": [
-        "computer monitor",
-        "screen",
-        "tv"
-      ]
+      "aliases": ["computer monitor", "screen", "tv"]
     },
     {
       "name": "computer tower",
       "type": "fixture",
       "count": 1,
-      "aliases": [
-        "pc",
-        "computer"
-      ]
+      "aliases": ["pc", "computer"]
     },
     {
       "name": "laptop",
       "type": "fixture",
       "count": 1,
-      "aliases": [
-        "computer"
-      ]
+      "aliases": ["computer"]
     },
     {
       "name": "television",
       "type": "fixture",
       "count": 1,
-      "aliases": [
-        "tv"
-      ]
+      "aliases": ["tv"]
     },
     {
       "name": "soundbar",
       "type": "fixture",
       "count": 1,
-      "aliases": [
-        "speaker"
-      ]
+      "aliases": ["speaker"]
     },
     {
       "name": "drying rack",
       "type": "decor",
       "count": 1,
-      "aliases": [
-        "clothes rack",
-        "rack"
-      ]
+      "aliases": ["clothes rack", "rack"]
     },
     {
       "name": "ironing board",
@@ -148,51 +108,37 @@
       "name": "rug",
       "type": "textile",
       "count": 1,
-      "aliases": [
-        "carpet"
-      ]
+      "aliases": ["carpet"]
     },
     {
       "name": "curtain",
       "type": "textile",
       "count": 1,
-      "aliases": [
-        "drape"
-      ]
+      "aliases": ["drape"]
     },
     {
       "name": "pillow",
       "type": "textile",
       "count": 1,
-      "aliases": [
-        "cushion"
-      ]
+      "aliases": ["cushion"]
     },
     {
       "name": "board games",
       "type": "decor",
       "count": 1,
-      "aliases": [
-        "games",
-        "boxes"
-      ]
+      "aliases": ["games", "boxes"]
     },
     {
       "name": "books",
       "type": "decor",
       "count": 1,
-      "aliases": [
-        "book"
-      ]
+      "aliases": ["book"]
     },
     {
       "name": "photo frame",
       "type": "decor",
       "count": 2,
-      "aliases": [
-        "picture frame",
-        "framed picture"
-      ]
+      "aliases": ["picture frame", "framed picture"]
     },
     {
       "name": "foam roller",
@@ -204,11 +150,7 @@
       "name": "floor convector",
       "type": "built_in",
       "count": 1,
-      "aliases": [
-        "heater",
-        "radiator",
-        "vent"
-      ]
+      "aliases": ["heater", "radiator", "vent"]
     }
   ]
 }
