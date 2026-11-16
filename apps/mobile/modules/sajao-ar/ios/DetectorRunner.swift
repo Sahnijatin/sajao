@@ -42,7 +42,7 @@ final class DetectorRunner {
     do {
       detector = try ObjectDetector(options: options)
     } catch {
-      loadError = String(describing: error).prefix(120).description
+      loadError = String(describing: error).prefix(600).description
     }
   }
 

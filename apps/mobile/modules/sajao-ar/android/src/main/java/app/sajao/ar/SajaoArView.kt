@@ -72,6 +72,8 @@ class SajaoArView(context: Context, appContext: AppContext) :
   private var running = false
   private var hostInForeground = true
   @Volatile private var torchOn = false
+  // The torch state the session was last configured with.
+  private var torchApplied = false
   @Volatile private var torchDirty = false
   @Volatile private var displayDirty = true
   private var viewWidth = 0
@@ -81,10 +83,13 @@ class SajaoArView(context: Context, appContext: AppContext) :
   private val shapes = WorldShapes()
   // Created with the view so it loads on its own thread before the scan
   // starts; never created lazily on ARCore's GL thread.
-  private val detector = Detector(context)
+  private val detector = Detector(context, ::countError)
   // Every new ARCore camera image, whether or not the detector is ready.
   private var cameraFrames = 0
   private var cpuImageSize = "-"
+  // The session as configured: plane finding, depth, focus and the camera
+  // configuration ARCore runs. Shown in the overlay.
+  private var sessionSummary = "-"
   private var lastLogAt = 0L
 
   private val view = FloatArray(16)
@@ -343,8 +348,9 @@ class SajaoArView(context: Context, appContext: AppContext) :
             .filter { it.imageSize.width <= 1920 }
             .maxByOrNull { it.imageSize.width * it.imageSize.height }
             ?.let { created.cameraConfig = it }
-        } catch (_: Throwable) {
+        } catch (error: Throwable) {
           // The default camera configuration still works.
+          countError(error)
         }
         // Raw depth: fewer pixels than smoothed depth, but measured, with a
         // real confidence image, and about half the compute.
@@ -354,7 +360,8 @@ class SajaoArView(context: Context, appContext: AppContext) :
         created.configure(config)
         val size = created.cameraConfig.imageSize
         cpuImageSize = "${size.width}x${size.height}, raw depth ${if (rawDepthSupported) "on" else "not supported"}"
-        Log.i(Detector.TAG, "ARCore session: planes horizontal and vertical, CPU image $cpuImageSize")
+        sessionSummary = describeSession(created)
+        Log.i(Detector.TAG, "ARCore session: $sessionSummary")
         session = created
       }
       current.resume()
@@ -365,8 +372,21 @@ class SajaoArView(context: Context, appContext: AppContext) :
       torchDirty = true
     } catch (error: Throwable) {
       running = false
-      emitStatus(mapOf("tracking" to "notAvailable", "error" to (error.message ?: "AR could not start")))
+      Log.e(Detector.TAG, "AR could not start", error)
+      emitStatus(mapOf("tracking" to "notAvailable", "error" to ErrorText.describe(error)))
     }
+  }
+
+  /** The configuration ARCore actually runs, read back from the session. */
+  private fun describeSession(session: Session): String = try {
+    val config = session.config
+    val camera = session.cameraConfig
+    "planes ${config.planeFindingMode}, depth ${config.depthMode}, focus ${config.focusMode}, " +
+      "update ${config.updateMode}, cpu ${camera.imageSize.width}x${camera.imageSize.height}, " +
+      "texture ${camera.textureSize.width}x${camera.textureSize.height}, " +
+      "fps ${camera.fpsRange.lower}-${camera.fpsRange.upper}, depth sensor ${camera.depthSensorUsage}"
+  } catch (error: Throwable) {
+    "unreadable: ${ErrorText.describe(error, 200)}"
   }
 
   private fun pause() {
@@ -477,7 +497,7 @@ class SajaoArView(context: Context, appContext: AppContext) :
   private fun countError(error: Throwable) {
     val name = error.javaClass.simpleName.ifEmpty { "Error" }
     errorCounts.merge(name, 1, Int::plus)
-    lastError = "$name: ${error.message ?: ""}".take(120)
+    lastError = ErrorText.describe(error, 400)
   }
 
   /**
@@ -584,12 +604,18 @@ class SajaoArView(context: Context, appContext: AppContext) :
   }
 
   private fun applyTorch(session: Session) {
+    // Reconfigure the session only when the torch really changed: every
+    // resume used to reconfigure it on the first frame for nothing.
+    val wanted = torchOn
+    if (wanted == torchApplied) return
     try {
       val config = session.config
-      config.flashMode = if (torchOn) Config.FlashMode.TORCH else Config.FlashMode.OFF
+      config.flashMode = if (wanted) Config.FlashMode.TORCH else Config.FlashMode.OFF
       session.configure(config)
-    } catch (_: Throwable) {
+      torchApplied = wanted
+    } catch (error: Throwable) {
       // Not every phone allows the torch during AR.
+      countError(error)
     }
   }
 
@@ -672,10 +698,18 @@ class SajaoArView(context: Context, appContext: AppContext) :
     var lowest: Float? = null
     var tracking = 0
     var paused = 0
+    var stopped = 0
+    var merged = 0
+    var total = 0
     val seen = HashSet<Plane>()
     for (plane in session.getAllTrackables(Plane::class.java)) {
+      total += 1
       if (plane.subsumedBy != null || plane.trackingState != TrackingState.TRACKING) {
-        if (plane.trackingState == TrackingState.PAUSED) paused += 1
+        when {
+          plane.subsumedBy != null -> merged += 1
+          plane.trackingState == TrackingState.PAUSED -> paused += 1
+          else -> stopped += 1
+        }
         continue
       }
       tracking += 1
@@ -694,7 +728,9 @@ class SajaoArView(context: Context, appContext: AppContext) :
       drawOutline(plane, outline, now)
     }
     planeCount = planeOutlines.size
-    planeStates = "tracking $tracking paused $paused"
+    // Every plane ARCore has ever reported in this session, by what became
+    // of it: "of 0" means ARCore itself found none.
+    planeStates = "tracking $tracking paused $paused stopped $stopped merged $merged of $total"
     // The lowest tracked upward plane is the floor; keep the last one seen.
     if (lowest != null) floorY = lowest
   }
@@ -860,6 +896,7 @@ class SajaoArView(context: Context, appContext: AppContext) :
         "detector" to detector.isAvailable,
         "detectorStatus" to detector.status,
         "cameraImage" to cpuImageSize,
+        "session" to sessionSummary,
         "planeStates" to planeStates,
         "errors" to errorCounts.entries.sortedByDescending { it.value }.joinToString(", ") { "${it.key} ${it.value}" },
         "lastError" to lastError,
@@ -895,7 +932,8 @@ class SajaoArView(context: Context, appContext: AppContext) :
       pose.getRotationQuaternion(rotation, 0)
       val intrinsics = frame.camera.imageIntrinsics
       CaptureCamera(rotation, pose.translation, intrinsics.focalLength, intrinsics.principalPoint, intrinsics.imageDimensions)
-    } catch (_: Throwable) {
+    } catch (error: Throwable) {
+      countError(error)
       return
     }
     val hits = ArrayList<Map<String, Any>>(SurfaceSample.GRID.size)
@@ -910,7 +948,8 @@ class SajaoArView(context: Context, appContext: AppContext) :
           val plane = result.trackable as? Plane
           plane != null && plane.subsumedBy == null && nearPlane(plane, result.hitPose.translation)
         }
-      } catch (_: Throwable) {
+      } catch (error: Throwable) {
+        countError(error)
         null
       }
       if (hit == null) {
@@ -996,7 +1035,8 @@ class SajaoArView(context: Context, appContext: AppContext) :
       )
       val hits = try {
         frame.hitTest(origin, 0, direction, 0)
-      } catch (_: Throwable) {
+      } catch (error: Throwable) {
+        countError(error)
         emptyList()
       }
       fun rangeOf(position: FloatArray) =

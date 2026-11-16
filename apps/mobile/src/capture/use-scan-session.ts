@@ -67,6 +67,8 @@ export interface ArDebug {
   /** Detector load and self-test result. */
   detectorStatus: string;
   cameraImage: string;
+  /** The AR session as configured (plane finding, depth, camera configuration). */
+  session: string;
   planeStates: string;
   surfaceHits: string;
   /** Caught errors by type, the last message, and the scan video's state. */
@@ -207,6 +209,7 @@ export function useScanSession(active: boolean) {
         detectorError: status.detectorError ?? "",
         detectorStatus: status.detectorStatus ?? "",
         cameraImage: status.cameraImage ?? "",
+        session: status.session ?? "",
         planeStates: status.planeStates ?? "",
         surfaceHits: status.surfaceHits ?? "",
         errors: status.errors ?? "",

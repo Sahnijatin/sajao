@@ -104,7 +104,7 @@ class YuvCopy(
  * at a time on a background thread. Any failure means no detections: the
  * scan carries on without labels.
  */
-class Detector(context: Context) {
+class Detector(context: Context, private val onError: (Throwable) -> Unit = {}) {
   private val executor = Executors.newSingleThreadExecutor()
   private val busy = AtomicBoolean(false)
   @Volatile private var detector: ObjectDetector? = null
@@ -147,7 +147,9 @@ class Detector(context: Context) {
       status = "loaded (${SystemClock.elapsedRealtime() - started} ms, ${bytes.size / 1024} KB model)"
       Log.i(TAG, "detector $status")
     } catch (error: Throwable) {
-      status = "error: ${error.javaClass.simpleName}: ${error.message ?: ""}".take(160)
+      // The whole message, the cause and where it was thrown: this line in
+      // the overlay is the only log a tester can read off a phone.
+      status = "error: ${ErrorText.describe(error)}"
       Log.e(TAG, "detector failed to load", error)
     }
   }
@@ -180,8 +182,9 @@ class Detector(context: Context) {
             ),
           )
         }
-      } catch (_: Throwable) {
-        // No labels this time.
+      } catch (error: Throwable) {
+        // No labels this time; the overlay shows why.
+        onError(error)
       } finally {
         busy.set(false)
       }

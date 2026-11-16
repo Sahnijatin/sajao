@@ -130,8 +130,9 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
   // AR-anchored scan where the phone supports it; otherwise the 2D scan.
   const capabilities = useMemo(() => getArCapabilities(), []);
   const ArView = useMemo(() => getArView(), []);
-  const [arFailed, setArFailed] = useState(false);
-  const arMode = capabilities.arSupported && ArView !== null && !arFailed;
+  // The native error when the AR session could not start; the 2D scan takes over.
+  const [arStartError, setArStartError] = useState<string | null>(null);
+  const arMode = capabilities.arSupported && ArView !== null && arStartError === null;
   // The capture package: keyframes with poses, depth, planes, detections, sensor log.
   const capture = useCaptureRecorder({
     tracking: capabilities.platform === "ios" ? "arkit" : "arcore",
@@ -219,7 +220,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
           labels={labelProps}
           onArStatus={({ nativeEvent }) => {
             // A session that cannot start falls back to the 2D scan.
-            if ("error" in nativeEvent) setArFailed(true);
+            if ("error" in nativeEvent) setArStartError(String(nativeEvent.error) || "unknown");
             else onArStatus(nativeEvent);
           }}
           onArPose={({ nativeEvent }) => {
@@ -347,7 +348,9 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos }: CaptureScreenPro
           }}
         >
           <View style={{ flex: 1 }}>
-            {showDebug ? <DebugOverlay debug={debug} state={state} /> : null}
+            {showDebug ? (
+              <DebugOverlay debug={debug} state={state} arStartError={arStartError} />
+            ) : null}
           </View>
           <MiniMap mapped={mapped} yaw={state.pose.yaw} />
         </View>
