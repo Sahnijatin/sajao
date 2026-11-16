@@ -23,14 +23,24 @@ final class DetectorRunner {
   /// The detector sees images this wide; plenty for room-scale objects.
   private let inputWidth: CGFloat = 480
 
+  /// Why the detector could not load, for the debug overlay; nil when it loaded.
+  private(set) var loadError: String?
+
   init() {
-    guard let path = DetectorRunner.modelPath() else { return }
+    guard let path = DetectorRunner.modelPath() else {
+      loadError = "model file not found"
+      return
+    }
     let options = ObjectDetectorOptions()
     options.baseOptions.modelAssetPath = path
     options.runningMode = .image
     options.maxResults = 10
     options.scoreThreshold = 0.4
-    detector = try? ObjectDetector(options: options)
+    do {
+      detector = try ObjectDetector(options: options)
+    } catch {
+      loadError = String(describing: error).prefix(120).description
+    }
   }
 
   var isAvailable: Bool { detector != nil }
@@ -59,10 +69,11 @@ final class DetectorRunner {
   /// model was trained on. Must be called on the main thread.
   func detect(
     pixelBuffer: CVPixelBuffer,
-    completion: @escaping ([UprightDetection]) -> Void
+    completion: @escaping ([UprightDetection], Double) -> Void
   ) {
     guard let detector, !busy else { return }
     busy = true
+    let started = CACurrentMediaTime()
     let image = CIImage(cvPixelBuffer: pixelBuffer).oriented(.right)
     queue.async { [weak self] in
       guard let self else { return }
@@ -97,9 +108,10 @@ final class DetectorRunner {
           )
         }
       }
+      let milliseconds = (CACurrentMediaTime() - started) * 1000
       DispatchQueue.main.async {
         self.busy = false
-        completion(found)
+        completion(found, milliseconds)
       }
     }
   }

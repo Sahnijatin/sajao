@@ -85,7 +85,10 @@
       "meshTriangles": "Mesh triangles",
       "mappedPoints": "Mapped points",
       "detector": "Detector",
-      "labels": "Labels"
+      "labels": "Labels",
+      "detectionsFound": "Detections",
+      "detectionsPlaced": "Detections placed",
+      "detectorError": "Detector error"
     },
     "labels": {
       "fridge": "Fridge",

@@ -27,6 +27,19 @@ export interface ArStatusEvent {
   ambientIntensity: number;
   detector: boolean;
   labels: number;
+  /** Running totals for the debug overlay: AR camera frames seen since the view started. */
+  frames?: number;
+  /** Detector runs finished. */
+  detectorRuns?: number;
+  /** Frames due for the detector while it was still busy. */
+  detectorSkipped?: number;
+  /** How long the latest detector run took, in milliseconds. */
+  detectorMs?: number;
+  /** Detections returned so far, and how many were placed in the room. */
+  detectionsFound?: number;
+  detectionsPlaced?: number;
+  /** Why the detector failed to load; empty when it loaded. */
+  detectorError?: string;
 }
 
 export interface ArPoseEvent {

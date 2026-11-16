@@ -85,7 +85,10 @@
       "meshTriangles": "मेश त्रिकोण",
       "mappedPoints": "मैप पॉइंट",
       "detector": "पहचान मॉडल",
-      "labels": "लेबल"
+      "labels": "लेबल",
+      "detectionsFound": "पहचान",
+      "detectionsPlaced": "रखी गई पहचान",
+      "detectorError": "डिटेक्टर त्रुटि"
     },
     "labels": {
       "fridge": "फ़्रिज",
