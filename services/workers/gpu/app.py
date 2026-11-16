@@ -1557,6 +1557,8 @@ def golden_room(capture: str, tape: str, out: str = "") -> None:
     sheet = json.loads(Path(tape).read_text())
     room = read_sheet(sheet).room or Path(capture).name  # a bad sheet stops here, before any GPU
     slug = re.sub(r"[^a-z0-9]+", "-", room.lower()).strip("-") or "room"
+    if not (Path(capture) / "capture.json").is_file():
+        raise SystemExit(f"{capture} has no capture.json: pass the capture folder itself")
     with vol.batch_upload(force=True) as batch:
         batch.put_directory(capture, f"golden/{slug}")
     result = golden_room_cpu.remote(slug, sheet)
