@@ -14,6 +14,7 @@ import json
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 import requests
 
@@ -38,7 +39,7 @@ QUERIES = {
 }
 
 
-def get(url: str, **kwargs) -> requests.Response:
+def get(url: str, **kwargs: Any) -> requests.Response:
     for attempt in range(6):
         r = requests.get(url, headers=UA, timeout=60, **kwargs)
         if r.status_code != 429 and r.status_code < 500:
