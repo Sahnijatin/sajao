@@ -273,7 +273,7 @@ sam3d_image = (
         "pip install hatchling==1.27.0 hatch-requirements-txt==0.4.1 editables==0.5",
         "cd /opt/sam3d && PIP_EXTRA_INDEX_URL='https://download.pytorch.org/whl/cu121' pip install -e '.[dev]'",
         "cd /opt/sam3d && PIP_EXTRA_INDEX_URL='https://download.pytorch.org/whl/cu121' pip install --no-build-isolation -e '.[p3d]'",
-        "cd /opt/sam3d && PIP_FIND_LINKS='https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.5.1_cu121.html' pip install -e '.[inference]'",
+        "cd /opt/sam3d && PIP_FIND_LINKS='https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.5.1_cu121.html' pip install --no-build-isolation -e '.[inference]'",
         "cd /opt/sam3d && bash ./patching/hydra || true",
     )
     .env({"HF_HOME": "/bk/hf", "PYTHONUNBUFFERED": "1", "PYTHONPATH": "/root"})
