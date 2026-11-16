@@ -1,6 +1,26 @@
 """Pinned search queries. Changing the list means a new query set version."""
 
-QUERY_SET = "youtube-v1"
+from sajao_dataset.manifest import Category
+
+QUERY_SET = "youtube-v2"
+
+# Priority category: empty or newly handed-over homes. They show bare walls, floors,
+# windows and doors, which is what the twin's room shell and the new-home buyer need.
+PRIORITY_QUERIES: tuple[str, ...] = (
+    "empty flat tour",
+    "empty 2bhk flat tour",
+    "empty 3bhk flat tour",
+    "unfurnished flat tour india",
+    "new flat tour before interior",
+    "bare flat tour india",
+    "possession day flat tour",
+    "flat handover tour india",
+    "new home tour empty india",
+    "empty house tour india",
+    "khali flat tour",
+    "खाली फ्लैट टूर",
+    "नया फ्लैट टूर",
+)
 
 QUERIES: tuple[str, ...] = (
     # Whole-home tours by city and size.
@@ -43,3 +63,9 @@ QUERIES: tuple[str, ...] = (
     "बेडरूम टूर",
     "घर की सजावट टूर",
 )
+
+ALL_QUERIES: tuple[str, ...] = PRIORITY_QUERIES + QUERIES
+
+
+def category_of(query: str) -> Category:
+    return "empty_new_build" if query in PRIORITY_QUERIES else "general"

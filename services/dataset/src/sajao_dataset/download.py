@@ -26,8 +26,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from sajao_dataset.manifest import SourceRecord
 from sajao_dataset.prefilter import Decision
-
-LICENSE_ORDER = {"creative_commons": 0, "standard": 1, "unknown": 2}
+from sajao_dataset.youtube import rank
 
 
 class Segment(BaseModel):
@@ -75,10 +74,11 @@ def plan_head_segments(
     head_s: float,
     limit: int,
 ) -> list[Segment]:
-    """One head segment per kept video, Creative Commons first, up to `limit` videos."""
+    """One head segment per kept video, up to `limit` videos: the priority category
+    first, then Creative Commons first (see `youtube.rank`)."""
     keep = {d.video_id for d in decisions if d.keep}
     kept = [s for s in sources if s.video_id in keep]
-    kept.sort(key=lambda s: LICENSE_ORDER[s.license])  # stable: manifest order within a license
+    kept.sort(key=rank)  # stable: manifest order within a rank
     segments = []
     for source in kept[:limit]:
         end = min(head_s, source.duration_s) if source.duration_s else head_s

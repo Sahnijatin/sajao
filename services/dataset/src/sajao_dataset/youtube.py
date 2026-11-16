@@ -24,7 +24,14 @@ from urllib.parse import quote_plus
 import httpx
 from pydantic import HttpUrl
 
-from sajao_dataset.manifest import FoundBy, License, LicenseEvidence, SourceRecord
+from sajao_dataset.manifest import (
+    CATEGORY_RANK,
+    Category,
+    FoundBy,
+    License,
+    LicenseEvidence,
+    SourceRecord,
+)
 
 MIN_DURATION_S = 60
 MAX_DURATION_S = 60 * 60
@@ -176,6 +183,11 @@ def parse_iso_duration(value: str | None) -> int | None:
 _LICENSE_RANK = {"creative_commons": 0, "standard": 1, "unknown": 2}
 
 
+def rank(record: SourceRecord) -> tuple[int, int]:
+    """Sort key: priority category first, then the most reusable license."""
+    return (CATEGORY_RANK[record.category], _LICENSE_RANK[record.license])
+
+
 def find(
     search: Search,
     queries: Iterable[str],
@@ -184,9 +196,11 @@ def find(
     seen: set[str],
     per_query: int,
     max_new: int,
+    category_of: Callable[[str], Category] = lambda query: "general",
     now: Callable[[], datetime] = lambda: datetime.now(UTC),
 ) -> list[SourceRecord]:
-    """Run every query in both license passes and return new records, Creative Commons first.
+    """Run every query in both license passes and return new records: the priority
+    category first, then Creative Commons first within each category.
 
     Videos in `seen` are skipped. When a video turns up in several passes, the
     record with the strongest license evidence wins.
@@ -209,16 +223,14 @@ def find(
                     license_evidence=hit.license_evidence,
                     query=query,
                     query_set=query_set,
+                    category=category_of(query),
                     found_by=search.name,
                     found_at=now(),
                 )
                 current = best.get(hit.video_id)
-                if (
-                    current is None
-                    or _LICENSE_RANK[record.license] < _LICENSE_RANK[current.license]
-                ):
+                if current is None or rank(record) < rank(current):
                     best[hit.video_id] = record
-    ordered = sorted(best.values(), key=lambda r: _LICENSE_RANK[r.license])
+    ordered = sorted(best.values(), key=rank)
     return ordered[:max_new]
 
 
