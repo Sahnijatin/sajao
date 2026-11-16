@@ -270,6 +270,7 @@ sam3d_image = (
         f"git clone https://github.com/facebookresearch/sam-3d-objects /opt/sam3d && cd /opt/sam3d && git checkout {SAM3D_REF}",
         # nvidia-pyindex only registers NVIDIA's package index, which the builders cannot reach.
         "cd /opt/sam3d && sed -i '/nvidia-pyindex/d' requirements*.txt pyproject.toml",
+        "pip install hatchling==1.27.0 hatch-requirements-txt==0.4.1 editables==0.5",
         "cd /opt/sam3d && PIP_EXTRA_INDEX_URL='https://download.pytorch.org/whl/cu121' pip install -e '.[dev]'",
         "cd /opt/sam3d && PIP_EXTRA_INDEX_URL='https://download.pytorch.org/whl/cu121' pip install --no-build-isolation -e '.[p3d]'",
         "cd /opt/sam3d && PIP_FIND_LINKS='https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.5.1_cu121.html' pip install -e '.[inference]'",
