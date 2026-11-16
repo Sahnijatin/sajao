@@ -7,7 +7,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./validate": "./src/validate.ts",
-    "./v1.schema.json": "./generated/v1.schema.json"
+    "./v1.schema.json": "./generated/v1.schema.json",
+    "./twin": "./src/twin.ts"
   },
   "scripts": {
     "generate": "node scripts/generate.mjs",

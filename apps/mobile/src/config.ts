@@ -51,8 +51,20 @@ export function parseConfig(env: Env): AppConfig {
   };
 }
 
+export type ConfigResult = { ok: true; config: AppConfig } | { ok: false; error: Error };
+
+/** Like parseConfig, but a bad value comes back as a result instead of an exception. */
+export function loadConfig(env: Env): ConfigResult {
+  try {
+    return { ok: true, config: parseConfig(env) };
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error : new Error(String(error)) };
+  }
+}
+
 // Expo inlines EXPO_PUBLIC_* only when each is read by its full name.
-export const config = parseConfig({
+// Loading never throws: the root layout shows an error screen for a bad value.
+export const configResult = loadConfig({
   EXPO_PUBLIC_ENVIRONMENT: process.env.EXPO_PUBLIC_ENVIRONMENT,
   EXPO_PUBLIC_API_URL: process.env.EXPO_PUBLIC_API_URL,
   EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
