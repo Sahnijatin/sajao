@@ -292,7 +292,23 @@ describe("mesh tracker", () => {
 
   it("maps points to screen pixels for drawing", () => {
     const mesh = updateMesh(EMPTY_MESH, seen([{ x: 0.5, y: 0.25 }]));
-    expect(toScreen(mesh, { width: 390, height: 844 })).toEqual([{ x: 195, y: 211 }]);
+    expect(toScreen(mesh, { width: 390, height: 844 }, 390 / 844)).toEqual([{ x: 195, y: 211 }]);
+  });
+
+  it("crops like the preview when the frame is wider than the screen", () => {
+    // A 9:16 frame on a taller screen: full height shown, sides cropped.
+    const mesh = updateMesh(
+      EMPTY_MESH,
+      seen([
+        { x: 0.5, y: 0.5 },
+        { x: 0, y: 0 },
+      ]),
+    );
+    const [first, second] = toScreen(mesh, { width: 390, height: 844 }, 9 / 16);
+    const shownWidth = 844 * (9 / 16);
+    expect(first).toEqual({ x: -(shownWidth - 390) / 2, y: 0 });
+    expect(second?.x).toBeCloseTo(195);
+    expect(second?.y).toBeCloseTo(422);
   });
 });
 
@@ -304,7 +320,10 @@ describe("scan guardrails", () => {
     glare: 0.01,
     sharpness: 500,
     rotationRate: 10,
+    acceleration: 0.3,
     rollDegrees: 2,
+    pitchDegrees: 5,
+    isoRatio: 0.2,
   };
 
   it("are all good in a well-lit, steady, level scan", () => {
@@ -313,8 +332,11 @@ describe("scan guardrails", () => {
 
   it.each([
     ["light", { brightness: 20 }],
+    ["light", { isoRatio: 0.97 }],
     ["motion", { rotationRate: 140 }],
+    ["motion", { acceleration: 6 }],
     ["level", { rollDegrees: -25 }],
+    ["level", { pitchDegrees: 50 }],
     ["glare", { glare: 0.4 }],
   ] as const)("warns about %s", (id, change) => {
     const state = evaluateGuardrails(ALL_GOOD, { ...good, ...change });
@@ -322,14 +344,19 @@ describe("scan guardrails", () => {
     expect(Object.values(state).filter((status) => status === "warn")).toHaveLength(1);
   });
 
+  it("stays good for a slow pan and turns amber for a swing", () => {
+    expect(evaluateGuardrails(ALL_GOOD, { ...good, rotationRate: 35 }).motion).toBe("good");
+    expect(evaluateGuardrails(ALL_GOOD, { ...good, rotationRate: 180 }).motion).toBe("warn");
+  });
+
   it("does not flicker when a reading hovers at the limit", () => {
-    let state = evaluateGuardrails(ALL_GOOD, { ...good, brightness: 44 });
+    let state = evaluateGuardrails(ALL_GOOD, { ...good, brightness: 59 });
     expect(state.light).toBe("warn");
     // Just over the limit is not enough to clear a warning...
-    state = evaluateGuardrails(state, { ...good, brightness: 47 });
+    state = evaluateGuardrails(state, { ...good, brightness: 63 });
     expect(state.light).toBe("warn");
     // ...it has to clear it with a margin.
-    state = evaluateGuardrails(state, { ...good, brightness: 60 });
+    state = evaluateGuardrails(state, { ...good, brightness: 70 });
     expect(state.light).toBe("good");
   });
 

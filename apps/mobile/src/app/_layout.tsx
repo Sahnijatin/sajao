@@ -8,6 +8,7 @@ import { type FontSource, useFonts } from "expo-font";
 import { Stack } from "expo-router/stack";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useSyncExternalStore } from "react";
+import { useTranslation } from "react-i18next";
 import { Platform } from "react-native";
 import { ErrorScreen } from "@/components/error-screen";
 import { configResult } from "@/config";
@@ -44,6 +45,7 @@ const fonts: Record<string, FontSource> = {
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts(fonts);
+  const { t } = useTranslation();
   const language = useSettings((state) => state.language);
 
   useEffect(() => {
@@ -62,12 +64,16 @@ export default function RootLayout() {
     <ThemeProvider>
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="capture" options={{ presentation: "fullScreenModal" }} />
+        {/* Every route has a title: it is also the back button label on the next screen. */}
+        <Stack.Screen name="(tabs)" options={{ title: t("nav.app") }} />
+        <Stack.Screen
+          name="capture"
+          options={{ title: t("nav.capture"), presentation: "fullScreenModal" }}
+        />
         <Stack.Protected guard={previewScreensEnabled()}>
-          <Stack.Screen name="gallery" options={{ headerShown: true, title: "Gallery" }} />
-          <Stack.Screen name="space-preview" />
-          <Stack.Screen name="taste-preview" />
+          <Stack.Screen name="gallery" options={{ headerShown: true, title: t("nav.gallery") }} />
+          <Stack.Screen name="space-preview" options={{ title: t("nav.spacePreview") }} />
+          <Stack.Screen name="taste-preview" options={{ title: t("nav.tastePreview") }} />
         </Stack.Protected>
       </Stack>
     </ThemeProvider>
