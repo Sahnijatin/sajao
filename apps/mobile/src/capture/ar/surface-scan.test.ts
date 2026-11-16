@@ -59,3 +59,17 @@ describe("AR scan coverage from surface samples", () => {
     expect(canFinish(state)).toBe(false);
   });
 });
+
+describe("one space per scan", () => {
+  it("counts nothing beyond a doorway and resumes on coming back", () => {
+    const outside = {
+      ...INITIAL_SCAN,
+      tracking: "normal" as const,
+      doorway: { home: {}, beyond: { wall: true }, outside: true },
+    };
+    const sample = { type: "arSurfaces" as const, sharpness: 100, hits: floor(0, 0), atMs: 1 };
+    expect(reduce(outside, sample).surfaces.accepted).toBe(0);
+    const back = { ...outside, doorway: { home: {}, beyond: { wall: false }, outside: false } };
+    expect(reduce(back, sample).surfaces.accepted).toBe(1);
+  });
+});

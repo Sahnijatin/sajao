@@ -333,6 +333,11 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
           "detectorClass": detection.detectorClass,
           "score": Double(detection.score),
           "surface": sighting.surface,
+          // The upright box, for "step back" when a large object is cut off.
+          "box": [
+            "x": Double(detection.box.minX), "y": Double(detection.box.minY),
+            "width": Double(detection.box.width), "height": Double(detection.box.height),
+          ],
         ]
         self.detectionsFound += 1
         if let point = sighting.point {

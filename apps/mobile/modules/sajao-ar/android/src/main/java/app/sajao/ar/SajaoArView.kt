@@ -696,6 +696,13 @@ class SajaoArView(context: Context, appContext: AppContext) :
       entry["detectorClass"] = detection.detectorClass
       entry["score"] = detection.score.toDouble()
       entry["surface"] = Surface.NONE
+      // The upright box, for "step back" when a large object is cut off.
+      entry["box"] = mapOf(
+        "x" to detection.left.toDouble(),
+        "y" to detection.top.toDouble(),
+        "width" to detection.width.toDouble(),
+        "height" to detection.height.toDouble(),
+      )
       val hits = try {
         frame.hitTest(origin, 0, direction, 0)
       } catch (_: Throwable) {
