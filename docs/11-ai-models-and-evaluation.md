@@ -31,7 +31,7 @@ The on-device detector knows COCO classes, not Indian home objects. `services/da
 
 ## Object detection for the twin
 
-The twin finds objects on the server with an open-vocabulary detector, prompted with a pinned list of general and Indian home object names (diwan, puja unit, jhoola, almirah, shoe rack, gas stove, floor seating and others). YOLOE is the default. The detector sits behind a swappable interface, and Grounding DINO and OWLv2 (both Apache-2.0) are benchmarked on the same Indian-object test set, so the twin can switch within a day if the legal review declines YOLOE. A fine-tuned Indian-home detector is trained only if the default misses the recall bar on that test set.
+The twin finds objects on the server with an open-vocabulary detector, prompted with a pinned list of general and Indian home object names (diwan, puja unit, jhoola, almirah, shoe rack, gas stove, floor seating and others). YOLOE is the default. The detector sits behind a swappable interface, and Grounding DINO and OWLv2 (both Apache-2.0) are benchmarked on the same Indian-object test set, so the twin can switch within a day if the legal review declines YOLOE. A fine-tuned Indian-home detector is trained only if the default misses the recall bar on that test set. A first benchmark on openly licensed web photos, before the scan test set exists, is in `eval/twin-indian/REPORT.md`: OWLv2 found 83% of the Indian objects, Grounding DINO 48% and YOLOE 9%. The detector order is one setting (`SAJAO_DETECTORS`).
 
 ## Render bake-off
 
