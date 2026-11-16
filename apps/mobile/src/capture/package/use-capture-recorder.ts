@@ -56,7 +56,7 @@ export function useCaptureRecorder(ar: CapturePackage["ar"]) {
     } catch {
       // Keyframes, detections and the sensor log still make a package.
     }
-    const local = localCapture(captureId, state.current, files);
+    const local = localCapture(captureId, state.current, files, files.video ?? null);
     setLast(local);
     return local;
   }, [captureId, setLast]);

@@ -9,10 +9,14 @@ import { filesToUpload, type PackageFiles, record, type RecorderState } from "./
 export interface NativeKeyframe {
   uri: string;
   sharpness: number;
-  yaw: number;
-  pitch: number;
+  /** Where the camera pointed; missing while tracking was lost (the frame is still kept). */
+  yaw?: number;
+  pitch?: number;
   depth: boolean;
-  pose: {
+  /** AR tracking was normal when the frame was taken. */
+  tracking?: boolean;
+  /** Missing while tracking was lost: the server solves the pose from the video. */
+  pose?: {
     position: { x_m: number; y_m: number; z_m: number };
     rotation: [number, number, number, number];
   };
@@ -38,9 +42,9 @@ export function addNativeKeyframe(
       uri: keyframe.uri,
       atMs,
       sharpness: keyframe.sharpness,
-      yaw: keyframe.yaw,
-      pitch: keyframe.pitch,
-      pose: keyframe.pose,
+      yaw: keyframe.pose ? (keyframe.yaw ?? null) : null,
+      pitch: keyframe.pose ? (keyframe.pitch ?? null) : null,
+      pose: keyframe.pose ?? null,
       intrinsics: keyframe.intrinsics,
     },
   });

@@ -20,6 +20,7 @@ function nativeView() {
       planes: "file:///planes.json",
       sceneMesh: null,
       depth: "file:///depth.sjdepth",
+      video: "file:///scan.mp4" as string | null,
     })),
   } satisfies SajaoArViewRef;
 }
@@ -64,6 +65,7 @@ describe("capture recorder hook", () => {
         ],
         depth: "file:///depth.sjdepth",
         planes: "file:///planes.json",
+        video: "file:///scan.mp4",
       },
     });
     expect(useCaptureStore.getState().last).toBe(local);

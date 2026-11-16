@@ -21,13 +21,23 @@ class CaptureFormatsTest {
   @Test
   fun savesOnlyFramesClearlySharperThanTheCellsBest() {
     val gate = KeyframeGate()
-    assertTrue(gate.shouldSave(10.0, 0.0, 100.0))
-    gate.saved(10.0, 0.0, 100.0)
-    assertFalse(gate.shouldSave(12.0, 1.0, 105.0))
-    assertTrue(gate.shouldSave(12.0, 1.0, 111.0))
+    val here = KeyframeGate.cellFor(10.0, 0.0, 0)
+    assertTrue(gate.shouldSave(here, 100.0))
+    gate.saved(here, 100.0)
+    assertFalse(gate.shouldSave(KeyframeGate.cellFor(12.0, 1.0, 0), 105.0))
+    assertTrue(gate.shouldSave(KeyframeGate.cellFor(12.0, 1.0, 0), 111.0))
     // Another direction is a new cell.
-    assertTrue(gate.shouldSave(50.0, 0.0, 20.0))
-    assertFalse(gate.shouldSave(50.0, 0.0, 0.0))
+    assertTrue(gate.shouldSave(KeyframeGate.cellFor(50.0, 0.0, 0), 20.0))
+    assertFalse(gate.shouldSave(KeyframeGate.cellFor(50.0, 0.0, 0), 0.0))
+  }
+
+  @Test
+  fun framesWithoutTrackingAreKeptByTime() {
+    // keyframes.ts: one cell per 1.5 s when there is no pose.
+    assertEquals("t0", KeyframeGate.cellFor(null, null, 1499))
+    assertEquals("t1", KeyframeGate.cellFor(null, null, 1500))
+    val gate = KeyframeGate()
+    assertTrue(gate.shouldSave(KeyframeGate.cellFor(null, null, 200), 50.0))
   }
 
   @Test

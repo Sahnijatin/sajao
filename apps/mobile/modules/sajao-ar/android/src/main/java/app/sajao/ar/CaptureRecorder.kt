@@ -4,7 +4,7 @@ import android.graphics.ImageFormat
 import android.graphics.Rect
 import android.graphics.YuvImage
 import android.media.Image
-import com.google.ar.core.Frame
+import android.os.SystemClock
 import com.google.ar.core.Plane
 import com.google.ar.core.Session
 import com.google.ar.core.TrackingState
@@ -31,7 +31,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 class CaptureRecorder(
   private val dir: File,
   private val emit: (Map<String, Any>) -> Unit,
+  private val onError: (Throwable) -> Unit,
 ) {
+  private val startedAt = SystemClock.elapsedRealtime()
   private val gate = KeyframeGate()
   private val writer = Executors.newSingleThreadExecutor()
   private val busy = AtomicBoolean(false)
@@ -42,25 +44,16 @@ class CaptureRecorder(
   }
 
   /**
-   * Offer the image the detector just copied. Saves it as a keyframe
-   * candidate when it is clearly the sharpest yet for its direction.
-   * Runs on the GL thread; encoding and writing happen on a worker thread.
+   * Offer a camera image. Saves it as a keyframe candidate when it is
+   * clearly the sharpest yet for its cell: its direction when tracking
+   * gives a pose, its time otherwise. Frames are kept whatever tracking
+   * says and whether or not the detector runs. Called on the image worker;
+   * encoding happens on the recorder's own thread.
    */
-  fun offer(frame: Frame, image: YuvCopy, sharpness: Double, yaw: Double, pitch: Double) {
-    if (frame.camera.trackingState != TrackingState.TRACKING) return
-    if (!gate.shouldSave(yaw, pitch, sharpness) || !busy.compareAndSet(false, true)) return
-    val pose = frame.camera.pose
-    val rotation = FloatArray(4)
-    pose.getRotationQuaternion(rotation, 0)
-    val position = pose.translation
-    val intrinsics = frame.camera.imageIntrinsics
-    val focal = intrinsics.focalLength
-    val principal = intrinsics.principalPoint
-    val depth = try {
-      frame.acquireDepthImage16Bits().use { depthCopy(it) }
-    } catch (_: Throwable) {
-      null
-    }
+  fun offer(image: YuvCopy, sharpness: Double, frame: FrameSnapshot, depth: RawDepth?) {
+    val elapsedMs = SystemClock.elapsedRealtime() - startedAt
+    val cell = KeyframeGate.cellFor(frame.yaw, frame.pitch, elapsedMs)
+    if (!gate.shouldSave(cell, sharpness) || !busy.compareAndSet(false, true)) return
     count += 1
     val name = "kf-%04d".format(count)
     writer.execute {
@@ -74,34 +67,35 @@ class CaptureRecorder(
             .compressToJpeg(Rect(0, 0, image.width, image.height), JPEG_QUALITY, out)
         }
         depth?.let { FileOutputStream(File(dir, "$name.depth")).use { out -> it.writeRaw(out) } }
-        gate.saved(yaw, pitch, sharpness)
-        emit(
-          mapOf(
-            "uri" to "file://${jpeg.absolutePath}",
-            "sharpness" to sharpness,
-            "yaw" to yaw,
-            "pitch" to pitch,
-            "depth" to (depth != null),
-            "pose" to mapOf(
-              "position" to mapOf(
-                "x_m" to position[0].toDouble(),
-                "y_m" to position[1].toDouble(),
-                "z_m" to position[2].toDouble(),
-              ),
-              "rotation" to rotation.map { it.toDouble() },
+        gate.saved(cell, sharpness)
+        val payload = HashMap<String, Any>()
+        payload["uri"] = "file://${jpeg.absolutePath}"
+        payload["sharpness"] = sharpness
+        payload["depth"] = depth != null
+        payload["tracking"] = frame.tracking
+        frame.yaw?.let { payload["yaw"] = it }
+        frame.pitch?.let { payload["pitch"] = it }
+        if (frame.position != null && frame.rotation != null) {
+          payload["pose"] = mapOf(
+            "position" to mapOf(
+              "x_m" to frame.position[0].toDouble(),
+              "y_m" to frame.position[1].toDouble(),
+              "z_m" to frame.position[2].toDouble(),
             ),
-            "intrinsics" to mapOf(
-              "fx" to focal[0].toDouble(),
-              "fy" to focal[1].toDouble(),
-              "cx" to principal[0].toDouble(),
-              "cy" to principal[1].toDouble(),
-              "width_px" to image.width,
-              "height_px" to image.height,
-            ),
-          ),
+            "rotation" to frame.rotation.map { it.toDouble() },
+          )
+        }
+        payload["intrinsics"] = mapOf(
+          "fx" to frame.focal[0].toDouble(),
+          "fy" to frame.focal[1].toDouble(),
+          "cx" to frame.principal[0].toDouble(),
+          "cy" to frame.principal[1].toDouble(),
+          "width_px" to image.width,
+          "height_px" to image.height,
         )
-      } catch (_: Throwable) {
-        // A lost candidate is fine; the next sharp frame in this direction replaces it.
+        emit(payload)
+      } catch (error: Throwable) {
+        onError(error)
       } finally {
         busy.set(false)
       }
@@ -156,9 +150,13 @@ class CaptureRecorder(
    * candidate, and return the files' uris. Runs on the writer thread, after
    * any keyframe still being written.
    */
-  fun finish(planes: JSONArray, chosenUris: List<String>, done: (Map<String, Any?>) -> Unit) {
+  /** Where ARCore records the scan video (MP4 with AR data tracks). */
+  val videoFile: File get() = File(dir, "scan.mp4")
+
+  fun finish(planes: JSONArray, chosenUris: List<String>, video: String?, done: (Map<String, Any?>) -> Unit) {
     writer.execute {
       val result = HashMap<String, Any?>()
+      result["video"] = video
       try {
         val planesFile = File(dir, "planes.json")
         planesFile.writeText(JSONObject().put("format", "sajao-planes-1").put("planes", planes).toString())
@@ -192,33 +190,6 @@ class CaptureRecorder(
     writer.shutdown()
   }
 
-  /** A depth image copied out of ARCore so it can be closed at once. */
-  private class RawDepth(val width: Int, val height: Int, val millimetres: ShortArray) {
-    fun writeRaw(out: FileOutputStream) {
-      val header = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putInt(width).putInt(height)
-      out.write(header.array())
-      val body = ByteBuffer.allocate(millimetres.size * 2).order(ByteOrder.LITTLE_ENDIAN)
-      body.asShortBuffer().put(millimetres)
-      out.write(body.array())
-    }
-  }
-
-  private fun depthCopy(image: Image): RawDepth {
-    val plane = image.planes[0]
-    val buffer = plane.buffer.order(ByteOrder.nativeOrder())
-    val width = image.width
-    val height = image.height
-    val rowStride = plane.rowStride
-    val out = ShortArray(width * height)
-    for (y in 0 until height) {
-      for (x in 0 until width) {
-        // DEPTH16: the low 13 bits are millimetres.
-        out[y * width + x] = (buffer.getShort(y * rowStride + x * 2).toInt() and 0x1FFF).toShort()
-      }
-    }
-    return RawDepth(width, height, out)
-  }
-
   private fun readRaw(file: File, id: String): DepthEntry? {
     if (!file.exists()) return null
     val bytes = ByteBuffer.wrap(file.readBytes()).order(ByteOrder.LITTLE_ENDIAN)
@@ -226,8 +197,9 @@ class CaptureRecorder(
     val height = bytes.int
     val millimetres = ShortArray(width * height)
     bytes.asShortBuffer().get(millimetres)
-    // ARCore's smoothed depth has no per-pixel confidence: full where there is a reading.
-    val confidence = ByteArray(width * height) { if (millimetres[it].toInt() != 0) 255.toByte() else 0 }
+    bytes.position(8 + width * height * 2)
+    val confidence = ByteArray(width * height)
+    bytes.get(confidence)
     return DepthEntry(id, width, height, millimetres, confidence)
   }
 
@@ -236,5 +208,61 @@ class CaptureRecorder(
 
     /** Session folder for a capture, under the app's cache. */
     fun folder(cacheDir: File, captureId: String) = File(cacheDir, "sajao-capture/$captureId")
+  }
+}
+
+/** What the GL thread read from one ARCore frame, safe to use on other threads. */
+class FrameSnapshot(
+  val tracking: Boolean,
+  /** Camera pose when tracking: quaternion x, y, z, w and position; null otherwise. */
+  val rotation: FloatArray?,
+  val position: FloatArray?,
+  val yaw: Double?,
+  val pitch: Double?,
+  val focal: FloatArray,
+  val principal: FloatArray,
+  /** For detection rays; null when not tracking. */
+  val camera: CaptureCamera?,
+)
+
+/**
+ * ARCore raw depth (millimetres, the full 16 bits) with its confidence
+ * image (0 to 255), copied so both images can be closed at once. Raw depth
+ * is sparser than smoothed depth but measured, with real confidence.
+ */
+class RawDepth(val width: Int, val height: Int, val millimetres: ShortArray, val confidence: ByteArray) {
+  fun writeRaw(out: FileOutputStream) {
+    val header = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putInt(width).putInt(height)
+    out.write(header.array())
+    val body = ByteBuffer.allocate(millimetres.size * 2).order(ByteOrder.LITTLE_ENDIAN)
+    body.asShortBuffer().put(millimetres)
+    out.write(body.array())
+    out.write(confidence)
+  }
+
+  companion object {
+    fun from(depth: Image, confidence: Image): RawDepth {
+      val width = depth.width
+      val height = depth.height
+      val depthPlane = depth.planes[0]
+      val depthBuffer = depthPlane.buffer.order(ByteOrder.nativeOrder())
+      val millimetres = ShortArray(width * height)
+      for (y in 0 until height) {
+        for (x in 0 until width) {
+          millimetres[y * width + x] = depthBuffer.getShort(y * depthPlane.rowStride + x * depthPlane.pixelStride)
+        }
+      }
+      val confidencePlane = confidence.planes[0]
+      val confidenceBuffer = confidencePlane.buffer
+      val values = ByteArray(width * height)
+      if (confidence.width == width && confidence.height == height) {
+        for (y in 0 until height) {
+          for (x in 0 until width) {
+            values[y * width + x] = confidenceBuffer.get(y * confidencePlane.rowStride + x * confidencePlane.pixelStride)
+          }
+        }
+      }
+      return RawDepth(width, height, millimetres, values)
+    }
   }
 }

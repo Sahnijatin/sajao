@@ -50,6 +50,11 @@ export interface ArStatusEvent {
   planeStates?: string;
   /** Coverage hits by source, for example "planes 120 points 40". */
   surfaceHits?: string;
+  /** Caught errors by type, for example "NotYetAvailableException 4". */
+  errors?: string;
+  lastError?: string;
+  /** Scan video: "recording", "saved (N KB)", "off" or "failed: ...". */
+  video?: string;
 }
 
 export interface ArPoseEvent {
@@ -100,12 +105,15 @@ export interface ArKeyframeEvent {
   /** Local file of the JPEG. */
   uri: string;
   sharpness: number;
-  yaw: number;
-  pitch: number;
+  /** Missing while tracking was lost: the frame is still kept, by time. */
+  yaw?: number;
+  pitch?: number;
   /** A depth image was saved with it. */
   depth: boolean;
-  /** AR camera pose: +X right, +Y up, -Z forward relative to the stored image. */
-  pose: {
+  /** AR tracking was normal when the frame was taken. */
+  tracking?: boolean;
+  /** AR camera pose: +X right, +Y up, -Z forward relative to the stored image. Missing while tracking was lost. */
+  pose?: {
     position: { x_m: number; y_m: number; z_m: number };
     rotation: [number, number, number, number];
   };
@@ -125,6 +133,8 @@ export interface ArCaptureFiles {
   planes: string | null;
   sceneMesh: string | null;
   depth: string | null;
+  /** The scan video (Android: ARCore's MP4 with AR data tracks); null when none was recorded. */
+  video?: string | null;
   error?: string;
 }
 

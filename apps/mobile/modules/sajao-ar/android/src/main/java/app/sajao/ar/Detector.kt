@@ -199,7 +199,8 @@ class Detector(context: Context) {
 
   companion object {
     private const val MODEL = "efficientdet_lite0.tflite"
-    private const val INPUT_WIDTH = 480
+    // EfficientDet-Lite0 takes 320 by 320: a larger copy only costs time.
+    private const val INPUT_WIDTH = 320
     const val TAG = "SajaoAr"
   }
 }

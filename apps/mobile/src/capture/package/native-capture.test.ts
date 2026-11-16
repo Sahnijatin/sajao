@@ -107,4 +107,35 @@ describe("native capture glue", () => {
     expect(sensorDue(0, 150)).toBe(false);
     expect(sensorDue(0, 200)).toBe(true);
   });
+
+  it("keeps frames taken while tracking was lost, by time, without a pose", () => {
+    let state = start();
+    const lost = {
+      uri: "file:///lost.jpg",
+      sharpness: 120,
+      depth: false,
+      tracking: false,
+      intrinsics,
+    };
+    let step = addNativeKeyframe(state, lost, 1500);
+    expect(step.discard).toEqual([]);
+    state = step.state;
+    // A second lost frame 2 s later is a new time cell, also kept.
+    step = addNativeKeyframe(state, { ...lost, uri: "file:///lost-2.jpg" }, 3500);
+    expect(step.discard).toEqual([]);
+    const local = localCapture(
+      "cap-3",
+      step.state,
+      { planes: null, sceneMesh: null, depth: null },
+      "file:///scan.mp4",
+    );
+    expect(local.files.video).toBe("file:///scan.mp4");
+    const pkg = buildPackage(local.state, {
+      keyframes: { k1: "captures/cap-3/k1.jpg", k2: "captures/cap-3/k2.jpg" },
+      sensorLog: "captures/cap-3/sensors.jsonl",
+      video: "captures/cap-3/scan.mp4",
+    });
+    expect(pkg.keyframes.map((k) => Boolean(k.pose))).toEqual([false, false]);
+    expect(pkg.video).toBe("captures/cap-3/scan.mp4");
+  });
 });

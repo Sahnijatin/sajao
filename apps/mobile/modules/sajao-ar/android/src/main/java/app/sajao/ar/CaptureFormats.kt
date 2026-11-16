@@ -15,14 +15,15 @@ import java.nio.ByteOrder
 class KeyframeGate {
   private val best = HashMap<String, Double>()
 
-  fun shouldSave(yaw: Double, pitch: Double, sharpness: Double): Boolean {
+  /** True when a frame in `cell` (see `cellFor`) is worth saving. */
+  fun shouldSave(cell: String, sharpness: Double): Boolean {
     if (!(sharpness > 0)) return false
-    val current = best[cellOf(yaw, pitch)] ?: return true
+    val current = best[cell] ?: return true
     return sharpness >= current * REPLACE_MARGIN
   }
 
-  fun saved(yaw: Double, pitch: Double, sharpness: Double) {
-    best[cellOf(yaw, pitch)] = sharpness
+  fun saved(cell: String, sharpness: Double) {
+    best[cell] = sharpness
   }
 
   fun reset() = best.clear()
@@ -30,6 +31,15 @@ class KeyframeGate {
   companion object {
     const val YAW_CELL_DEGREES = 30.0
     const val REPLACE_MARGIN = 1.1
+    /** Without a pose, one cell per this many milliseconds, as `TIME_CELL_MS` in keyframes.ts. */
+    const val TIME_CELL_MS = 1500L
+
+    /**
+     * The cell for a frame: by direction when tracking gives a pose, by
+     * time otherwise, so frames are kept whatever tracking says.
+     */
+    fun cellFor(yaw: Double?, pitch: Double?, elapsedMs: Long): String =
+      if (yaw != null && pitch != null) cellOf(yaw, pitch) else "t${elapsedMs / TIME_CELL_MS}"
 
     /** "d<sector>-<band>", as `cellOf` in keyframes.ts. */
     fun cellOf(yaw: Double, pitch: Double): String {
