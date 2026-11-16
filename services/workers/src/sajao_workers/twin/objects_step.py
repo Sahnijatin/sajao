@@ -21,7 +21,7 @@ from sajao_workers.twin.objects import FrameMasks, build_objects, decode_depth_m
 from sajao_workers.validate import check_detections, check_masks
 
 # Bump when this step's logic, prompts or pinned model chains change.
-VERSION = 1
+VERSION = 2
 
 
 def objects_step(detect: ModelGateway, segment: ModelGateway) -> Step:

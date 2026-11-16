@@ -410,6 +410,7 @@ def objects_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
         "all": [
             {k: o[k] for k in ("category", "frames", "confidence")}
             | {"size_m": [o["box"][s]["value_m"] for s in ("length", "width", "height")]}
+            | {"center": o["box"]["center"]}
             for o in objects
         ],
     }
