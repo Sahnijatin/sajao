@@ -15,7 +15,7 @@ import json
 from typing import Any
 
 from sajao_gateway import ModelGateway, ModelRequest
-from sajao_workers.models import VOCABULARY
+from sajao_workers.models import SHELL_VOCABULARY, VOCABULARY
 from sajao_workers.steps import NonRetryableStepError, Step, StepContext, StepOutput
 from sajao_workers.twin.objects import (
     FrameMasks,
@@ -27,7 +27,7 @@ from sajao_workers.twin.objects import (
 from sajao_workers.validate import check_detections, check_masks
 
 # Bump when this step's logic, prompts or pinned model chains change.
-VERSION = 4
+VERSION = 5
 
 
 def objects_step(detect: ModelGateway, segment: ModelGateway) -> Step:
@@ -41,7 +41,7 @@ def objects_step(detect: ModelGateway, segment: ModelGateway) -> Step:
             )
 
         images = [{"image": f["image"], "width": f["width"], "height": f["height"]} for f in frames]
-        detect_payload = {"images": images, "vocabulary": list(VOCABULARY)}
+        detect_payload = {"images": images, "vocabulary": [*VOCABULARY, *SHELL_VOCABULARY]}
         detected = await detect.call(
             ModelRequest("twin_detect", "vision", "twin_detect@1", detect_payload),
             validate=check_detections(detect_payload),
@@ -58,12 +58,23 @@ def objects_step(detect: ModelGateway, segment: ModelGateway) -> Step:
             validate=check_masks(segment_payload),
         )
 
-        frame_masks = []
+        frame_masks, openings = [], []
         for frame, det, seg in zip(frames, found, masked.output["frames"], strict=True):
-            masks = [
-                (d["label"], d["score"], decode_mask(context.store.read_blob(m["mask"])), m["mask"])
-                for d, m in zip(det["detections"], seg["masks"], strict=True)
-            ]
+            masks = []
+            for d, m in zip(det["detections"], seg["masks"], strict=True):
+                if d["label"] in SHELL_VOCABULARY:  # doors and windows go to the shell
+                    openings.append(
+                        {"keyframe_id": frame["keyframe_id"], "kind": d["label"], "mask": m["mask"]}
+                    )
+                    continue
+                masks.append(
+                    (
+                        d["label"],
+                        d["score"],
+                        decode_mask(context.store.read_blob(m["mask"])),
+                        m["mask"],
+                    )
+                )
             frame_masks.append(
                 FrameMasks(
                     frame["keyframe_id"],
@@ -81,9 +92,13 @@ def objects_step(detect: ModelGateway, segment: ModelGateway) -> Step:
             frame_masks, manifest["up_axis"], manifest["depth_source"], stats=fusion
         )
         return StepOutput(
-            files={"objects": json.dumps(objects, sort_keys=True).encode()},
+            files={
+                "objects": json.dumps(objects, sort_keys=True).encode(),
+                "openings": json.dumps(openings, sort_keys=True).encode(),
+            },
             meta={
                 "objects": len(objects),
+                "opening_masks": len(openings),
                 "detector": detected.provider,
                 "segmenter": masked.provider,
                 "fusion": fusion,

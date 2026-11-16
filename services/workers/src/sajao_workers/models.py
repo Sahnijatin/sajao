@@ -44,6 +44,9 @@ VOCABULARY = (
     "bowl",
 )
 
+# Parts of the room shell found in the same detection pass and kept out of the objects.
+SHELL_VOCABULARY = ("door", "window")
+
 YOLOE = "yoloe-26x-seg@ultralytics-8.4.214"
 GROUNDING_DINO = "IDEA-Research/grounding-dino-base@12bdfa3120f3e7ec7b434d90674b3396eccf88eb"
 SAM_LARGE = "facebook/sam2.1-hiera-large@665f8e2ad61cf5f53d65644ff27c8ee525124610"

@@ -1073,6 +1073,7 @@ def twin_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
                 "capture": store.put_blob(json.dumps(capture).encode()),
                 "frames": frames,
                 "objects": objects.outputs["objects"],
+                "openings": objects.outputs["openings"],
                 "splat": splat.outputs["splat"],
                 "phone": store.put_blob(json.dumps(dict(phone.meta)).encode()),
                 **phone.outputs,

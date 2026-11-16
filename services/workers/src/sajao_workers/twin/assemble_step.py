@@ -1,9 +1,11 @@
 """The assembly step: the worker's outputs become one validated SpaceTwin.
 
 Inputs (blob digests): `capture` (Capture JSON), `frames` (frames manifest),
-`objects` (objects step output), `splat` (room PLY), `phone` (phone step
-metadata) with `sog_500k` and `sog_250k`. Params: `twin_id`, `version`,
-`created_at`. CPU only: shell points from depth, object crops, the twin.
+`objects` (objects step output), optionally `openings` (the objects step's door
+and window masks), `splat` (room PLY), `phone` (phone step metadata) with
+`sog_500k` and `sog_250k`. Params: `twin_id`, `version`, `created_at`. CPU
+only: shell points from depth, doors and windows on the walls, surface
+textures, object crops, the twin.
 """
 
 import io
@@ -15,12 +17,20 @@ import numpy as np
 from PIL import Image
 
 from sajao_workers.steps import ArtifactStore, NonRetryableStepError, Step, StepContext, StepOutput
-from sajao_workers.twin.assemble import AssemblyError, assemble_twin
+from sajao_workers.twin.assemble import AssemblyError, assemble_twin, storage_key
 from sajao_workers.twin.objects import decode_depth_mm, decode_mask
-from sajao_workers.twin.space import fit_space
+from sajao_workers.twin.shell import (
+    TextureBuilder,
+    frame_of,
+    fuse_openings,
+    jpeg,
+    sight_opening,
+    surface_rectangles,
+)
+from sajao_workers.twin.space import Space, fit_space
 
 # Bump when assembly, the shell fit or the crops change.
-VERSION = 2
+VERSION = 3
 CROP_MARGIN = 0.10  # of the mask's box, split between the two sides
 CROPS_PER_OBJECT = 4
 
@@ -50,6 +60,60 @@ def shell_points(store: ArtifactStore, manifest: Mapping[str, Any], stride: int 
         pose = np.asarray(frame["c2w"], dtype=np.float64)
         chunks.append(cam @ pose[:3, :3].T + pose[:3, 3])
     return np.concatenate(chunks) if chunks else np.zeros((0, 3))
+
+
+TEXTURE_IMAGE_WIDTH = 960  # keyframes are read at this width for textures
+
+
+def _rgb(data: bytes, width: int | None = None) -> np.ndarray:
+    image = Image.open(io.BytesIO(data)).convert("RGB")
+    if width and image.width > width:
+        image = image.resize((width, round(image.height * width / image.width)))
+    return np.asarray(image)
+
+
+def _shell_from_frames(
+    store: ArtifactStore,
+    manifest: Mapping[str, Any],
+    objects: list[Any],
+    openings: list[Any],
+    space: Space,
+) -> dict[str, Any]:
+    """Doors and windows on the walls, and a texture for every surface, into the shell."""
+    frames = {f["keyframe_id"]: f for f in manifest["frames"]}
+    sightings = []
+    for entry in openings:
+        record = frames.get(entry["keyframe_id"])
+        if record is None:
+            continue
+        found = sight_opening(
+            entry["kind"], decode_mask(store.read_blob(entry["mask"])), frame_of(record), space
+        )
+        if found is not None:
+            sightings.append(found)
+    space.shell["openings"] = fuse_openings(sightings, manifest["depth_source"])
+
+    covered: dict[str, list[str]] = {}
+    for obj in objects:
+        for view in obj["views"]:
+            covered.setdefault(view["keyframe_id"], []).append(view["mask"])
+    builders = {k: TextureBuilder(r, space) for k, r in surface_rectangles(space).items()}
+    for record in manifest["frames"]:
+        image = _rgb(store.read_blob(record["image"]), TEXTURE_IMAGE_WIDTH)
+        depth = decode_depth_mm(store.read_blob(record["depth"])) if record.get("depth") else None
+        blocked = None
+        for digest in covered.get(record["keyframe_id"], []):
+            mask = decode_mask(store.read_blob(digest))
+            blocked = mask if blocked is None else blocked | mask
+        for builder in builders.values():
+            builder.add(frame_of(record), image, depth, blocked)
+    coverage = {}
+    for surface in space.shell["surfaces"]:
+        texture, seen = builders[surface["id"]].result()
+        coverage[surface["id"]] = round(seen, 2)
+        if seen > 0:
+            surface["texture"] = storage_key(store.put_blob(jpeg(texture)))
+    return coverage
 
 
 def _crop(image: bytes, mask: np.ndarray) -> bytes:
@@ -100,6 +164,8 @@ def assemble_step(points_for_shell: PointsForShell = shell_points) -> Step:
         if len(points) < 1000:
             raise NonRetryableStepError("too little depth to fit the room shell")
         space = fit_space(points, depth_source=manifest["depth_source"])
+        openings = json.loads(context.read("openings")) if "openings" in context.inputs else []
+        coverage = _shell_from_frames(context.store, manifest, objects, openings, space)
         crops = _crops(context.store, manifest, objects)
         phone_splats = [
             {
@@ -134,6 +200,8 @@ def assemble_step(points_for_shell: PointsForShell = shell_points) -> Step:
                 "walls_m": [w["length"]["value_m"] for w in twin["shell"]["walls"]],
                 "ceiling_m": twin["shell"]["ceiling_height"]["value_m"],
                 "north_deg": twin["direction"]["north_deg"],
+                "openings": [o["kind"] for o in twin["shell"]["openings"]],
+                "texture_coverage": coverage,
             },
         )
 
