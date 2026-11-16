@@ -4,7 +4,7 @@ A language model proposes, a solver places, a verifier decides. The engine is CP
 
 ## Steps
 
-1. **Brief to spec.** A language model turns the Room Profile, Taste Profile and Brief into a strict JSON spec: furniture program, palette, lighting layers, budget split. Schema-checked; on failure, retry once, then fall back to rules.
+1. **Brief to spec.** A language model turns the Space Profile, Taste Profile and Brief into a strict JSON spec: furniture program, palette, lighting layers, budget split. Schema-checked; on failure, retry once, then fall back to rules.
 2. **Retrieval.** Hard filters first (category, price, stock at your pincode, maximum size the room can take with margin), then ranking by the taste vector. About 30 candidates per slot.
 3. **AI designer.** Picks a coherent set from the shortlist only (never invents products), checks colour harmony in a perceptual colour space, chooses wall paint and flooring, and seeds a layout archetype.
 4. **Solver.** OR-Tools plus simulated annealing places items against wall, door, window, walkway and Vastu constraints, with the room's error band as extra margin.
@@ -39,7 +39,7 @@ When no design passes, the engine relaxes in this order and stops at the first s
 
 ## Archetypes
 
-Start with 10 to 12 layout archetypes per room type, grown from real failures. Archetypes cover the repeated layouts of Indian flats.
+Start with 10 to 12 layout archetypes each for living rooms and bedrooms, grown from real failures. Archetypes cover the repeated layouts of Indian flats. Balconies, other spaces and partial scans (a corner or one wall) use a lighter template set, labelled as such on the design, until golden-set tests pass. When you choose "Just a part", the solver places new items only inside the area you drew and treats the rest of the space as fixed.
 
 ## Explanations
 

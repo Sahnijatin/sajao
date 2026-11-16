@@ -1,0 +1,84 @@
+# Third-party register
+
+Every model, library and dataset used to build, train or evaluate Sajao is listed here for the legal team, who review it separately. Engineering adds a row when something is first used; review never blocks engineering.
+
+| Name | Type | Used for | Source | License as stated by the source | Training use | Added by task |
+| --- | --- | --- | --- | --- | --- | --- |
+| Expo, React Native, Supabase and coding guideline skills | Agent skills | Development guidance | See `.claude/skills/THIRD_PARTY_NOTICES.md` | MIT | No | Repo agent setup |
+| EfficientDet-Lite0 (int8, MediaPipe build) | Model | Live object labels during the AR scan, on the phone | https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector | Not stated on the MediaPipe model page; the same TensorFlow Hub model is listed as Apache-2.0 on its mirrors | No | SJ-33 AR-anchored scan |
+| COCO 2017 | Dataset (indirect) | The detector's weights were trained on it by Google; Sajao does not train on it | https://cocodataset.org/#termsofuse | Annotations CC BY 4.0; images under the Flickr terms of use | No (not by Sajao) | SJ-33 AR-anchored scan |
+| MediaPipe Tasks Vision 0.10.33 (iOS pod, Android library) | Library | Runs the on-device detector | https://github.com/google-ai-edge/mediapipe | Apache-2.0 | No | SJ-33 AR-anchored scan |
+| ARCore SDK for Android 1.57.0 | Library | AR tracking, planes, depth and hit tests on Android | https://github.com/google-ar/arcore-android-sdk | Apache-2.0 for the SDK; Google APIs Terms of Service for Google Play Services for AR | No | SJ-33 AR-anchored scan |
+| ARKit and SceneKit | Platform SDK | AR tracking, LiDAR scene mesh and rendering on iPhone | https://developer.apple.com/augmented-reality/arkit/ | Apple Developer Program License Agreement | No | SJ-33 AR-anchored scan |
+| Android SDK, build tools and NDK | Build tools | Compiling the Android app | https://developer.android.com/studio/terms | Android Software Development Kit License Agreement | No | Existing |
+| Xcode and the iOS SDK | Build tools | Compiling the iOS app (on EAS Build) | https://developer.apple.com/support/terms/ | Xcode and Apple SDKs Agreement | No | Existing |
+| @eslint/js 10.0.1 | Library (npm) | Build and test tooling in root | https://github.com/eslint/eslint | MIT | No | Existing |
+| @expo-google-fonts/geist 0.4.2 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/google-fonts | MIT AND OFL-1.1 | No | Existing |
+| @expo-google-fonts/instrument-serif 0.4.1 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/google-fonts | MIT AND OFL-1.1 | No | Existing |
+| @expo/ui 58.0.28 | Library (npm) | App and service code in apps/mobile, packages/ui | https://github.com/expo/expo | MIT | No | Existing |
+| @react-native-async-storage/async-storage 2.2.0 | Library (npm) | App and service code in apps/mobile | https://github.com/react-native-async-storage/async-storage | MIT | No | Existing |
+| @shopify/react-native-skia 2.14.0 | Library (npm) | App and service code in apps/mobile, packages/ui | https://github.com/Shopify/react-native-skia | MIT | No | Existing |
+| @testing-library/react-native 14.1.0 | Library (npm) | Build and test tooling in apps/mobile, packages/ui | https://www.github.com/callstack/react-native-testing-library | MIT | No | Existing |
+| @types/jest 30.0.0 | Library (npm) | Build and test tooling in apps/mobile, packages/ui | https://github.com/DefinitelyTyped/DefinitelyTyped | MIT | No | Existing |
+| @types/node 22.20.5 | Library (npm) | Build and test tooling in packages/schemas | https://github.com/DefinitelyTyped/DefinitelyTyped | MIT | No | Existing |
+| @types/react 19.3.0 | Library (npm) | Build and test tooling in apps/mobile, packages/ui | https://github.com/DefinitelyTyped/DefinitelyTyped | MIT | No | Existing |
+| ajv 8.20.0 | Library (npm) | App and service code in packages/schemas | https://github.com/ajv-validator/ajv | MIT | No | Existing |
+| ajv-formats 3.0.1 | Library (npm) | App and service code in packages/schemas | https://github.com/ajv-validator/ajv-formats | MIT | No | Existing |
+| eslint 10.15.0 | Library (npm) | Build and test tooling in root | https://github.com/eslint/eslint | MIT | No | Existing |
+| expo 58.0.25 | Library (npm) | App and service code in apps/mobile, packages/ui | https://github.com/expo/expo | MIT | No | Existing |
+| expo-blur 58.0.6 | Library (npm) | App and service code in apps/mobile, packages/ui | https://github.com/expo/expo | MIT | No | Existing |
+| expo-build-properties 58.0.12 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
+| expo-constants 58.0.16 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
+| expo-dev-client 58.0.20 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
+| expo-device 58.0.5 | Library (npm) | App and service code in apps/mobile, packages/ui | https://github.com/expo/expo | MIT | No | Existing |
+| expo-font 58.0.12 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
+| expo-haptics 58.0.8 | Library (npm) | App and service code in apps/mobile, packages/ui | https://github.com/expo/expo | MIT | No | Existing |
+| expo-image-manipulator 58.0.16 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
+| expo-linking 58.0.17 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
+| expo-localization 58.0.5 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
+| expo-router 58.0.31 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
+| expo-sensors 58.0.5 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
+| expo-status-bar 58.0.5 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
+| expo-symbols 58.0.5 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
+| expo-updates 58.0.22 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
+| globals 17.14.0 | Library (npm) | Build and test tooling in root | https://github.com/sindresorhus/globals | MIT | No | Existing |
+| i18next 27.1.1 | Library (npm) | App and service code in apps/mobile | https://github.com/i18next/i18next | MIT | No | Existing |
+| jest 30.5.2 | Library (npm) | Build and test tooling in apps/mobile, packages/ui | https://github.com/jestjs/jest | MIT | No | Existing |
+| jest-expo 58.0.14 | Library (npm) | Build and test tooling in apps/mobile, packages/ui | https://github.com/expo/expo | MIT | No | Existing |
+| json-schema-to-typescript 16.0.0 | Library (npm) | Build and test tooling in packages/schemas | https://github.com/bcherny/json-schema-to-typescript | MIT | No | Existing |
+| openapi-fetch 0.17.0 | Library (npm) | App and service code in packages/api-client | https://github.com/openapi-ts/openapi-typescript | MIT | No | Existing |
+| openapi-typescript 7.13.0 | Library (npm) | Build and test tooling in packages/api-client | https://github.com/openapi-ts/openapi-typescript | MIT | No | Existing |
+| prettier 3.10.1 | Library (npm) | Build and test tooling in root | https://github.com/prettier/prettier | MIT | No | Existing |
+| react 19.3.0 | Library (npm) | App and service code in apps/mobile, packages/ui | https://github.com/react/react | MIT | No | Existing |
+| react-i18next 18.0.1 | Library (npm) | App and service code in apps/mobile | https://github.com/i18next/react-i18next | MIT | No | Existing |
+| react-native 0.88.1 | Library (npm) | App and service code in apps/mobile, packages/ui | https://github.com/react/react-native | MIT | No | Existing |
+| react-native-nitro-image 0.15.2 | Library (npm) | App and service code in apps/mobile | https://github.com/mrousavy/react-native-nitro-image | MIT | No | Existing |
+| react-native-nitro-modules 0.37.2 | Library (npm) | App and service code in apps/mobile | https://github.com/margelo/nitro | MIT | No | Existing |
+| react-native-reanimated 4.7.1 | Library (npm) | App and service code in apps/mobile, packages/ui | https://github.com/software-mansion/react-native-reanimated | MIT | No | Existing |
+| react-native-safe-area-context 5.11.1 | Library (npm) | App and service code in apps/mobile | https://github.com/appandflow/react-native-safe-area-context | MIT | No | Existing |
+| react-native-screens 4.30.1 | Library (npm) | App and service code in apps/mobile | https://github.com/software-mansion/react-native-screens | MIT | No | Existing |
+| react-native-vision-camera 5.2.4 | Library (npm) | App and service code in apps/mobile | https://github.com/margelo/react-native-vision-camera | MIT | No | Existing |
+| react-native-vision-camera-worklets 5.2.4 | Library (npm) | App and service code in apps/mobile | https://github.com/margelo/react-native-vision-camera | MIT | No | Existing |
+| react-native-worklets 0.13.0 | Library (npm) | App and service code in apps/mobile, packages/ui | https://github.com/software-mansion/react-native-reanimated | MIT | No | Existing |
+| typescript 6.0.3 | Library (npm) | Build and test tooling in apps/mobile, packages/api-client, packages/schemas, packages/ui, root | https://github.com/microsoft/TypeScript | Apache-2.0 | No | Existing |
+| typescript-eslint 8.72.2 | Library (npm) | Build and test tooling in root | https://github.com/typescript-eslint/typescript-eslint | MIT | No | Existing |
+| vitest 5.1.0 | Library (npm) | Build and test tooling in packages/api-client, packages/schemas | https://github.com/vitest-dev/vitest | MIT | No | Existing |
+| zustand 5.1.0 | Library (npm) | App and service code in apps/mobile | https://github.com/pmndrs/zustand | MIT | No | Existing |
+| boto3 1.44.3 | Library (Python) | Service code in services/api | https://github.com/boto/boto3 | Apache-2.0 | No | Existing |
+| datamodel-code-generator 0.96.0 | Library (Python) | Build and test tooling in root | https://github.com/datamodel-code-generator/datamodel-code-generator | MIT | No | Existing |
+| fastapi 0.163.0 | Library (Python) | Service code in services/api | https://github.com/fastapi/fastapi | MIT | No | Existing |
+| httpx 0.28.1 | Library (Python) | Build and test tooling in root | https://github.com/encode/httpx | BSD-3-Clause | No | Existing |
+| jsonschema 4.26.0 | Library (Python) | Build and test tooling in root | https://github.com/python-jsonschema/jsonschema | MIT | No | Existing |
+| mypy 2.4.1 | Library (Python) | Build and test tooling in root | https://github.com/python/mypy | MIT | No | Existing |
+| psycopg 3.3.9 | Library (Python) | Service code in services/api | https://github.com/psycopg/psycopg | LGPL-3.0-only | No | Existing |
+| pydantic 2.14.3 | Library (Python) | Service code in packages/schemas | https://github.com/pydantic/pydantic | MIT | No | Existing |
+| pydantic-settings 2.16.3 | Library (Python) | Service code in services/api | https://github.com/pydantic/pydantic-settings | MIT | No | Existing |
+| pyjwt 2.15.1 | Library (Python) | Service code in services/api | https://github.com/jpadilla/pyjwt | MIT | No | Existing |
+| pytest 9.2.0 | Library (Python) | Build and test tooling in root | https://github.com/pytest-dev/pytest | MIT | No | Existing |
+| pytest-asyncio 1.5.0 | Library (Python) | Build and test tooling in root | https://github.com/pytest-dev/pytest-asyncio | Apache-2.0 | No | Existing |
+| ruff 0.17.5 | Library (Python) | Build and test tooling in root | https://github.com/astral-sh/ruff | MIT | No | Existing |
+| structlog 26.1.0 | Library (Python) | Service code in services/api | https://github.com/hynek/structlog | MIT OR Apache-2.0 | No | Existing |
+| types-jsonschema 4.26.0.20261006 | Library (Python) | Build and test tooling in root | https://github.com/python/typeshed | Apache-2.0 | No | Existing |
+| uvicorn 0.54.0 | Library (Python) | Service code in services/api | https://github.com/encode/uvicorn | BSD-3-Clause | No | Existing |
+
+Libraries are the direct dependencies in the workspace manifests (`package.json`, `pyproject.toml`) and the native modules; their own dependencies are not listed one by one. Versions are those installed when the row was added; the lockfiles hold the exact versions in use.

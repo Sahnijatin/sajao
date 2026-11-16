@@ -8,7 +8,7 @@
 | 03 | [Competitive landscape](03-competitive-landscape.md) | Who else exists and the gap to own |
 | 04 | [Product flow and brief](04-product-flow-and-brief.md) | The journey and its schema objects |
 | 05 | [System architecture](05-system-architecture.md) | How the pieces connect |
-| 06 | [Room understanding](06-room-capture.md) | Capture, geometry, scale anchors, Room Profile |
+| 06 | [Space understanding](06-room-capture.md) | Capture of any space, live scan mesh, geometry, scale anchors, Space Profile |
 | 07 | [Catalog](07-catalog-and-3d-assets.md) | Sources, AI curation, freshness, 3D assets |
 | 08 | [Design engine](08-design-engine.md) | Spec, retrieval, designer, solver, verifier, intents |
 | 09 | [Render, plan and share](09-editor-and-ar.md) | Guided render, checks, 2D plan, 3D view, reel |
@@ -25,3 +25,5 @@
 | 20 | [Taste understanding](20-taste-understanding.md) | Taste profile inputs, representation, guardrails |
 | 21 | [Infrastructure and scaling](21-infrastructure-and-scaling.md) | From 10 users to 1 lakh without a rebuild |
 | 22 | [Production readiness](22-production-readiness.md) | Environments, releases, security, observability |
+| 23 | [Space Twin](23-space-twin.md) | Every scan as a full 3D twin with every object editable |
+| 24 | [Third-party register](24-third-party-register.md) | Every model, library and dataset used, for the legal team |
