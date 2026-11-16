@@ -9,9 +9,13 @@ dependencies = [
     "psycopg[binary,pool]>=3.2",
     "pyjwt[crypto]>=2.10",
     "pydantic-settings>=2.11",
+    "sajao-schemas",
     "structlog>=25.4",
     "uvicorn>=0.38",
 ]
+
+[tool.uv.sources]
+sajao-schemas = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]

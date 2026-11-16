@@ -24,7 +24,7 @@ MIB = 1024 * 1024
 PART_SIZE_BYTES = 5 * MIB  # The smallest part size S3-compatible stores accept.
 URL_EXPIRES_IN_SECONDS = 15 * 60
 
-MediaKind = Literal["photo", "video"]
+MediaKind = Literal["photo", "video", "data"]
 # Allowed content types and the file extension each is stored under.
 CONTENT_TYPES: dict[MediaKind, dict[str, str]] = {
     "photo": {
@@ -34,11 +34,29 @@ CONTENT_TYPES: dict[MediaKind, dict[str, str]] = {
         "image/webp": "webp",
     },
     "video": {"video/mp4": "mp4", "video/quicktime": "mov"},
+    # A scan's capture package besides images and video: the sensor log (JSON
+    # lines), planes (JSON), and the depth file and scene mesh (binary).
+    "data": {
+        "application/x-ndjson": "jsonl",
+        "application/json": "json",
+        "application/octet-stream": "bin",
+    },
 }
 # Photos are resized on the phone to about 1600 px, so these are generous.
-MAX_SIZE_BYTES: dict[MediaKind, int] = {"photo": 20 * MIB, "video": 200 * MIB}
+# A scan video runs from the first frame to Done at full camera resolution.
+MAX_SIZE_BYTES: dict[MediaKind, int] = {"photo": 20 * MIB, "video": 512 * MIB, "data": 100 * MIB}
 
-_KEY = re.compile(r"^(?P<owner>[0-9a-f-]{36})/[0-9a-f]{32}\.(?:jpg|heic|png|webp|mp4|mov)$")
+_KEY = re.compile(
+    r"^(?P<owner>[0-9a-f-]{36})/[0-9a-f]{32}\.(?:jpg|heic|png|webp|mp4|mov|jsonl|json|bin)$"
+)
+
+
+def is_owned_key(key: str, user_id: str) -> bool:
+    """True when `key` is a stored object key that belongs to `user_id`."""
+    match = _KEY.match(key)
+    return match is not None and match["owner"] == user_id
+
+
 _KIND_BY_EXTENSION: dict[str, MediaKind] = {
     extension: kind for kind, types in CONTENT_TYPES.items() for extension in types.values()
 }
@@ -99,9 +117,8 @@ def get_storage(request: Request) -> ObjectStorage:
 
 
 def _owned_key(key: str, user: Principal) -> str:
-    match = _KEY.match(key)
     # One answer for "malformed" and "someone else's": never reveal which keys exist.
-    if match is None or match["owner"] != user.user_id:
+    if not is_owned_key(key, user.user_id):
         raise ApiError(404, "upload_not_found", "This upload does not exist.")
     return key
 

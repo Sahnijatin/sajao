@@ -43,6 +43,10 @@ Single-image models can shrink far-away geometry, which is why scale is cross-ch
 
 The Space Profile card shows what we found (the space type and size, with a Change action) and the plan drawn over your photo. You choose what to redo, "All of it" or "Just a part" by drawing around a corner or wall. You can drag a door, mark each existing item keep, replace or remove, and add tape values. Each value snaps in with a haptic tick and re-fits the whole room.
 
+## Upload and registration
+
+On Done the phone uploads every file of the package with the resumable uploader (small files first, the video last), then registers the capture with the API (`POST /v1/captures`). The API validates the Capture object, checks that every storage key belongs to the caller, and stores it for the twin worker. The capture id is chosen on the phone when the scan starts, so both steps are safe to repeat after a lost connection or an app restart: finished files are skipped and registering again returns the stored capture.
+
 ## Upload safety and privacy
 
 Non-room or explicit images are rejected by a classifier. Faces and personal photos are blurred before storage. Raw video is deleted after processing.

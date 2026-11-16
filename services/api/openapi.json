@@ -1,6 +1,442 @@
 {
   "components": {
     "schemas": {
+      "Ar": {
+        "additionalProperties": false,
+        "properties": {
+          "depth": {
+            "description": "Depth images are in the package.",
+            "title": "Depth",
+            "type": "boolean"
+          },
+          "lidar": {
+            "title": "Lidar",
+            "type": "boolean"
+          },
+          "tracking": {
+            "enum": [
+              "arkit",
+              "arcore",
+              "none"
+            ],
+            "title": "Tracking",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tracking",
+          "lidar",
+          "depth"
+        ],
+        "title": "Ar",
+        "type": "object"
+      },
+      "ArPoint": {
+        "additionalProperties": false,
+        "description": "A point in the AR session's world frame, in metres, y up.",
+        "properties": {
+          "x_m": {
+            "title": "X M",
+            "type": "number"
+          },
+          "y_m": {
+            "title": "Y M",
+            "type": "number"
+          },
+          "z_m": {
+            "title": "Z M",
+            "type": "number"
+          }
+        },
+        "required": [
+          "x_m",
+          "y_m",
+          "z_m"
+        ],
+        "title": "ArPoint",
+        "type": "object"
+      },
+      "ArPose": {
+        "additionalProperties": false,
+        "description": "Camera pose from AR tracking: position and a unit quaternion (x, y, z, w).",
+        "properties": {
+          "position": {
+            "$ref": "#/components/schemas/ArPoint"
+          },
+          "rotation": {
+            "items": {
+              "$ref": "#/components/schemas/RotationItem"
+            },
+            "maxItems": 4,
+            "minItems": 4,
+            "title": "Rotation",
+            "type": "array"
+          }
+        },
+        "required": [
+          "position",
+          "rotation"
+        ],
+        "title": "ArPose",
+        "type": "object"
+      },
+      "CameraIntrinsics": {
+        "additionalProperties": false,
+        "properties": {
+          "cx": {
+            "minimum": 0.0,
+            "title": "Cx",
+            "type": "number"
+          },
+          "cy": {
+            "minimum": 0.0,
+            "title": "Cy",
+            "type": "number"
+          },
+          "fx": {
+            "exclusiveMinimum": 0.0,
+            "title": "Fx",
+            "type": "number"
+          },
+          "fy": {
+            "exclusiveMinimum": 0.0,
+            "title": "Fy",
+            "type": "number"
+          },
+          "height_px": {
+            "minimum": 1.0,
+            "title": "Height Px",
+            "type": "integer"
+          },
+          "width_px": {
+            "minimum": 1.0,
+            "title": "Width Px",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "fx",
+          "fy",
+          "cx",
+          "cy",
+          "width_px",
+          "height_px"
+        ],
+        "title": "CameraIntrinsics",
+        "type": "object"
+      },
+      "CaptureDevice": {
+        "additionalProperties": false,
+        "properties": {
+          "has_ar": {
+            "title": "Has Ar",
+            "type": "boolean"
+          },
+          "platform": {
+            "enum": [
+              "ios",
+              "android"
+            ],
+            "title": "Platform",
+            "type": "string"
+          },
+          "tier": {
+            "description": "Device tier detected at launch.",
+            "enum": [
+              "standard",
+              "low"
+            ],
+            "title": "Tier",
+            "type": "string"
+          }
+        },
+        "required": [
+          "platform",
+          "tier",
+          "has_ar"
+        ],
+        "title": "CaptureDevice",
+        "type": "object"
+      },
+      "CaptureKeyframe": {
+        "additionalProperties": false,
+        "properties": {
+          "captured_at_ms": {
+            "description": "Milliseconds from the start of the scan.",
+            "minimum": 0.0,
+            "title": "Captured At Ms",
+            "type": "integer"
+          },
+          "id": {
+            "description": "Identifier that is unique inside its parent object, for example a wall or a design item.",
+            "pattern": "^[a-z0-9_-]{1,40}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "image": {
+            "description": "Object key in the media store. Never a public URL; clients receive signed URLs.",
+            "maxLength": 512,
+            "minLength": 1,
+            "title": "Image",
+            "type": "string"
+          },
+          "intrinsics": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CameraIntrinsics"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "pose": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ArPose"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sharpness": {
+            "minimum": 0.0,
+            "title": "Sharpness",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "image",
+          "captured_at_ms",
+          "sharpness"
+        ],
+        "title": "CaptureKeyframe",
+        "type": "object"
+      },
+      "CaptureMedia": {
+        "additionalProperties": false,
+        "properties": {
+          "compass_heading_deg": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 360.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Degrees, 0 inclusive to 360 exclusive.",
+            "title": "Compass Heading Deg"
+          },
+          "duration_s": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Video only.",
+            "title": "Duration S"
+          },
+          "has_ar_pose": {
+            "description": "True when an ARKit or ARCore pose is attached. Never required.",
+            "title": "Has Ar Pose",
+            "type": "boolean"
+          },
+          "height_px": {
+            "minimum": 1.0,
+            "title": "Height Px",
+            "type": "integer"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "photo",
+              "video"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "origin": {
+            "enum": [
+              "camera",
+              "gallery"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "sharpness": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "On-device sharpness check result.",
+            "title": "Sharpness"
+          },
+          "storage_key": {
+            "description": "Object key in the media store. Never a public URL; clients receive signed URLs.",
+            "maxLength": 512,
+            "minLength": 1,
+            "title": "Storage Key",
+            "type": "string"
+          },
+          "width_px": {
+            "minimum": 1.0,
+            "title": "Width Px",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "origin",
+          "storage_key",
+          "width_px",
+          "height_px",
+          "has_ar_pose"
+        ],
+        "title": "CaptureMedia",
+        "type": "object"
+      },
+      "CapturePackage": {
+        "additionalProperties": false,
+        "description": "Everything the scan recorded for building the twin, uploaded as one package. Works without AR: then there is video and keyframes only, with no poses. AR poses and points are in the AR session's world frame: metres, gravity aligned, y up; the twin converts them to the space frame.",
+        "properties": {
+          "ar": {
+            "$ref": "#/components/schemas/Ar"
+          },
+          "depth": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Depth images aligned to keyframes, when the phone provides them.",
+            "title": "Depth"
+          },
+          "detections": {
+            "description": "Live detector results during the scan.",
+            "items": {
+              "$ref": "#/components/schemas/LiveDetection"
+            },
+            "maxItems": 4000,
+            "title": "Detections",
+            "type": "array"
+          },
+          "keyframes": {
+            "items": {
+              "$ref": "#/components/schemas/CaptureKeyframe"
+            },
+            "maxItems": 120,
+            "minItems": 1,
+            "title": "Keyframes",
+            "type": "array"
+          },
+          "planes": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "AR planes as JSON.",
+            "title": "Planes"
+          },
+          "scene_mesh": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "LiDAR scene mesh with surface classes, when the phone has LiDAR.",
+            "title": "Scene Mesh"
+          },
+          "sensor_log": {
+            "description": "Motion, pose and light readings over time, as JSON lines.",
+            "maxLength": 512,
+            "minLength": 1,
+            "title": "Sensor Log",
+            "type": "string"
+          },
+          "video": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The scan video, when recorded.",
+            "title": "Video"
+          }
+        },
+        "required": [
+          "ar",
+          "keyframes",
+          "detections",
+          "sensor_log"
+        ],
+        "title": "CapturePackage",
+        "type": "object"
+      },
+      "CompassReading": {
+        "additionalProperties": false,
+        "description": "Compass headings averaged across the capture, used for Vastu direction.",
+        "properties": {
+          "mean_heading_deg": {
+            "description": "Degrees, 0 inclusive to 360 exclusive.",
+            "exclusiveMaximum": 360.0,
+            "minimum": 0.0,
+            "title": "Mean Heading Deg",
+            "type": "number"
+          },
+          "sample_count": {
+            "minimum": 1.0,
+            "title": "Sample Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "mean_heading_deg",
+          "sample_count"
+        ],
+        "title": "CompassReading",
+        "type": "object"
+      },
       "CompleteUpload": {
         "properties": {
           "key": {
@@ -59,7 +495,8 @@
           "kind": {
             "enum": [
               "photo",
-              "video"
+              "video",
+              "data"
             ],
             "title": "Kind",
             "type": "string"
@@ -118,6 +555,47 @@
           "environment"
         ],
         "title": "Health",
+        "type": "object"
+      },
+      "LiveDetection": {
+        "additionalProperties": false,
+        "properties": {
+          "at_ms": {
+            "minimum": 0.0,
+            "title": "At Ms",
+            "type": "integer"
+          },
+          "detector_class": {
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Detector Class",
+            "type": "string"
+          },
+          "score": {
+            "description": "A score from 0 to 1.",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Score",
+            "type": "number"
+          },
+          "world": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ArPoint"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Where the detection hit the AR scene, when it did."
+          }
+        },
+        "required": [
+          "detector_class",
+          "score",
+          "at_ms"
+        ],
+        "title": "LiveDetection",
         "type": "object"
       },
       "Me": {
@@ -184,6 +662,55 @@
         "title": "PartUrl",
         "type": "object"
       },
+      "RegisterCapture": {
+        "additionalProperties": false,
+        "properties": {
+          "compass": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CompassReading"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "device": {
+            "$ref": "#/components/schemas/CaptureDevice"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "media": {
+            "items": {
+              "$ref": "#/components/schemas/CaptureMedia"
+            },
+            "maxItems": 40,
+            "minItems": 1,
+            "title": "Media",
+            "type": "array"
+          },
+          "package": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CapturePackage"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "device",
+          "media"
+        ],
+        "title": "RegisterCapture",
+        "type": "object"
+      },
       "ResumeUpload": {
         "properties": {
           "key": {
@@ -210,6 +737,12 @@
         ],
         "title": "ResumeUpload",
         "type": "object"
+      },
+      "RotationItem": {
+        "maximum": 1.0,
+        "minimum": -1.0,
+        "title": "RotationItem",
+        "type": "number"
       },
       "UploadPlan": {
         "properties": {
@@ -308,6 +841,96 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/v1/captures": {
+      "post": {
+        "description": "Store a capture whose files are already uploaded. Safe to repeat.",
+        "operationId": "registerCapture",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterCapture"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Registercapture",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Register Capture",
+        "tags": [
+          "captures"
+        ]
+      }
+    },
+    "/v1/captures/{capture_id}": {
+      "get": {
+        "description": "The caller's own capture.",
+        "operationId": "getCapture",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "capture_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Capture Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Getcapture",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Capture",
+        "tags": [
+          "captures"
+        ]
+      }
+    },
     "/v1/health": {
       "get": {
         "description": "Liveness check. Does not touch the database or any model provider.",
