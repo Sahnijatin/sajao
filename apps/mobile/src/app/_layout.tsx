@@ -3,7 +3,7 @@ import { Geist_500Medium } from "@expo-google-fonts/geist/500Medium";
 import { Geist_600SemiBold } from "@expo-google-fonts/geist/600SemiBold";
 import { InstrumentSerif_400Regular } from "@expo-google-fonts/instrument-serif/400Regular";
 import { InstrumentSerif_400Regular_Italic } from "@expo-google-fonts/instrument-serif/400Regular_Italic";
-import { fontFamilies, ThemeProvider } from "@sajao/ui";
+import { colors, fontFamilies, ThemeProvider } from "@sajao/ui";
 import { type FontSource, useFonts } from "expo-font";
 import { Stack } from "expo-router/stack";
 import { StatusBar } from "expo-status-bar";
@@ -87,6 +87,18 @@ export default function RootLayout() {
             presentation: "fullScreenModal",
             animation: "fade",
             gestureEnabled: false,
+          }}
+        />
+        {/* One room: a pushed screen with the platform's own header and back. */}
+        <Stack.Screen
+          name="room/[id]"
+          options={{
+            headerShown: true,
+            headerShadowVisible: false,
+            headerBackButtonDisplayMode: "minimal",
+            headerStyle: { backgroundColor: colors.canvas },
+            headerTintColor: colors.ink,
+            title: t("nav.room"),
           }}
         />
         <Stack.Protected guard={previewScreensEnabled()}>

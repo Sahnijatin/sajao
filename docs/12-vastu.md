@@ -1,6 +1,6 @@
 # Vastu
 
-Vastu gets its own tab: basic room-level guidance at launch, labelled honestly, and a path to deeper help later. An expert consultant reviews the rules behind the scenes and is not named in the product.
+Vastu gets its own tab, and a Vastu view on each room's Designs tab that switches on only when the scan has a compass reading: basic room-level guidance at launch, labelled honestly, and a path to deeper help later. An expert consultant reviews the rules behind the scenes and is not named in the product.
 
 ## Stages
 

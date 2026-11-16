@@ -101,6 +101,9 @@ describe("My home", () => {
     expect(screen.queryByLabelText("A room before and after a redesign")).toBeNull();
     await fireEvent.press(screen.getByRole("button", { name: "Add a room" }));
     expect(mockPush).toHaveBeenCalledWith("/capture");
+    // A card opens its room.
+    await fireEvent.press(screen.getByTestId("room-card-one"));
+    expect(mockPush).toHaveBeenLastCalledWith({ pathname: "/room/[id]", params: { id: "one" } });
   });
 
   it("ticks softly when a new room lands, and not on first sight of the list", async () => {

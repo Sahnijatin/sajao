@@ -181,6 +181,49 @@
     },
     "total": "{{amount}} for everything"
   },
+  "room": {
+    "tabs": {
+      "room": "Room",
+      "designs": "Designs",
+      "shopping": "Shopping list"
+    },
+    "size": {
+      "title": "Size",
+      "floor": "{{long}} by {{short}}",
+      "ceiling": "Ceiling {{height}}",
+      "none": "Your room's size appears here once it is measured.",
+      "source": {
+        "estimated": "Estimated from your scan, to within {{band}}",
+        "measured": "Measured, to within {{band}}",
+        "user_confirmed": "Confirmed by you, to within {{band}}"
+      }
+    },
+    "plan": {
+      "title": "Floor plan",
+      "body": "A plan of your room with the furniture in place will appear here."
+    },
+    "sample": "These are sample views and sizes. Yours appear here when they are ready."
+  },
+  "designs": {
+    "why": "Why this works",
+    "fits": "Everything fits your room",
+    "check": "Some pieces need a fit check",
+    "vastu": "Vastu view",
+    "vastuNeedsCompass": "Needs a compass reading from your scan",
+    "vastuPoints": "Vastu points for this look appear here."
+  },
+  "shopping": {
+    "total": "Total",
+    "buy": "Buy",
+    "buyItem": "Buy {{item}}",
+    "outOfStock": "Out of stock",
+    "checking": "Prices are being checked",
+    "fit": {
+      "fits": "Fits your room",
+      "check": "Needs a fit check"
+    },
+    "sample": "These are sample products. Links open when your own designs are ready."
+  },
   "space": {
     "found": "We found",
     "change": "Change",
@@ -361,6 +404,7 @@
     "tastePreview": "Taste",
     "capture": "Scan",
     "generating": "Designing",
-    "reveal": "Your room"
+    "reveal": "Your room",
+    "room": "Room"
   }
 }
