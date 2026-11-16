@@ -184,6 +184,71 @@ def gate_table(model: str) -> dict:
     }
 
 
+ASSET_GPU = {"triposg": "L40S", "trellis2": "H100", "sam3d": "H100"}
+
+
+def build_costs(model: str) -> dict[str, dict]:
+    """Per SKU: build seconds and cost in INR (GPU time at Modal rates; for the
+    parametric tier, the vision call's metered cost plus Blender CPU time)."""
+    from bakeoff.cost import cpu_usd, gpu_usd, inr
+
+    out: dict[str, dict] = {}
+    f = R / f"assets_{model}.json"
+    if not f.exists():
+        return out
+    rows = json.loads(f.read_text())
+    if model == "parametric":
+        picks = {
+            x["id"]: x for x in json.loads((R / "parametric_pick.json").read_text()) if "spec" in x
+        }
+        for x in rows:
+            if "build_seconds" not in x:
+                continue
+            pk = picks.get(x["id"], {})
+            secs = pk.get("seconds", 0) + x["build_seconds"]
+            cost = pk.get("cost_micro_inr", 0) / 1e6 + inr(cpu_usd(x["build_seconds"]))
+            out[x["id"]] = {"seconds": secs, "inr": cost}
+    else:
+        for x in rows:
+            if "seconds" in x:
+                out[x["id"]] = {
+                    "seconds": x["seconds"],
+                    "inr": inr(gpu_usd(ASSET_GPU[model], x["seconds"])),
+                }
+    return out
+
+
+def tier_comparison(models=("triposg", "trellis2", "sam3d", "parametric")) -> dict:
+    """Per category and tier: gate pass rate (thresholds calibrated per tier on half
+    the SKUs, all SKUs reported), median build seconds, median cost per SKU, and the
+    best default tier (highest pass rate; ties to the cheaper)."""
+    table: dict[str, dict[str, dict]] = defaultdict(dict)
+    for m in models:
+        g = gate_table(m)
+        if not g:
+            continue
+        costs = build_costs(m)
+        res = [r for r in json.loads((R / f"gate_{m}.json").read_text()) if "pairs" in r]
+        cats = defaultdict(list)
+        for r in res:
+            cats[r["category"]].append(r["id"])
+        for cat, ids in cats.items():
+            c = [costs[i] for i in ids if i in costs]
+            table[cat][m] = {
+                "pass_rate": g["by_category"].get(cat),
+                "skus_built": len(c),
+                "skus": len(ids),
+                "median_seconds": float(np.median([x["seconds"] for x in c])) if c else None,
+                "median_inr": float(np.median([x["inr"] for x in c])) if c else None,
+            }
+    best = {}
+    for cat, row in table.items():
+        cands = [(v["pass_rate"] or 0, -(v["median_inr"] or 1e9), m) for m, v in row.items()]
+        if cands:
+            best[cat] = max(cands)[2]
+    return {"by_category": table, "best_default_tier": best}
+
+
 def main() -> None:
     summary = {
         "gate": {m: gate_table(m) for m in ("triposg", "trellis2", "sam3d")},
