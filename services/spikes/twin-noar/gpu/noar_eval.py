@@ -47,6 +47,10 @@ ROOMS = [
 N_VIEWS = 120
 MAPANYTHING_APACHE = "facebook/map-anything-apache"
 MAPANYTHING_APACHE_REVISION = "00f9c245bbcb60522d1ed7f9e9d88462c6e3f38a"
+# VGGT-1B-Commercial (gated; its own license permits commercial use, the original
+# VGGT-1B checkpoint does not). Code revision pinned in app.py.
+VGGT_COMMERCIAL = "facebook/VGGT-1B-Commercial"
+VGGT_COMMERCIAL_REVISION = "ebb29a532abe92960eeb6903a5530f16990ef4ab"
 SCALE_SOURCES = ["model", "moge3", "ar_translation", "tape"]
 
 
@@ -122,6 +126,55 @@ def predict_mapanything(name: str) -> dict:
     )
     info = {"model": "mapanything_apache", "views": len(frames), "seconds": round(seconds, 1)}
     save_json(noar_dir(name) / "poses_mapanything_apache.json", info)
+    return info
+
+
+def predict_vggt(name: str) -> dict:
+    """Camera poses and depth from the images alone (VGGT takes no intrinsics)."""
+    import cv2
+    import torch
+    from vggt.models.vggt import VGGT
+    from vggt.utils.pose_enc import pose_encoding_to_extri_intri
+
+    path = noar_dir(name) / "poses_vggt_commercial.npz"
+    if path.exists():
+        return json.loads((noar_dir(name) / "poses_vggt_commercial.json").read_text())
+    scene = load_scene(name, refined=False)
+    sd = scene_dir(name)
+    frames = views_for(name)
+    model = VGGT.from_pretrained(VGGT_COMMERCIAL, revision=VGGT_COMMERCIAL_REVISION)
+    model = model.cuda().eval()
+    # VGGT's own preprocessing: width 518, height scaled and rounded to 14 pixels.
+    first = read_rgb(sd / scene["frames"][frames[0]]["file"])
+    tw = 518
+    th = round(first.shape[0] * tw / first.shape[1] / 14) * 14
+    imgs = []
+    for fi in frames:
+        rgb = read_rgb(sd / scene["frames"][fi]["file"])
+        imgs.append(cv2.resize(rgb, (tw, th), interpolation=cv2.INTER_AREA))
+    batch = torch.from_numpy(np.stack(imgs)).permute(0, 3, 1, 2).float().div(255).cuda()
+    started = time.time()
+    with torch.no_grad(), torch.autocast("cuda", dtype=torch.bfloat16):
+        preds = model(batch)
+    extrinsic, _ = pose_encoding_to_extri_intri(preds["pose_enc"], batch.shape[-2:])
+    seconds = time.time() - started
+    w2c = np.tile(np.eye(4), (len(frames), 1, 1))
+    w2c[:, :3, :4] = extrinsic[0].float().cpu().numpy()
+    c2w = np.linalg.inv(w2c)  # OpenCV camera axes, world = the first camera
+    raw = preds["depth"][0, ..., 0].float().cpu().numpy()
+    conf = preds["depth_conf"][0].float().cpu().numpy()
+    depth = []
+    for fi, d, c in zip(frames, raw, conf, strict=True):
+        f = scene["frames"][fi]
+        keep = c >= np.percentile(c, 10)  # same confidence cut as MapAnything's run
+        depth.append(
+            cv2.resize(np.where(keep, d, 0.0), (f["w"], f["h"]), interpolation=cv2.INTER_NEAREST)
+        )
+    np.savez_compressed(
+        path, frames=np.array(frames), c2w=c2w, depth=np.stack(depth).astype(np.float16)
+    )
+    info = {"model": "vggt_commercial", "views": len(frames), "seconds": round(seconds, 1)}
+    save_json(noar_dir(name) / "poses_vggt_commercial.json", info)
     return info
 
 

@@ -4,6 +4,11 @@
   "seconds": 28.3,
   "views": 120
  },
+ "poses_vggt_commercial": {
+  "model": "vggt_commercial",
+  "seconds": 12.8,
+  "views": 120
+ },
  "scene": "arkit_living_47331265",
  "score_mapanything_apache": {
   "ar_poses": {
@@ -118,6 +123,119 @@
   "true_scale": 1.1344,
   "views": 120
  },
+ "score_vggt_commercial": {
+  "ar_poses": {
+   "gt_objects": 10,
+   "median_center_error_m": 0.15262971884423096,
+   "median_height_error_m": 0.07450748101544724,
+   "median_iou": 0.4268434346197624,
+   "median_length_error_m": 0.10915777973468105,
+   "median_size_error_rel": 0.16373702984257923,
+   "median_width_error_m": 0.08986379457176924,
+   "precision_class_iou25": 0.2631578947368421,
+   "predicted_annotated_classes": 19,
+   "predicted_objects": 35,
+   "recall_any_class_iou25": 0.5,
+   "recall_class_iou05": 0.6,
+   "recall_class_iou25": 0.5
+  },
+  "ar_translation": {
+   "metrics_seen": {
+    "gt_objects": 10,
+    "median_center_error_m": 0.2557316696885224,
+    "median_height_error_m": 0.11648368169460765,
+    "median_iou": 0.35679437007767356,
+    "median_length_error_m": 0.11056925660229672,
+    "median_size_error_rel": 0.18453286375869146,
+    "median_width_error_m": 0.1267325804598363,
+    "precision_class_iou25": 0.2857142857142857,
+    "predicted_annotated_classes": 14,
+    "predicted_objects": 29,
+    "recall_any_class_iou25": 0.4,
+    "recall_class_iou05": 0.6,
+    "recall_class_iou25": 0.4
+   },
+   "pose": {
+    "centre_rmse_cm": 17.0,
+    "rotation_median_deg": 1.87
+   },
+   "scale": 2.9478,
+   "scale_error_pct": 0.0
+  },
+  "method": "vggt_commercial",
+  "model": {
+   "metrics_seen": {
+    "gt_objects": 10,
+    "median_center_error_m": 0.8071403978202716,
+    "median_height_error_m": 0.32527270538326364,
+    "median_iou": null,
+    "median_length_error_m": 0.6788284867332421,
+    "median_size_error_rel": 0.3075913362878458,
+    "median_width_error_m": 0.2139212535910126,
+    "precision_class_iou25": 0.0,
+    "predicted_annotated_classes": 13,
+    "predicted_objects": 30,
+    "recall_any_class_iou25": 0.0,
+    "recall_class_iou05": 0.2,
+    "recall_class_iou25": 0.0
+   },
+   "pose": {
+    "centre_rmse_cm": 109.1,
+    "rotation_median_deg": 1.87
+   },
+   "scale": 1.0,
+   "scale_error_pct": -66.1
+  },
+  "moge3": {
+   "metrics_seen": {
+    "gt_objects": 10,
+    "median_center_error_m": 0.2481397931680664,
+    "median_height_error_m": 0.09106589850185376,
+    "median_iou": 0.38887819457232187,
+    "median_length_error_m": 0.12875121071296675,
+    "median_size_error_rel": 0.16444151941706575,
+    "median_width_error_m": 0.12791152869354028,
+    "precision_class_iou25": 0.25,
+    "predicted_annotated_classes": 16,
+    "predicted_objects": 35,
+    "recall_any_class_iou25": 0.4,
+    "recall_class_iou05": 0.6,
+    "recall_class_iou25": 0.4
+   },
+   "pose": {
+    "centre_rmse_cm": 19.3,
+    "rotation_median_deg": 1.87
+   },
+   "scale": 2.7807,
+   "scale_error_pct": -5.7
+  },
+  "scene": "arkit_living_47331265",
+  "tape": {
+   "metrics_seen": {
+    "gt_objects": 10,
+    "median_center_error_m": 0.8035050645038654,
+    "median_height_error_m": 0.4724386709251709,
+    "median_iou": null,
+    "median_length_error_m": 1.216304638739589,
+    "median_size_error_rel": 0.46901744525564815,
+    "median_width_error_m": 0.32256369523758377,
+    "precision_class_iou25": 0.0,
+    "predicted_annotated_classes": 13,
+    "predicted_objects": 22,
+    "recall_any_class_iou25": 0.0,
+    "recall_class_iou05": 0.1,
+    "recall_class_iou25": 0.0
+   },
+   "pose": {
+    "centre_rmse_cm": 116.1,
+    "rotation_median_deg": 1.87
+   },
+   "scale": 5.0244,
+   "scale_error_pct": 70.4
+  },
+  "true_scale": 2.9478,
+  "views": 120
+ },
  "splat_ar": {
   "gaussians": 2969190,
   "gpu": "NVIDIA L40S",
@@ -135,5 +253,14 @@
   "psnr_heldout_raw": 13.65,
   "scene": "arkit_living_47331265",
   "train_seconds": 600.7
+ },
+ "splat_vggt_commercial_moge3": {
+  "gaussians": 2605536,
+  "gpu": "NVIDIA L40S",
+  "poses": "vggt_commercial_moge3",
+  "psnr_heldout": 23.77,
+  "psnr_heldout_raw": 15.66,
+  "scene": "arkit_living_47331265",
+  "train_seconds": 469.2
  }
 }
