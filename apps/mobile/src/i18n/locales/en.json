@@ -9,7 +9,16 @@
     "headline": "Any corner, redone.",
     "intro": "Scan a whole room, a corner or a balcony. See three ways it could look, built from real products that fit.",
     "start": "Start scanning",
-    "worksWith": "Works with whole rooms, corners and balconies"
+    "worksWith": "Works with whole rooms, corners and balconies",
+    "upload": {
+      "waiting": "Your scan is saved on this phone",
+      "uploading": "Uploading your scan, {{finished}} of {{total}}",
+      "starting": "Uploading your scan",
+      "done": "Scan uploaded",
+      "doneNoVideo": "Scan uploaded without its video (the video was too large)",
+      "failed": "Upload paused. Nothing is lost",
+      "retry": "Try again"
+    }
   },
   "capture": {
     "title": "Mapping your space",

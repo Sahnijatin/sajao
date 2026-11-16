@@ -3,6 +3,7 @@
 // this again after a crash or a lost connection skips what already
 // arrived and resumes the rest. Same inputs, same package: idempotent.
 import type { CapturePackage } from "@sajao/schemas";
+import { FileTooLargeError } from "@/uploads/resumable-upload";
 import { buildPackage, type PackageFiles, type RecorderState } from "./recorder";
 
 export type PackageFileKind =
@@ -23,6 +24,8 @@ export interface PackageUploadDeps {
     set(localId: string, key: string): Promise<void>;
   };
   onProgress?: (finished: number, total: number) => void;
+  /** The video was over the server's size limit and was left out; the rest of the package went up. */
+  onVideoSkipped?: () => void;
 }
 
 export async function uploadCapturePackage(
@@ -53,8 +56,21 @@ export async function uploadCapturePackage(
   for (const item of queue) {
     const localId = `${captureId}/${item.name}`;
     const known = await deps.done.get(localId);
-    const key = known ?? (await deps.uploadFile({ localId, uri: item.uri, kind: item.kind })).key;
-    if (!known) await deps.done.set(localId, key);
+    let key = known;
+    if (!key) {
+      try {
+        key = (await deps.uploadFile({ localId, uri: item.uri, kind: item.kind })).key;
+      } catch (error) {
+        // The twin is built from keyframes and poses; a video over the
+        // server's limit must not hold the whole scan back.
+        if (item.kind !== "video" || !(error instanceof FileTooLargeError)) throw error;
+        deps.onVideoSkipped?.();
+        finished += 1;
+        deps.onProgress?.(finished, queue.length);
+        continue;
+      }
+      await deps.done.set(localId, key);
+    }
     keys[item.name] = key;
     finished += 1;
     deps.onProgress?.(finished, queue.length);
