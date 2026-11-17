@@ -8,6 +8,15 @@ The full twin is the direction, not the launch. At launch the twin supplies what
 
 After launch: the room splat and its viewer on the phone, 3D models of your own items, catalog matches for your own items, removal inside the splat, and rearrange-only mode. What the evidence showed: the splat reads like a soft photo near the capture path and breaks down away from it; removing an object inside the splat leaves a visible ghost at room scale, so removal for redesigns is 2D inpainting on hero keyframes; and frame rate on a budget phone has not been measured on a device. The sections below describe the full twin and stay as the design for that work.
 
+## What the design engine and the render read
+
+Added to the twin by the room understanding step, all from the fused geometry and the hero photos:
+
+- **Footprint** of every object and built-in: its box seen from above, with width and depth as dimensions (value, source, error band), and whether it stands on the floor (a clock or a ceiling fan does not).
+- **Keep or replace** for every object. The rule keeps fixtures (fans, lights, AC units, switchboards, geysers) and lets everything else be replaced; the person can change it, and their choice is kept.
+- **Hero masks**: for every object, its mask in each hero photo where at least 30% of it is in frame and not hidden behind something nearer. The detector's own mask is reused where it has one for that keyframe; otherwise the segmenter is prompted with the object's box projected into the photo. Masks are not dilated; the render decides how far to grow them before inpainting.
+- **Free floor**: the floor area less the footprints of everything kept that stands on the floor (objects marked keep, and built-ins), with an error band from the walls' and footprints' bands.
+
 ## Why this is new
 
 | What exists | What it lacks |
