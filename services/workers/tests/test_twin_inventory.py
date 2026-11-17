@@ -287,3 +287,25 @@ def test_a_merged_group_takes_the_name_most_of_its_views_gave() -> None:
     kept, _ = dedupe(objects, items)
 
     assert sorted(o["category"] for o in kept) == ["armchair", "armchair", "sofa"]
+
+
+def test_pieces_of_one_chair_pool_their_views_and_seven_chairs_stay_seven() -> None:
+    from sajao_workers.twin.inventory import dedupe
+
+    items = merge_inventories({"m": [item("dining chair", "furniture", 7)]})
+    strong = [obj("dining chair", 1.0 * i, size=0.5, frames=20) for i in range(5)]
+    # A sixth chair seen only in pieces (back and seat, and once as "armchair").
+    pieces = [
+        obj("dining chair", 6.0, size=0.45, frames=4, conf=0.5),
+        obj("dining chair", 6.12, size=0.35, frames=4, conf=0.4),
+        obj("armchair", 6.05, size=0.4, frames=3, conf=0.35),
+    ]
+    # A seventh seen well in only five frames: real, so kept.
+    tall = obj("dining chair", 9.0, size=0.7, frames=5, conf=0.45)
+    stray = obj("dining chair", 12.0, size=0.2, frames=3, conf=0.3)  # a wrong label once
+
+    kept, _ = dedupe([*strong, *pieces, tall, stray], items)
+
+    chairs = [o for o in kept if o["category"] in ("dining chair", "armchair")]
+    assert len(chairs) == 7
+    assert all(o["category"] == "dining chair" for o in chairs)

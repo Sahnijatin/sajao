@@ -264,6 +264,17 @@ def _support(obj: Mapping[str, Any]) -> float:
     return float(obj["frames"]) * float(obj["confidence"])
 
 
+def _kind(name: str) -> str:
+    """What kind of thing a name is: its head noun, grouped as fusion groups names
+    (armchair and dining chair are both chairs; photo frame and painting are not)."""
+    from sajao_workers.twin.fusion import GROUPS
+
+    words = normalise(name).split(" ")
+    head = words[words.index("of") - 1] if "of" in words[1:] else words[-1]
+    whole = " ".join(words)
+    return GROUPS.get(whole, GROUPS.get(head, head))
+
+
 def dedupe(
     objects: Sequence[Mapping[str, Any]],
     items: Sequence[Mapping[str, Any]],
@@ -271,73 +282,94 @@ def dedupe(
     contain: float = 0.6,
     iou: float = 0.3,
     min_volume_ratio: float = 0.3,
+    near_m: float = 0.3,
     min_relative_support: float = 0.35,
+    min_frames: int = 4,
     slack: int | None = None,
-    same_label: bool = False,
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
     """One object per real thing (defaults tuned in eval/twin-inventory).
 
-    1. Boxes that overlap are one thing, whatever their labels: IoU at least
-       `iou`, or at least `contain` of the smaller inside the larger when their
-       volumes are within `min_volume_ratio` (a cushion on a sofa is not the
-       sofa). The best-seen box (frames times confidence) stays. The best box of
-       each label is never merged away, so every listed item keeps one object.
-    2. Boxes seen far less than the best box of their label (below
-       `min_relative_support` of it) are dropped: a common name (book, box) gets
-       put on many things in a few frames each.
-    3. With `slack`, each item keeps at most its listed count plus `slack`.
+    1. Boxes are one thing when they overlap (IoU at least `iou`, or at least
+       `contain` of the smaller inside the larger when their volumes are within
+       `min_volume_ratio`: a cushion on a sofa is not the sofa), or when they are
+       the same kind of thing with centres within `near_m` and overlapping
+       heights (the back and the seat of one chair). The best-seen box (frames
+       times confidence) stays, the group pools its views, and it takes the name
+       most of its views gave.
+    2. The best box of each listed item is never merged into a different kind of
+       thing, so every listed item keeps one object.
+    3. A group seen far less than the best of its name (pooled support below
+       `min_relative_support` of it) and in fewer than `min_frames` frames is
+       dropped: a common name (book, box) gets put on many things briefly.
+    4. With `slack`, each item keeps at most its listed count plus `slack`.
     """
-    from sajao_workers.twin.geometry import box_overlap
+    from sajao_workers.twin.geometry import box_overlap, horizontal_axes
 
     ranked: list[dict[str, Any]] = [dict(o) for o in sorted(objects, key=_support, reverse=True)]
     boxes = [_upright(o) for o in ranked]
-    kept: list[int] = []
-    merged = 0
+    kinds = [_kind(o["category"]) for o in ranked]
+
+    def near(i: int, k: int) -> bool:
+        if kinds[i] != kinds[k]:
+            return False
+        a, b = horizontal_axes(boxes[i].up_axis)
+        ci, ck = boxes[i].center, boxes[k].center
+        if math.hypot(ci[a] - ck[a], ci[b] - ck[b]) > near_m:
+            return False
+        (lo_i, hi_i), (lo_k, hi_k) = boxes[i].vertical_range(), boxes[k].vertical_range()
+        return bool(min(hi_i, hi_k) > max(lo_i, lo_k))
 
     def same_thing(i: int, k: int) -> bool:
-        if same_label and ranked[i]["category"] != ranked[k]["category"]:
+        if i in protected and kinds[i] != kinds[k]:
             return False
         overlap_iou, contained = box_overlap(boxes[i], boxes[k])
         small, large = sorted((boxes[i].volume(), boxes[k].volume()))
         similar = large > 0 and small / large >= min_volume_ratio
-        return overlap_iou >= iou or (contained >= contain and similar)
+        return overlap_iou >= iou or (contained >= contain and similar) or near(i, k)
 
-    # The best-seen box of each label is never merged away: a listed item keeps
-    # at least one object, even where two names fit the same thing.
     first: dict[str, int] = {}
     for i, o in enumerate(ranked):
         first.setdefault(o["category"], i)
     protected = set(first.values())
+    kept: list[int] = []
     votes: dict[int, dict[str, float]] = {}
+    pooled: dict[int, float] = {}
+    frames: dict[int, int] = {}
+    merged = 0
     for i in range(len(boxes)):
-        into = None if i in protected else next((k for k in kept if same_thing(i, k)), None)
-        if into is not None:
-            merged += 1
-            tally = votes.setdefault(into, {ranked[into]["category"]: _support(ranked[into])})
-            name = ranked[i]["category"]
-            tally[name] = tally.get(name, 0.0) + _support(ranked[i])
+        into = next((k for k in kept if same_thing(i, k)), None)
+        if into is None:
+            kept.append(i)
+            votes[i] = {ranked[i]["category"]: _support(ranked[i])}
+            pooled[i], frames[i] = _support(ranked[i]), int(ranked[i]["frames"])
             continue
-        kept.append(i)
-    # A merged group takes the name most of its views gave; protected boxes keep theirs.
-    for k, tally in votes.items():
-        name = max(tally, key=lambda n: tally[n])
-        if k not in protected and name != ranked[k]["category"]:
+        merged += 1
+        name = ranked[i]["category"]
+        votes[into][name] = votes[into].get(name, 0.0) + _support(ranked[i])
+        pooled[into] += _support(ranked[i])
+        frames[into] = max(frames[into], int(ranked[i]["frames"]))
+    # A group takes the name most of its views gave, unless that would take away
+    # the last object of a listed item of another kind.
+    for k in kept:
+        name = max(votes[k], key=lambda n: votes[k][n])
+        if name != ranked[k]["category"] and not (k in protected and _kind(name) != kinds[k]):
             ranked[k]["category"], ranked[k]["label"] = name, name.capitalize()
     big = 10**9
     limit = {str(i["name"]): int(i["count"]) + (big if slack is None else slack) for i in items}
     best: dict[str, float] = {}
-    for i in kept:
-        best.setdefault(ranked[i]["category"], _support(ranked[i]))
+    for k in kept:
+        name = ranked[k]["category"]
+        best[name] = max(best.get(name, 0.0), pooled[k])
     counts: dict[str, int] = {}
     out, capped = [], 0
-    for i in kept:
-        name = ranked[i]["category"]
-        if _support(ranked[i]) < min_relative_support * best[name]:
+    for k in sorted(kept, key=lambda k: -pooled[k]):
+        name = ranked[k]["category"]
+        if pooled[k] < min_relative_support * best[name] and frames[k] < min_frames:
             capped += 1
             continue
         counts[name] = counts.get(name, 0) + 1
         if counts[name] > limit.get(name, big):
             capped += 1
             continue
-        out.append(dict(ranked[i]))
+        out.append(dict(ranked[k]))
     return out, {"merged": merged, "capped": capped}

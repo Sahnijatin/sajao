@@ -1885,7 +1885,11 @@ def inventory_eval_cpu(
     import asyncio
     import json
 
-    from sajao_workers.inventory_recall import recall_report
+    from sajao_workers.inventory_recall import (
+        big_item_placement,
+        listing_recall_by_geometry,
+        recall_report,
+    )
     from sajao_workers.steps import LocalArtifactStore, StepRunner
 
     store = LocalArtifactStore(Path("/work/artifacts"))
@@ -1931,6 +1935,8 @@ def inventory_eval_cpu(
         ]
         + [{k: b[k] for k in ("category", "confidence", "frames", "box")} for b in built_ins],
         "ground_truth": truth,
+        "listing_by_geometry": listing_recall_by_geometry(truth, listed["items"]),
+        "big_item_placement": big_item_placement([*placed, *built_ins], truth),
         "inventory_meta": dict(inventory.meta),
         "objects_meta": dict(objects.meta),
         "charged_micro_inr": inventory.cost_micro_inr + objects.cost_micro_inr,
