@@ -153,7 +153,7 @@ export type Hint =
   | { id: "walkWalls" }
   | { id: "keepGoing" }
   | { id: "standMiddle" }
-  | { id: "tiltDown" }
+  | { id: "tiltWall" }
   | { id: "oneMoreSpot" }
   | { id: "meterDone" }
   | null;

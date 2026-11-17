@@ -17,18 +17,21 @@
       "uploading": "Uploading your scan, {{finished}} of {{total}}",
       "starting": "Uploading your scan",
       "done": "Scan uploaded",
-      "doneNoVideo": "Scan uploaded without its video (the video was too large)",
+      "doneNoVideo": "Scan uploaded",
       "failed": "Upload paused. Nothing is lost",
       "retry": "Try again",
       "doneSize": "Scan uploaded ({{megabytes}} MB)",
-      "doneNoVideoSize": "Scan uploaded without its video, which was too large ({{megabytes}} MB)"
+      "doneNoVideoSize": "Scan uploaded ({{megabytes}} MB)",
+      "notificationTitle": "Uploading your scan",
+      "notificationText": "You can keep using your phone"
     },
     "room": {
       "measuring": "Measuring your room",
       "measured": "Room measured",
       "failed": {
         "no_walls": "We could not find the walls in this scan. Please scan again and walk around the room",
-        "other": "We could not measure this room. Please scan again"
+        "other": "We could not measure this room. Please scan again",
+        "no_ar_data": "Your pictures are uploaded. Rooms from photos and videos are not ready yet"
       }
     }
   },
@@ -134,8 +137,8 @@
       "walkWalls": "Walk along the walls",
       "keepGoing": "Keep going round",
       "standMiddle": "Now stand in the middle and turn slowly",
-      "tiltDown": "Tilt down a little",
-      "oneMoreSpot": "One more spot, over there"
+      "oneMoreSpot": "One more spot, over there",
+      "tiltWall": "On each wall, tilt slowly up to the ceiling, then down to the floor"
     },
     "keepGoing": "Keep going",
     "torchOn": "Use the torch",
@@ -154,6 +157,9 @@
     "noAr": {
       "title": "This phone can't measure a room by scanning",
       "body": "Scanning needs a phone that supports AR. Yours can still get a redesign and a shopping list: use photos of your space instead."
+    },
+    "hints": {
+      "tiltWall": "On each wall, tilt slowly up to the ceiling, then down to the floor"
     }
   },
   "review": {
@@ -474,5 +480,17 @@
     "room": "Room",
     "space": "Your space",
     "taste": "Your taste"
+  },
+  "import": {
+    "problemTitle": "We could not use that",
+    "problems": {
+      "nothing": "Nothing was chosen. Pick some photos of the room, or one video.",
+      "tooManyPhotos": "Please choose 20 photos or fewer.",
+      "photosAndVideo": "Please choose photos or one video, not both.",
+      "severalVideos": "Please choose one video.",
+      "videoTooShort": "That video is very short. Choose one of 5 seconds or more.",
+      "videoTooLong": "That video is long. Choose one of 2 minutes or less.",
+      "failed": "Something went wrong opening your photos. Please try again."
+    }
   }
 }
