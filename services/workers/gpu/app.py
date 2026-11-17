@@ -141,7 +141,12 @@ splat_base = (
     )
 )
 splat_image = (
-    splat_base.add_local_dir(SRC, "/root/sajao_workers")
+    # LPIPS scores held-out views. Its AlexNet weights are fetched at build time,
+    # so a run never downloads them.
+    splat_base.pip_install("lpips==0.1.4")
+    .env({"TORCH_HOME": "/opt/torch_home"})
+    .run_commands("python -c 'import lpips; lpips.LPIPS(net=\"alex\")'")
+    .add_local_dir(SRC, "/root/sajao_workers")
     .add_local_file(HERE / "splat_gpu.py", "/root/splat_gpu.py")
     .add_local_file(HERE / "removal_gpu.py", "/root/removal_gpu.py")
     .add_local_file(HERE / "review_gpu.py", "/root/review_gpu.py")
@@ -1184,9 +1189,16 @@ async def _compress(payload: Any) -> Any:
 
 
 async def _build_twin(
-    store: Any, runner: Any, ledger: Any, capture: dict[str, Any], manifest: dict[str, Any]
+    store: Any,
+    runner: Any,
+    ledger: Any,
+    capture: dict[str, Any],
+    manifest: dict[str, Any],
+    holdout: str = "spread",
 ) -> dict[str, Any]:
-    """Objects, splat, phone splats and the twin, each a durable step (stored results reused)."""
+    """Objects, splat, phone splats and the twin, each a durable step (stored results reused).
+
+    `holdout` is "split" for golden rooms, which also score views far from the path."""
     import json
     import uuid
 
@@ -1211,7 +1223,7 @@ async def _build_twin(
             ModelGateway(splat_chain(volume_invoke("twin_splat", run_splat)), ledger=ledger)
         ),
         {"frames": frames, "objects": objects.outputs["objects"]},
-        {},
+        {"holdout": holdout},
     )
     phone = await runner.run(phone_splat_step(_compress), {"splat": splat.outputs["splat"]}, {})
     twin = await runner.run(
@@ -1433,9 +1445,9 @@ def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
             )
             manifest = json.loads(store.read_blob(estimated.outputs["frames"]))
             depth_meta = dict(estimated.meta)
-        built = await _build_twin(store, runner, ledger, capture, manifest)
+        built = await _build_twin(store, runner, ledger, capture, manifest, holdout="split")
         twin = json.loads(store.read_blob(built["twin"].outputs["twin"]))
-        report = accuracy_report(twin, read_sheet(sheet))
+        report = accuracy_report(twin, read_sheet(sheet), built["splat"].meta.get("heldout"))
         charged = sum(built[k].cost_micro_inr for k in ("objects", "splat", "phone"))
         return {
             "twin": twin,

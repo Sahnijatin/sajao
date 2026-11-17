@@ -272,12 +272,26 @@ def refine_test_cameras(params, imgs, viewmats, ks, steps: int = 300):
     return cams
 
 
+_lpips = None
+
+
+def _perceptual():
+    """LPIPS with the AlexNet backbone (weights are baked into the image)."""
+    global _lpips
+    if _lpips is None:
+        import lpips
+
+        _lpips = lpips.LPIPS(net="alex", verbose=False).cuda().eval()
+    return _lpips
+
+
 def evaluate(params, imgs, viewmats, ks, cams=None):
+    """PSNR, SSIM and LPIPS of each view against its photo."""
     import torch
     from pytorch_msssim import ssim
 
     h, w = imgs.shape[1:3]
-    psnrs, ssims = [], []
+    views = []
     with torch.no_grad():
         for i in range(len(imgs)):
             vm = viewmats[i : i + 1]
@@ -285,14 +299,20 @@ def evaluate(params, imgs, viewmats, ks, cams=None):
                 vm = adjusted_viewmats(vm, cams["delta"][i : i + 1])
             rc, _, _ = render(params, vm, ks[i : i + 1], w, h)
             pred = rc[0] if cams is None else apply_color(rc[0], cams["color"][i])
-            pred = pred.clamp(0, 1)
-            gt = imgs[i].float() / 255.0
-            mse = ((pred - gt) ** 2).mean()
-            psnrs.append(float(-10 * torch.log10(mse)))
-            ssims.append(
-                float(ssim(pred.permute(2, 0, 1)[None], gt.permute(2, 0, 1)[None], data_range=1.0))
+            pred = pred.clamp(0, 1).permute(2, 0, 1)[None]
+            gt = (imgs[i].float() / 255.0).permute(2, 0, 1)[None]
+            views.append(
+                {
+                    "psnr": float(-10 * torch.log10(((pred - gt) ** 2).mean())),
+                    "ssim": float(ssim(pred, gt, data_range=1.0)),
+                    "lpips": float(_perceptual()(pred, gt, normalize=True)),
+                }
             )
-    return {"psnr": float(np.mean(psnrs)), "ssim": float(np.mean(ssims)), "views": len(imgs)}
+    return views
+
+
+def _mean(views, key: str) -> float:
+    return float(np.mean([v[key] for v in views]))
 
 
 # A checkpoint of a room is about 2 GB (Gaussians plus Adam state), so it is written
@@ -460,7 +480,13 @@ def train(
     import torch
 
     from sajao_workers.twin.objects import decode_depth_mm
-    from sajao_workers.twin.splat_inputs import held_out, initial_points
+    from sajao_workers.twin.splat_inputs import (
+        held_out,
+        held_out_split,
+        initial_points,
+        split_views,
+        summarise,
+    )
 
     for key in ("frames", "objects"):
         if not store.has_blob(payload[key]):
@@ -479,9 +505,12 @@ def train(
     ]
 
     torch.manual_seed(0)
-    test = set(held_out(len(frames)))
-    train_idx = [i for i in range(len(frames)) if i not in test]
-    test_idx = sorted(test)
+    holdout = payload.get("holdout", "spread")
+    if holdout not in ("spread", "split"):
+        raise InputError(f"unknown holdout {holdout}")
+    poses = np.asarray([f["c2w"] for f in frames], dtype=np.float64)
+    test_idx = held_out_split(poses) if holdout == "split" else held_out(len(frames))
+    train_idx = [i for i in range(len(frames)) if i not in set(test_idx)]
     ks_all = torch.tensor([f["intrinsics"] for f in frames], dtype=torch.float32, device="cuda")
     c2w_all = torch.tensor([f["c2w"] for f in frames], dtype=torch.float32, device="cuda")
     vms_all = torch.linalg.inv(c2w_all)
@@ -495,7 +524,7 @@ def train(
     saved = resume = None
     if checkpoints is not None:
         key = hashlib.sha256(
-            json.dumps([payload["frames"], payload["objects"], steps]).encode()
+            json.dumps([payload["frames"], payload["objects"], steps, holdout]).encode()
         ).hexdigest()
         saved = checkpoints / f"splat-{key}.pt"
         if saved.exists():
@@ -540,9 +569,20 @@ def train(
         refined[train_idx] = adjusted_viewmats(vms_all[train_idx], cams["delta"])
     if test_idx:
         timgs, tvms, tks = imgs[test_idx], vms_all[test_idx], ks_all[test_idx]
-        result["psnr_heldout_raw"] = round(evaluate(params, timgs, tvms, tks)["psnr"], 2)
+        result["psnr_heldout_raw"] = round(_mean(evaluate(params, timgs, tvms, tks), "psnr"), 2)
         tcams = refine_test_cameras(params, timgs, tvms, tks)
-        result["psnr_heldout"] = round(evaluate(params, timgs, tvms, tks, tcams)["psnr"], 2)
+        views = [
+            {"keyframe_id": frames[v["index"]]["keyframe_id"], **v, **scores}
+            for v, scores in zip(
+                split_views(poses, test_idx, train_idx),
+                evaluate(params, timgs, tvms, tks, tcams),
+                strict=True,
+            )
+        ]
+        result["heldout"] = {**summarise(views), "per_view": views}
+        # The gate is on the views people are shown: those near the capture path.
+        gate = "near" if result["heldout"]["near"]["views"] else "all"
+        result["psnr_heldout"] = result["heldout"][gate]["psnr"]
         with torch.no_grad():
             refined[test_idx] = adjusted_viewmats(tvms, tcams["delta"])
 
