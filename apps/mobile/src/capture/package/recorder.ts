@@ -39,7 +39,16 @@ export interface RecorderState {
   detections: readonly LiveDetection[];
   /** JSON lines: one reading per line. */
   sensorLog: readonly string[];
+  /** Closed review windows, in ms from the start of the capture. */
+  reviewWindows: readonly { start_ms: number; end_ms: number }[];
+  /** When the review now open was opened, in ms from the start; null while scanning. */
+  reviewOpenedMs: number | null;
+  /** When the scan video's first frame was taken, in ms from the start; null until known. */
+  videoStartMs: number | null;
 }
+
+/** The package holds at most this many review windows. */
+export const MAX_REVIEW_WINDOWS = 50;
 
 export const MAX_DETECTIONS = 4000;
 export const MAX_SENSOR_LINES = 20000;
@@ -52,7 +61,15 @@ export function startRecording(startedAtMs: number, ar: CapturePackage["ar"]): R
     poses: new Map(),
     detections: [],
     sensorLog: [],
+    reviewWindows: [],
+    reviewOpenedMs: null,
+    videoStartMs: null,
   };
+}
+
+/** The review is open: the phone is lowered and nothing it sees belongs to the scan. */
+export function inReview(state: RecorderState): boolean {
+  return state.reviewOpenedMs !== null;
 }
 
 export type RecorderEvent =
@@ -66,13 +83,37 @@ export type RecorderEvent =
         world: { x: number; y: number; z: number } | null;
       }[];
     }
-  | { type: "sensor"; atMs: number; reading: Record<string, number | string | boolean> };
+  | { type: "sensor"; atMs: number; reading: Record<string, number | string | boolean> }
+  /** The review opened over the scan, or closed again ("Rescan this part"). */
+  | { type: "review"; open: boolean; atMs: number }
+  /** The native view took the scan video's first frame. */
+  | { type: "videoStart"; atMs: number };
 
 const elapsed = (state: RecorderState, atMs: number) =>
   Math.max(0, Math.round(atMs - state.startedAtMs));
 
 export function record(state: RecorderState, event: RecorderEvent): RecorderState {
+  // Nothing seen while the review is open belongs to the scan.
+  if (inReview(state) && event.type !== "review" && event.type !== "videoStart") return state;
   switch (event.type) {
+    case "review": {
+      const at = elapsed(state, event.atMs);
+      if (event.open) return inReview(state) ? state : { ...state, reviewOpenedMs: at };
+      if (state.reviewOpenedMs === null) return state;
+      const window = { start_ms: state.reviewOpenedMs, end_ms: Math.max(state.reviewOpenedMs, at) };
+      return {
+        ...state,
+        reviewOpenedMs: null,
+        reviewWindows:
+          state.reviewWindows.length < MAX_REVIEW_WINDOWS
+            ? [...state.reviewWindows, window]
+            : state.reviewWindows,
+      };
+    }
+    case "videoStart":
+      return state.videoStartMs === null
+        ? { ...state, videoStartMs: elapsed(state, event.atMs) }
+        : state;
     case "keyframe": {
       const frame = { ...event.frame, atMs: elapsed(state, event.frame.atMs) };
       const keyframes = offerKeyframe(state.keyframes, frame);
@@ -163,8 +204,26 @@ export function buildPackage(
     detections: [...state.detections],
     sensor_log: keys.sensorLog,
     ...(keys.video ? { video: keys.video } : {}),
+    ...(keys.video && state.videoStartMs !== null ? { video_start_ms: state.videoStartMs } : {}),
+    ...(reviewWindowsOf(state).length > 0 ? { review_windows: reviewWindowsOf(state) } : {}),
     ...(keys.planes ? { planes: keys.planes } : {}),
     ...(keys.sceneMesh ? { scene_mesh: keys.sceneMesh } : {}),
     ...(keys.depth ? { depth: keys.depth } : {}),
   };
+}
+
+/**
+ * Every review window for the package. A review still open when the scan
+ * ends (Done was tapped from it) runs to the end of the capture.
+ */
+export function reviewWindowsOf(
+  state: RecorderState,
+  endedAtMs?: number,
+): { start_ms: number; end_ms: number }[] {
+  const windows = [...state.reviewWindows];
+  if (state.reviewOpenedMs !== null && windows.length < MAX_REVIEW_WINDOWS) {
+    const end = endedAtMs === undefined ? state.reviewOpenedMs : elapsed(state, endedAtMs);
+    windows.push({ start_ms: state.reviewOpenedMs, end_ms: Math.max(state.reviewOpenedMs, end) });
+  }
+  return windows;
 }
