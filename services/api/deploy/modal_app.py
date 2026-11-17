@@ -6,6 +6,10 @@ settings come from the `sajao-api` Modal secret as SAJAO_* environment
 variables, state lives in Postgres, and capture files go to the private
 `captures` bucket in Supabase Storage, signed with each caller's own session.
 
+The durable pipeline runs beside it as `run_room` and `run_designs`: the API
+spawns them by name and returns at once. Only `run_room` mounts the
+`sajao-pipeline` secret, which lets it read any user's capture files.
+
     uv run --with 'modal[api-proxy-support]==1.6.4' modal deploy services/api/deploy/modal_app.py
 """
 
@@ -44,7 +48,11 @@ app = modal.App("sajao-api")
 
 @app.function(
     image=image,
-    secrets=[modal.Secret.from_name("sajao-api")],
+    secrets=[
+        modal.Secret.from_name("sajao-api"),
+        # Not a secret: which Modal app runs the pipeline (this one).
+        modal.Secret.from_dict({"SAJAO_PIPELINE_MODAL_APP": "sajao-api"}),
+    ],
     # Scales to zero between scans; a few containers are plenty for testing.
     min_containers=0,
     max_containers=3,
