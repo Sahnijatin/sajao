@@ -25,7 +25,7 @@ The Sajao app: Expo with Expo Router, two native tabs, English and Hindi, and a 
 ## Rules for screens
 
 - Every user-facing string goes in both catalogs. A test fails if the keys or placeholders differ, or if a Hindi string is left in English.
-- Lengths are metres in data and are shown through `formatLength` in the user's units. Prices are paise in data and are shown through `formatInr`.
+- Lengths are metres in data and are shown through `formatLength` in the user's units: feet and inches by default, centimetres as the alternative in settings. Prices are paise in data and are shown through `formatInr`.
 - Colors, spacing, motion and haptics come from `@sajao/ui`.
 
 ## Hindi copy: needs native review
