@@ -1,16 +1,17 @@
 # Design language, motion and haptics
 
-Sajao uses the LiveMap design system: bright frosted glass, soft layered shadows, one confident accent, and spring motion. The room is the hero, so the interface stays neutral and lets your space carry the colour. Minimal, modern, sleek, and calm.
+Sajao looks like a warm contemporary Indian home: ivory walls, sand and warm wood, soft daylight. The structure comes from the LiveMap design system (frosted glass, soft layered shadows, one accent, spring motion); the palette is warm. The room is the hero, so the interface stays quiet, with generous whitespace, and lets your space carry the colour. Premium and calm.
 
-## Tokens carried over from LiveMap
+## Tokens
 
 | Token | Value | Use in Sajao |
 | --- | --- | --- |
-| Canvas | #eef0f5 with slow drifting colour blobs (blue, pink, amber) | Home, brief, list screens |
-| Ink | #1d1d1f; secondary #55595f and #636873 | Text |
+| Canvas | Warm ivory #f6f1e8 with slow drifting warm blobs (terracotta, amber, wood); surfaces #fffdf9 | Home, brief, list screens |
+| Ink | Warm near-black #221e19; secondary #5a5249 and #6b6258 | Text |
+| Neutrals | Sand #e9dfd0, wood #b08968, daylight #fbf4e4 | Image placeholders and tracks; small marks; highlights. Never text |
 | Glass | Light: white at 62%, 28 px blur, 180% saturation, hairline border. Dark: near-black at 42%, 28 px blur, 160% saturation, white text | Light over the canvas and photos, on sheets and floating toolbars; dark on camera screens |
 | Shadows | Three stacked soft shadows | Cards, lifted furniture, product tiles |
-| Accent | #0a7cff with 10% tints | Primary actions, selection, Verified badge |
+| Accent | Terracotta #ad4f27 with 10% tints; white text on it passes 4.5:1 | Primary actions, selection, Verified badge |
 | Status | Green #1fae55, red #ff3b30, orange #ff8a00 | Scan guides, collisions, warnings |
 | Radius | 20 px panes, 20 px cards, 30 px sheet corners; buttons and chips fully rounded | Same |
 | Type | Instrument Serif headlines, bundled on both platforms; body in SF Pro on iOS and bundled Geist on Android | Same |
@@ -18,7 +19,7 @@ Sajao uses the LiveMap design system: bright frosted glass, soft layered shadows
 | Ease | cubic-bezier(.32, .72, 0, 1), 0.45 s | Screen and sheet transitions |
 | Selection spring | Stiffness 380, damping 32 | Chips, toggles, item selection |
 | Layout glide | Critically damped, 0.45 s | Lists and panels resizing |
-| Dark theme | LiveMap dark tokens | Later; camera screens always use glass on camera |
+| Dark theme | A warm dark set | Later; camera screens always use glass on camera |
 
 On mobile the tokens live in one theme package. Springs use Reanimated with the same constants; glass uses native blur or Skia; effects (glows, grid, paint sweep) use Skia.
 
@@ -26,9 +27,10 @@ On mobile the tokens live in one theme package. Springs use Reanimated with the 
 
 | Moment | iOS | Android |
 | --- | --- | --- |
-| Corner captured | Light tick | Short tick |
-| Level reached (line turns green) | Selection tick | Short tick |
+| Corner captured; scan coverage passes another tenth | Light tick | Short tick |
+| Level reached (line turns green); Done becomes ready on the scan | Selection tick | Short tick |
 | Room verified | Success pattern | Double tick |
+| A new room lands on My home | Soft impact | Short tick |
 | Furniture snaps to a wall | Medium impact | Short tick |
 | Collision | Rigid bump | Single strong tick |
 | Swap lands | Soft impact | Short tick |
@@ -41,7 +43,7 @@ Android motors vary widely, so patterns stay simple there. Haptics respect syste
 
 | Moment | What you see | Low-end fallback |
 | --- | --- | --- |
-| Scan mesh | A glowing mesh spreads over what the camera has mapped, with a white sweep at its edge; corners tick | Dots and edges |
+| Calm scan | One thin ring fills as the room is covered; a soft tick at every tenth; Done appears inside the ring. The scan mesh is no longer shown while scanning: it is a brief "we got your room" glimpse on the review screen | Same |
 | Tape lock | An animated tape stretches along the wall; dimensions snap in; Verified | Same |
 | Plan draws itself | Floor plan drawn line by line, measurements tick in | Same |
 | Room rises | Walls lift from the plan; camera eases into a dollhouse orbit | Cross-fade |

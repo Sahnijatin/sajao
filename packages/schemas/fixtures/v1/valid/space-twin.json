@@ -506,5 +506,30 @@
     "error_band_m2": 0.74,
     "floor_area_m2": 14.28,
     "kept_ids": ["almirah-1", "b1"]
-  }
+  },
+  "confidence": {
+    "level": "ar_measured",
+    "basis": "lidar",
+    "tape_values": 0
+  },
+  "areas": [
+    {
+      "id": "a1",
+      "space_type": "living_room",
+      "floor_polygon": [
+        { "x_m": 0, "y_m": 0 },
+        { "x_m": 4.2, "y_m": 0 },
+        { "x_m": 4.2, "y_m": 3.4 },
+        { "x_m": 0, "y_m": 3.4 }
+      ],
+      "floor_area_m2": 14.28,
+      "object_ids": ["sofa-1", "almirah-1", "b1"],
+      "keyframe_ids": ["k1"],
+      "photo_keyframe_id": "k1",
+      "confidence": {
+        "level": "ar_measured",
+        "basis": "lidar"
+      }
+    }
+  ]
 }

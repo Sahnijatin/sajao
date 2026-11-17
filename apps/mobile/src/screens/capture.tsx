@@ -1,40 +1,35 @@
-import { Button, GlassSurface, Text, useTheme } from "@sajao/ui";
+import { Button, GlassSurface, motion, playHaptic, Text, touchTarget, useTheme } from "@sajao/ui";
 import { MeshEffect } from "@sajao/ui/effects";
 import { Icon, type IconName } from "@sajao/ui/icons";
 import { useKeepAwake } from "expo-keep-awake";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
+import Animated, { cubicBezier, Easing, FadeIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCameraPermission } from "react-native-vision-camera";
 import { getArCapabilities, getArView } from "../../modules/sajao-ar";
 import { shownLabels } from "@/capture/ar/labels";
-import { mappedSectors } from "@/capture/coverage";
-import { DebugOverlay } from "@/capture/debug-overlay";
-import type { GuardrailId, GuardrailStatus } from "@/capture/guardrails";
-import { toScreen } from "@/capture/mesh-tracker";
-import { meterMissing, meterParts } from "@/capture/coverage-meter";
+import { meterMissing } from "@/capture/coverage-meter";
 import { MeterMap } from "@/capture/meter-map";
-import { MiniMap } from "@/capture/mini-map";
+import { NoArNotice } from "@/capture/no-ar-notice";
+import { toScreen } from "@/capture/mesh-tracker";
 import { imuReading } from "@/capture/package/imu";
 import type { LocalCapture } from "@/capture/package/native-capture";
 import type { CaptureDeviceInfo } from "@/capture/package/upload-capture";
 import { useCaptureRecorder } from "@/capture/package/use-capture-recorder";
 import type { RawMotion } from "@/capture/pose";
-import { NoArNotice } from "@/capture/no-ar-notice";
-import { ProgressRing } from "@/capture/progress-ring";
-import { ScanHint } from "@/capture/scan-hint";
 import { ScanCamera } from "@/capture/scan-camera";
-import {
-  canFinish,
-  canFinishEarly,
-  isMeter,
-  isSimple,
-  mappedShare,
-  shouldShowSlowDown,
-} from "@/capture/scan-session";
+import { canFinish, canFinishEarly, isMeter, isSimple, mappedShare } from "@/capture/scan-session";
 import { useScanSession } from "@/capture/use-scan-session";
+import { ScanInstruction } from "@/components/scan-instruction";
+import { ScanRing } from "@/components/scan-ring";
+import { previewScreensEnabled } from "@/preview-screens";
 import { useCaptureStore } from "@/state/capture";
+import { CaptureDebugLayer } from "./capture-debug";
+import { coverageStep, scanInstruction, shouldTick } from "./capture-guide";
+import { Review } from "./review";
+import { type MissingArea, type ScanSummary, scanSummary } from "./review-summary";
 
 export interface CaptureScreenProps {
   onClose: () => void;
@@ -44,42 +39,11 @@ export interface CaptureScreenProps {
   onCaptured?: (capture: LocalCapture, device: CaptureDeviceInfo) => void;
 }
 
-const CHIPS: readonly GuardrailId[] = ["light", "motion", "level"];
+/** The round glass buttons at the top: one touch target. */
+const ROUND_BUTTON = touchTarget;
 
 /** Keeps the screen on while the scan screen is open, on iOS and Android. */
 export const SCAN_KEEP_AWAKE_TAG = "sajao-scan";
-
-function StatusChip({ id, status }: { id: GuardrailId; status: GuardrailStatus }) {
-  const { t } = useTranslation();
-  const { tokens } = useTheme();
-  const { colors, spacing, radius } = tokens;
-  return (
-    <GlassSurface
-      tone="dark"
-      accessibilityRole="text"
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        gap: spacing.sm,
-        height: 30,
-        paddingHorizontal: spacing.lg,
-        borderRadius: radius.pill,
-      }}
-    >
-      <View
-        style={{
-          width: 6,
-          height: 6,
-          borderRadius: 3,
-          backgroundColor: status === "good" ? colors.success : colors.warning,
-        }}
-      />
-      <Text variant="captionStrong" tone="onDark">
-        {t(`capture.chips.${id}.${status}`)}
-      </Text>
-    </GlassSurface>
-  );
-}
 
 function RoundButton({
   label,
@@ -103,30 +67,146 @@ function RoundButton({
       <GlassSurface
         tone={on ? "light" : "dark"}
         style={{
-          width: 44,
-          height: 44,
+          width: ROUND_BUTTON,
+          height: ROUND_BUTTON,
           borderRadius: tokens.radius.pill,
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        <Icon name={icon} color={on ? tokens.colors.accent : "#ffffff"} />
+        <Icon name={icon} color={on ? tokens.colors.accent : tokens.glass.dark.text} />
       </GlassSurface>
     </Pressable>
   );
 }
 
+/** The ring with Done inside it. */
+const RING_SIZE = 88;
+/** Space between the ring and the button inside it. */
+const RING_GAP = 8;
+const NO_LABELS: never[] = [];
+const pressEasing = cubicBezier(...motion.press.bezier);
+/** "You have enough": Done swells twice as it arrives, with the haptic. */
+const enoughPulse = {
+  from: { transform: [{ scale: 1 }] },
+  "50%": { transform: [{ scale: 1.12 }] },
+  to: { transform: [{ scale: 1 }] },
+};
+const ENOUGH_PULSE_MS = 600;
+
 /**
- * The scan screen: live camera with the scan mesh spreading over what has
- * been mapped, guardrail chips, and a soft pause with a fix when a
- * guardrail fails. There is no room-type picker.
+ * The scan's progress and its way out, in one control: a thin ring that
+ * fills as the room is covered, and Done inside it once there is enough.
+ */
+function DoneRing({
+  progress,
+  ready,
+  busy,
+  onPress,
+}: {
+  progress: number;
+  ready: boolean;
+  busy: boolean;
+  onPress: () => void;
+}) {
+  const { t } = useTranslation();
+  const { tokens, duration, reducedMotion } = useTheme();
+  const [pressed, setPressed] = useState(false);
+  const enabled = ready && !busy;
+  const percent = Math.round(Math.min(1, Math.max(0, progress)) * 100);
+  const fade = duration(motion.ease.durationMs);
+  return (
+    <Pressable
+      testID="scan-done"
+      accessibilityRole={ready ? "button" : "progressbar"}
+      accessibilityLabel={ready ? t("capture.done") : t("capture.progress")}
+      accessibilityValue={{ min: 0, max: 100, now: percent }}
+      accessibilityState={{ disabled: !enabled }}
+      disabled={!enabled}
+      pressRetentionOffset={16}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      onPress={() => {
+        // A light tick as the review rises; the success pattern waits for "Looks good".
+        void playHaptic("cornerCaptured");
+        onPress();
+      }}
+      style={{
+        width: RING_SIZE,
+        height: RING_SIZE,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <ScanRing progress={progress} ready={ready} size={RING_SIZE} />
+      <Animated.View
+        testID={ready ? "scan-done-ready" : undefined}
+        style={[
+          // With reduced motion the colour change and the haptic carry the moment.
+          ready && !reducedMotion
+            ? {
+                animationName: enoughPulse,
+                animationDuration: ENOUGH_PULSE_MS,
+                animationIterationCount: 2,
+                animationTimingFunction: "ease-in-out",
+              }
+            : null,
+        ]}
+      >
+        <Animated.View
+          style={{
+            width: RING_SIZE - RING_GAP * 2,
+            height: RING_SIZE - RING_GAP * 2,
+            borderRadius: tokens.radius.pill,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: ready ? tokens.colors.surface : tokens.glass.dark.fill,
+            opacity: busy ? 0.4 : 1,
+            transform: [{ scale: pressed ? motion.press.scale : 1 }],
+            transitionProperty: "transform",
+            transitionDuration: duration(motion.press.durationMs),
+            transitionTimingFunction: pressEasing,
+          }}
+        >
+          {ready ? (
+            <Animated.View
+              entering={
+                fade > 0
+                  ? FadeIn.duration(fade).easing(Easing.bezier(...motion.ease.bezier))
+                  : undefined
+              }
+            >
+              <Text variant="label" style={{ color: tokens.colors.accent }}>
+                {t("capture.done")}
+              </Text>
+            </Animated.View>
+          ) : null}
+        </Animated.View>
+      </Animated.View>
+    </Pressable>
+  );
+}
+
+/** After "Rescan this part", the scan points at the missing part for this long. */
+export const RESCAN_NUDGE_MS = 8000;
+
+/**
+ * The scan screen: the camera, full screen, with one thin ring and one plain
+ * instruction at a time. Coverage ticks softly under your fingers as it
+ * grows. A nudge appears only when something needs fixing. Chips, the
+ * compass map, live labels and the scan mesh are diagnostics: they show only
+ * with the debug flag. There is no room-type picker.
+ *
+ * Done opens the review over the scan, which stays open underneath: "Rescan
+ * this part" carries on the same scan, and only "Looks good" finishes it and
+ * hands the capture on to be uploaded.
  */
 export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: CaptureScreenProps) {
   // A scan is hands-on but touch-free: without this the screen dims and locks mid-scan.
   useKeepAwake(SCAN_KEEP_AWAKE_TAG);
   const { t } = useTranslation();
   const { tokens, tier, reducedMotion } = useTheme();
-  const { spacing, radius } = tokens;
+  const { spacing } = tokens;
   const insets = useSafeAreaInsets();
   const window = useWindowDimensions();
   const permission = useCameraPermission();
@@ -140,11 +220,16 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
     depth: false,
   });
   const captureSensor = capture.onSensor;
+  // True while the review is open. The phone is being read, not pointed at
+  // the room, so nothing seen then may go into the package. The recorder
+  // pauses the native view and notes the review window; on top of that the
+  // screen records no detections or sensor readings from that time.
+  const reviewing = useRef(false);
   // Motion sensor readings go into the package's sensor log in every mode.
   const onImu = useCallback(
     (reading: RawMotion) => {
       const line = imuReading(reading);
-      if (line) captureSensor(line);
+      if (line && !reviewing.current) captureSensor(line);
     },
     [captureSensor],
   );
@@ -195,17 +280,17 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
   );
   const aspect = state.frame?.aspect ?? 9 / 16;
   const points = useMemo(() => toScreen(state.mesh, window, aspect), [state.mesh, window, aspect]);
-  const mapped = useMemo(() => mappedSectors(state.coverage), [state.coverage]);
   const share = mappedShare(state);
-  const percent = Math.round(share * 100);
-  // The simple scan shows one progress ring instead of the map of directions.
+  const ready = canFinish(state);
   const simple = arMode && isSimple(state);
   // Where AR gives positions the coverage meter decides Done, in both scan modes.
   const meter = arMode && isMeter(state);
   const [showDebug, setShowDebug] = useState(false);
   const taps = useRef<number[]>([]);
-  // Hidden debug overlay: three taps on the camera within a second.
+  // The debug flag: three taps on the camera within a second, in development
+  // and preview builds only. The store build has no way to switch it on.
   const onCameraTap = useCallback(() => {
+    if (!previewScreensEnabled()) return;
     const now = Date.now();
     taps.current = [...taps.current.filter((at) => now - at < 1000), now];
     if (taps.current.length >= 3) {
@@ -213,13 +298,51 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
       setShowDebug((shown) => !shown);
     }
   }, []);
-  const reason = state.pause.reason;
-  // Glare has no chip of its own until it is a problem.
-  const chips = state.guardrails.glare === "warn" ? [...CHIPS, "glare" as const] : CHIPS;
-  // AR scan: frames rejected for turning fast or blur also ask you to slow down.
-  const slowDown = shouldShowSlowDown(state);
-  const chipStatus = (id: GuardrailId): GuardrailStatus =>
-    id === "motion" && slowDown ? "warn" : state.guardrails[id];
+  const pausedFor = state.pause.paused ? state.pause.reason : null;
+  const instruction = scanInstruction({ pausedFor, hint, share, ready });
+  // The review, while it is open, and the part to rescan just after it closes.
+  const [review, setReview] = useState<ScanSummary | null>(null);
+  reviewing.current = review !== null;
+  const [rescanFor, setRescanFor] = useState<MissingArea | null>(null);
+  useEffect(() => {
+    if (!rescanFor) return;
+    const timer = setTimeout(() => setRescanFor(null), RESCAN_NUDGE_MS);
+    return () => clearTimeout(timer);
+  }, [rescanFor]);
+  const setReviewOpen = capture.setReviewOpen;
+  const openReview = useCallback(() => {
+    // The recorder pauses and notes the review window before anything shows.
+    setReviewOpen(true);
+    setReview(scanSummary(state));
+  }, [setReviewOpen, state]);
+  const onRescan = useCallback(() => {
+    setReviewOpen(false);
+    setRescanFor(review?.missing[0] ?? null);
+    setReview(null);
+  }, [review, setReviewOpen]);
+  // A pause to fix something always comes first.
+  const pointAt = instruction.tone === "fix" ? null : rescanFor;
+  const instructionId = pointAt ? `rescan:${pointAt}` : instruction.id;
+  const instructionText = pointAt
+    ? t(`capture.rescan.${pointAt}`)
+    : t(`capture.guide.${instruction.id}`);
+
+  // A light tick each time coverage passes another tenth, and one more when
+  // Done becomes ready. The ring shows the same thing: haptics never stand alone.
+  const step = useRef(0);
+  useEffect(() => {
+    if (!shouldTick(step.current, share)) return;
+    step.current = coverageStep(share);
+    // The coverage meter is felt sector by sector by the scan session itself,
+    // and nothing ticks while the review is being read.
+    if (meter || reviewing.current) return;
+    void playHaptic("cornerCaptured");
+  }, [share, meter]);
+  const wasReady = useRef(false);
+  useEffect(() => {
+    if (ready && !wasReady.current) void playHaptic("levelReached");
+    wasReady.current = ready;
+  }, [ready]);
 
   // A phone that cannot run AR cannot measure the room: it goes to photos
   // with a friendly note, before any camera permission is asked for.
@@ -251,20 +374,33 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#000000" }}>
+    <View style={{ flex: 1, backgroundColor: tokens.colors.ink }}>
       {/* The camera keeps running while paused, so the scan can see the fix and resume. */}
       {arMode && ArView ? (
         <ArView
           ref={capture.viewRef}
           captureId={capture.captureId}
+          // While the review is open the native view records no keyframe and,
+          // on iOS, no video frame.
           capturePaused={capture.capturePaused}
-          onArKeyframe={({ nativeEvent }) => capture.onKeyframe(nativeEvent)}
+          onArKeyframe={({ nativeEvent }) => {
+            // A build from before the pause prop still sends keyframes: delete them.
+            if (reviewing.current) {
+              void capture.viewRef.current?.discardKeyframes([nativeEvent.uri]);
+            } else {
+              capture.onKeyframe(nativeEvent);
+            }
+          }}
           style={StyleSheet.absoluteFill}
           active
           torch={torch}
           lite={tier === "low"}
           reducedMotion={reducedMotion}
-          labels={labelProps}
+          // The mesh, planes and live labels are diagnostics: the scan shows
+          // the camera image only, unless the debug flag is on.
+          // The review shows it for a moment too: "we got your room".
+          overlay={showDebug || review !== null}
+          labels={showDebug ? labelProps : NO_LABELS}
           onArStatus={({ nativeEvent }) => {
             // A session that cannot start falls back to the 2D scan.
             if ("error" in nativeEvent) setArStartError(String(nativeEvent.error) || "unknown");
@@ -272,6 +408,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
           }}
           onArPose={({ nativeEvent }) => {
             onArPose(nativeEvent);
+            if (reviewing.current) return;
             capture.onSensor({
               source: "ar_pose",
               x: nativeEvent.x,
@@ -292,6 +429,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
           onArDetections={({ nativeEvent }) => {
             const detections = nativeEvent.detections ?? [];
             // Every detection goes into the package; the server decides what it means.
+            if (reviewing.current) return;
             capture.onDetections(
               detections.map((detection) => ({
                 detectorClass: detection.detectorClass,
@@ -323,13 +461,16 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
             onExposure={onExposure}
             onDiagnostics={onDiagnostics}
           />
-          <MeshEffect
-            style={StyleSheet.absoluteFill}
-            width={window.width}
-            height={window.height}
-            points={points}
-            triangles={state.mesh.triangles}
-          />
+          {/* The mesh shows for a moment on the review: "we got your room". */}
+          {showDebug || review ? (
+            <MeshEffect
+              style={StyleSheet.absoluteFill}
+              width={window.width}
+              height={window.height}
+              points={points}
+              triangles={state.mesh.triangles}
+            />
+          ) : null}
         </>
       )}
       <Pressable
@@ -339,157 +480,98 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
         onPress={onCameraTap}
       />
 
+      {/* Top: the way out, and the torch only when it can help. */}
       <View
+        pointerEvents="box-none"
         style={{
           position: "absolute",
           top: insets.top + spacing.md,
           left: spacing.gutter,
           right: spacing.gutter,
-          gap: spacing.xl,
+          flexDirection: "row",
+          justifyContent: "space-between",
         }}
       >
-        <View
-          style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
-        >
-          <RoundButton label={t("capture.close")} icon="close" onPress={onClose} />
-          <GlassSurface
-            tone="dark"
-            style={{
-              height: 36,
-              paddingHorizontal: spacing.xxl,
-              borderRadius: radius.pill,
-              justifyContent: "center",
-            }}
-          >
-            <Text variant="meta" tone="onDark" accessibilityRole="header">
-              {t("capture.title")}
-              <Text variant="meta" tone="onDark" testID="scan-mapped">
-                {`  ${t("capture.mapped", { percent })}`}
-              </Text>
-            </Text>
-          </GlassSurface>
+        <RoundButton label={t("capture.close")} icon="close" onPress={onClose} />
+        {torch || pausedFor === "light" || showDebug ? (
           <RoundButton
             label={t("capture.torch")}
             icon={torch ? "torchOn" : "torch"}
             on={torch}
             onPress={() => setTorch((on) => !on)}
           />
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            gap: spacing.md,
-          }}
-        >
-          {chips.map((id) => (
-            <StatusChip key={id} id={id} status={chipStatus(id)} />
-          ))}
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-          }}
-        >
-          <View style={{ flex: 1 }}>
-            {showDebug ? (
-              <DebugOverlay debug={debug} state={state} arStartError={arStartError} />
-            ) : null}
-          </View>
-          {meter ? (
-            <View style={{ alignItems: "center", gap: spacing.sm }}>
-              <ProgressRing
-                progress={share}
-                ready={canFinish(state)}
-                parts={meterParts(state.meter)}
-              />
-              <MeterMap meter={state.meter} position={state.position} yaw={state.pose.yaw} />
-            </View>
-          ) : simple ? (
-            <ProgressRing progress={share} ready={canFinish(state)} />
-          ) : (
-            <MiniMap mapped={mapped} yaw={state.pose.yaw} />
-          )}
-        </View>
-        <ScanHint hint={hint} />
+        ) : null}
       </View>
 
-      <GlassSurface
-        tone="dark"
-        style={{
-          position: "absolute",
-          left: spacing.md,
-          right: spacing.md,
-          bottom: insets.bottom + spacing.md,
-          padding: spacing.gutter,
-          gap: spacing.xl,
-          borderRadius: radius.sheet,
-        }}
-      >
-        {state.pause.paused && reason && reason !== "level" ? (
-          <>
-            <Text variant="captionStrong" tone="onDark">
-              {t("capture.pausedTitle")}
-            </Text>
-            <Text variant="heading" tone="onDark">
-              {t(`capture.fix.${reason}.title`)}
-            </Text>
-            <Text variant="bodySmall" tone="onDark">
-              {t(`capture.fix.${reason}.body`)}
-            </Text>
-            <View style={{ flexDirection: "row", gap: spacing.lg }}>
-              <Button
-                label={t("capture.scanAnyway")}
-                variant="outline"
-                style={{ flex: 1 }}
-                onPress={scanAnyway}
-              />
-              {/* The scan resumes by itself once the reading is good again. */}
-              <Button
-                label={t(`capture.fix.${reason}.fixed`)}
-                style={{ flex: 1 }}
-                onPress={() => (reason === "light" ? setTorch(true) : undefined)}
-              />
-            </View>
-          </>
-        ) : (
-          <>
-            <Text variant="heading" tone="onDark">
-              {t("capture.guideTitle")}
-            </Text>
-            <Text variant="bodySmall" tone="onDark">
-              {t("capture.guideBody")}
-            </Text>
-            <View style={{ flexDirection: "row", gap: spacing.lg }}>
-              <Button
-                label={t("capture.usePhotos")}
-                variant="outline"
-                style={{ flex: 1 }}
-                onPress={onUsePhotos}
-              />
-              <Button
-                label={t("capture.done")}
-                style={{ flex: 1 }}
-                disabled={!canFinish(state) || finishing}
-                haptic="roomVerified"
-                onPress={() => void finishScan()}
-              />
-            </View>
-            {canFinishEarly(state) && !finishing ? (
-              // Coverage has not moved for a minute: never trap the person in the scan.
+      {showDebug ? (
+        <CaptureDebugLayer
+          state={state}
+          debug={debug}
+          arStartError={arStartError}
+          simple={simple}
+          top={insets.top + spacing.md + ROUND_BUTTON + spacing.md}
+        />
+      ) : null}
+
+      {review ? (
+        <Review
+          summary={review}
+          busy={finishing}
+          onRescan={onRescan}
+          onConfirm={() => void finishScan()}
+        />
+      ) : (
+        <>
+          {/* Bottom: one instruction, a way on when the scan is paused, and the ring. */}
+          <View
+            pointerEvents="box-none"
+            style={{
+              position: "absolute",
+              left: spacing.gutter,
+              right: spacing.gutter,
+              bottom: insets.bottom + spacing.sheetBottom,
+              alignItems: "center",
+              gap: spacing.gutter,
+            }}
+          >
+            {/* "One more spot, over there" needs a there: the meter's map shows it, for that step only. */}
+            {meter && instruction.id === "oneMoreSpot" && !pointAt ? (
+              <MeterMap meter={state.meter} position={state.position} yaw={state.pose.yaw} />
+            ) : null}
+            <ScanInstruction id={instructionId} text={instructionText} />
+            {instruction.tone === "fix" ? (
+              // The scan resumes by itself once the reading is good again.
+              <View style={{ flexDirection: "row", gap: spacing.lg }}>
+                {pausedFor === "light" && !torch ? (
+                  <Button
+                    label={t("capture.torchOn")}
+                    variant="outline"
+                    size="small"
+                    onPress={() => setTorch(true)}
+                  />
+                ) : null}
+                <Button
+                  label={t("capture.keepGoing")}
+                  variant="outline"
+                  size="small"
+                  onPress={scanAnyway}
+                />
+              </View>
+            ) : null}
+            {canFinishEarly(state) && !ready && !finishing ? (
+              // Coverage has not moved for a minute: never trap the person in the
+              // scan. The review then names what is missing.
               <Button
                 label={t("capture.finishAnyway")}
-                variant="ghost"
+                variant="outline"
                 size="small"
-                onPress={() => void finishScan()}
+                onPress={openReview}
               />
             ) : null}
-          </>
-        )}
-      </GlassSurface>
+            <DoneRing progress={share} ready={ready} busy={finishing} onPress={openReview} />
+          </View>
+        </>
+      )}
     </View>
   );
 }

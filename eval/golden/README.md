@@ -26,6 +26,8 @@ It reads the capture's planes file, turns the planes into measurements (`sajao_w
 - ARKit classes door and window planes; ARCore does not. On an iPhone the report scores both readings against the tape and lists the difference between them as a cross-check.
 - A scan in which the phone found no planes reports nothing measured, and says so.
 
+The room's outline is moving to `sajao_workers.ar_shell.measured_shell`: a floor polygon built from the walls the phone saw, each edge a wall or open, for rooms that are not a box (L-shaped, open-plan, or scanned through a doorway). A wall must run from near the floor to near the ceiling, planes of inventory objects are dropped by a function the caller passes, and a corner is claimed only where two walls' lines cross close to what was seen of both. It is not yet part of this report.
+
 Files: `ar-measurements.json` (every value an estimated dimension with an error band), `ar-report.json` and `ar-report.md`.
 
 ## Inputs
