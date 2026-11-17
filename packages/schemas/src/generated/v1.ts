@@ -41,19 +41,19 @@ export type Uuid = string
  */
 export type Timestamp = string
 /**
- * Object key in the media store. Never a public URL; clients receive signed URLs.
- * 
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "StorageKey".
- */
-export type StorageKey = string
-/**
  * A score from 0 to 1.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
  * via the `definition` "UnitScore".
  */
 export type UnitScore = number
+/**
+ * Object key in the media store. Never a public URL; clients receive signed URLs.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "StorageKey".
+ */
+export type StorageKey = string
 /**
  * Top-level grouping used for the cost breakdown.
  * 
@@ -92,6 +92,13 @@ export type TwinEdit = (MoveEdit | RotateEdit | RemoveEdit | ReplaceEdit | AddEd
  * via the `definition` "DetectionSource".
  */
 export type DetectionSource = ("detected" | "user")
+/**
+ * The type of an item in the room.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "ObjectType".
+ */
+export type ObjectType = ("furniture" | "fixture" | "wall_item" | "textile" | "decor")
 /**
  * Closed floor polygon; the last point joins the first.
  * 
@@ -241,6 +248,35 @@ currency: "INR"
  * Amount in paise.
  */
 amount_minor: number
+}
+/**
+ * Something built into the room (a fitted wardrobe, a fireplace, a radiator, a kitchen counter). Part of the shell: it stays when the room is redesigned.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "BuiltIn".
+ */
+export interface BuiltIn {
+id: LocalId
+category: string
+label: string
+box: OrientedBox
+detection: {
+source: ("live_scan" | "server_segmentation" | "user")
+confidence: UnitScore
+}
+}
+/**
+ * An object's measured box: centre, turn about the vertical axis and size. Sizes are dimensions with a source and an error band.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "OrientedBox".
+ */
+export interface OrientedBox {
+center: Point3
+yaw_deg: AngleDeg
+width: Dimension
+depth: Dimension
+height: Dimension
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -766,6 +802,42 @@ mount_height: Dimension
 width?: Dimension
 }
 /**
+ * The open-vocabulary inventory the objects were found from, and what could not be placed.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "Inventory".
+ */
+export interface Inventory {
+/**
+ * @minItems 1
+ */
+listed_by: [string, ...(string)[]]
+items_listed: number
+unplaced: InventoryItem[]
+}
+/**
+ * An item a vision model listed that could not be placed in 3D. Kept and shown, never dropped silently.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "InventoryItem".
+ */
+export interface InventoryItem {
+name: string
+type: ("furniture" | "fixture" | "wall_item" | "textile" | "decor" | "built_in")
+count?: number
+/**
+ * Pinned models that listed it.
+ * 
+ * @minItems 1
+ */
+listed_by: [string, ...(string)[]]
+/**
+ * Detector prompts and models tried to place it.
+ */
+tried: string[]
+reason: ("not_detected" | "not_seen_in_enough_frames" | "no_depth" | "implausible_size")
+}
+/**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
  * via the `definition` "Keyframe".
  */
@@ -822,19 +894,6 @@ swing?: {
 hinge: ("start" | "end")
 opens: ("inward" | "outward")
 }
-}
-/**
- * An object's measured box: centre, turn about the vertical axis and size. Sizes are dimensions with a source and an error band.
- * 
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "OrientedBox".
- */
-export interface OrientedBox {
-center: Point3
-yaw_deg: AngleDeg
-width: Dimension
-depth: Dimension
-height: Dimension
 }
 /**
  * A decimated, compressed room splat for on-device viewing.
@@ -997,6 +1056,10 @@ fixtures: Fixture[]
  * Appearance of each wall, the floor and the ceiling.
  */
 surfaces: ShellSurface[]
+/**
+ * Built-in items, kept with the shell.
+ */
+built_ins?: BuiltIn[]
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -1160,6 +1223,7 @@ splat?: SplatRef
  * @maxItems 4
  */
 phone_splats?: []|[PhoneSplat]|[PhoneSplat, PhoneSplat]|[PhoneSplat, PhoneSplat, PhoneSplat]|[PhoneSplat, PhoneSplat, PhoneSplat, PhoneSplat]
+inventory?: Inventory
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -1191,6 +1255,7 @@ catalog_matches: CatalogMatch[]
  * keep in a freshly built twin. Edits change it only in a derived view, never in the stored twin.
  */
 state: ("keep" | "move" | "remove" | "replace")
+object_type?: ObjectType
 }
 /**
  * The photoreal room splat trained on the keyframes.

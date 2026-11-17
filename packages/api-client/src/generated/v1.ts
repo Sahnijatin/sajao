@@ -4,6 +4,46 @@
  */
 
 export interface paths {
+    "/v1/captures": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Register Capture
+         * @description Store a capture whose files are already uploaded. Safe to repeat.
+         */
+        post: operations["registerCapture"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/captures/{capture_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Capture
+         * @description The caller's own capture.
+         */
+        get: operations["getCapture"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/health": {
         parameters: {
             query?: never;
@@ -108,6 +148,194 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Ar */
+        Ar: {
+            /**
+             * Depth
+             * @description Depth images are in the package.
+             */
+            depth: boolean;
+            /** Lidar */
+            lidar: boolean;
+            /**
+             * Tracking
+             * @enum {string}
+             */
+            tracking: "arkit" | "arcore" | "none";
+        };
+        /**
+         * ArPoint
+         * @description A point in the AR session's world frame, in metres, y up.
+         */
+        ArPoint: {
+            /** X M */
+            x_m: number;
+            /** Y M */
+            y_m: number;
+            /** Z M */
+            z_m: number;
+        };
+        /**
+         * ArPose
+         * @description Camera pose from AR tracking: position and a unit quaternion (x, y, z, w).
+         */
+        ArPose: {
+            position: components["schemas"]["ArPoint"];
+            /** Rotation */
+            rotation: components["schemas"]["RotationItem"][];
+        };
+        /** CameraIntrinsics */
+        CameraIntrinsics: {
+            /** Cx */
+            cx: number;
+            /** Cy */
+            cy: number;
+            /** Fx */
+            fx: number;
+            /** Fy */
+            fy: number;
+            /** Height Px */
+            height_px: number;
+            /** Width Px */
+            width_px: number;
+        };
+        /** CaptureDevice */
+        CaptureDevice: {
+            /** Has Ar */
+            has_ar: boolean;
+            /**
+             * Platform
+             * @enum {string}
+             */
+            platform: "ios" | "android";
+            /**
+             * Tier
+             * @description Device tier detected at launch.
+             * @enum {string}
+             */
+            tier: "standard" | "low";
+        };
+        /** CaptureKeyframe */
+        CaptureKeyframe: {
+            /**
+             * Captured At Ms
+             * @description Milliseconds from the start of the scan.
+             */
+            captured_at_ms: number;
+            /**
+             * Id
+             * @description Identifier that is unique inside its parent object, for example a wall or a design item.
+             */
+            id: string;
+            /**
+             * Image
+             * @description Object key in the media store. Never a public URL; clients receive signed URLs.
+             */
+            image: string;
+            intrinsics?: components["schemas"]["CameraIntrinsics"] | null;
+            pose?: components["schemas"]["ArPose"] | null;
+            /** Sharpness */
+            sharpness: number;
+        };
+        /** CaptureMedia */
+        CaptureMedia: {
+            /**
+             * Compass Heading Deg
+             * @description Degrees, 0 inclusive to 360 exclusive.
+             */
+            compass_heading_deg?: number | null;
+            /**
+             * Duration S
+             * @description Video only.
+             */
+            duration_s?: number | null;
+            /**
+             * Has Ar Pose
+             * @description True when an ARKit or ARCore pose is attached. Never required.
+             */
+            has_ar_pose: boolean;
+            /** Height Px */
+            height_px: number;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "photo" | "video";
+            /**
+             * Origin
+             * @enum {string}
+             */
+            origin: "camera" | "gallery";
+            /**
+             * Sharpness
+             * @description On-device sharpness check result.
+             */
+            sharpness?: number | null;
+            /**
+             * Storage Key
+             * @description Object key in the media store. Never a public URL; clients receive signed URLs.
+             */
+            storage_key: string;
+            /** Width Px */
+            width_px: number;
+        };
+        /**
+         * CapturePackage
+         * @description Everything the scan recorded for building the twin, uploaded as one package. Works without AR: then there is video and keyframes only, with no poses. AR poses and points are in the AR session's world frame: metres, gravity aligned, y up; the twin converts them to the space frame.
+         */
+        CapturePackage: {
+            ar: components["schemas"]["Ar"];
+            /**
+             * Depth
+             * @description Depth images aligned to keyframes, when the phone provides them.
+             */
+            depth?: string | null;
+            /**
+             * Detections
+             * @description Live detector results during the scan.
+             */
+            detections: components["schemas"]["LiveDetection"][];
+            /** Keyframes */
+            keyframes: components["schemas"]["CaptureKeyframe"][];
+            /**
+             * Planes
+             * @description AR planes as JSON.
+             */
+            planes?: string | null;
+            /**
+             * Scene Mesh
+             * @description LiDAR scene mesh with surface classes, when the phone has LiDAR.
+             */
+            scene_mesh?: string | null;
+            /**
+             * Sensor Log
+             * @description Motion, pose and light readings over time, as JSON lines.
+             */
+            sensor_log: string;
+            /**
+             * Video
+             * @description The scan video, when recorded.
+             */
+            video?: string | null;
+        };
+        /**
+         * CompassReading
+         * @description Compass headings averaged across the capture, used for Vastu direction.
+         */
+        CompassReading: {
+            /**
+             * Mean Heading Deg
+             * @description Degrees, 0 inclusive to 360 exclusive.
+             */
+            mean_heading_deg: number;
+            /** Sample Count */
+            sample_count: number;
+        };
         /** CompleteUpload */
         CompleteUpload: {
             /** Key */
@@ -132,7 +360,7 @@ export interface components {
              * Kind
              * @enum {string}
              */
-            kind: "photo" | "video";
+            kind: "photo" | "video" | "data";
             /** Size Bytes */
             size_bytes: number;
         };
@@ -155,6 +383,20 @@ export interface components {
             status: "ok";
             /** Version */
             version: string;
+        };
+        /** LiveDetection */
+        LiveDetection: {
+            /** At Ms */
+            at_ms: number;
+            /** Detector Class */
+            detector_class: string;
+            /**
+             * Score
+             * @description A score from 0 to 1.
+             */
+            score: number;
+            /** @description Where the detection hit the AR scene, when it did. */
+            world?: components["schemas"]["ArPoint"] | null;
         };
         /** Me */
         Me: {
@@ -179,6 +421,19 @@ export interface components {
             /** Url */
             url: string;
         };
+        /** RegisterCapture */
+        RegisterCapture: {
+            compass?: components["schemas"]["CompassReading"] | null;
+            device: components["schemas"]["CaptureDevice"];
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Media */
+            media: components["schemas"]["CaptureMedia"][];
+            package?: components["schemas"]["CapturePackage"] | null;
+        };
         /** ResumeUpload */
         ResumeUpload: {
             /** Key */
@@ -188,6 +443,8 @@ export interface components {
             /** Upload Id */
             upload_id: string;
         };
+        /** RotationItem */
+        RotationItem: number;
         /** UploadPlan */
         UploadPlan: {
             /** Key */
@@ -227,6 +484,74 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    registerCapture: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterCapture"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getCapture: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                capture_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     getHealth: {
         parameters: {
             query?: never;

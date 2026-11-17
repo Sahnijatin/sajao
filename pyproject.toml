@@ -63,6 +63,8 @@ exclude = [
     "services/spikes/twin-noar/gpu/",
     "services/workers/gpu/",
     "services/dataset/cloud/",
+    # The Modal client exists only where the deployment runs.
+    "services/api/deploy/",
 ]
 
 [[tool.mypy.overrides]]

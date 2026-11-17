@@ -111,6 +111,34 @@ class HttpsUrl(RootModel[str]):
     root: Annotated[str, Field(max_length=2048, pattern="^https://\\S+$")]
 
 
+class ListedByItem(RootModel[str]):
+    root: Annotated[str, Field(min_length=1)]
+
+
+class TriedItem(RootModel[str]):
+    root: Annotated[str, Field(min_length=1)]
+
+
+class InventoryItem(BaseModel):
+    """
+    An item a vision model listed that could not be placed in 3D. Kept and shown, never dropped silently.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    name: Annotated[str, Field(max_length=80, min_length=1)]
+    type: Literal["furniture", "fixture", "wall_item", "textile", "decor", "built_in"]
+    count: Annotated[int | None, Field(ge=1)] = None
+    listed_by: Annotated[
+        list[ListedByItem], Field(description="Pinned models that listed it.", min_length=1)
+    ]
+    tried: Annotated[
+        list[TriedItem], Field(description="Detector prompts and models tried to place it.")
+    ]
+    reason: Literal["not_detected", "not_seen_in_enough_frames", "no_depth", "implausible_size"]
+
+
 class LocalId(RootModel[str]):
     root: Annotated[
         str,
@@ -411,6 +439,10 @@ class TasteEmbedding(BaseModel):
     vector: Annotated[list[float], Field(min_length=1)]
 
 
+class UnitScore(RootModel[float]):
+    root: Annotated[float, Field(description="A score from 0 to 1.", ge=0.0, le=1.0)]
+
+
 class Budget(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -448,6 +480,14 @@ class Brief(BaseModel):
         list[LocalId], Field(description="Existing items in the space profile to keep.")
     ]
     consider_vastu: bool
+
+
+class Detection(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    source: Literal["live_scan", "server_segmentation", "user"]
+    confidence: Annotated[float, Field(description="A score from 0 to 1.", ge=0.0, le=1.0)]
 
 
 class CameraPose(BaseModel):
@@ -689,6 +729,19 @@ class Fixture(BaseModel):
     offset: Dimension
     mount_height: Dimension
     width: Dimension | None = None
+
+
+class Inventory(BaseModel):
+    """
+    The open-vocabulary inventory the objects were found from, and what could not be placed.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    listed_by: Annotated[list[ListedByItem], Field(min_length=1)]
+    items_listed: Annotated[int, Field(ge=0)]
+    unplaced: list[InventoryItem]
 
 
 class Keyframe(BaseModel):
@@ -1331,14 +1384,6 @@ class TasteProfile(BaseModel):
     ]
 
 
-class Detection(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    source: Literal["live_scan", "server_segmentation", "user"]
-    confidence: Annotated[float, Field(description="A score from 0 to 1.", ge=0.0, le=1.0)]
-
-
 class TwinObject(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -1382,6 +1427,12 @@ class TwinObject(BaseModel):
             description="keep in a freshly built twin. Edits change it only in a derived view, never in the stored twin."
         ),
     ]
+    object_type: Annotated[
+        Literal["furniture", "fixture", "wall_item", "textile", "decor"] | None,
+        Field(
+            description="What kind of thing it is. Built-ins are not objects: they are in the shell's built_ins."
+        ),
+    ] = None
 
 
 class Wall(BaseModel):
@@ -1424,6 +1475,27 @@ class AddEdit(BaseModel):
         float, Field(description="Degrees, 0 inclusive to 360 exclusive.", ge=0.0, lt=360.0)
     ]
     label: Annotated[str, Field(max_length=80, min_length=1)]
+
+
+class BuiltIn(BaseModel):
+    """
+    Something built into the room (a fitted wardrobe, a fireplace, a radiator, a kitchen counter). Part of the shell: it stays when the room is redesigned.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    category: Annotated[str, Field(max_length=60, min_length=1)]
+    label: Annotated[str, Field(max_length=80, min_length=1)]
+    box: OrientedBox
+    detection: Detection
 
 
 class CapturePackage(BaseModel):
@@ -1737,6 +1809,9 @@ class Shell(BaseModel):
     surfaces: Annotated[
         list[ShellSurface], Field(description="Appearance of each wall, the floor and the ceiling.")
     ]
+    built_ins: Annotated[
+        list[BuiltIn] | None, Field(description="Built-in items, kept with the shell.")
+    ] = None
 
 
 class SpaceTwin(BaseModel):
@@ -1806,3 +1881,4 @@ class SpaceTwin(BaseModel):
             max_length=4,
         ),
     ] = None
+    inventory: Inventory | None = None

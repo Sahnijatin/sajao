@@ -7,6 +7,7 @@ import {
   frameFov,
   INITIAL_SCAN,
   mappedShare,
+  shouldShowSlowDown,
   type ScanEvent,
   scanReducer,
   type ScanState,
@@ -213,7 +214,7 @@ describe("scan session", () => {
     expect(mappedShare(state) * 180).toBeGreaterThanOrEqual(DONE_DEGREES);
   });
 
-  it("counts a steady full turn even when every frame is thin", () => {
+  it("gives nothing for a full turn whose frames are thin", () => {
     const t = timeline();
     let state = run(INITIAL_SCAN, [t.motion()]);
     // 30 degrees a second for 12 seconds, frames with no feature points.
@@ -221,19 +222,44 @@ describe("scan session", () => {
       state = run(state, [t.motion({ yawRate: 30, rotationRate: 30 }), t.frame(goodStats, [])]);
     }
     expect(state.pose.yaw).toBeGreaterThan(355);
-    expect(mappedShare(state)).toBe(1);
-    // Done still needs frames that were usable, which these were.
-    expect(canFinish(state)).toBe(true);
+    expect(mappedShare(state)).toBe(0);
+    expect(canFinish(state)).toBe(false);
   });
 
-  it("counts the sweep with no frames at all, but offers Done only with frames", () => {
+  it("gives nothing for facing directions without frames", () => {
     const t = timeline();
     let state = run(INITIAL_SCAN, [t.motion()]);
     for (let step = 0; step < 80; step += 1) {
       state = run(state, [t.motion({ yawRate: 30, rotationRate: 30 })]);
     }
-    expect(mappedShare(state)).toBeGreaterThan(0.5);
+    expect(mappedShare(state)).toBe(0);
     expect(canFinish(state)).toBe(false);
+  });
+
+  it("gives nothing for a pan faster than 45 degrees a second, and asks to slow down", () => {
+    const t = timeline();
+    // Already panning fast when filming starts.
+    let state = run(INITIAL_SCAN, [
+      t.motion({ yawRate: 60, rotationRate: 60 }),
+      t.motion({ yawRate: 60, rotationRate: 60 }),
+    ]);
+    for (let step = 0; step < 40; step += 1) {
+      state = run(state, [t.motion({ yawRate: 60, rotationRate: 60 }), t.frame()]);
+    }
+    expect(mappedShare(state)).toBe(0);
+    expect(shouldShowSlowDown(state)).toBe(true);
+  });
+
+  it("gives nothing for blurred frames, judged against this scan's sharp ones", () => {
+    const t = timeline();
+    let state = run(INITIAL_SCAN, [t.motion(), ...repeat(8, () => t.frame())]);
+    const before = mappedShare(state);
+    const blurred = { ...goodStats, sharpness: 50 };
+    for (let step = 0; step < 30; step += 1) {
+      state = run(state, [t.motion({ yawRate: 20, rotationRate: 20 }), t.frame(blurred)]);
+    }
+    expect(mappedShare(state)).toBe(before);
+    expect(shouldShowSlowDown(state)).toBe(true);
   });
 
   it("gives nothing for a fast swing", () => {
@@ -254,6 +280,74 @@ describe("scan session", () => {
       repeat(FALLBACK_DONE_FRAMES, () => t.frame()),
     );
     expect(canFinish(state)).toBe(true);
+  });
+
+  describe("with AR tracking", () => {
+    const arPose = (
+      yaw: number,
+      atMs: number,
+      tracking: "normal" | "limited" = "normal",
+    ): ScanEvent => ({
+      type: "arPose",
+      yaw,
+      pitch: 0,
+      tracking,
+      atMs,
+    });
+    const arFrame = (
+      atMs: number,
+      change: Partial<Extract<ScanEvent, { type: "arFrame" }>> = {},
+    ): ScanEvent => ({
+      type: "arFrame",
+      brightness: 120,
+      lowLight: false,
+      featureCount: 40,
+      tracking: "normal",
+      atMs,
+      ...change,
+    });
+
+    it("takes the pose from AR and stops integrating the gyroscope", () => {
+      let state = run(INITIAL_SCAN, [arPose(30, 100)]);
+      state = run(state, [
+        { type: "motion", sample: { ...still, yawRate: 90 }, atMs: 200 },
+        { type: "motion", sample: { ...still, yawRate: 90 }, atMs: 300 },
+      ]);
+      expect(state.poseSource).toBe("ar");
+      expect(state.pose.yaw).toBe(30);
+    });
+
+    it("maps a full turn from AR poses and allows Done with usable AR frames", () => {
+      let state = INITIAL_SCAN;
+      let now = 0;
+      for (let yaw = 0; yaw <= 200; yaw += 3) {
+        now += 100;
+        state = run(state, [arPose(yaw, now), arFrame(now + 50)]);
+      }
+      expect(mappedShare(state)).toBe(1);
+      expect(canFinish(state)).toBe(true);
+    });
+
+    it("does not count frames while tracking is limited", () => {
+      let state = INITIAL_SCAN;
+      for (let i = 0; i < 30; i += 1) {
+        state = run(state, [
+          arPose(i * 5, i * 100, "limited"),
+          arFrame(i * 100 + 50, { tracking: "limited" }),
+        ]);
+      }
+      expect(state.usableFrames).toBe(0);
+      expect(mappedShare(state)).toBe(0);
+    });
+
+    it("turns the light chip amber from the AR light estimate", () => {
+      const state = run(INITIAL_SCAN, [arFrame(100, { brightness: 140, lowLight: true })]);
+      expect(state.guardrails.light).toBe("warn");
+      const dark = run(INITIAL_SCAN, [arFrame(100, { brightness: 20 })]);
+      expect(dark.guardrails.light).toBe("warn");
+      const fine = run(INITIAL_SCAN, [arFrame(100)]);
+      expect(fine.guardrails.light).toBe("good");
+    });
   });
 
   it("tracks fewer points on a low-tier phone", () => {

@@ -116,11 +116,22 @@ async def test_uploads_need_a_signed_in_or_guest_caller() -> None:
         ({"kind": "photo", "content_type": "application/pdf", "size_bytes": 10}, 415, None),
         ({"kind": "photo", "content_type": "video/mp4", "size_bytes": 10}, 415, None),
         ({"kind": "photo", "content_type": "image/jpeg", "size_bytes": 21 * MIB}, 413, None),
-        ({"kind": "video", "content_type": "video/mp4", "size_bytes": 201 * MIB}, 413, None),
+        ({"kind": "video", "content_type": "video/mp4", "size_bytes": 513 * MIB}, 413, None),
+        ({"kind": "data", "content_type": "application/json", "size_bytes": 101 * MIB}, 413, None),
+        ({"kind": "data", "content_type": "image/jpeg", "size_bytes": 10}, 415, None),
         ({"kind": "photo", "content_type": "image/jpeg", "size_bytes": 0}, 422, None),
         ({"kind": "document", "content_type": "image/jpeg", "size_bytes": 10}, 422, None),
     ],
-    ids=["pdf", "video-as-photo", "photo-too-large", "video-too-large", "empty", "unknown-kind"],
+    ids=[
+        "pdf",
+        "video-as-photo",
+        "photo-too-large",
+        "video-too-large",
+        "data-too-large",
+        "image-as-data",
+        "empty",
+        "unknown-kind",
+    ],
 )
 async def test_only_room_media_within_the_size_limits_can_start_an_upload(
     body: dict[str, Any], status: int, code: None
@@ -270,3 +281,67 @@ async def test_a_real_multipart_upload_resumes_on_the_local_stack() -> None:
         )
         assert gone.status_code == 404
     storage.delete(plan["key"])
+
+
+@pytest.mark.parametrize(
+    ("content_type", "extension"),
+    [
+        ("application/x-ndjson", "jsonl"),
+        ("application/json", "json"),
+        ("application/octet-stream", "bin"),
+    ],
+)
+async def test_capture_package_data_files_upload_and_resume(
+    content_type: str, extension: str
+) -> None:
+    storage = InMemoryObjectStorage()
+    body = {"kind": "data", "content_type": content_type, "size_bytes": 2000}
+    async with client(storage) as api:
+        created = await api.post("/v1/uploads", json=body, headers=headers())
+        plan = created.json()
+        assert created.status_code == 201
+        assert plan["key"].startswith(f"{USER_A}/") and plan["key"].endswith(f".{extension}")
+        ref = {"key": plan["key"], "upload_id": plan["upload_id"]}
+        resumed = await api.post(
+            "/v1/uploads/resume", json={**ref, "size_bytes": 2000}, headers=headers()
+        )
+        assert resumed.status_code == 200
+        etag = storage.put_part(plan["key"], plan["upload_id"], 1, b"x" * 2000)
+        done = await api.post(
+            "/v1/uploads/complete",
+            json={**ref, "parts": [{"part_number": 1, "size_bytes": 2000, "etag": etag}]},
+            headers=headers(),
+        )
+        assert done.json() == {"key": plan["key"], "size_bytes": 2000}
+
+
+async def test_the_stores_own_limit_refuses_a_larger_file_before_any_part_is_sent() -> None:
+    settings = Settings(storage_max_object_bytes=50 * MIB)
+    app = create_app(settings, InMemoryIdempotencyStore(), VERIFIER, InMemoryObjectStorage())
+    transport = httpx.ASGITransport(app=app, raise_app_exceptions=False)
+    async with httpx.AsyncClient(transport=transport, base_url="http://api.test") as api:
+        too_large = await api.post("/v1/uploads", json=video(51 * MIB), headers=headers())
+        assert too_large.status_code == 413
+        assert too_large.json()["error"]["code"] == "file_too_large"
+        fits = await api.post("/v1/uploads", json=video(49 * MIB), headers=headers())
+        assert fits.status_code == 201
+
+
+async def test_user_session_storage_signs_with_the_callers_own_token() -> None:
+    settings = Settings(
+        storage_endpoint="https://project.storage.example/storage/v1/s3",
+        storage_region="ap-south-1",
+        storage_bucket="captures",
+        storage_access_key_id=SecretStr("project-ref"),
+        storage_secret_access_key=SecretStr("public-anon-key"),
+        storage_user_sessions=True,
+    )
+    app = create_app(settings, InMemoryIdempotencyStore(), VERIFIER)
+    assert app.state.storage is None
+    access_token = token(sub=USER_A)
+    scoped = app.state.storage_for_session(access_token)
+    assert isinstance(scoped, S3ObjectStorage)
+    # Signing is local: the caller's token travels in the URL as the session token.
+    url = scoped.sign_part(f"{USER_A}/{'0' * 32}.jpg", "upload-1", 1, 900)
+    assert "X-Amz-Security-Token=" in url and access_token[:20] in url
+    assert "public-anon-key" not in url

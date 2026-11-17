@@ -24,7 +24,7 @@ MIB = 1024 * 1024
 PART_SIZE_BYTES = 5 * MIB  # The smallest part size S3-compatible stores accept.
 URL_EXPIRES_IN_SECONDS = 15 * 60
 
-MediaKind = Literal["photo", "video"]
+MediaKind = Literal["photo", "video", "data"]
 # Allowed content types and the file extension each is stored under.
 CONTENT_TYPES: dict[MediaKind, dict[str, str]] = {
     "photo": {
@@ -34,11 +34,29 @@ CONTENT_TYPES: dict[MediaKind, dict[str, str]] = {
         "image/webp": "webp",
     },
     "video": {"video/mp4": "mp4", "video/quicktime": "mov"},
+    # A scan's capture package besides images and video: the sensor log (JSON
+    # lines), planes (JSON), and the depth file and scene mesh (binary).
+    "data": {
+        "application/x-ndjson": "jsonl",
+        "application/json": "json",
+        "application/octet-stream": "bin",
+    },
 }
 # Photos are resized on the phone to about 1600 px, so these are generous.
-MAX_SIZE_BYTES: dict[MediaKind, int] = {"photo": 20 * MIB, "video": 200 * MIB}
+# A scan video runs from the first frame to Done at full camera resolution.
+MAX_SIZE_BYTES: dict[MediaKind, int] = {"photo": 20 * MIB, "video": 512 * MIB, "data": 100 * MIB}
 
-_KEY = re.compile(r"^(?P<owner>[0-9a-f-]{36})/[0-9a-f]{32}\.(?:jpg|heic|png|webp|mp4|mov)$")
+_KEY = re.compile(
+    r"^(?P<owner>[0-9a-f-]{36})/[0-9a-f]{32}\.(?:jpg|heic|png|webp|mp4|mov|jsonl|json|bin)$"
+)
+
+
+def is_owned_key(key: str, user_id: str) -> bool:
+    """True when `key` is a stored object key that belongs to `user_id`."""
+    match = _KEY.match(key)
+    return match is not None and match["owner"] == user_id
+
+
 _KIND_BY_EXTENSION: dict[str, MediaKind] = {
     extension: kind for kind, types in CONTENT_TYPES.items() for extension in types.values()
 }
@@ -92,6 +110,14 @@ class CompletedUpload(BaseModel):
 
 
 def get_storage(request: Request) -> ObjectStorage:
+    for_session = getattr(request.app.state, "storage_for_session", None)
+    if for_session is not None:
+        # The store checks the caller's own session on every request it signs.
+        scheme, _, token = request.headers.get("authorization", "").partition(" ")
+        if scheme.lower() != "bearer" or not token:
+            raise ApiError(401, "not_authenticated", "This request needs an access token.")
+        scoped: ObjectStorage = for_session(token.strip())
+        return scoped
     storage: ObjectStorage | None = request.app.state.storage
     if storage is None:
         raise ApiError(503, "uploads_unavailable", "Uploads are not available right now.")
@@ -99,9 +125,8 @@ def get_storage(request: Request) -> ObjectStorage:
 
 
 def _owned_key(key: str, user: Principal) -> str:
-    match = _KEY.match(key)
     # One answer for "malformed" and "someone else's": never reveal which keys exist.
-    if match is None or match["owner"] != user.user_id:
+    if not is_owned_key(key, user.user_id):
         raise ApiError(404, "upload_not_found", "This upload does not exist.")
     return key
 
@@ -110,8 +135,13 @@ def _part_count(size_bytes: int) -> int:
     return max(1, math.ceil(size_bytes / PART_SIZE_BYTES))
 
 
-def _check_size(kind: MediaKind, size_bytes: int) -> None:
-    if size_bytes > MAX_SIZE_BYTES[kind]:
+def _max_size(kind: MediaKind, request: Request) -> int:
+    store_limit: int | None = request.app.state.settings.storage_max_object_bytes
+    return min(MAX_SIZE_BYTES[kind], store_limit) if store_limit else MAX_SIZE_BYTES[kind]
+
+
+def _check_size(kind: MediaKind, size_bytes: int, request: Request) -> None:
+    if size_bytes > _max_size(kind, request):
         raise ApiError(413, "file_too_large", "This file is too large to upload.")
 
 
@@ -143,22 +173,26 @@ Storage = Annotated[ObjectStorage, Depends(get_storage)]
 
 
 @router.post("", operation_id="createUpload", status_code=201)
-async def create_upload(body: CreateUpload, user: User, storage: Storage) -> UploadPlan:
+async def create_upload(
+    body: CreateUpload, user: User, storage: Storage, request: Request
+) -> UploadPlan:
     """Plan a new upload and get signed URLs for its parts."""
     extension = CONTENT_TYPES[body.kind].get(body.content_type)
     if extension is None:
         raise ApiError(415, "unsupported_media_type", "This kind of file cannot be uploaded.")
-    _check_size(body.kind, body.size_bytes)
+    _check_size(body.kind, body.size_bytes, request)
     key = f"{user.user_id}/{uuid.uuid4().hex}.{extension}"
     upload_id = await asyncio.to_thread(storage.create_upload, key, body.content_type)
     return await _plan(storage, key, upload_id, body.size_bytes, [])
 
 
 @router.post("/resume", operation_id="resumeUpload")
-async def resume_upload(body: ResumeUpload, user: User, storage: Storage) -> UploadPlan:
+async def resume_upload(
+    body: ResumeUpload, user: User, storage: Storage, request: Request
+) -> UploadPlan:
     """After a dropped connection: which parts arrived, and fresh URLs for the rest."""
     key = _owned_key(body.key, user)
-    _check_size(_KIND_BY_EXTENSION[key.rsplit(".", 1)[1]], body.size_bytes)
+    _check_size(_KIND_BY_EXTENSION[key.rsplit(".", 1)[1]], body.size_bytes, request)
     try:
         uploaded = await asyncio.to_thread(storage.list_parts, key, body.upload_id)
     except UploadNotFoundError:
@@ -167,7 +201,9 @@ async def resume_upload(body: ResumeUpload, user: User, storage: Storage) -> Upl
 
 
 @router.post("/complete", operation_id="completeUpload")
-async def complete_upload(body: CompleteUpload, user: User, storage: Storage) -> CompletedUpload:
+async def complete_upload(
+    body: CompleteUpload, user: User, storage: Storage, request: Request
+) -> CompletedUpload:
     """Join the uploaded parts into the stored file."""
     key = _owned_key(body.key, user)
     parts = [UploadedPart(part.part_number, part.size_bytes, part.etag) for part in body.parts]
@@ -176,7 +212,7 @@ async def complete_upload(body: CompleteUpload, user: User, storage: Storage) ->
     except (UploadNotFoundError, KeyError):
         raise ApiError(404, "upload_not_found", "This upload does not exist.") from None
     # The declared size was only a plan. Enforce the limit on what really arrived.
-    if size > MAX_SIZE_BYTES[_KIND_BY_EXTENSION[key.rsplit(".", 1)[1]]]:
+    if size > _max_size(_KIND_BY_EXTENSION[key.rsplit(".", 1)[1]], request):
         await asyncio.to_thread(storage.delete, key)
         raise ApiError(413, "file_too_large", "This file is too large to upload.")
     return CompletedUpload(key=key, size_bytes=size)

@@ -16,6 +16,7 @@ AI decides taste and appearance; geometry and code decide fit. Every model outpu
 | Taste and product embeddings | Open image-text embedding model (SigLIP 2 class) | Permissive, to confirm | Must |
 | Upload safety classifier | Off-the-shelf classifier | To confirm | Must |
 | Image to 3D for hero products | TRELLIS.2, SAM 3D Objects | MIT; SAM license | Next |
+| Live object labels during the scan (on device) | EfficientDet-Lite0 on COCO classes, run with MediaPipe Tasks | Apache 2.0 (model and MediaPipe) | Must |
 | Floor plan reading, design chat | Vision and language models | Provider terms | Next |
 | Taste ranker, compatibility model | Small models trained by us | Ours | Later |
 
@@ -31,7 +32,7 @@ The on-device detector knows COCO classes, not Indian home objects. `services/da
 
 ## Object detection for the twin
 
-The twin finds objects on the server with an open-vocabulary detector, prompted with a pinned list of general and Indian home object names (diwan, puja unit, jhoola, almirah, shoe rack, gas stove, floor seating and others). YOLOE is the default. The detector sits behind a swappable interface, and Grounding DINO and OWLv2 (both Apache-2.0) are benchmarked on the same Indian-object test set, so the twin can switch within a day if the legal review declines YOLOE. A fine-tuned Indian-home detector is trained only if the default misses the recall bar on that test set.
+The twin finds objects on the server with an open-vocabulary detector, prompted with a pinned list of general and Indian home object names (diwan, puja unit, jhoola, almirah, shoe rack, gas stove, floor seating and others). YOLOE is the default. The detector sits behind a swappable interface, and Grounding DINO and OWLv2 (both Apache-2.0) are benchmarked on the same Indian-object test set, so the twin can switch within a day if the legal review declines YOLOE. A fine-tuned Indian-home detector is trained only if the default misses the recall bar on that test set. A first benchmark on openly licensed web photos, before the scan test set exists, is in `eval/twin-indian/REPORT.md`: OWLv2 found 83% of the Indian objects, Grounding DINO 48% and YOLOE 9%. The detector order is one setting (`SAJAO_DETECTORS`).
 
 ## Render bake-off
 

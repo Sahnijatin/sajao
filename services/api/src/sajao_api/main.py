@@ -9,6 +9,7 @@ from starlette.types import Scope
 
 from sajao_api import __version__, v1
 from sajao_api.auth import JwksTokenVerifier, TokenVerifier
+from sajao_api.captures import CaptureStore, InMemoryCaptureStore, PostgresCaptureStore
 from sajao_api.errors import ApiError, api_error_handler
 from sajao_api.idempotency import (
     IdempotencyStore,
@@ -35,6 +36,7 @@ def create_app(
     idempotency_store: IdempotencyStore | None = None,
     token_verifier: TokenVerifier | None = None,
     storage: ObjectStorage | None = None,
+    capture_store: CaptureStore | None = None,
 ) -> FastAPI:
     settings = settings or Settings()
     configure_logging(settings.log_level)
@@ -44,19 +46,19 @@ def create_app(
 
     pool: AsyncConnectionPool | None = None
     store = idempotency_store
+    if (store is None or capture_store is None) and settings.database_url is not None:
+        # prepare_threshold=None: safe behind a transaction-mode connection pooler.
+        pool = AsyncConnectionPool(
+            settings.database_url.get_secret_value(),
+            open=False,
+            min_size=1,
+            max_size=5,
+            kwargs={"prepare_threshold": None, "autocommit": True},
+        )
     if store is None:
-        if settings.database_url is not None:
-            # prepare_threshold=None: safe behind a transaction-mode connection pooler.
-            pool = AsyncConnectionPool(
-                settings.database_url.get_secret_value(),
-                open=False,
-                min_size=1,
-                max_size=5,
-                kwargs={"prepare_threshold": None, "autocommit": True},
-            )
-            store = PostgresIdempotencyStore(pool)
-        else:
-            store = InMemoryIdempotencyStore()
+        store = PostgresIdempotencyStore(pool) if pool is not None else InMemoryIdempotencyStore()
+    if capture_store is None:
+        capture_store = PostgresCaptureStore(pool) if pool is not None else InMemoryCaptureStore()
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
@@ -85,14 +87,31 @@ def create_app(
         and settings.storage_access_key_id
         and settings.storage_secret_access_key
     ):
-        storage = S3ObjectStorage(
-            endpoint=settings.storage_endpoint,
-            region=settings.storage_region,
-            bucket=settings.storage_bucket,
-            access_key_id=settings.storage_access_key_id.get_secret_value(),
-            secret_access_key=settings.storage_secret_access_key.get_secret_value(),
+        endpoint, region, bucket = (
+            settings.storage_endpoint,
+            settings.storage_region,
+            settings.storage_bucket,
         )
+        access_key_id = settings.storage_access_key_id.get_secret_value()
+        secret_access_key = settings.storage_secret_access_key.get_secret_value()
+
+        def storage_for(session_token: str | None) -> ObjectStorage:
+            return S3ObjectStorage(
+                endpoint=endpoint,
+                region=region,
+                bucket=bucket,
+                access_key_id=access_key_id,
+                secret_access_key=secret_access_key,
+                session_token=session_token,
+            )
+
+        if settings.storage_user_sessions:
+            # One client per request, signed with that caller's own session.
+            app.state.storage_for_session = storage_for
+        else:
+            storage = storage_for(None)
     app.state.storage = storage
+    app.state.captures = capture_store
     app.include_router(v1.router)
     app.add_exception_handler(ApiError, api_error_handler)
 

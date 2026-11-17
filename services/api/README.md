@@ -11,7 +11,8 @@ The Sajao API: a stateless FastAPI modular monolith behind a versioned `/v1`. Pr
 | Request context | `middleware/request_context.py` | `X-Request-ID` on every response and one JSON log line per request. Query strings, headers and bodies are never logged. |
 | Minimum app version | `middleware/app_version.py` | Apps sending an `X-App-Version` below the minimum get `426` with code `app_update_required`. |
 | Auth | `auth.py`, `middleware/auth.py`, `v1/me.py` | Bearer tokens from the auth service are verified against its public keys. No token means anonymous; a bad token is always `401`. Endpoints that need a caller use the `current_user` dependency. Guests have a real user id. |
-| Uploads | `storage.py`, `v1/uploads.py` | Resumable multipart uploads of capture media straight to object storage through short-lived signed URLs. See below. |
+| Uploads | `storage.py`, `v1/uploads.py` | Resumable multipart uploads of capture media (photos, video, and the capture package's data files: sensor log, planes, depth, scene mesh) straight to object storage through short-lived signed URLs. See below. |
+| Captures | `captures.py`, `v1/captures.py` | `POST /v1/captures` registers a finished scan whose files are already uploaded: the body is validated as a `Capture`, every storage key must belong to the caller, and the row is stored for the twin worker. The capture id comes from the phone, so repeating the call returns the stored capture (`200` instead of `201`). `GET /v1/captures/{id}` returns the caller's own capture. |
 | Idempotency | `middleware/idempotency.py`, `idempotency.py` | Every write needs an `Idempotency-Key`. See below. |
 | OpenAPI | `openapi.py`, `openapi.json` | The exported document the typed client in `packages/api-client` is generated from. |
 
@@ -57,6 +58,18 @@ Rules: callers must be signed in or guests; keys live under the caller's user id
 | `SAJAO_IDEMPOTENCY_IN_PROGRESS_SECONDS` | `60` | How long an unfinished write blocks retries |
 
 Secrets are set in the platform's secret manager and reach the service as environment variables. Never commit them.
+
+## Interim hosting
+
+Until the production deployment exists, the API runs as one Modal web endpoint (`deploy/modal_app.py`) that serves the same ASGI app, with settings from the `sajao-api` Modal secret. This is an approved, temporary route so real scans can reach the twin worker; Cloud Run in Mumbai stays the production target.
+
+Capture files go to the private `captures` bucket in Supabase Storage on the development project (`supabase/migrations/*_captures_bucket.sql`). With `SAJAO_STORAGE_USER_SESSIONS=true` the API signs every storage request, signed part URLs included, with the caller's own access token as the session token: the access key id is the project ref and the secret is the project's public anon key. The bucket's row level security keeps each user inside the folder named after their user id, so the API holds no storage credential that could read another user's files. `SAJAO_STORAGE_MAX_OBJECT_BYTES` carries the store's own limit for one file (50 MiB there); a larger file is refused before any part is sent, and the app then leaves the scan video out and uploads the rest.
+
+Known limits of the interim store: listing the parts of an unfinished upload returns none under a user session, so an interrupted file restarts from its first part (finished files are still skipped); and the worker needs its own server-side access to read the bucket.
+
+```bash
+uv run --with 'modal[api-proxy-support]==1.6.4' modal deploy services/api/deploy/modal_app.py
+```
 
 ## Development environment
 

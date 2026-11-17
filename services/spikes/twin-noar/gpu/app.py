@@ -20,6 +20,8 @@ SPIKE = SPIKES / "twin-risk"
 SRC = SPIKE / "src" / "twin_risk"
 WORKERS = SPIKES.parent / "workers"
 
+VGGT_REF = "a288dd0f14786c93483e45524328726ab7b1b4ce"
+
 # The SJ-116 spike's image, unchanged, so Modal reuses its cached layers.
 MAPANYTHING_REF = "3d10cf7a3016fc0f9bb13a071ee66c47b10be0d9"
 
@@ -99,6 +101,13 @@ cpu_image = (
 )
 
 
+# VGGT declares numpy<2 only; its imports (einops, safetensors, huggingface_hub) are
+# already in the spike image, so it is installed without its list.
+vggt_image = gpu_image.pip_install(
+    f"vggt @ git+https://github.com/facebookresearch/vggt@{VGGT_REF}", extra_options="--no-deps"
+).run_commands("python -c 'import einops, safetensors; from vggt.models.vggt import VGGT'")
+
+
 def mounted(image: modal.Image) -> modal.Image:
     return (
         image.add_local_dir(SRC, "/root/twin_risk")
@@ -122,40 +131,50 @@ ROOMS = [
 ]
 
 
-@app.function(image=mounted(gpu_image), volumes=V, gpu="L40S", timeout=3600, max_containers=1)
-def poses(name: str) -> dict:
+@app.function(
+    image=mounted(vggt_image),
+    volumes=V,
+    gpu="L40S",
+    timeout=3600,
+    max_containers=1,
+    secrets=[modal.Secret.from_name("huggingface-secret")],
+)
+def poses(name: str, method: str) -> dict:
     import noar_eval
 
     vol.reload()
-    out = noar_eval.predict_mapanything(name)
+    if method == "vggt_commercial":
+        out = noar_eval.predict_vggt(name)
+    else:
+        out = noar_eval.predict_mapanything(name)
     vol.commit()
     return out
 
 
 @app.function(image=mounted(cpu_image), volumes=V, cpu=8, memory=16384, timeout=3600)
-def score(name: str) -> dict:
+def score(name: str, method: str) -> dict:
     import noar_eval
 
     vol.reload()
-    out = noar_eval.score_room(name)
+    out = noar_eval.score_room(name, method)
     vol.commit()
     return out
 
 
 @app.function(image=mounted(gpu_image), volumes=V, gpu="L40S", timeout=3600, max_containers=1)
-def splat(name: str, which: str) -> dict:
+def splat(name: str, which: str, method: str) -> dict:
     import noar_eval
     import splat_gpu
 
     vol.reload()
     splat_gpu.load_cached_kernels()
-    out = noar_eval.splat_room(name, "ar" if which == "ar" else "mapanything_apache")
+    out = noar_eval.splat_room(name, which, method=method)
     vol.commit()
     return out
 
 
 @app.local_entrypoint()
-def main(stage: str = "poses", rooms: str = "") -> None:
+def main(stage: str = "poses", rooms: str = "", method: str = "mapanything_apache") -> None:
     import json
 
     names = rooms.split(",") if rooms else ROOMS
@@ -165,12 +184,13 @@ def main(stage: str = "poses", rooms: str = "") -> None:
             print(json.dumps(r if isinstance(r, dict) else {"failed": repr(r)[:600]}, default=str))
 
     if stage == "poses":
-        show(poses.map(names, return_exceptions=True))
+        show(poses.starmap([(n, method) for n in names], return_exceptions=True))
     elif stage == "score":
-        show(score.map(names, return_exceptions=True))
+        show(score.starmap([(n, method) for n in names], return_exceptions=True))
     elif stage == "splat":
         show(
             splat.starmap(
-                [(n, w) for n in names for w in ("ar", "fallback")], return_exceptions=True
+                [(n, w, method) for n in names for w in ("ar", "fallback")],
+                return_exceptions=True,
             )
         )

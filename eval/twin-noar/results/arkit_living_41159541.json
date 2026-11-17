@@ -4,6 +4,11 @@
   "seconds": 28.9,
   "views": 120
  },
+ "poses_vggt_commercial": {
+  "model": "vggt_commercial",
+  "seconds": 12.0,
+  "views": 120
+ },
  "scene": "arkit_living_41159541",
  "score_mapanything_apache": {
   "ar_poses": {
@@ -118,6 +123,119 @@
   "true_scale": 1.0193,
   "views": 120
  },
+ "score_vggt_commercial": {
+  "ar_poses": {
+   "gt_objects": 9,
+   "median_center_error_m": 0.19456283857209333,
+   "median_height_error_m": 0.11729419435573224,
+   "median_iou": 0.3997045514266402,
+   "median_length_error_m": 0.2860090114067957,
+   "median_size_error_rel": 0.30743894039008646,
+   "median_width_error_m": 0.11097782914977672,
+   "precision_class_iou25": 0.2222222222222222,
+   "predicted_annotated_classes": 27,
+   "predicted_objects": 49,
+   "recall_any_class_iou25": 0.6666666666666666,
+   "recall_class_iou05": 0.8888888888888888,
+   "recall_class_iou25": 0.6666666666666666
+  },
+  "ar_translation": {
+   "metrics_seen": {
+    "gt_objects": 9,
+    "median_center_error_m": 0.22346684782246015,
+    "median_height_error_m": 0.08380520676814121,
+    "median_iou": 0.36787709054066187,
+    "median_length_error_m": 0.22851352455296403,
+    "median_size_error_rel": 0.21081967215131686,
+    "median_width_error_m": 0.05242427737723948,
+    "precision_class_iou25": 0.23076923076923078,
+    "predicted_annotated_classes": 26,
+    "predicted_objects": 47,
+    "recall_any_class_iou25": 0.6666666666666666,
+    "recall_class_iou05": 0.8888888888888888,
+    "recall_class_iou25": 0.6666666666666666
+   },
+   "pose": {
+    "centre_rmse_cm": 10.2,
+    "rotation_median_deg": 1.6
+   },
+   "scale": 3.0891,
+   "scale_error_pct": 0.0
+  },
+  "method": "vggt_commercial",
+  "model": {
+   "metrics_seen": {
+    "gt_objects": 9,
+    "median_center_error_m": 0.5871876696023333,
+    "median_height_error_m": 0.15618827580674186,
+    "median_iou": null,
+    "median_length_error_m": 0.39929086403777747,
+    "median_size_error_rel": 0.27905988101221235,
+    "median_width_error_m": 0.21911152575765896,
+    "precision_class_iou25": 0.0,
+    "predicted_annotated_classes": 36,
+    "predicted_objects": 59,
+    "recall_any_class_iou25": 0.0,
+    "recall_class_iou05": 0.4444444444444444,
+    "recall_class_iou25": 0.0
+   },
+   "pose": {
+    "centre_rmse_cm": 87.1,
+    "rotation_median_deg": 1.6
+   },
+   "scale": 1.0,
+   "scale_error_pct": -67.6
+  },
+  "moge3": {
+   "metrics_seen": {
+    "gt_objects": 9,
+    "median_center_error_m": 0.23013211146494508,
+    "median_height_error_m": 0.09777952181654093,
+    "median_iou": 0.37390341561729173,
+    "median_length_error_m": 0.20437695626389063,
+    "median_size_error_rel": 0.25534515612312086,
+    "median_width_error_m": 0.09241136436323732,
+    "precision_class_iou25": 0.2727272727272727,
+    "predicted_annotated_classes": 22,
+    "predicted_objects": 45,
+    "recall_any_class_iou25": 0.6666666666666666,
+    "recall_class_iou05": 0.8888888888888888,
+    "recall_class_iou25": 0.6666666666666666
+   },
+   "pose": {
+    "centre_rmse_cm": 10.3,
+    "rotation_median_deg": 1.6
+   },
+   "scale": 3.0465,
+   "scale_error_pct": -1.4
+  },
+  "scene": "arkit_living_41159541",
+  "tape": {
+   "metrics_seen": {
+    "gt_objects": 9,
+    "median_center_error_m": 0.5292246019982748,
+    "median_height_error_m": 0.14557416764496794,
+    "median_iou": 0.2620243219076919,
+    "median_length_error_m": 0.3771925053662802,
+    "median_size_error_rel": 0.19902149796192264,
+    "median_width_error_m": 0.22274820991584893,
+    "precision_class_iou25": 0.029411764705882353,
+    "predicted_annotated_classes": 34,
+    "predicted_objects": 54,
+    "recall_any_class_iou25": 0.1111111111111111,
+    "recall_class_iou05": 0.2222222222222222,
+    "recall_class_iou25": 0.1111111111111111
+   },
+   "pose": {
+    "centre_rmse_cm": 77.3,
+    "rotation_median_deg": 1.6
+   },
+   "scale": 4.9391,
+   "scale_error_pct": 59.9
+  },
+  "true_scale": 3.0891,
+  "views": 120
+ },
  "splat_ar": {
   "gaussians": 2160187,
   "gpu": "NVIDIA L40S",
@@ -135,5 +253,14 @@
   "psnr_heldout_raw": 15.39,
   "scene": "arkit_living_41159541",
   "train_seconds": 428.9
+ },
+ "splat_vggt_commercial_moge3": {
+  "gaussians": 1934941,
+  "gpu": "NVIDIA L40S",
+  "poses": "vggt_commercial_moge3",
+  "psnr_heldout": 23.46,
+  "psnr_heldout_raw": 16.92,
+  "scene": "arkit_living_41159541",
+  "train_seconds": 390.1
  }
 }
