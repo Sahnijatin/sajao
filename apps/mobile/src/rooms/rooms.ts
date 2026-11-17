@@ -26,6 +26,8 @@ export interface Room {
   still: RoomStill;
   /** The scan this room came from. */
   captureId: string | null;
+  /** For a scan of several areas: the one chosen to redesign. Unset until chosen. */
+  redesignAreaId?: string | null;
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;

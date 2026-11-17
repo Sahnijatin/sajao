@@ -4,6 +4,7 @@
 // position and rotation the solver (or a person) gave it. Pure geometry;
 // nothing here places, sizes or measures anything.
 import type { Design, SpaceTwin } from "@sajao/schemas";
+import { type EdgeKind, edgeKinds } from "./room-shape";
 
 type Shell = SpaceTwin["shell"];
 export type PlanShell = Pick<Shell, "floor_polygon" | "walls" | "openings">;
@@ -20,6 +21,8 @@ interface Metres {
 
 export interface DesignPlan {
   outline: Px[];
+  /** The outline edge by edge: a wall, or an open side with no wall along it. */
+  edges: { from: Px; to: Px; kind: EdgeKind }[];
   /**
    * Half-width in pixels of the soft band drawn round the outline: the widest
    * error band of a wall that is not tape-measured. 0 when every wall is.
@@ -77,11 +80,13 @@ const distance = (a: Metres, b: Metres) => Math.hypot(a.x_m - b.x_m, a.y_m - b.y
 
 /**
  * The narrowest gap between an item's footprint and the room's walls: the
- * two points it runs between and its width in metres.
+ * two points it runs between and its width in metres. Open edges are not
+ * walls: with `kinds` given, only the wall edges are measured against.
  */
 export function wallClearance(
   corners: readonly Metres[],
   polygon: readonly Metres[],
+  kinds?: readonly EdgeKind[],
 ): { from: Metres; to: Metres; metres: number } | null {
   let best: { from: Metres; to: Metres; metres: number } | null = null;
   const consider = (from: Metres, to: Metres) => {
@@ -89,6 +94,7 @@ export function wallClearance(
     if (!best || metres < best.metres) best = { from, to, metres };
   };
   for (let w = 0; w < polygon.length; w += 1) {
+    if (kinds && kinds[w] === "open") continue;
     const wallA = polygon[w] as Metres;
     const wallB = polygon[(w + 1) % polygon.length] as Metres;
     // A rectangle and a wall are closest at a corner of one or the other.
@@ -127,6 +133,12 @@ export function designPlan(
   });
 
   const outline = shell.floor_polygon.map(place);
+  const kinds = edgeKinds(shell);
+  const edges = outline.map((from, index) => ({
+    from,
+    to: outline[(index + 1) % outline.length] as Px,
+    kind: kinds[index] as EdgeKind,
+  }));
   const centre = {
     x: outline.reduce((sum, point) => sum + point.x, 0) / outline.length,
     y: outline.reduce((sum, point) => sum + point.y, 0) / outline.length,
@@ -178,7 +190,7 @@ export function designPlan(
 
   const clearances = placed
     .flatMap(({ item, corners }) => {
-      const gap = wallClearance(corners, shell.floor_polygon);
+      const gap = wallClearance(corners, shell.floor_polygon, kinds);
       return gap && gap.metres >= AGAINST_WALL_M
         ? [{ itemId: item.id, from: place(gap.from), to: place(gap.to), metres: gap.metres }]
         : [];
@@ -190,5 +202,5 @@ export function designPlan(
     .filter((wall) => wall.length.source !== "measured")
     .reduce((widest, wall) => Math.max(widest, wall.length.error_band_m), 0);
 
-  return { outline, haloPx: widestBand * scale, walls, openings, items, clearances, scale };
+  return { outline, edges, haloPx: widestBand * scale, walls, openings, items, clearances, scale };
 }

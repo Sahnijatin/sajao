@@ -97,6 +97,31 @@ export default function RootLayout() {
             gestureEnabled: false,
           }}
         />
+        {/* A scan of several areas: which one to redesign. */}
+        <Stack.Screen
+          name="areas"
+          options={{
+            headerShown: true,
+            headerShadowVisible: false,
+            headerBackButtonDisplayMode: "minimal",
+            headerStyle: { backgroundColor: colors.canvas },
+            headerTintColor: colors.ink,
+            title: t("nav.areas"),
+            animation: "fade",
+          }}
+        />
+        {/* Add a room from photos or a video already on the phone. */}
+        <Stack.Screen
+          name="import"
+          options={{
+            headerShown: true,
+            headerShadowVisible: false,
+            headerBackButtonDisplayMode: "minimal",
+            headerStyle: { backgroundColor: colors.canvas },
+            headerTintColor: colors.ink,
+            title: t("nav.import"),
+          }}
+        />
         {/* One room: a pushed screen with the platform's own header and back. */}
         <Stack.Screen
           name="room/[id]"

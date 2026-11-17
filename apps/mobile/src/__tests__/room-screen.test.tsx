@@ -19,10 +19,13 @@ const sample = roomContent("r") as RoomContent;
 /** The same content as it will arrive from the pipeline: not a sample. */
 const real: RoomContent = { ...sample, sample: false };
 
-const show = (content: RoomContent = sample) =>
+const show = (
+  content: RoomContent = sample,
+  props: Partial<React.ComponentProps<typeof RoomScreen>> = {},
+) =>
   render(
     <ThemeProvider tier="standard" reducedMotion>
-      <RoomScreen content={content} />
+      <RoomScreen content={content} {...props} />
     </ThemeProvider>,
   );
 const openTab = (name: string) => fireEvent.press(screen.getByRole("tab", { name }));
@@ -494,5 +497,86 @@ describe("shopping list: photos and per-item fit", () => {
       screen.getByRole("button", { name: "Buy Oak frame three seater sofa" }).props
         .accessibilityState.disabled,
     ).toBe(false);
+  });
+});
+
+describe("how far to trust the numbers", () => {
+  it("says a scanned room was measured by the scan", async () => {
+    await show(real);
+    expect(
+      within(screen.getByTestId("room-confidence")).getByText("Measured by your scan"),
+    ).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Measure to confirm" })).toBeNull();
+  });
+
+  it("says a taped room was checked with a tape", async () => {
+    await show({ ...real, confidence: "taped" });
+    expect(screen.getByText("Checked with a tape")).toBeTruthy();
+  });
+
+  it("an estimated room says so, offers to measure, and makes no fit claims", async () => {
+    const onMeasure = jest.fn();
+    await show({ ...real, confidence: "estimated" }, { onMeasure });
+    expect(screen.getByText("Estimated")).toBeTruthy();
+    await fireEvent.press(screen.getByRole("button", { name: "Measure to confirm" }));
+    expect(onMeasure).toHaveBeenCalledTimes(1);
+    await openTab("Shopping list");
+    expect(screen.getAllByText("Measure your room to confirm the fit").length).toBeGreaterThan(0);
+    expect(screen.queryByText(/^Fits|A tight fit|Does not fit/)).toBeNull();
+  });
+
+  it("says nothing when the level is not known", async () => {
+    await show({ ...real, confidence: null });
+    expect(screen.queryByTestId("room-confidence")).toBeNull();
+  });
+});
+
+describe("a scan of several areas", () => {
+  const living = {
+    id: "a1",
+    spaceType: "living_room" as const,
+    photo: null,
+    heroViews: real.heroViews,
+    measures: real.measures,
+    shell: real.shell,
+    confidence: "measured" as const,
+  };
+  const dining = {
+    ...living,
+    id: "a2",
+    spaceType: "other" as const,
+    heroViews: [],
+    measures: { ...real.measures!, areaM2: 9 },
+  };
+  const several: RoomContent = { ...real, areas: [living, dining] };
+
+  it("asks for a choice before any designs, and keeps every area's Room tab", async () => {
+    const onChooseArea = jest.fn();
+    await show(several, { onChooseArea });
+    expect(within(screen.getByTestId("room-areas")).getByText("Living room")).toBeTruthy();
+    expect(screen.getByText("About 14 m²")).toBeTruthy();
+    await fireEvent.press(within(screen.getByTestId("room-areas")).getByText("Something else"));
+    expect(screen.getByText("About 9 m²")).toBeTruthy();
+    await openTab("Designs");
+    expect(screen.getByTestId("areas-choose")).toBeTruthy();
+    expect(screen.queryByText("Best match")).toBeNull();
+    await fireEvent.press(screen.getByRole("button", { name: "Choose an area" }));
+    expect(onChooseArea).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows designs for the chosen area only, and says which", async () => {
+    await show(several, { redesignAreaId: "a1", onChooseArea: jest.fn() });
+    await openTab("Designs");
+    expect(screen.getByText("Designs for: Living room")).toBeTruthy();
+    expect(screen.getAllByText("Best match").length).toBeGreaterThan(0);
+    await openTab("Shopping list");
+    expect(screen.getByText("Designs for: Living room")).toBeTruthy();
+  });
+
+  it("a scan of one area shows no area picker", async () => {
+    await show({ ...real, areas: [living] });
+    expect(screen.queryByTestId("room-areas")).toBeNull();
+    await openTab("Designs");
+    expect(screen.queryByTestId("areas-chosen")).toBeNull();
   });
 });

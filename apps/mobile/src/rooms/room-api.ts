@@ -5,6 +5,7 @@
 import type { SpaceTwin } from "@sajao/schemas";
 import type { GenerationSource } from "./generation";
 import { measuresFromTwin } from "./measures";
+import { confidenceOf } from "./room-shape";
 import type { RoomContent } from "./room-content";
 import type { RoomJob } from "./room-job";
 
@@ -84,6 +85,9 @@ export function contentFromTwin(twin: SpaceTwin): RoomContent {
     measures: measuresFromTwin(twin),
     shell: twin.shell,
     direction: twin.direction ?? null,
+    // The level comes from the server or not at all; a twin split into areas is not served yet.
+    confidence: confidenceOf(twin),
+    areas: [],
   };
 }
 

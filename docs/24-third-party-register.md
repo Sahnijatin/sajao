@@ -59,6 +59,7 @@ Every model, library and dataset used to build, train or evaluate Sajao is liste
 | expo-font 58.0.12 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
 | expo-haptics 58.0.8 | Library (npm) | App and service code in apps/mobile, packages/ui | https://github.com/expo/expo | MIT | No | Existing |
 | expo-image-manipulator 58.0.16 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
+| expo-image-picker 58.0.10 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Add a room from photos or a video |
 | expo-linking 58.0.17 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
 | expo-localization 58.0.5 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
 | expo-router 58.0.31 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |

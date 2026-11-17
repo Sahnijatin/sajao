@@ -124,3 +124,48 @@ describe("the plan", () => {
     expect(empty.walls).toHaveLength(4);
   });
 });
+
+describe("a room that is not a closed box", () => {
+  const point = (x_m: number, y_m: number) => ({ x_m, y_m });
+  // An L-shaped open-plan room, 6 m by 5 m, open along its right-hand side.
+  const polygon = [point(0, 0), point(6, 0), point(6, 3), point(3, 3), point(3, 5), point(0, 5)];
+  const walls = polygon
+    .map((start, i) => {
+      const end = polygon[(i + 1) % polygon.length]!;
+      return {
+        id: `w${i}`,
+        start,
+        end,
+        length: {
+          value_m: Math.hypot(end.x_m - start.x_m, end.y_m - start.y_m),
+          source: "estimated" as const,
+          error_band_m: 0.05,
+        },
+      };
+    })
+    .filter((_, i) => i !== 1);
+  const open = { floor_polygon: polygon, walls, openings: [] } as unknown as typeof shell;
+
+  it("draws the floor polygon edge by edge, walls and open sides apart", () => {
+    const plan = designPlan(null, open, box);
+    expect(plan.outline).toHaveLength(6);
+    expect(plan.edges.map((edge) => edge.kind)).toEqual([
+      "wall",
+      "open",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+    ]);
+    // Only walls carry a length.
+    expect(plan.walls).toHaveLength(5);
+  });
+
+  it("measures clearance to walls, never to an open side", () => {
+    // 0.3 m from the open side at x = 6, 0.6 m from the wall along y = 0.
+    const item = at(sofa, 6 - 0.3 - 1.95 / 2, 0.6 + 0.85 / 2);
+    const plan = designPlan({ ...bestMatch, items: [item] } as Design, open, box);
+    expect(plan.clearances).toHaveLength(1);
+    expect(round(plan.clearances[0]!.metres)).toBe(0.6);
+  });
+});

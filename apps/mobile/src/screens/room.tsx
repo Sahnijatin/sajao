@@ -22,10 +22,14 @@ import { twinViewerEnabled } from "@/features";
 import { isApprox, leastCertain, wallName } from "@/rooms/measures";
 import {
   compassCalibrated,
+  contentForArea,
   designsOffered,
+  hasAreas,
+  redesignArea,
   type RoomContent,
   type RoomLook,
 } from "@/rooms/room-content";
+import { edgeKinds, fitClaimsAllowed } from "@/rooms/room-shape";
 import { RoomStillView } from "@/rooms/room-still";
 import { shoppingFor } from "@/rooms/shopping";
 import { useSettings } from "@/state/settings";
@@ -139,10 +143,13 @@ function RoomTabBody({
   units,
   show3d,
   look,
+  onMeasure,
 }: {
   content: RoomContent;
   units: LengthUnits;
   show3d: boolean;
+  /** "Measure to confirm", for a room whose sizes are estimates. */
+  onMeasure?: () => void;
   /** The look whose furniture the plan shows; none draws the room alone. */
   look: RoomLook | undefined;
 }) {
@@ -193,6 +200,22 @@ function RoomTabBody({
           />
         ))}
       </ScrollView>
+
+      {/* How far to trust the numbers below, in plain words. */}
+      {content.confidence ? (
+        <Card testID="room-confidence" style={{ gap: spacing.md }}>
+          <Text variant="bodyStrong">{t(`room.confidence.${content.confidence}.title`)}</Text>
+          <Text tone="secondary">{t(`room.confidence.${content.confidence}.body`)}</Text>
+          {content.confidence === "estimated" && onMeasure ? (
+            <Button
+              label={t("room.confidence.measure")}
+              variant="outline"
+              size="small"
+              onPress={onMeasure}
+            />
+          ) : null}
+        </Card>
+      ) : null}
 
       {measures ? (
         <>
@@ -308,6 +331,11 @@ function RoomTabBody({
           {content.shell.walls.some((wall) => wall.length.source !== "measured") ? (
             <Text variant="caption" tone="tertiary">
               {t("room.plan.softEdge")}
+            </Text>
+          ) : null}
+          {edgeKinds(content.shell).includes("open") ? (
+            <Text testID="room-plan-open" variant="caption" tone="tertiary">
+              {t("room.plan.openEdge")}
             </Text>
           ) : null}
         </Card>
@@ -438,6 +466,8 @@ function ShoppingTabBody({
   const { tokens } = useTheme();
   const { colors, spacing } = tokens;
   const shopping = shoppingFor(look.design);
+  // "This fits" is only said of a room that was taped or measured by the scan.
+  const fitClaims = fitClaimsAllowed(content.confidence);
   return (
     <>
       {content.sample ? <Sample text={t("shopping.sample")} /> : null}
@@ -485,9 +515,11 @@ function ShoppingTabBody({
               <Text variant="caption" tone="tertiary">
                 {!line.inStock
                   ? t("shopping.outOfStock")
-                  : line.fit === "fits" && line.spareM !== null
-                    ? t("shopping.fit.fitsWith", { spare: formatLength(line.spareM, units, t) })
-                    : t(`shopping.fit.${line.fit}`)}
+                  : !fitClaims
+                    ? t("shopping.fit.confirm")
+                    : line.fit === "fits" && line.spareM !== null
+                      ? t("shopping.fit.fitsWith", { spare: formatLength(line.spareM, units, t) })
+                      : t(`shopping.fit.${line.fit}`)}
               </Text>
             </View>
             {line.url ? (
@@ -497,7 +529,9 @@ function ShoppingTabBody({
                 size="small"
                 accessibilityLabel={t("shopping.buyItem", { item: line.title })}
                 // Sample products have example links; real ones open at the retailer.
-                disabled={content.sample || !line.inStock || line.fit === "does_not_fit"}
+                disabled={
+                  content.sample || !line.inStock || (fitClaims && line.fit === "does_not_fit")
+                }
                 onPress={() => void Linking.openURL(line.url as string)}
               />
             ) : null}
@@ -549,21 +583,43 @@ export function RoomWaiting() {
 export function RoomScreen({
   content,
   show3d = twinViewerEnabled(),
+  redesignAreaId = null,
+  onChooseArea,
+  onMeasure,
 }: {
   content: RoomContent;
   /** Show the place kept for the 3D view. Off unless its flag is on. */
   show3d?: boolean;
+  /** For a scan of several areas: the one chosen to redesign. */
+  redesignAreaId?: string | null;
+  /** Opens the choice of which area to redesign. */
+  onChooseArea?: () => void;
+  /** Opens measuring with a tape, for a room whose sizes are estimates. */
+  onMeasure?: () => void;
 }) {
   const { t } = useTranslation();
   const { tokens } = useTheme();
   const { colors, spacing } = tokens;
   const units = useSettings((state) => state.units);
   const [tab, setTab] = useState<RoomTab>("room");
+  // A scan of several areas: every area has its Room tab; one has designs.
+  const areas = hasAreas(content) ? content.areas : [];
+  const redesigned = redesignArea(content, redesignAreaId);
+  const [viewedId, setViewedId] = useState(redesigned?.id ?? areas[0]?.id ?? null);
+  const viewed = areas.find((area) => area.id === viewedId) ?? areas[0];
+  const roomView = viewed ? contentForArea(content, viewed, viewed.id === redesigned?.id) : content;
+  const designView = redesigned ? contentForArea(content, redesigned, true) : content;
+  const areaName = (area: (typeof areas)[number]) =>
+    t(`space.typeNames.${area.spaceType ?? "other"}`, {
+      defaultValue: t("areas.unnamed", { number: areas.indexOf(area) + 1 }),
+    });
+  // Until an area is chosen there is nothing to design.
+  const awaitingChoice = areas.length > 0 && !redesigned;
   // The chosen look is shared by Designs and Shopping list. Best match first.
   const [chosen, setChosen] = useState(Math.min(1, content.looks.length - 1));
-  const offered = designsOffered(content.spaceType);
-  const look = offered ? content.looks[chosen] : undefined;
-  const picker = <LookPicker looks={content.looks} selected={chosen} onSelect={setChosen} />;
+  const offered = designsOffered(designView.spaceType);
+  const look = offered && !awaitingChoice ? designView.looks[chosen] : undefined;
+  const picker = <LookPicker looks={designView.looks} selected={chosen} onSelect={setChosen} />;
 
   return (
     <ScrollView
@@ -580,22 +636,64 @@ export function RoomScreen({
         selected={tab}
         onSelect={setTab}
       />
-      {tab === "room" ? (
-        <RoomTabBody content={content} units={units} show3d={show3d} look={look} />
+      {tab === "room" && areas.length > 0 ? (
+        <View
+          testID="room-areas"
+          style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing.md }}
+        >
+          {areas.map((area) => (
+            <Chip
+              key={area.id}
+              label={areaName(area)}
+              selected={area.id === viewed?.id}
+              haptic="swapLands"
+              onPress={() => setViewedId(area.id)}
+            />
+          ))}
+        </View>
       ) : null}
-      {tab !== "room" && !offered ? (
+      {tab === "room" ? (
+        <RoomTabBody
+          content={roomView}
+          units={units}
+          show3d={show3d}
+          // The plan shows furniture only in the area being redesigned.
+          look={!viewed || viewed.id === redesigned?.id ? look : undefined}
+          onMeasure={onMeasure}
+        />
+      ) : null}
+      {tab !== "room" && awaitingChoice ? (
+        <Card testID="areas-choose" style={{ gap: spacing.lg }}>
+          <Text tone="secondary">{t("areas.chooseFirst", { count: areas.length })}</Text>
+          {onChooseArea ? <Button label={t("areas.chooseOne")} onPress={onChooseArea} /> : null}
+        </Card>
+      ) : null}
+      {tab !== "room" && redesigned ? (
+        <View
+          testID="areas-chosen"
+          style={{ flexDirection: "row", alignItems: "center", gap: spacing.lg }}
+        >
+          <Text tone="secondary" style={{ flex: 1 }}>
+            {t("areas.designsFor", { area: areaName(redesigned) })}
+          </Text>
+          {onChooseArea ? (
+            <Button label={t("areas.change")} variant="ghost" size="small" onPress={onChooseArea} />
+          ) : null}
+        </View>
+      ) : null}
+      {tab !== "room" && !awaitingChoice && !offered ? (
         // Any space can be scanned; designs are made for living rooms and bedrooms for now.
         <Card testID="designs-coming">
           <Text tone="secondary">{t("designs.comingForSpace")}</Text>
         </Card>
       ) : null}
       {tab === "designs" && look ? (
-        <DesignsTabBody content={content} look={look} picker={picker} />
+        <DesignsTabBody content={designView} look={look} picker={picker} />
       ) : null}
       {tab === "shopping" && look ? (
-        <ShoppingTabBody content={content} look={look} picker={picker} units={units} />
+        <ShoppingTabBody content={designView} look={look} picker={picker} units={units} />
       ) : null}
-      {tab !== "room" && offered && !look ? (
+      {tab !== "room" && !awaitingChoice && offered && !look ? (
         <Text tone="secondary">{t("rooms.designs.none")}</Text>
       ) : null}
     </ScrollView>

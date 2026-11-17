@@ -41,6 +41,17 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ...(config.plugins ?? []),
       ["expo-build-properties", { android: { buildArchs: variant.androidArchs } }],
       "./plugins/with-mediapipe-ios",
+      // "Use photos or a video" reads the photo library through the phone's
+      // own picker. It never opens the camera or the microphone.
+      [
+        "expo-image-picker",
+        {
+          photosPermission:
+            "Sajao uses the photos and videos you choose to make a room you can redesign.",
+          cameraPermission: false,
+          microphonePermission: false,
+        },
+      ],
     ],
   };
 };
