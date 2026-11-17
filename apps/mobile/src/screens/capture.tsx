@@ -192,11 +192,16 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
     depth: false,
   });
   const captureSensor = capture.onSensor;
+  // True while the review is open. The phone is being read, not pointed at
+  // the room, so nothing seen then may go into the package: keyframes are
+  // deleted, and detections and sensor readings are not recorded. The scan
+  // video is recorded by the native view and cannot be paused from here.
+  const reviewing = useRef(false);
   // Motion sensor readings go into the package's sensor log in every mode.
   const onImu = useCallback(
     (reading: RawMotion) => {
       const line = imuReading(reading);
-      if (line) captureSensor(line);
+      if (line && !reviewing.current) captureSensor(line);
     },
     [captureSensor],
   );
@@ -264,6 +269,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
   const instruction = scanInstruction({ pausedFor, hint, share, ready });
   // The review, while it is open, and the part to rescan just after it closes.
   const [review, setReview] = useState<ScanSummary | null>(null);
+  reviewing.current = review !== null;
   const [rescanFor, setRescanFor] = useState<MissingArea | null>(null);
   useEffect(() => {
     if (!rescanFor) return;
@@ -293,7 +299,8 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
   useEffect(() => {
     if (!shouldTick(step.current, share)) return;
     step.current = coverageStep(share);
-    void playHaptic("cornerCaptured");
+    // No ticks while the review is being read.
+    if (!reviewing.current) void playHaptic("cornerCaptured");
   }, [share]);
   const wasReady = useRef(false);
   useEffect(() => {
@@ -333,7 +340,13 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
         <ArView
           ref={capture.viewRef}
           captureId={capture.captureId}
-          onArKeyframe={({ nativeEvent }) => capture.onKeyframe(nativeEvent)}
+          onArKeyframe={({ nativeEvent }) => {
+            if (reviewing.current) {
+              void capture.viewRef.current?.discardKeyframes([nativeEvent.uri]);
+            } else {
+              capture.onKeyframe(nativeEvent);
+            }
+          }}
           style={StyleSheet.absoluteFill}
           active
           torch={torch}
@@ -349,6 +362,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
           }}
           onArPose={({ nativeEvent }) => {
             onArPose(nativeEvent);
+            if (reviewing.current) return;
             capture.onSensor({
               source: "ar_pose",
               x: nativeEvent.x,
@@ -369,6 +383,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
           onArDetections={({ nativeEvent }) => {
             const detections = nativeEvent.detections ?? [];
             // Every detection goes into the package; the server decides what it means.
+            if (reviewing.current) return;
             capture.onDetections(
               detections.map((detection) => ({
                 detectorClass: detection.detectorClass,

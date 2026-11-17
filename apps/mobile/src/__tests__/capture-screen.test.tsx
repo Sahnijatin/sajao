@@ -78,6 +78,14 @@ jest.mock("@/capture/ar/labels", () => ({
 // The AR view and the recorder are the capture module's too. `mockAr` turns
 // the AR scan on, so a finished scan produces a capture to hand on.
 let mockAr = false;
+// The props the screen gives the AR view, so a test can send its events.
+const mockArProps: { current: Record<string, unknown> } = { current: {} };
+const mockRecorder = {
+  onKeyframe: jest.fn(),
+  onSensor: jest.fn(),
+  onDetections: jest.fn(),
+  discardKeyframes: jest.fn(async () => {}),
+};
 const mockFinish = jest.fn(async () => ({ captureId: "capture-1", state: {}, files: [] }));
 jest.mock("../../modules/sajao-ar", () => {
   const { View } = jest.requireActual("react-native");
@@ -88,16 +96,22 @@ jest.mock("../../modules/sajao-ar", () => {
       lidar: false,
       depth: false,
     }),
-    getArView: () => (mockAr ? () => <View testID="ar-view" /> : null),
+    getArView: () =>
+      mockAr
+        ? (props: Record<string, unknown>) => {
+            mockArProps.current = props;
+            return <View testID="ar-view" />;
+          }
+        : null,
   };
 });
 jest.mock("@/capture/package/use-capture-recorder", () => ({
   useCaptureRecorder: () => ({
-    viewRef: { current: null },
+    viewRef: { current: { discardKeyframes: mockRecorder.discardKeyframes } },
     captureId: "capture-1",
-    onKeyframe: jest.fn(),
-    onSensor: jest.fn(),
-    onDetections: jest.fn(),
+    onKeyframe: mockRecorder.onKeyframe,
+    onSensor: mockRecorder.onSensor,
+    onDetections: mockRecorder.onDetections,
     finish: mockFinish,
   }),
 }));
@@ -269,6 +283,45 @@ describe("review before upload", () => {
     expect(
       screen.getByRole("button", { name: "Looks good" }).props.accessibilityState.disabled,
     ).toBe(true);
+  });
+
+  it("keeps what the camera sees during the review out of the package", async () => {
+    mockAr = true;
+    const send = (event: string, nativeEvent: object) =>
+      act(async () => {
+        (mockArProps.current[event] as (e: { nativeEvent: object }) => void)({ nativeEvent });
+      });
+    const keyframe = (uri: string) => send("onArKeyframe", { uri, sharpness: 1, depth: false });
+    const pose = () => send("onArPose", { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, tracking: "normal" });
+    const detections = () =>
+      send("onArDetections", { detections: [{ detectorClass: "couch", score: 0.9 }] });
+
+    mockScan.share = 0.8;
+    mockScan.ready = true;
+    await render(ui());
+    // During the scan everything is recorded.
+    await keyframe("file:///k1.jpg");
+    await pose();
+    await detections();
+    expect(mockRecorder.onKeyframe).toHaveBeenCalledTimes(1);
+    expect(mockRecorder.onSensor).toHaveBeenCalledTimes(1);
+    expect(mockRecorder.onDetections).toHaveBeenCalledTimes(1);
+
+    // With the review open, frames are deleted and nothing is recorded.
+    await fireEvent.press(screen.getByRole("button", { name: "Done" }));
+    await keyframe("file:///k2.jpg");
+    await pose();
+    await detections();
+    expect(mockRecorder.onKeyframe).toHaveBeenCalledTimes(1);
+    expect(mockRecorder.onSensor).toHaveBeenCalledTimes(1);
+    expect(mockRecorder.onDetections).toHaveBeenCalledTimes(1);
+    expect(mockRecorder.discardKeyframes).toHaveBeenCalledWith(["file:///k2.jpg"]);
+
+    // Back in the scan, recording carries on.
+    await fireEvent.press(screen.getByRole("button", { name: "Scan a bit more" }));
+    await keyframe("file:///k3.jpg");
+    expect(mockRecorder.onKeyframe).toHaveBeenCalledTimes(2);
+    expect(mockRecorder.discardKeyframes).toHaveBeenCalledTimes(1);
   });
 
   it("calls out what is missing and a rough size, in the chosen units", async () => {
