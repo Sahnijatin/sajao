@@ -1,6 +1,6 @@
 # UI
 
-The Sajao design system: LiveMap tokens, motion presets, the haptic map and core components. Every screen builds from this package. Source of truth: `docs/10-design-language-and-motion.md`.
+The Sajao design system: warm tokens on the LiveMap structure, motion presets, the haptic map and core components. Every screen builds from this package. Source of truth: `docs/10-design-language-and-motion.md`.
 
 ## What is here
 

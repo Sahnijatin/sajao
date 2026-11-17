@@ -1,21 +1,31 @@
-// LiveMap design tokens, from docs/10-design-language-and-motion.md.
-// The room is the hero, so the interface stays neutral: one accent, soft
-// shadows, frosted glass. Every screen reads its values from here.
+// Design tokens, from docs/10-design-language-and-motion.md. A warm
+// contemporary Indian home: ivory canvas, sand and wood neutrals, one
+// terracotta accent, soft shadows, frosted glass. The room is the hero, so
+// the interface stays calm. Every screen reads its values from here.
 import { Platform } from "react-native";
 
 export const colors = {
-  canvas: "#eef0f5",
-  surface: "#ffffff",
-  ink: "#1d1d1f",
-  inkSecondary: "#55595f",
-  inkTertiary: "#636873",
-  accent: "#0a7cff",
-  accentTint: "rgba(10, 124, 255, 0.10)",
+  /** Warm ivory, like a lime-washed wall in daylight. */
+  canvas: "#f6f1e8",
+  surface: "#fffdf9",
+  /** Warm near-black. */
+  ink: "#221e19",
+  inkSecondary: "#5a5249",
+  inkTertiary: "#6b6258",
+  /** Terracotta. White text on it passes 4.5:1. */
+  accent: "#ad4f27",
+  accentTint: "rgba(173, 79, 39, 0.10)",
   onAccent: "#ffffff",
+  /** Quiet fills: image placeholders, tracks, unselected segments. */
+  sand: "#e9dfd0",
+  /** Warm wood, for small marks and drawn stills. Never for text. */
+  wood: "#b08968",
+  /** Soft daylight, for the lit side of drawn stills and gentle highlights. */
+  daylight: "#fbf4e4",
   success: "#1fae55",
   danger: "#ff3b30",
   warning: "#ff8a00",
-  hairline: "rgba(29, 29, 31, 0.08)",
+  hairline: "rgba(34, 30, 25, 0.08)",
 } as const;
 
 export const glass = {
@@ -26,7 +36,7 @@ export const glass = {
     saturation: 1.8,
     /** Low tier: no live blur, so the tint carries the surface on its own. */
     fallbackFill: "rgba(255, 255, 255, 0.9)",
-    text: "#1d1d1f",
+    text: "#221e19",
   },
   /** Dark glass: for camera screens, where the picture behind is busy and bright. */
   dark: {
@@ -87,19 +97,19 @@ export const touchTarget = Platform.OS === "android" ? 48 : 44;
 // Three stacked soft shadows on standard devices; one on the low tier.
 export const shadows = {
   standard: {
-    card: "0 1px 2px rgba(29, 29, 31, 0.04), 0 4px 12px rgba(29, 29, 31, 0.06), 0 16px 32px rgba(29, 29, 31, 0.08)",
+    card: "0 1px 2px rgba(34, 30, 25, 0.04), 0 4px 12px rgba(34, 30, 25, 0.06), 0 16px 32px rgba(34, 30, 25, 0.08)",
     /** Upward shadow where a sheet meets the content behind it. */
-    sheet: "0 -16px 40px rgba(29, 29, 31, 0.12)",
+    sheet: "0 -16px 40px rgba(34, 30, 25, 0.12)",
     /** Glow under the accent call to action. */
-    accentGlow: "0 10px 24px rgba(10, 124, 255, 0.35)",
+    accentGlow: "0 10px 24px rgba(173, 79, 39, 0.30)",
     /** The selected segment in a segmented control. */
-    segment: "0 2px 8px rgba(29, 29, 31, 0.10)",
+    segment: "0 2px 8px rgba(34, 30, 25, 0.10)",
   },
   low: {
-    card: "0 2px 8px rgba(29, 29, 31, 0.08)",
-    sheet: "0 -4px 16px rgba(29, 29, 31, 0.10)",
+    card: "0 2px 8px rgba(34, 30, 25, 0.08)",
+    sheet: "0 -4px 16px rgba(34, 30, 25, 0.10)",
     accentGlow: "none",
-    segment: "0 1px 3px rgba(29, 29, 31, 0.10)",
+    segment: "0 1px 3px rgba(34, 30, 25, 0.10)",
   },
 } as const;
 
@@ -175,7 +185,6 @@ export const lightTokens = {
 
 export type Tokens = typeof lightTokens;
 
-// Dark theme is reserved: it becomes a second entry here with the LiveMap
-// dark values. Camera screens always use glass on camera, in either scheme.
+// Dark theme is reserved: it becomes a second entry here. Camera screens always use glass on camera, in either scheme.
 export const themes = { light: lightTokens } as const;
 export type ColorScheme = keyof typeof themes;
