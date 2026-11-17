@@ -233,7 +233,7 @@ order by position
 
 
 _CAPTURE_FOR_ROOM = """
-select c.capture
+select r.user_id::text, c.capture
 from public.rooms r
 join public.captures c on c.id = r.capture_id
 where r.id = %(room_id)s
@@ -369,13 +369,13 @@ class PostgresRoomStore:
             return None
         return await self._request(row)
 
-    async def capture_for_room(self, room_id: str) -> dict[str, Any] | None:
-        """The registered capture a room was made from, for the pipeline worker."""
+    async def capture_for_room(self, room_id: str) -> tuple[str, dict[str, Any]] | None:
+        """The room's owner and the capture it was made from, for the pipeline worker."""
         async with self._pool.connection() as connection:
             row = await (
                 await connection.execute(_CAPTURE_FOR_ROOM, {"room_id": room_id})
             ).fetchone()
-        return row[0] if row is not None else None
+        return (row[0], row[1]) if row is not None else None
 
     # What the pipeline worker does. Each is safe to repeat.
     async def set_stage(

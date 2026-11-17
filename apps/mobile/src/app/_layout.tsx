@@ -9,7 +9,7 @@ import { Stack } from "expo-router/stack";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform } from "react-native";
+import { AppState, Platform } from "react-native";
 import { ErrorScreen } from "@/components/error-screen";
 import { configResult } from "@/config";
 import i18n, { resolveLanguage } from "@/i18n";
@@ -51,6 +51,20 @@ export default function RootLayout() {
   useEffect(() => {
     void i18n.changeLanguage(resolveLanguage(language));
   }, [language]);
+
+  // A scan whose upload did not finish carries on by itself: when the app
+  // opens and each time it comes back to the front. No tap needed.
+  useEffect(() => {
+    const resume = () =>
+      void import("@/capture/package/start-upload")
+        .then((uploads) => uploads.resumePendingUpload())
+        .catch(() => undefined);
+    resume();
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") resume();
+    });
+    return () => subscription.remove();
+  }, []);
 
   const fatal = useSyncExternalStore(subscribeToFatalError, getFatalError, getFatalError);
   if (fatal) return <ErrorScreen error={fatal} onRetry={clearFatalError} />;

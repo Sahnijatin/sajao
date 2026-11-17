@@ -41,7 +41,7 @@ class Backend:
             self.captures,
             self.rooms,
             RecordingLauncher(),
-            self.clicks,
+            click_store=self.clicks,
         )
         transport = httpx.ASGITransport(app=app, raise_app_exceptions=False)
         return httpx.AsyncClient(transport=transport, base_url="http://api.test")

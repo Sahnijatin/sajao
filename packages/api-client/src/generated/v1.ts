@@ -98,7 +98,14 @@ export interface paths {
         get: operations["getMe"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete Me
+         * @description Erase the caller's account and everything stored for it. There is no undo.
+         *
+         *     The request is recorded and the erasure starts at once; it finishes within
+         *     minutes. Safe to repeat: a repeat starts the erasure again where it stopped.
+         */
+        delete: operations["deleteMe"];
         options?: never;
         head?: never;
         patch?: never;
@@ -256,6 +263,11 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AccountDeletion */
+        AccountDeletion: {
+            /** Status */
+            status: string;
+        };
         /** Ar */
         Ar: {
             /**
@@ -943,6 +955,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    deleteMe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountDeletion"];
                 };
             };
         };

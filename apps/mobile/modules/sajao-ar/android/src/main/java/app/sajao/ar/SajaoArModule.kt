@@ -37,6 +37,15 @@ class SajaoArModule : Module() {
       )
     }
 
+    // Holds the process while a scan uploads; see UploadService.
+    Function("startUploadService") { title: String, text: String ->
+      appContext.reactContext?.let { UploadService.start(it, title, text) }
+    }
+
+    Function("stopUploadService") {
+      appContext.reactContext?.let { UploadService.stop(it) }
+    }
+
     OnActivityEntersBackground {
       liveViews.mapNotNull { it.get() }.forEach { it.hostPaused() }
     }

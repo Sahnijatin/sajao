@@ -15,11 +15,13 @@
       "uploading": "Uploading your scan, {{finished}} of {{total}}",
       "starting": "Uploading your scan",
       "done": "Scan uploaded",
-      "doneNoVideo": "Scan uploaded without its video (the video was too large)",
+      "doneNoVideo": "Scan uploaded",
       "failed": "Upload paused. Nothing is lost",
       "retry": "Try again",
       "doneSize": "Scan uploaded ({{megabytes}} MB)",
-      "doneNoVideoSize": "Scan uploaded without its video, which was too large ({{megabytes}} MB)"
+      "doneNoVideoSize": "Scan uploaded ({{megabytes}} MB)",
+      "notificationTitle": "Uploading your scan",
+      "notificationText": "You can keep using your phone"
     },
     "room": {
       "measuring": "Measuring your room",
@@ -149,7 +151,7 @@
       "walkWalls": "Walk along the walls",
       "keepGoing": "Keep going round",
       "standMiddle": "Now stand in the middle and turn slowly",
-      "tiltDown": "Tilt down a little",
+      "tiltWall": "On each wall, tilt slowly up to the ceiling, then down to the floor",
       "oneMoreSpot": "One more spot, over there",
       "meterDone": "Done"
     },

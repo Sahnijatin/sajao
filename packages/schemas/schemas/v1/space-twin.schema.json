@@ -96,6 +96,10 @@
     },
     "free_floor": {
       "$ref": "#/$defs/FreeFloor"
+    },
+    "confidence": {
+      "$ref": "#/$defs/MeasurementConfidence",
+      "description": "How far the room's measurements can be trusted. Fit claims only at taped or ar_measured."
     }
   },
   "$defs": {
@@ -1019,6 +1023,28 @@
             "$ref": "common.schema.json#/$defs/LocalId"
           },
           "description": "Objects and built-ins whose footprints were taken out."
+        }
+      }
+    },
+    "MeasurementConfidence": {
+      "description": "How a room's lengths were measured. taped: a tape value the person entered checked or set them. ar_measured: the phone's AR (planes or LiDAR) measured them. estimated: a depth model guessed them from pictures, as for imported photos and videos; the app shows sizes with measure to confirm and makes no fit claim.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "basis"],
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["taped", "ar_measured", "estimated"]
+        },
+        "basis": {
+          "type": "string",
+          "enum": ["tape", "ar_planes", "lidar", "depth_model"],
+          "description": "Where the room's lengths came from."
+        },
+        "tape_values": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Tape values the person entered for this room."
         }
       }
     }
