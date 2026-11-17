@@ -1,19 +1,21 @@
-// One room, in exactly three tabs. Room: the room as it is, in its hero
-// views, with its size. Designs: the three looks, with a Vastu view that
+// One room, in exactly three tabs. Room: the room as it is, in hero photos
+// and measured dimensions (walls, openings, big items), with no 3D viewer. Designs: the three looks, with a Vastu view that
 // switches on only when the scan has a compass reading. Shopping list: the
 // chosen look's products, each with a price, a link and whether it fits.
 // The look and its list are two views of one `Design` and cannot disagree.
 import { Button, Card, Chip, Text, useTheme } from "@sajao/ui";
+import type { Dimension } from "@sajao/schemas";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Linking, ScrollView, Switch, useWindowDimensions, View } from "react-native";
 import { Segmented } from "@/components/segmented";
+import { twinViewerEnabled } from "@/features";
 import { compassCalibrated, type RoomContent, type RoomLook } from "@/rooms/room-content";
 import { RoomStillView } from "@/rooms/room-still";
 import { shoppingFor } from "@/rooms/shopping";
 import { useSettings } from "@/state/settings";
 import { formatInr } from "@/utils/format-inr";
-import { formatLength, type LengthUnits } from "@/utils/format-length";
+import { formatArea, formatLength, type LengthUnits } from "@/utils/format-length";
 
 export const ROOM_TABS = ["room", "designs", "shopping"] as const;
 export type RoomTab = (typeof ROOM_TABS)[number];
@@ -29,14 +31,61 @@ function Sample({ text }: { text: string }) {
   );
 }
 
-/** The room as it is: hero views to swipe through, its size, and the plan to come. */
-function RoomTabBody({ content, units }: { content: RoomContent; units: LengthUnits }) {
+/** One measured thing: what it is, its value, and where the value came from. */
+function Measure({ title, value, source }: { title: string; value: string; source: string }) {
+  const { tokens } = useTheme();
+  return (
+    <View style={{ gap: tokens.spacing.xxs }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "baseline",
+          gap: tokens.spacing.xl,
+        }}
+      >
+        <Text style={{ flexShrink: 1 }}>{title}</Text>
+        <Text variant="bodyStrong" selectable style={{ fontVariant: ["tabular-nums"] }}>
+          {value}
+        </Text>
+      </View>
+      {/* Every value says where it came from and how far off it may be. */}
+      <Text variant="caption" tone="tertiary">
+        {source}
+      </Text>
+    </View>
+  );
+}
+
+/**
+ * The room as it is, without a 3D viewer: hero photos to swipe through, then
+ * what was measured: the floor and ceiling, each wall, doors and windows, and
+ * the big things in the room. A place is kept for the 3D view behind its
+ * flag, and for the furnished plan.
+ */
+function RoomTabBody({
+  content,
+  units,
+  show3d,
+}: {
+  content: RoomContent;
+  units: LengthUnits;
+  show3d: boolean;
+}) {
   const { t } = useTranslation();
   const { tokens, tier } = useTheme();
   const { spacing, radius } = tokens;
   const { width } = useWindowDimensions();
   const cardWidth = Math.round((width - spacing.gutter * 2) * 0.86);
-  const size = content.dimensions;
+  const measures = content.measures;
+  // The source and error band of a value. Several dimensions of one thing
+  // (a door's width and height) share a line: the least certain one speaks.
+  const sourceOf = (...dimensions: Dimension[]) => {
+    const widest = dimensions.reduce((a, b) => (b.error_band_m > a.error_band_m ? b : a));
+    return t(`room.size.source.${widest.source}`, {
+      band: formatLength(widest.error_band_m, units, t),
+    });
+  };
   return (
     <>
       {/* Hero views only: fixed viewpoints to swipe between, no free movement. */}
@@ -65,36 +114,97 @@ function RoomTabBody({ content, units }: { content: RoomContent; units: LengthUn
         ))}
       </ScrollView>
 
-      <Card style={{ gap: spacing.xs }}>
-        <Text variant="captionStrong" tone="tertiary">
-          {t("room.size.title")}
-        </Text>
-        {size ? (
-          <>
+      {measures ? (
+        <>
+          <Card style={{ gap: spacing.xs }}>
+            <Text variant="captionStrong" tone="tertiary">
+              {t("room.size.title")}
+            </Text>
             <Text variant="figure" selectable>
-              {t("room.size.floor", {
-                long: formatLength(size.long.value_m, units, t),
-                short: formatLength(size.short.value_m, units, t),
-              })}
+              {t("room.size.area", { area: formatArea(measures.areaM2, units, t) })}
             </Text>
-            <Text tone="secondary" selectable>
-              {t("room.size.ceiling", { height: formatLength(size.ceiling.value_m, units, t) })}
+            <Measure
+              title={t("room.size.ceilingTitle")}
+              value={formatLength(measures.ceiling.value_m, units, t)}
+              source={sourceOf(measures.ceiling)}
+            />
+          </Card>
+
+          <Card testID="room-walls" style={{ gap: spacing.xl }}>
+            <Text variant="captionStrong" tone="tertiary">
+              {t("room.walls.title")}
             </Text>
-            {/* Every size says where it came from and how far off it may be. */}
-            <Text variant="caption" tone="tertiary">
-              {t(`room.size.source.${size.long.source}`, {
-                band: formatLength(
-                  Math.max(size.long.error_band_m, size.short.error_band_m),
-                  units,
-                  t,
-                ),
-              })}
-            </Text>
-          </>
-        ) : (
+            {measures.walls.map((wall) => (
+              <Measure
+                key={wall.id}
+                title={t("room.walls.wall", { number: wall.number })}
+                value={formatLength(wall.length.value_m, units, t)}
+                source={sourceOf(wall.length)}
+              />
+            ))}
+          </Card>
+
+          {measures.openings.length > 0 ? (
+            <Card testID="room-openings" style={{ gap: spacing.xl }}>
+              <Text variant="captionStrong" tone="tertiary">
+                {t("room.openings.title")}
+              </Text>
+              {measures.openings.map((opening) => (
+                <Measure
+                  key={opening.id}
+                  title={
+                    opening.wallNumber === null
+                      ? t(`room.openings.${opening.kind}`)
+                      : t(`room.openings.${opening.kind}OnWall`, { number: opening.wallNumber })
+                  }
+                  value={t("room.openings.size", {
+                    width: formatLength(opening.width.value_m, units, t),
+                    height: formatLength(opening.height.value_m, units, t),
+                  })}
+                  source={sourceOf(opening.width, opening.height)}
+                />
+              ))}
+            </Card>
+          ) : null}
+
+          {measures.bigItems.length > 0 ? (
+            <Card testID="room-items" style={{ gap: spacing.xl }}>
+              <Text variant="captionStrong" tone="tertiary">
+                {t("room.items.title")}
+              </Text>
+              {measures.bigItems.map((item) => (
+                <Measure
+                  key={item.id}
+                  title={item.label}
+                  value={t("room.items.size", {
+                    width: formatLength(item.width.value_m, units, t),
+                    depth: formatLength(item.depth.value_m, units, t),
+                    height: formatLength(item.height.value_m, units, t),
+                  })}
+                  source={sourceOf(item.width, item.depth, item.height)}
+                />
+              ))}
+            </Card>
+          ) : null}
+        </>
+      ) : (
+        <Card style={{ gap: spacing.xs }}>
+          <Text variant="captionStrong" tone="tertiary">
+            {t("room.size.title")}
+          </Text>
           <Text tone="secondary">{t("room.size.none")}</Text>
-        )}
-      </Card>
+        </Card>
+      )}
+
+      {/* A place for the 3D view. The app may launch without it, so it shows only with its flag. */}
+      {show3d ? (
+        <Card testID="room-3d-slot" style={{ gap: spacing.xs }}>
+          <Text variant="captionStrong" tone="tertiary">
+            {t("room.view3d.title")}
+          </Text>
+          <Text tone="secondary">{t("room.view3d.body")}</Text>
+        </Card>
+      ) : null}
 
       {/* The furnished floor plan goes here when it is built. */}
       <Card testID="room-plan-slot" style={{ gap: spacing.xs }}>
@@ -295,7 +405,14 @@ function ShoppingTabBody({
   );
 }
 
-export function RoomScreen({ content }: { content: RoomContent }) {
+export function RoomScreen({
+  content,
+  show3d = twinViewerEnabled(),
+}: {
+  content: RoomContent;
+  /** Show the place kept for the 3D view. Off unless its flag is on. */
+  show3d?: boolean;
+}) {
   const { t } = useTranslation();
   const { tokens } = useTheme();
   const { colors, spacing } = tokens;
@@ -321,7 +438,7 @@ export function RoomScreen({ content }: { content: RoomContent }) {
         selected={tab}
         onSelect={setTab}
       />
-      {tab === "room" ? <RoomTabBody content={content} units={units} /> : null}
+      {tab === "room" ? <RoomTabBody content={content} units={units} show3d={show3d} /> : null}
       {tab === "designs" && look ? (
         <DesignsTabBody content={content} look={look} picker={picker} />
       ) : null}

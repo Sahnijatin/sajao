@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ThemeProvider } from "@sajao/ui";
-import { act, fireEvent, render, screen } from "@testing-library/react-native";
+import { act, fireEvent, render, screen, within } from "@testing-library/react-native";
 import { Linking } from "react-native";
 import "@/i18n";
 import { type RoomContent, roomContent } from "@/rooms/room-content";
@@ -65,15 +65,47 @@ describe("room screen", () => {
 });
 
 describe("Room tab", () => {
-  it("shows the hero views, the size with its source and error band, and the plan slot", async () => {
+  it("is hero photos and measured dimensions, with no 3D view", async () => {
     await show();
     expect(screen.getByLabelText("Your room, view 1 of 3")).toBeTruthy();
     expect(screen.getByLabelText("Your room, view 3 of 3")).toBeTruthy();
-    expect(screen.getByText("410 cm by 340 cm")).toBeTruthy();
-    expect(screen.getByText("Ceiling 270 cm")).toBeTruthy();
-    expect(screen.getByText("Estimated from your scan, to within 5 cm")).toBeTruthy();
+    expect(screen.getByText("About 14 m²")).toBeTruthy();
+    expect(screen.getByText("290 cm")).toBeTruthy();
+    expect(screen.queryByTestId("room-3d-slot")).toBeNull();
+    expect(screen.queryByText(/3D/)).toBeNull();
     expect(screen.getByTestId("room-plan-slot")).toBeTruthy();
-    expect(screen.getByText(/^These are sample views and sizes\./)).toBeTruthy();
+    expect(screen.getByText(/^These are sample views and measurements\./)).toBeTruthy();
+  });
+
+  it("lists every wall with its length, source and error band", async () => {
+    await show();
+    const walls = within(screen.getByTestId("room-walls"));
+    for (const number of [1, 2, 3, 4]) expect(walls.getByText(`Wall ${number}`)).toBeTruthy();
+    expect(walls.getAllByText("420 cm")).toHaveLength(2);
+    expect(walls.getAllByText("340 cm")).toHaveLength(2);
+    expect(walls.getByText("Measured, to within 1 cm")).toBeTruthy();
+    expect(walls.getByText("Estimated, to within 15 cm")).toBeTruthy();
+    expect(walls.getByText("Confirmed by you, to within 12 cm")).toBeTruthy();
+  });
+
+  it("lists doors and windows with their wall and size", async () => {
+    await show();
+    const openings = within(screen.getByTestId("room-openings"));
+    expect(openings.getByText("Door on wall 4")).toBeTruthy();
+    expect(openings.getByText("90 cm wide, 205 cm high")).toBeTruthy();
+    expect(openings.getByText("Window on wall 1")).toBeTruthy();
+    expect(openings.getByText("150 cm wide, 120 cm high")).toBeTruthy();
+    // A door's width and height share a line: the wider band is the one shown.
+    expect(openings.getAllByText("Estimated, to within 5 cm")).toHaveLength(2);
+  });
+
+  it("lists the big items already in the room with their sizes", async () => {
+    await show();
+    const items = within(screen.getByTestId("room-items"));
+    expect(items.getByText("Grey three-seater sofa")).toBeTruthy();
+    expect(items.getByText("210 cm by 90 cm, 84 cm high")).toBeTruthy();
+    expect(items.getByText("Steel almirah")).toBeTruthy();
+    expect(items.getByText("90 cm by 50 cm, 190 cm high")).toBeTruthy();
   });
 
   it("shows sizes in feet and inches when that is the setting", async () => {
@@ -81,13 +113,36 @@ describe("Room tab", () => {
       useSettings.setState({ units: "ft_in" });
     });
     await show();
-    expect(screen.getByText("13 ft 5 in by 11 ft 2 in")).toBeTruthy();
+    expect(screen.getByText("About 154 sq ft")).toBeTruthy();
+    expect(within(screen.getByTestId("room-walls")).getAllByText("13 ft 9 in")).toHaveLength(2);
+  });
+
+  it("keeps a place for the 3D view only when its flag is on", async () => {
+    await render(
+      <ThemeProvider tier="standard" reducedMotion>
+        <RoomScreen content={sample} show3d />
+      </ThemeProvider>,
+    );
+    expect(screen.getByTestId("room-3d-slot")).toBeTruthy();
+    // The photos and measurements are still the tab.
+    expect(screen.getByTestId("room-walls")).toBeTruthy();
   });
 
   it("says so when the room has not been measured, and drops the sample note for a real room", async () => {
-    await show({ ...real, dimensions: null });
-    expect(screen.getByText("Your room's size appears here once it is measured.")).toBeTruthy();
+    await show({ ...real, measures: null });
+    expect(
+      screen.getByText("Your room's measurements appear here once it is measured."),
+    ).toBeTruthy();
+    expect(screen.queryByTestId("room-walls")).toBeNull();
     expect(screen.queryByText(/sample/i)).toBeNull();
+  });
+
+  it("leaves out the openings and items cards when the twin has none", async () => {
+    const measures = { ...sample.measures!, openings: [], bigItems: [] };
+    await show({ ...real, measures });
+    expect(screen.queryByTestId("room-openings")).toBeNull();
+    expect(screen.queryByTestId("room-items")).toBeNull();
+    expect(screen.getByTestId("room-walls")).toBeTruthy();
   });
 });
 

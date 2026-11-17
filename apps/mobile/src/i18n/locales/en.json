@@ -188,20 +188,40 @@
     },
     "size": {
       "title": "Size",
-      "floor": "{{long}} by {{short}}",
-      "ceiling": "Ceiling {{height}}",
-      "none": "Your room's size appears here once it is measured.",
+      "area": "About {{area}}",
+      "ceilingTitle": "Ceiling height",
+      "none": "Your room's measurements appear here once it is measured.",
       "source": {
-        "estimated": "Estimated from your scan, to within {{band}}",
+        "estimated": "Estimated, to within {{band}}",
         "measured": "Measured, to within {{band}}",
         "user_confirmed": "Confirmed by you, to within {{band}}"
       }
+    },
+    "walls": {
+      "title": "Walls",
+      "wall": "Wall {{number}}"
+    },
+    "openings": {
+      "title": "Doors and windows",
+      "door": "Door",
+      "window": "Window",
+      "doorOnWall": "Door on wall {{number}}",
+      "windowOnWall": "Window on wall {{number}}",
+      "size": "{{width}} wide, {{height}} high"
+    },
+    "items": {
+      "title": "Big items",
+      "size": "{{width}} by {{depth}}, {{height}} high"
+    },
+    "view3d": {
+      "title": "3D view",
+      "body": "A 3D view of your room will appear here."
     },
     "plan": {
       "title": "Floor plan",
       "body": "A plan of your room with the furniture in place will appear here."
     },
-    "sample": "These are sample views and sizes. Yours appear here when they are ready."
+    "sample": "These are sample views and measurements. Yours appear here when they are ready."
   },
   "designs": {
     "why": "Why this works",

@@ -10,13 +10,17 @@ The Sajao app: Expo with Expo Router, two native tabs, English and Hindi, and a 
 | `src/screens` | Screen bodies the route files render. |
 | `src/components` | Shared building blocks for screens. Design system components come from `@sajao/ui`. |
 | `src/capture` | Scan logic, all unit-tested: frame statistics, feature points, triangulation, mesh tracking, guardrails and the scan session. `scan-camera.tsx` is the only file that touches the camera library. |
-| `src/rooms` | Rooms on My home: the room model, card labels, the room card and the room still (a real image, or a drawn stand-in until one exists). Also what a room holds after the pipeline (`room-content.ts`: hero views and three looks, each a view of one `Design`), the generation stages, the sample content that stands in for both, and the shopping list as a view of a `Design` (`shopping.ts`). |
+| `src/rooms` | Rooms on My home: the room model, card labels, the room card and the room still (a real image, or a drawn stand-in until one exists). Also what a room holds after the pipeline (`room-content.ts`: hero views and three looks, each a view of one `Design`), the generation stages, the sample content that stands in for both, the shopping list as a view of a `Design` (`shopping.ts`), and the room's measured walls, openings and big items read from its `SpaceTwin` (`measures.ts`). |
 | `src/space` | Space Profile card logic: what was found, user edits, tape re-fit, plan geometry. |
 | `src/taste` | Taste onboarding: adaptive swipes, the card deck and the onboarding flow. |
 | `src/i18n` | String catalogs (`locales/en.json`, `locales/hi.json`) and language choice. |
 | `src/state` | On-device settings (language, units) and the rooms on My home, saved across launches. |
 | `src/uploads` | Photo resizing and resumable uploads through signed URLs. |
 | `src/utils` | Length and INR formatting. |
+
+## Flags
+
+`src/features.ts` holds features that are built towards but switched off. `EXPO_PUBLIC_TWIN_VIEWER=1` on an EAS environment shows the place kept for the 3D view on the Room tab; without it the tab is hero photos and measurements only.
 
 ## Rules for screens
 
