@@ -1256,10 +1256,16 @@ async def _objects(runner: Any, ledger: Any, frames: str, detectors: str = "") -
 
 
 async def _build_twin(
-    store: Any, runner: Any, ledger: Any, capture: dict[str, Any], manifest: dict[str, Any]
+    store: Any,
+    runner: Any,
+    ledger: Any,
+    capture: dict[str, Any],
+    manifest: dict[str, Any],
+    with_splat: bool = True,
 ) -> dict[str, Any]:
     """Inventory, objects, splat, phone splats and the twin, each a durable step (stored
-    results reused)."""
+    results reused). Without the splat the twin still has its shell, objects, inventory
+    and hero views: what the measured plan and the hero-photo redesign read."""
     import json
     import uuid
 
@@ -1271,14 +1277,22 @@ async def _build_twin(
 
     frames = store.put_blob(json.dumps(manifest).encode())
     inventory, objects = await _objects(runner, ledger, frames)
-    splat = await runner.run(
-        splat_step(
-            ModelGateway(splat_chain(volume_invoke("twin_splat", run_splat)), ledger=ledger)
-        ),
-        {"frames": frames, "objects": objects.outputs["objects"]},
-        {},
-    )
-    phone = await runner.run(phone_splat_step(_compress), {"splat": splat.outputs["splat"]}, {})
+    splat, phone = None, None
+    splat_inputs: dict[str, str] = {"phone": store.put_blob(json.dumps({"variants": {}}).encode())}
+    if with_splat:
+        splat = await runner.run(
+            splat_step(
+                ModelGateway(splat_chain(volume_invoke("twin_splat", run_splat)), ledger=ledger)
+            ),
+            {"frames": frames, "objects": objects.outputs["objects"]},
+            {},
+        )
+        phone = await runner.run(phone_splat_step(_compress), {"splat": splat.outputs["splat"]}, {})
+        splat_inputs = {
+            "splat": splat.outputs["splat"],
+            "phone": store.put_blob(json.dumps(dict(phone.meta)).encode()),
+            **phone.outputs,
+        }
     twin = await runner.run(
         assemble_step(),
         {
@@ -1288,9 +1302,7 @@ async def _build_twin(
             "openings": objects.outputs["openings"],
             "built_ins": objects.outputs["built_ins"],
             "inventory": objects.outputs["inventory"],
-            "splat": splat.outputs["splat"],
-            "phone": store.put_blob(json.dumps(dict(phone.meta)).encode()),
-            **phone.outputs,
+            **splat_inputs,
         },
         {
             "twin_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"twin/{capture['id']}")),
@@ -1484,7 +1496,7 @@ def _capture_file(root: Path, key: str) -> bytes:
     timeout=7200,
     secrets=VISION_SECRETS,
 )
-def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
+def golden_room_cpu(folder: str, sheet: dict[str, Any], with_splat: bool = True) -> dict[str, Any]:
     """An uploaded capture to its twin, and the twin's accuracy against the tape sheet."""
     import asyncio
     import json
@@ -1530,7 +1542,7 @@ def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
             )
             manifest = json.loads(store.read_blob(estimated.outputs["frames"]))
             depth_meta = dict(estimated.meta)
-        built = await _build_twin(store, runner, ledger, capture, manifest)
+        built = await _build_twin(store, runner, ledger, capture, manifest, with_splat)
         twin = json.loads(store.read_blob(built["twin"].outputs["twin"]))
         truth, to_space = None, None
         if (root / "ground_truth.json").is_file():  # an annotated dataset room
@@ -1549,7 +1561,11 @@ def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
         ar_measurements["keyframe_openings"] = openings_from_keyframes(ar_measurements, masks)
         ar = ar_report(ar_measurements, read_sheet(sheet))
         report = accuracy_report(twin, read_sheet(sheet), truth=truth, to_space=to_space)
-        charged = sum(built[k].cost_micro_inr for k in ("inventory", "objects", "splat", "phone"))
+        charged = sum(
+            built[k].cost_micro_inr
+            for k in ("inventory", "objects", "splat", "phone")
+            if built[k] is not None
+        )
         return {
             "twin": twin,
             "report": report,
@@ -1558,7 +1574,8 @@ def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
             "run": {
                 "depth": depth_meta,
                 "objects": dict(built["objects"].meta),
-                "splat": dict(built["splat"].meta),
+                "inventory": dict(built["inventory"].meta),
+                "splat": dict(built["splat"].meta) if built["splat"] is not None else None,
                 "twin": dict(built["twin"].meta),
                 "charged_micro_inr": charged,
             },
@@ -1688,7 +1705,7 @@ def golden_fixture(scene: str = "arkit_living_47331265", keyframes: int = 120) -
 
 
 @app.local_entrypoint()
-def golden_room(capture: str, tape: str, out: str = "") -> None:
+def golden_room(capture: str, tape: str, out: str = "", splat: bool = True) -> None:
     """One golden room: `--capture` is the uploaded capture folder (capture.json plus the
     files its storage keys name), `--tape` the measurement sheet (eval/golden). Writes the
     twin, the report as JSON and Markdown, and run details to `--out`."""
@@ -1704,7 +1721,8 @@ def golden_room(capture: str, tape: str, out: str = "") -> None:
         raise SystemExit(f"{capture} has no capture.json: pass the capture folder itself")
     with vol.batch_upload(force=True) as batch:
         batch.put_directory(capture, f"golden/{slug}")
-    result = golden_room_cpu.remote(slug, sheet)
+    # `--no-splat`: the shell, objects, inventory and AR measurements without the GPU splat.
+    result = golden_room_cpu.remote(slug, sheet, splat)
     target = Path(out or f"golden-runs/{slug}")
     target.mkdir(parents=True, exist_ok=True)
     (target / "twin.json").write_text(json.dumps(result["twin"], indent=1) + "\n")
