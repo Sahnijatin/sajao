@@ -9,30 +9,41 @@ describe("the scan's one instruction", () => {
     expect(scanInstruction({ ...base, share: 0.5 })).toEqual({ id: "corners", tone: "guide" });
   });
 
-  it("says when Done is ready, and when everything is covered", () => {
-    expect(scanInstruction({ ...base, share: 0.75, ready: true }).id).toBe("almost");
-    expect(
-      scanInstruction({ ...base, share: 0.8, ready: true, hint: { id: "coverMore" } }).id,
-    ).toBe("almost");
-    expect(scanInstruction({ ...base, share: 1, ready: true, hint: { id: "complete" } })).toEqual({
-      id: "complete",
+  it("says there is enough as soon as Done is ready, and when everything is covered", () => {
+    expect(scanInstruction({ ...base, share: 0.75, ready: true })).toEqual({
+      id: "enough",
       tone: "guide",
     });
+    expect(
+      scanInstruction({ ...base, share: 0.8, ready: true, hint: { id: "coverMore" } }).id,
+    ).toBe("enough");
+    // Nothing asks for more once there is enough.
+    for (const id of ["slowDown", "stepBack", "walk", "keepGoing", "oneMoreSpot"] as const) {
+      expect(scanInstruction({ ...base, share: 0.8, ready: true, hint: { id } }).id).toBe("enough");
+    }
+    for (const id of ["complete", "meterDone"] as const) {
+      expect(scanInstruction({ ...base, share: 1, ready: true, hint: { id } })).toEqual({
+        id: "complete",
+        tone: "guide",
+      });
+    }
   });
 
-  it("nudges only when the scan asks for it, and names the object to walk around", () => {
+  it("nudges only when the scan asks for it", () => {
     expect(scanInstruction({ ...base, hint: { id: "slowDown" } })).toEqual({
       id: "slowDown",
-      tone: "nudge",
-    });
-    expect(scanInstruction({ ...base, hint: { id: "walkAround", kind: "sofa" } })).toEqual({
-      id: "walkAround",
-      kind: "sofa",
       tone: "nudge",
     });
     for (const id of ["doorway", "stepBack", "walk"] as const) {
       expect(scanInstruction({ ...base, hint: { id } }).tone).toBe("nudge");
     }
+  });
+
+  it("never names an object to walk around: the steady guide carries on", () => {
+    const hint = { id: "walkAround", kind: "fridge" } as const;
+    expect(scanInstruction({ ...base, hint })).toEqual({ id: "move", tone: "guide" });
+    expect(scanInstruction({ ...base, share: 0.6, hint }).id).toBe("corners");
+    expect(scanInstruction({ ...base, share: 0.8, ready: true, hint }).id).toBe("enough");
   });
 
   it("puts a pause ahead of every hint", () => {

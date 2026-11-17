@@ -2,7 +2,7 @@
 // with a count, uploaded, paused with a retry, or saved on the phone when
 // this build has no server. Once the scan is up, a second line follows the
 // room being measured. Nothing shows before the first scan.
-import { Button, Card, Text } from "@sajao/ui";
+import { Button, Card, Text, useTheme } from "@sajao/ui";
 import { useTranslation } from "react-i18next";
 import { startCaptureUpload } from "@/capture/package/start-upload";
 import { roomMessage } from "@/rooms/room-job";
@@ -47,10 +47,16 @@ export function UploadStatus() {
   const last = useCaptureStore((store) => store.last);
   const device = useCaptureStore((store) => store.device);
   const room = useCaptureStore((store) => store.room);
+  const { tokens } = useTheme();
   const message = uploadMessage(upload);
   if (!message) return null;
   return (
-    <Card testID="upload-status" accessibilityRole="summary">
+    <Card
+      testID="upload-status"
+      accessibilityRole="summary"
+      // Room between the lines, and above the button when the upload is paused.
+      style={{ gap: tokens.spacing.lg }}
+    >
       <Text variant="bodySmall">{t(message.key, message.values ?? {})}</Text>
       {room ? (
         <Text testID="room-status" variant="bodySmall">

@@ -42,11 +42,26 @@ const PLAN_ASPECT = 0.85;
 /** Stills are portrait: three wide by four tall. */
 const STILL_ASPECT = 3 / 4;
 
+/**
+ * The sample label: the same strip at the top of every tab, so nothing
+ * below it can be read as your own room, looks or prices.
+ */
 function Sample({ text }: { text: string }) {
+  const { tokens } = useTheme();
+  const { colors, spacing, radius } = tokens;
   return (
-    <Text variant="caption" tone="tertiary">
-      {text}
-    </Text>
+    <View
+      testID="sample-note"
+      style={{
+        padding: spacing.lg,
+        borderRadius: radius.card,
+        backgroundColor: colors.sand,
+      }}
+    >
+      <Text variant="caption" tone="secondary">
+        {text}
+      </Text>
+    </View>
   );
 }
 
@@ -152,6 +167,7 @@ function RoomTabBody({
   };
   return (
     <>
+      {content.sample ? <Sample text={t("room.sample")} /> : null}
       {/* Hero views only: fixed viewpoints to swipe between, no free movement. */}
       <ScrollView
         horizontal
@@ -296,8 +312,6 @@ function RoomTabBody({
           ) : null}
         </Card>
       ) : null}
-
-      {content.sample ? <Sample text={t("room.sample")} /> : null}
     </>
   );
 }
@@ -345,6 +359,7 @@ function DesignsTabBody({
   const { design } = look;
   return (
     <>
+      {content.sample ? <Sample text={t("reveal.sample")} /> : null}
       {picker}
       <RoomStillView
         still={look.still}
@@ -404,8 +419,6 @@ function DesignsTabBody({
           </>
         ) : null}
       </Card>
-
-      {content.sample ? <Sample text={t("reveal.sample")} /> : null}
     </>
   );
 }
@@ -427,6 +440,7 @@ function ShoppingTabBody({
   const shopping = shoppingFor(look.design);
   return (
     <>
+      {content.sample ? <Sample text={t("shopping.sample")} /> : null}
       {picker}
       <Card style={{ padding: 0 }}>
         {shopping.lines.map((line, index) => (
@@ -509,8 +523,6 @@ function ShoppingTabBody({
           <Text tone="secondary">{t("shopping.checking")}</Text>
         )}
       </View>
-
-      {content.sample ? <Sample text={t("shopping.sample")} /> : null}
     </>
   );
 }

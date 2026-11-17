@@ -86,6 +86,13 @@ const RING_SIZE = 88;
 const RING_GAP = 8;
 const NO_LABELS: never[] = [];
 const pressEasing = cubicBezier(...motion.press.bezier);
+/** "You have enough": Done swells twice as it arrives, with the haptic. */
+const enoughPulse = {
+  from: { transform: [{ scale: 1 }] },
+  "50%": { transform: [{ scale: 1.12 }] },
+  to: { transform: [{ scale: 1 }] },
+};
+const ENOUGH_PULSE_MS = 600;
 
 /**
  * The scan's progress and its way out, in one control: a thin ring that
@@ -103,7 +110,7 @@ function DoneRing({
   onPress: () => void;
 }) {
   const { t } = useTranslation();
-  const { tokens, duration } = useTheme();
+  const { tokens, duration, reducedMotion } = useTheme();
   const [pressed, setPressed] = useState(false);
   const enabled = ready && !busy;
   const percent = Math.round(Math.min(1, Math.max(0, progress)) * 100);
@@ -133,31 +140,48 @@ function DoneRing({
     >
       <ScanRing progress={progress} ready={ready} size={RING_SIZE} />
       <Animated.View
-        style={{
-          width: RING_SIZE - RING_GAP * 2,
-          height: RING_SIZE - RING_GAP * 2,
-          borderRadius: tokens.radius.pill,
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: ready ? tokens.colors.surface : tokens.glass.dark.fill,
-          opacity: busy ? 0.4 : 1,
-          transform: [{ scale: pressed ? motion.press.scale : 1 }],
-          transitionProperty: "transform",
-          transitionDuration: duration(motion.press.durationMs),
-          transitionTimingFunction: pressEasing,
-        }}
+        testID={ready ? "scan-done-ready" : undefined}
+        style={[
+          // With reduced motion the colour change and the haptic carry the moment.
+          ready && !reducedMotion
+            ? {
+                animationName: enoughPulse,
+                animationDuration: ENOUGH_PULSE_MS,
+                animationIterationCount: 2,
+                animationTimingFunction: "ease-in-out",
+              }
+            : null,
+        ]}
       >
-        {ready ? (
-          <Animated.View
-            entering={
-              fade > 0
-                ? FadeIn.duration(fade).easing(Easing.bezier(...motion.ease.bezier))
-                : undefined
-            }
-          >
-            <Text variant="label">{t("capture.done")}</Text>
-          </Animated.View>
-        ) : null}
+        <Animated.View
+          style={{
+            width: RING_SIZE - RING_GAP * 2,
+            height: RING_SIZE - RING_GAP * 2,
+            borderRadius: tokens.radius.pill,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: ready ? tokens.colors.surface : tokens.glass.dark.fill,
+            opacity: busy ? 0.4 : 1,
+            transform: [{ scale: pressed ? motion.press.scale : 1 }],
+            transitionProperty: "transform",
+            transitionDuration: duration(motion.press.durationMs),
+            transitionTimingFunction: pressEasing,
+          }}
+        >
+          {ready ? (
+            <Animated.View
+              entering={
+                fade > 0
+                  ? FadeIn.duration(fade).easing(Easing.bezier(...motion.ease.bezier))
+                  : undefined
+              }
+            >
+              <Text variant="label" style={{ color: tokens.colors.accent }}>
+                {t("capture.done")}
+              </Text>
+            </Animated.View>
+          ) : null}
+        </Animated.View>
       </Animated.View>
     </Pressable>
   );
@@ -298,16 +322,10 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
   }, [review, setReviewOpen]);
   // A pause to fix something always comes first.
   const pointAt = instruction.tone === "fix" ? null : rescanFor;
-  const instructionId = pointAt
-    ? `rescan:${pointAt}`
-    : `${instruction.id}:${instruction.kind ?? ""}`;
+  const instructionId = pointAt ? `rescan:${pointAt}` : instruction.id;
   const instructionText = pointAt
     ? t(`capture.rescan.${pointAt}`)
-    : instruction.id === "walkAround" && instruction.kind
-      ? t("capture.guide.walkAround", {
-          object: t(`capture.labels.${instruction.kind}`).toLowerCase(),
-        })
-      : t(`capture.guide.${instruction.id}`);
+    : t(`capture.guide.${instruction.id}`);
 
   // A light tick each time coverage passes another tenth, and one more when
   // Done becomes ready. The ring shows the same thing: haptics never stand alone.

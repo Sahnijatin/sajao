@@ -57,6 +57,8 @@ export function HomeScreen() {
     return (
       <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: colors.canvas }}>
         <ScrollView
+          // The tab bar sits over the page on iOS: the list ends above it.
+          contentInsetAdjustmentBehavior="automatic"
           contentContainerStyle={{
             flexGrow: 1,
             padding: spacing.gutter,
@@ -91,6 +93,8 @@ export function HomeScreen() {
   return (
     <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: colors.canvas }}>
       <ScrollView
+        // The tab bar sits over the page on iOS: the last card ends above it.
+        contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{
           padding: spacing.gutter,
           paddingBottom: spacing.sheetBottom,
