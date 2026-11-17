@@ -1,9 +1,11 @@
 // The state of the last scan's upload, shown on the home screen: uploading
 // with a count, uploaded, paused with a retry, or saved on the phone when
-// this build has no server. Nothing shows before the first scan.
+// this build has no server. Once the scan is up, a second line follows the
+// room being measured. Nothing shows before the first scan.
 import { Button, Card, Text } from "@sajao/ui";
 import { useTranslation } from "react-i18next";
 import { startCaptureUpload } from "@/capture/package/start-upload";
+import { roomMessage } from "@/rooms/room-job";
 import { type UploadStatus, useCaptureStore } from "@/state/capture";
 
 /** The message key and its values for an upload state; null when there is nothing to show. */
@@ -44,11 +46,17 @@ export function UploadStatus() {
   const upload = useCaptureStore((store) => store.upload);
   const last = useCaptureStore((store) => store.last);
   const device = useCaptureStore((store) => store.device);
+  const room = useCaptureStore((store) => store.room);
   const message = uploadMessage(upload);
   if (!message) return null;
   return (
     <Card testID="upload-status" accessibilityRole="summary">
       <Text variant="bodySmall">{t(message.key, message.values ?? {})}</Text>
+      {room ? (
+        <Text testID="room-status" variant="bodySmall">
+          {t(roomMessage(room))}
+        </Text>
+      ) : null}
       {upload.state === "failed" && last && device ? (
         <Button
           label={t("home.upload.retry")}
