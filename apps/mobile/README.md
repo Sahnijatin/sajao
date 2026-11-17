@@ -1,12 +1,12 @@
 # Mobile app
 
-The Sajao app: Expo with Expo Router, three native tabs, English and Hindi, and a units setting. It opens on My home as a guest; there is no sign-in gate and no paywall, lock or upgrade prompt anywhere.
+The Sajao app: Expo with Expo Router, two native tabs, English and Hindi, and a units setting. It opens on My home as a guest; there is no sign-in gate and no paywall, lock or upgrade prompt anywhere.
 
 ## Layout
 
 | Path | What lives there |
 | --- | --- |
-| `src/app` | Routes only. `(tabs)` holds Home (My home), Vastu and Profile; `gallery` is the dev-only component gallery. |
+| `src/app` | Routes only. `(tabs)` holds Home (My home) and Profile; `gallery` is the dev-only component gallery. |
 | `src/screens` | Screen bodies the route files render. |
 | `src/components` | Shared building blocks for screens. Design system components come from `@sajao/ui`. |
 | `src/capture` | Scan logic, all unit-tested: frame statistics, feature points, triangulation, mesh tracking, guardrails and the scan session. `scan-camera.tsx` is the only file that touches the camera library. |

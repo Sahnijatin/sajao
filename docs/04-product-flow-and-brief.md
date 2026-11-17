@@ -27,7 +27,7 @@ Every stage of the journey is one schema object, so the stages cannot drift apar
 10. **Plan.** Dimensioned 2D plan; drag and rotate re-run the verifier live with haptic snaps.
 11. **Shopping list.** Total, breakdown by category, cheaper alternative and rent option per item, grouped by retailer, buy links through our redirect.
 12. **Share.** Before and after reel, 9:16, with a link that opens the design in the app, or the landing page for people without it (a web viewer comes after launch).
-13. **Vastu tab.** Direction, room scorecard, guidance; deeper help later.
+13. **Vastu.** No tab of its own. Vastu lives as the Vastu view on each room's Designs tab: direction, room scorecard and guidance for that room, on only with a compass reading; deeper help later.
 14. **Saved designs and history.** Reached from each room on My home.
 
 ## The brief

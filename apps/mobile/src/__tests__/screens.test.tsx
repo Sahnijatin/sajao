@@ -5,7 +5,6 @@ import type { ReactElement } from "react";
 import i18n from "@/i18n";
 import { HomeScreen } from "@/screens/home";
 import { ProfileScreen } from "@/screens/profile";
-import { VastuScreen } from "@/screens/vastu";
 import { useCaptureStore } from "@/state/capture";
 import { useRooms } from "@/state/rooms";
 import { useSettings } from "@/state/settings";
@@ -139,13 +138,6 @@ describe("My home", () => {
     });
     await show(<HomeScreen />);
     expect(screen.getByRole("button", { name: "कमरा जोड़ें" })).toBeTruthy();
-  });
-});
-
-describe("tab screens", () => {
-  it("Vastu carries the guidance label", async () => {
-    await show(<VastuScreen />);
-    expect(screen.getByText(/^Vastu guidance, as close as possible\./)).toBeTruthy();
   });
 });
 

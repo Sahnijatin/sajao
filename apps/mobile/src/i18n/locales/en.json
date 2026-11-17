@@ -1,7 +1,6 @@
 {
   "tabs": {
     "home": "Home",
-    "vastu": "Vastu",
     "profile": "Profile"
   },
   "home": {
@@ -363,9 +362,7 @@
     }
   },
   "vastu": {
-    "title": "Vastu",
-    "label": "Vastu guidance, as close as possible. For a full consultation, speak to an expert.",
-    "body": "Scan a room to see its direction and a room scorecard."
+    "label": "Vastu guidance, as close as possible. For a full consultation, speak to an expert."
   },
   "profile": {
     "title": "Profile",

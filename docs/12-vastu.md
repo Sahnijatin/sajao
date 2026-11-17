@@ -1,6 +1,6 @@
 # Vastu
 
-Vastu gets its own tab, and a Vastu view on each room's Designs tab that switches on only when the scan has a compass reading: basic room-level guidance at launch, labelled honestly, and a path to deeper help later. An expert consultant reviews the rules behind the scenes and is not named in the product.
+Vastu has no tab of its own. It lives as a Vastu view on each room's Designs tab, a toggle that switches on only when the scan has a compass reading: basic room-level guidance at launch, labelled honestly, and a path to deeper help later. An expert consultant reviews the rules behind the scenes and is not named in the product.
 
 ## Stages
 
@@ -23,4 +23,4 @@ Rules are hand-authored, versioned in the repo, reviewed by the consultant, and 
 
 ## Label
 
-Every Vastu screen carries: "Vastu guidance, as close as possible. For a full consultation, speak to an expert."
+Every Vastu view carries: "Vastu guidance, as close as possible. For a full consultation, speak to an expert."
