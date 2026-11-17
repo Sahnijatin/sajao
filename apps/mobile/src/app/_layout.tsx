@@ -70,7 +70,15 @@ export default function RootLayout() {
           name="capture"
           options={{ title: t("nav.capture"), presentation: "fullScreenModal" }}
         />
-        {/* After a scan: the stages, then the reveal. Neither can be swiped away half way. */}
+        {/* After a scan: what we found, taste the first time, the stages, then the reveal. */}
+        <Stack.Screen
+          name="space"
+          options={{ title: t("nav.space"), presentation: "fullScreenModal", animation: "fade" }}
+        />
+        <Stack.Screen
+          name="taste"
+          options={{ title: t("nav.taste"), presentation: "fullScreenModal", animation: "fade" }}
+        />
         <Stack.Screen
           name="generating"
           options={{

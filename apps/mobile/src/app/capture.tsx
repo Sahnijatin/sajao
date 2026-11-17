@@ -1,8 +1,13 @@
 import { useRouter } from "expo-router";
 import { useRef } from "react";
 import { startCaptureUpload } from "@/capture/package/start-upload";
+import { afterReview } from "@/rooms/flow";
+import { roomSpaceProfile } from "@/rooms/room-space";
 import { CaptureScreen } from "@/screens/capture";
 import { useRooms } from "@/state/rooms";
+import { useTaste } from "@/state/taste";
+
+const ROUTES = { space: "/space", taste: "/taste", generating: "/generating" } as const;
 
 export default function CaptureRoute() {
   const router = useRouter();
@@ -13,9 +18,14 @@ export default function CaptureRoute() {
     <CaptureScreen
       onClose={() => router.back()}
       onDone={() => {
-        // A confirmed scan goes on to its designs; anything else returns to My home.
+        // A confirmed scan goes on: what we found, then taste the first time,
+        // then its designs. Anything else returns to My home.
         if (roomId.current) {
-          router.replace({ pathname: "/generating", params: { room: roomId.current } });
+          const step = afterReview({
+            hasSpaceProfile: roomSpaceProfile(roomId.current) !== null,
+            hasTaste: useTaste.getState().answers !== null,
+          });
+          router.replace({ pathname: ROUTES[step], params: { room: roomId.current } });
         } else {
           router.back();
         }

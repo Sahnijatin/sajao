@@ -7,6 +7,8 @@ import { Screen } from "@/components/screen";
 import { LANGUAGES, resolveLanguage } from "@/i18n";
 import { previewScreensEnabled } from "@/preview-screens";
 import { useSettings } from "@/state/settings";
+import { useTaste } from "@/state/taste";
+import { formatInr } from "@/utils/format-inr";
 import { formatLength } from "@/utils/format-length";
 
 function Setting({ title, children }: { title: string; children: ReactNode }) {
@@ -24,14 +26,38 @@ function Setting({ title, children }: { title: string; children: ReactNode }) {
 export function ProfileScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { tokens } = useTheme();
   const { language, units, setLanguage, setUnits } = useSettings();
   const activeLanguage = resolveLanguage(language);
+  const taste = useTaste((state) => state.answers);
 
   return (
     <Screen title={t("profile.title")}>
       <Card>
         <Text variant="label">{t("profile.guestTitle")}</Text>
         <Text tone="secondary">{t("profile.guestBody")}</Text>
+      </Card>
+
+      {/* Taste and budget are asked once, before the first room's designs, and changed here. */}
+      <Card style={{ gap: tokens.spacing.xl }}>
+        <Text variant="label">{t("profile.tasteTitle")}</Text>
+        {taste ? (
+          <>
+            <Text tone="secondary">
+              {taste.traits.map((trait) => t(`taste.traits.${trait}`)).join(" · ")}
+            </Text>
+            <Text tone="secondary" selectable>
+              {t("profile.tasteBudget", { amount: formatInr(taste.budget.limit.amount_minor) })}
+            </Text>
+          </>
+        ) : (
+          <Text tone="secondary">{t("profile.tasteNone")}</Text>
+        )}
+        <Button
+          label={t(taste ? "profile.tasteChange" : "profile.tasteStart")}
+          variant="outline"
+          onPress={() => router.push("/taste")}
+        />
       </Card>
 
       <Setting title={t("profile.language")}>
