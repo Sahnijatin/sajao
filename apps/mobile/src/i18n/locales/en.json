@@ -199,14 +199,14 @@
     },
     "walls": {
       "title": "Walls",
-      "wall": "Wall {{number}}"
+      "wall": "Wall {{name}}"
     },
     "openings": {
       "title": "Doors and windows",
       "door": "Door",
       "window": "Window",
-      "doorOnWall": "Door on wall {{number}}",
-      "windowOnWall": "Window on wall {{number}}",
+      "doorOnWall": "Door on wall {{name}}",
+      "windowOnWall": "Window on wall {{name}}",
       "size": "{{width}} wide, {{height}} high"
     },
     "items": {
@@ -221,7 +221,9 @@
       "title": "Floor plan",
       "body": "A plan of your room with the furniture in place will appear here."
     },
-    "sample": "These are sample views and measurements. Yours appear here when they are ready."
+    "sample": "These are sample views and measurements. Yours appear here when they are ready.",
+    "approx": "approx.",
+    "measureHint": "Shows where this measurement came from"
   },
   "designs": {
     "why": "Why this works",

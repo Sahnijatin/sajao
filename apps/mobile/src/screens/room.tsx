@@ -7,9 +7,10 @@ import { Button, Card, Chip, Text, useTheme } from "@sajao/ui";
 import type { Dimension } from "@sajao/schemas";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Linking, ScrollView, Switch, useWindowDimensions, View } from "react-native";
+import { Linking, Pressable, ScrollView, Switch, useWindowDimensions, View } from "react-native";
 import { Segmented } from "@/components/segmented";
 import { twinViewerEnabled } from "@/features";
+import { isApprox, leastCertain, wallName } from "@/rooms/measures";
 import { compassCalibrated, type RoomContent, type RoomLook } from "@/rooms/room-content";
 import { RoomStillView } from "@/rooms/room-still";
 import { shoppingFor } from "@/rooms/shopping";
@@ -31,11 +32,40 @@ function Sample({ text }: { text: string }) {
   );
 }
 
-/** One measured thing: what it is, its value, and where the value came from. */
-function Measure({ title, value, source }: { title: string; value: string; source: string }) {
+/** Where a value came from and how far off it may be, shown when its line is tapped. */
+interface Provenance {
+  text: string;
+  /** The band is wide enough to say "approx." beside the value. */
+  approx: boolean;
+}
+
+/**
+ * One measured thing: what it is and its value, clean. A wide error band
+ * adds a small "approx." beside the value. Tapping the line shows where the
+ * value came from and its error band; tapping again hides it.
+ */
+function Measure({
+  title,
+  value,
+  provenance,
+}: {
+  title: string;
+  value: string;
+  provenance: Provenance;
+}) {
+  const { t } = useTranslation();
   const { tokens } = useTheme();
+  const [open, setOpen] = useState(false);
   return (
-    <View style={{ gap: tokens.spacing.xxs }}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${title}, ${provenance.approx ? `${t("room.approx")} ` : ""}${value}`}
+      accessibilityHint={t("room.measureHint")}
+      accessibilityState={{ expanded: open }}
+      hitSlop={tokens.spacing.sm}
+      onPress={() => setOpen((shown) => !shown)}
+      style={{ gap: tokens.spacing.xxs }}
+    >
       <View
         style={{
           flexDirection: "row",
@@ -45,15 +75,23 @@ function Measure({ title, value, source }: { title: string; value: string; sourc
         }}
       >
         <Text style={{ flexShrink: 1 }}>{title}</Text>
-        <Text variant="bodyStrong" selectable style={{ fontVariant: ["tabular-nums"] }}>
-          {value}
-        </Text>
+        <View style={{ flexDirection: "row", alignItems: "baseline", gap: tokens.spacing.sm }}>
+          {provenance.approx ? (
+            <Text variant="caption" tone="tertiary">
+              {t("room.approx")}
+            </Text>
+          ) : null}
+          <Text variant="bodyStrong" style={{ fontVariant: ["tabular-nums"] }}>
+            {value}
+          </Text>
+        </View>
       </View>
-      {/* Every value says where it came from and how far off it may be. */}
-      <Text variant="caption" tone="tertiary">
-        {source}
-      </Text>
-    </View>
+      {open ? (
+        <Text variant="caption" tone="tertiary" testID="measure-provenance">
+          {provenance.text}
+        </Text>
+      ) : null}
+    </Pressable>
   );
 }
 
@@ -80,11 +118,14 @@ function RoomTabBody({
   const measures = content.measures;
   // The source and error band of a value. Several dimensions of one thing
   // (a door's width and height) share a line: the least certain one speaks.
-  const sourceOf = (...dimensions: Dimension[]) => {
-    const widest = dimensions.reduce((a, b) => (b.error_band_m > a.error_band_m ? b : a));
-    return t(`room.size.source.${widest.source}`, {
-      band: formatLength(widest.error_band_m, units, t),
-    });
+  const sourceOf = (...dimensions: [Dimension, ...Dimension[]]): Provenance => {
+    const widest = leastCertain(...dimensions);
+    return {
+      text: t(`room.size.source.${widest.source}`, {
+        band: formatLength(widest.error_band_m, units, t),
+      }),
+      approx: isApprox(widest),
+    };
   };
   return (
     <>
@@ -126,7 +167,7 @@ function RoomTabBody({
             <Measure
               title={t("room.size.ceilingTitle")}
               value={formatLength(measures.ceiling.value_m, units, t)}
-              source={sourceOf(measures.ceiling)}
+              provenance={sourceOf(measures.ceiling)}
             />
           </Card>
 
@@ -137,9 +178,9 @@ function RoomTabBody({
             {measures.walls.map((wall) => (
               <Measure
                 key={wall.id}
-                title={t("room.walls.wall", { number: wall.number })}
+                title={t("room.walls.wall", { name: wallName(wall.number) })}
                 value={formatLength(wall.length.value_m, units, t)}
-                source={sourceOf(wall.length)}
+                provenance={sourceOf(wall.length)}
               />
             ))}
           </Card>
@@ -155,13 +196,15 @@ function RoomTabBody({
                   title={
                     opening.wallNumber === null
                       ? t(`room.openings.${opening.kind}`)
-                      : t(`room.openings.${opening.kind}OnWall`, { number: opening.wallNumber })
+                      : t(`room.openings.${opening.kind}OnWall`, {
+                          name: wallName(opening.wallNumber),
+                        })
                   }
                   value={t("room.openings.size", {
                     width: formatLength(opening.width.value_m, units, t),
                     height: formatLength(opening.height.value_m, units, t),
                   })}
-                  source={sourceOf(opening.width, opening.height)}
+                  provenance={sourceOf(opening.width, opening.height)}
                 />
               ))}
             </Card>
@@ -181,7 +224,7 @@ function RoomTabBody({
                     depth: formatLength(item.depth.value_m, units, t),
                     height: formatLength(item.height.value_m, units, t),
                   })}
-                  source={sourceOf(item.width, item.depth, item.height)}
+                  provenance={sourceOf(item.width, item.depth, item.height)}
                 />
               ))}
             </Card>

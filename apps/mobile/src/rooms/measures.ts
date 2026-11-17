@@ -81,3 +81,21 @@ export function measuresFromTwin(twin: SpaceTwin): RoomMeasures {
       .slice(0, MAX_BIG_ITEMS),
   };
 }
+
+/** Walls are named by letter, going round the room: A, B, C. Past Z they are numbered. */
+export function wallName(number: number): string {
+  return number >= 1 && number <= 26 ? String.fromCharCode(64 + number) : String(number);
+}
+
+/** A value whose error band is wider than this is marked "approx." where it shows. */
+export const APPROX_ABOVE_M = 0.05;
+
+/** Of the dimensions on one line (a door's width and height), the one with the widest band. */
+export function leastCertain(...dimensions: [Dimension, ...Dimension[]]): Dimension {
+  return dimensions.reduce((a, b) => (b.error_band_m > a.error_band_m ? b : a));
+}
+
+export function isApprox(dimension: Dimension): boolean {
+  // A small allowance, so a band of exactly 5 cm stored as 0.05000001 is not marked.
+  return dimension.error_band_m > APPROX_ABOVE_M + 1e-6;
+}

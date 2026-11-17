@@ -1,6 +1,13 @@
 import type { SpaceTwin } from "@sajao/schemas";
 import fixture from "../../../../packages/schemas/fixtures/v1/valid/space-twin.json";
-import { BIG_ITEM_FROM_M, MAX_BIG_ITEMS, measuresFromTwin } from "./measures";
+import {
+  BIG_ITEM_FROM_M,
+  isApprox,
+  leastCertain,
+  MAX_BIG_ITEMS,
+  measuresFromTwin,
+  wallName,
+} from "./measures";
 
 const twin = fixture as unknown as SpaceTwin;
 const dimension = (value_m: number) => ({
@@ -80,5 +87,26 @@ describe("room measures from the twin", () => {
     expect(
       measuresFromTwin({ ...twin, objects: [small, tall] } as SpaceTwin).bigItems.map((i) => i.id),
     ).toEqual(["lamp"]);
+  });
+});
+
+describe("how a measure shows", () => {
+  it("names walls by letter, then by number past Z", () => {
+    expect([1, 2, 4, 26].map(wallName)).toEqual(["A", "B", "D", "Z"]);
+    expect(wallName(27)).toBe("27");
+  });
+
+  it("marks a value approximate only when its band is wider than 5 cm", () => {
+    expect(isApprox(dimension(1))).toBe(false);
+    expect(isApprox({ ...dimension(1), error_band_m: 0.01 })).toBe(false);
+    expect(isApprox({ ...dimension(1), error_band_m: 0.051 })).toBe(true);
+    expect(isApprox({ ...dimension(1), error_band_m: 0.12 })).toBe(true);
+  });
+
+  it("lets the least certain dimension speak for a line", () => {
+    const tight = { ...dimension(0.9), error_band_m: 0.03 };
+    const loose = { ...dimension(2.05), error_band_m: 0.08, source: "measured" as const };
+    expect(leastCertain(tight, loose)).toBe(loose);
+    expect(leastCertain(tight)).toBe(tight);
   });
 });
