@@ -21,6 +21,7 @@ import type { LocalCapture } from "@/capture/package/native-capture";
 import type { CaptureDeviceInfo } from "@/capture/package/upload-capture";
 import { useCaptureRecorder } from "@/capture/package/use-capture-recorder";
 import type { RawMotion } from "@/capture/pose";
+import { NoArNotice } from "@/capture/no-ar-notice";
 import { ProgressRing } from "@/capture/progress-ring";
 import { ScanHint } from "@/capture/scan-hint";
 import { ScanCamera } from "@/capture/scan-camera";
@@ -219,6 +220,10 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
   const slowDown = shouldShowSlowDown(state);
   const chipStatus = (id: GuardrailId): GuardrailStatus =>
     id === "motion" && slowDown ? "warn" : state.guardrails[id];
+
+  // A phone that cannot run AR cannot measure the room: it goes to photos
+  // with a friendly note, before any camera permission is asked for.
+  if (!arMode) return <NoArNotice onUsePhotos={onUsePhotos} onClose={onClose} />;
 
   if (!permission.hasPermission) {
     return (

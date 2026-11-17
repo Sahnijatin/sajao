@@ -145,7 +145,11 @@
       "oneMoreSpot": "One more spot, over there",
       "meterDone": "Done"
     },
-    "finishAnyway": "Finish anyway"
+    "finishAnyway": "Finish anyway",
+    "noAr": {
+      "title": "This phone can't measure a room by scanning",
+      "body": "Scanning needs a phone that supports AR. Yours can still get a redesign and a shopping list: use photos of your space instead."
+    }
   },
   "space": {
     "found": "We found",
