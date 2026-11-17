@@ -7,6 +7,8 @@ M="uv run --with modal[api-proxy-support]==1.6.4 modal run services/workers/gpu/
 $M::golden_room --capture path/to/capture-folder --tape path/to/sheet.json
 ```
 
+Add `--no-splat` to build the twin without the splat: the shell, objects, inventory, hero views and the AR measurements do not need it, and it is the launch shape. A sparse scan fails the splat's quality gate only after minutes of GPU training, and with the splat on that stops the whole run.
+
 ## AR measurements against the tape
 
 Fit is checked against what the phone measured, so the first question of a golden room is how far the phone's own walls, floor, ceiling, doors and windows are from the tape. That needs no GPU and no twin:
@@ -23,6 +25,8 @@ It reads the capture's planes file, turns the planes into measurements (`sajao_w
 - Doors and windows are found in the keyframes by the vision model (a mask in each picture, nothing more), and the rays through each mask are cast from that keyframe's AR pose onto the walls the phone measured; code then works out width, height, sill and distance from the nearest corner (`sajao_workers.ar_openings`). An opening must be seen in at least two keyframes. This needs the model, so it runs in `golden_room`, on every phone. The command above has no model and reports only the planes the phone classed itself.
 - ARKit classes door and window planes; ARCore does not. On an iPhone the report scores both readings against the tape and lists the difference between them as a cross-check.
 - A scan in which the phone found no planes reports nothing measured, and says so.
+
+The room's outline is moving to `sajao_workers.ar_shell.measured_shell`: a floor polygon built from the walls the phone saw, each edge a wall or open, for rooms that are not a box (L-shaped, open-plan, or scanned through a doorway). A wall must run from near the floor to near the ceiling, planes of inventory objects are dropped by a function the caller passes, and a corner is claimed only where two walls' lines cross close to what was seen of both. It is not yet part of this report.
 
 Files: `ar-measurements.json` (every value an estimated dimension with an error band), `ar-report.json` and `ar-report.md`.
 

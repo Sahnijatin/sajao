@@ -160,19 +160,19 @@ describe("scan summary", () => {
 });
 
 describe("what the coverage meter still wanted", () => {
-  const nothing = { loopBearings: [], loopPathM: 0, sweepsNeeded: 0, floorLook: false };
+  const nothing = { loopBearings: [], loopPathM: 0, sweepsNeeded: 0, wallTilts: 0 };
 
   it("a complete scan misses nothing", () => {
     expect(missingFromMeter(nothing)).toEqual([]);
   });
 
-  it("names the walk, the turn in the middle and the floor, in the order to do them", () => {
+  it("names the walk, the turn in the middle and the walls, in the order to do them", () => {
     expect(missingFromMeter({ ...nothing, loopBearings: [45, 75] })).toEqual(["walk"]);
     expect(missingFromMeter({ ...nothing, loopPathM: 2 })).toEqual(["walk"]);
     expect(missingFromMeter({ ...nothing, sweepsNeeded: 1 })).toEqual(["middle"]);
-    expect(missingFromMeter({ ...nothing, floorLook: true })).toEqual(["floor"]);
+    expect(missingFromMeter({ ...nothing, wallTilts: 2 })).toEqual(["walls"]);
     expect(
-      missingFromMeter({ loopBearings: [15], loopPathM: 1, sweepsNeeded: 2, floorLook: true }),
-    ).toEqual(["walk", "middle", "floor"]);
+      missingFromMeter({ loopBearings: [15], loopPathM: 1, sweepsNeeded: 2, wallTilts: 1 }),
+    ).toEqual(["walk", "middle", "walls"]);
   });
 });
