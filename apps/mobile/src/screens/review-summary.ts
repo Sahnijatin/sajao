@@ -15,13 +15,14 @@ export type MissingArea = "floor" | "walls" | "walk" | "middle" | Side;
 
 /**
  * What the coverage meter still wanted, in the review's words: the walk
- * along the walls, the turn in the middle of the room, a look at the floor.
+ * along the walls, the turn in the middle of the room, the walls not yet
+ * tilted through from ceiling to floor.
  */
 export function missingFromMeter(missing: MeterMissing): MissingArea[] {
   const areas: MissingArea[] = [];
   if (missing.loopBearings.length > 0 || missing.loopPathM > 0) areas.push("walk");
   if (missing.sweepsNeeded > 0) areas.push("middle");
-  if (missing.floorLook) areas.push("floor");
+  if (missing.wallTilts > 0) areas.push("walls");
   return areas;
 }
 
