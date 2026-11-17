@@ -19,6 +19,10 @@ jest.mock("@sajao/ui/icons", () => ({ Icon: () => null }));
 jest.mock("@/capture/mini-map", () => ({ MiniMap: () => null }));
 jest.mock("@/capture/progress-ring", () => ({ ProgressRing: () => null }));
 jest.mock("@/components/scan-ring", () => ({ ScanRing: () => null }));
+jest.mock("@/capture/meter-map", () => {
+  const { View } = jest.requireActual("react-native");
+  return { MeterMap: () => <View testID="scan-meter-map" /> };
+});
 jest.mock(
   "react-native-safe-area-context",
   () => jest.requireActual("react-native-safe-area-context/jest/mock").default,
@@ -37,6 +41,8 @@ jest.mock("@/preview-screens", () => ({ previewScreensEnabled: () => mockPreview
 const mockScan = {
   share: 0,
   ready: false,
+  meter: false,
+  stuck: false,
   hint: null as Hint,
   state: INITIAL_SCAN as ScanState,
   scanAnyway: jest.fn(),
@@ -45,6 +51,8 @@ jest.mock("@/capture/scan-session", () => ({
   ...jest.requireActual("@/capture/scan-session"),
   mappedShare: () => mockScan.share,
   canFinish: () => mockScan.ready,
+  isMeter: () => mockScan.meter,
+  canFinishEarly: () => mockScan.stuck,
 }));
 jest.mock("@/capture/use-scan-session", () => ({
   useScanSession: () => ({
@@ -75,6 +83,35 @@ jest.mock("@/capture/ar/labels", () => ({
   shownLabels: () => [],
 }));
 
+// The AR view and the recorder are the capture module's too. `mockAr` says
+// whether this phone can run AR; without it there is no scan.
+let mockAr = true;
+const mockFinish = jest.fn(async () => ({ captureId: "capture-1", state: {}, files: [] }));
+jest.mock("../../modules/sajao-ar", () => {
+  const { View } = jest.requireActual("react-native");
+  return {
+    getArCapabilities: () => ({
+      platform: "ios",
+      arSupported: mockAr,
+      lidar: false,
+      depth: false,
+    }),
+    getArView: () => (mockAr ? () => <View testID="ar-view" /> : null),
+  };
+});
+jest.mock("@/capture/package/use-capture-recorder", () => ({
+  useCaptureRecorder: () => ({
+    viewRef: { current: null },
+    captureId: "capture-1",
+    onKeyframe: jest.fn(),
+    onSensor: jest.fn(),
+    onDetections: jest.fn(),
+    finish: mockFinish,
+    setReviewOpen: jest.fn(),
+    capturePaused: false,
+  }),
+}));
+
 const handlers = { onClose: jest.fn(), onDone: jest.fn(), onUsePhotos: jest.fn() };
 const ui = () => (
   <ThemeProvider tier="standard" reducedMotion>
@@ -85,7 +122,15 @@ const ui = () => (
 beforeEach(() => {
   jest.clearAllMocks();
   mockPreview = true;
-  Object.assign(mockScan, { share: 0, ready: false, hint: null, state: INITIAL_SCAN });
+  mockAr = true;
+  Object.assign(mockScan, {
+    share: 0,
+    ready: false,
+    meter: false,
+    stuck: false,
+    hint: null,
+    state: INITIAL_SCAN,
+  });
 });
 
 const tripleTap = async () => {
@@ -175,11 +220,10 @@ describe("the calm scan screen", () => {
 });
 
 describe("the debug flag", () => {
-  it("three taps bring back the chips, the map and the mesh in a preview build", async () => {
+  it("three taps bring back the chips, the map and the numbers in a preview build", async () => {
     await render(ui());
     await act(tripleTap);
     expect(screen.getByTestId("scan-debug-layer")).toBeTruthy();
-    expect(screen.getByTestId("scan-mesh")).toBeTruthy();
     expect(screen.getByText("0% mapped")).toBeTruthy();
     expect(screen.getByText("Light good")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Torch" })).toBeTruthy();
@@ -193,5 +237,55 @@ describe("the debug flag", () => {
     await act(tripleTap);
     expect(screen.queryByTestId("scan-debug-layer")).toBeNull();
     expect(screen.queryByTestId("scan-mesh")).toBeNull();
+  });
+});
+
+describe("the coverage meter in the calm scan", () => {
+  it("says the meter's next step as the one instruction, with no map", async () => {
+    mockScan.meter = true;
+    mockScan.hint = { id: "standMiddle" };
+    await render(ui());
+    expect(screen.getByText("Now stand in the middle and turn slowly")).toBeTruthy();
+    expect(screen.getAllByTestId("scan-instruction")).toHaveLength(1);
+    expect(screen.queryByTestId("scan-meter-map")).toBeNull();
+  });
+
+  it("shows the map only for the step that needs a place to point at", async () => {
+    mockScan.meter = true;
+    mockScan.hint = { id: "oneMoreSpot" };
+    await render(ui());
+    expect(screen.getByText("One more spot, over there")).toBeTruthy();
+    expect(screen.getByTestId("scan-meter-map")).toBeTruthy();
+  });
+
+  it("leaves the ticks to the meter, which is felt sector by sector", async () => {
+    mockScan.meter = true;
+    const view = await render(ui());
+    for (const share of [0.12, 0.31, 0.55]) {
+      mockScan.share = share;
+      await view.rerender(ui());
+    }
+    expect(mockHaptic).not.toHaveBeenCalledWith("cornerCaptured");
+  });
+
+  it("offers Finish anyway only when coverage has stopped moving, and not once Done is ready", async () => {
+    const view = await render(ui());
+    expect(screen.queryByRole("button", { name: "Finish anyway" })).toBeNull();
+    mockScan.stuck = true;
+    await view.rerender(ui());
+    expect(screen.getByRole("button", { name: "Finish anyway" })).toBeTruthy();
+    mockScan.ready = true;
+    await view.rerender(ui());
+    expect(screen.queryByRole("button", { name: "Finish anyway" })).toBeNull();
+  });
+});
+
+describe("a phone that cannot run AR", () => {
+  it("gets the friendly note and photos, not a scan", async () => {
+    mockAr = false;
+    await render(ui());
+    expect(screen.getByText("This phone can't measure a room by scanning")).toBeTruthy();
+    expect(screen.queryByTestId("scan-instruction")).toBeNull();
+    expect(screen.queryByTestId("scan-done")).toBeNull();
   });
 });
