@@ -39,7 +39,8 @@ image = (
     .add_local_dir(ROOT / "services/workers/src/sajao_workers", "/root/sajao_workers")
 )
 
-# Step results, content addressed: a room that is run again reuses them.
+# Step results, content addressed, in one folder per user: a room that is run
+# again reuses them, and erasing an account removes its folder.
 artifacts = modal.Volume.from_name("sajao-pipeline", create_if_missing=True)
 ARTIFACTS = "/artifacts"
 
@@ -124,10 +125,11 @@ async def run_room(room_id: str) -> str:
     await pool.open()
     try:
         rooms = PostgresRoomStore(pool)
-        capture = await rooms.capture_for_room(room_id)
-        if capture is None:
+        found = await rooms.capture_for_room(room_id)
+        if found is None:
             return "unknown room"
-        runner = StepRunner(LocalArtifactStore(Path(ARTIFACTS)))
+        user_id, capture = found
+        runner = StepRunner(LocalArtifactStore(Path(ARTIFACTS) / user_id))
         run = await pipeline.run_room(runner, rooms, _CaptureFiles(), room_id, capture)
         return run.outcome
     finally:
@@ -148,6 +150,12 @@ class _UserFiles:
         self._files = _CaptureFiles()
 
     def erase(self, user_id: str) -> int:
+        import shutil
+
+        # What the pipeline derived from the user's scans, then the scans.
+        artifacts.reload()
+        shutil.rmtree(Path(ARTIFACTS) / user_id, ignore_errors=True)
+        artifacts.commit()
         client, bucket = self._files._client, self._files._bucket
         deleted = 0
         while True:
@@ -191,6 +199,7 @@ class _SignIn:
 @app.function(
     image=image,
     secrets=[modal.Secret.from_name("sajao-api"), modal.Secret.from_name("sajao-pipeline")],
+    volumes={ARTIFACTS: artifacts},
     max_containers=2,
     timeout=900,
     retries=2,

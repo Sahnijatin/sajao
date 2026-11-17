@@ -164,6 +164,7 @@ async def test_postgres_erases_only_the_users_own_rows(pool: AsyncConnectionPool
     await captures.register(CAPTURE_ID, USER_A, capture(USER_A, CAPTURE_ID))
     await captures.register(OTHER_CAPTURE, USER_B, capture(USER_B, OTHER_CAPTURE))
     mine, _ = await rooms.create_room("11111111-aaaa-4aaa-8aaa-aaaaaaaaaaaa", USER_A, CAPTURE_ID)
+    assert await rooms.capture_for_room(mine.room_id) == (USER_A, capture(USER_A, CAPTURE_ID))
     theirs, _ = await rooms.create_room(
         "22222222-aaaa-4aaa-8aaa-aaaaaaaaaaaa", USER_B, OTHER_CAPTURE
     )
@@ -175,6 +176,7 @@ async def test_postgres_erases_only_the_users_own_rows(pool: AsyncConnectionPool
     await erase_account(USER_A, accounts, Files(), SignIn())  # safe to repeat
 
     assert await rooms.get_room(mine.room_id, USER_A) is None
+    assert await rooms.capture_for_room(mine.room_id) is None
     assert await captures.get(CAPTURE_ID, USER_A) is None
     assert await rooms.list_rooms(USER_A) == []
     assert await rooms.get_room(theirs.room_id, USER_B) is not None
