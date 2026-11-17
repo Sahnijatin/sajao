@@ -1,7 +1,6 @@
 {
   "tabs": {
     "home": "Home",
-    "vastu": "Vastu",
     "profile": "Profile"
   },
   "home": {
@@ -138,8 +137,8 @@
       "walkWalls": "Walk along the walls",
       "keepGoing": "Keep going round",
       "standMiddle": "Now stand in the middle and turn slowly",
-      "tiltWall": "On each wall, tilt slowly up to the ceiling, then down to the floor",
-      "oneMoreSpot": "One more spot, over there"
+      "oneMoreSpot": "One more spot, over there",
+      "tiltWall": "On each wall, tilt slowly up to the ceiling, then down to the floor"
     },
     "keepGoing": "Keep going",
     "torchOn": "Use the torch",
@@ -209,6 +208,71 @@
       "bold": "Bold"
     },
     "total": "{{amount}} for everything"
+  },
+  "room": {
+    "tabs": {
+      "room": "Room",
+      "designs": "Designs",
+      "shopping": "Shopping list"
+    },
+    "size": {
+      "title": "Size",
+      "area": "About {{area}}",
+      "ceilingTitle": "Ceiling height",
+      "none": "Your room's measurements appear here once it is measured.",
+      "source": {
+        "estimated": "Estimated, to within {{band}}",
+        "measured": "Measured, to within {{band}}",
+        "user_confirmed": "Confirmed by you, to within {{band}}"
+      }
+    },
+    "walls": {
+      "title": "Walls",
+      "wall": "Wall {{name}}"
+    },
+    "openings": {
+      "title": "Doors and windows",
+      "door": "Door",
+      "window": "Window",
+      "doorOnWall": "Door on wall {{name}}",
+      "windowOnWall": "Window on wall {{name}}",
+      "size": "{{width}} wide, {{height}} high"
+    },
+    "items": {
+      "title": "Big items",
+      "size": "{{width}} by {{depth}}, {{height}} high"
+    },
+    "view3d": {
+      "title": "3D view",
+      "body": "A 3D view of your room will appear here."
+    },
+    "plan": {
+      "title": "Floor plan",
+      "body": "A plan of your room with the furniture in place will appear here."
+    },
+    "sample": "These are sample views and measurements. Yours appear here when they are ready.",
+    "approx": "approx.",
+    "measureHint": "Shows where this measurement came from"
+  },
+  "designs": {
+    "why": "Why this works",
+    "fits": "Everything fits your room",
+    "check": "Some pieces need a fit check",
+    "vastu": "Vastu view",
+    "vastuNeedsCompass": "Needs a compass reading from your scan",
+    "vastuPoints": "Vastu points for this look appear here."
+  },
+  "shopping": {
+    "total": "Total",
+    "buy": "Buy",
+    "buyItem": "Buy {{item}}",
+    "outOfStock": "Out of stock",
+    "checking": "Prices are being checked",
+    "fit": {
+      "fits": "Fits your room",
+      "check": "Needs a fit check"
+    },
+    "sample": "These are sample products. Links open when your own designs are ready."
   },
   "space": {
     "found": "We found",
@@ -349,9 +413,7 @@
     }
   },
   "vastu": {
-    "title": "Vastu",
-    "label": "Vastu guidance, as close as possible. For a full consultation, speak to an expert.",
-    "body": "Scan a room to see its direction and a room scorecard."
+    "label": "Vastu guidance, as close as possible. For a full consultation, speak to an expert."
   },
   "profile": {
     "title": "Profile",
@@ -390,7 +452,8 @@
     "tastePreview": "Taste",
     "capture": "Scan",
     "generating": "Designing",
-    "reveal": "Your room"
+    "reveal": "Your room",
+    "room": "Room"
   },
   "import": {
     "problemTitle": "We could not use that",

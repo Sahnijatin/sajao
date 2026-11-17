@@ -8,6 +8,11 @@ export default function RevealRoute() {
   const router = useRouter();
   const { room } = useLocalSearchParams<{ room?: string }>();
   if (!room) return <Redirect href="/" />;
-  // The room screen arrives with its own task; until then this returns to My home.
-  return <RevealScreen content={roomContent(room)} onOpenRoom={() => router.dismissTo("/")} />;
+  return (
+    <RevealScreen
+      content={roomContent(room)}
+      // The reveal gives way to the room: back from there is My home.
+      onOpenRoom={() => router.replace({ pathname: "/room/[id]", params: { id: room } })}
+    />
+  );
 }

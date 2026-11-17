@@ -39,7 +39,7 @@ flowchart LR
 
 ## Components
 
-- **Mobile app (Expo).** Capture with on-device quality checks, resumable uploads, taste swipes, reveal, plan editor, shopping list, Vastu tab, share. No heavy AI on the device.
+- **Mobile app (Expo).** Capture with on-device quality checks, resumable uploads, taste swipes, reveal, plan editor, shopping list, Vastu view, share. No heavy AI on the device.
 - **API (FastAPI on Cloud Run, Mumbai).** Stateless modular monolith with modules for auth, rooms, taste, designs, catalog, commerce, Vastu and admin. Versioned `/v1`, OpenAPI generated, typed client generated for the app.
 - **Workers (Modal).** Durable pipeline steps: frame selection, geometry, layout, segmentation, design engine, render and checks, reel. GPU steps scale to zero.
 - **Model gateway.** One library every model call goes through: provider routing, fallbacks, concurrency limits, circuit breakers, spend caps, caching by content hash, structured logging.

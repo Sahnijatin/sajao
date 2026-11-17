@@ -15,10 +15,6 @@ export default function TabsLayout() {
         <NativeTabs.Trigger.Icon sf="house.fill" md="home" />
         <NativeTabs.Trigger.Label>{t("tabs.home")}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="vastu">
-        <NativeTabs.Trigger.Icon sf="safari.fill" md="explore" />
-        <NativeTabs.Trigger.Label>{t("tabs.vastu")}</NativeTabs.Trigger.Label>
-      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="profile">
         <NativeTabs.Trigger.Icon sf="person.fill" md="person" />
         <NativeTabs.Trigger.Label>{t("tabs.profile")}</NativeTabs.Trigger.Label>

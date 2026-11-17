@@ -97,7 +97,11 @@ export function HomeScreen() {
         <UploadStatus />
         {rooms.map((room, index) => (
           <Animated.View key={room.id} entering={entering(index)}>
-            <RoomCard room={room} nowMs={nowMs} />
+            <RoomCard
+              room={room}
+              nowMs={nowMs}
+              onPress={() => router.push({ pathname: "/room/[id]", params: { id: room.id } })}
+            />
           </Animated.View>
         ))}
         <Button label={t("home.addRoom")} variant="outline" onPress={addRoom} />
