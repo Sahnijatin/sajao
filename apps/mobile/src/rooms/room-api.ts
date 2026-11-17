@@ -6,14 +6,11 @@ import type { SpaceTwin } from "@sajao/schemas";
 import type { GenerationSource } from "./generation";
 import { measuresFromTwin } from "./measures";
 import type { RoomContent } from "./room-content";
+import type { RoomJob } from "./room-job";
 
-/** A room's job on the server: its id there and each stage's state. */
-export interface RoomJob {
-  id: string;
-  /** working, ready (every stage done) or failed. */
-  status: string;
-  stages: { stage: string; status: string; detail?: string | null }[];
-}
+// The room's job is the capture session's type: the upload makes the room
+// and follows its measuring; this follows it to the end and reads its twin.
+export type { RoomJob } from "./room-job";
 
 export interface RoomApi {
   /** Creates the room for a registered capture and starts measuring it. Safe to repeat. */
