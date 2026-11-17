@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import type { MeterMissing } from "@/capture/coverage-meter";
 import type { LocalCapture } from "@/capture/package/native-capture";
+import type { RoomJob } from "@/rooms/room-job";
 
 export interface UploadStatus {
   /**
@@ -33,6 +34,9 @@ interface CaptureStore {
   device: { platform: "ios" | "android"; tier: "standard" | "low"; has_ar: boolean } | null;
   setDevice(device: CaptureStore["device"]): void;
   upload: UploadStatus;
+  /** The room made from the last scan and its job at the server; null until the scan is up. */
+  room: RoomJob | null;
+  setRoom(room: RoomJob | null): void;
   setLast(capture: LocalCapture | null): void;
   setUpload(upload: UploadStatus): void;
 }
@@ -44,6 +48,8 @@ export const useCaptureStore = create<CaptureStore>((set) => ({
   device: null,
   setDevice: (device) => set({ device }),
   upload: { state: "idle", finished: 0, total: 0 },
+  room: null,
+  setRoom: (room) => set({ room }),
   setLast: (last) => set({ last }),
   setUpload: (upload) => set({ upload }),
 }));
