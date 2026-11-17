@@ -11,6 +11,7 @@ import { measuresFromTwin, type RoomMeasures } from "./measures";
 import type { RoomStill } from "./rooms";
 import { SAMPLE_DESIGNS } from "./sample-designs";
 import { samplesAllowed } from "./samples";
+import { useRoomData } from "@/state/room-data";
 
 export interface HeroView {
   id: string;
@@ -79,10 +80,21 @@ const SAMPLE: RoomContent = {
   })),
 };
 
-/**
- * The content for a room, or null while there is none to show. Today: the
- * sample where samples are allowed, and nothing anywhere else.
- */
-export function roomContent(_roomId: string): RoomContent | null {
+/** The stand-in content, where this build may show one; null in a store or closed-test build. */
+export function sampleContent(): RoomContent | null {
   return samplesAllowed() ? SAMPLE : null;
+}
+
+/**
+ * The content for a room, or null while there is none to show: what the
+ * server has sent for it, else the sample where samples are allowed.
+ */
+export function roomContent(roomId: string): RoomContent | null {
+  return useRoomData.getState().content[roomId] ?? sampleContent();
+}
+
+/** The same, kept up to date as the room's content arrives. */
+export function useRoomContent(roomId: string): RoomContent | null {
+  const real = useRoomData((state) => state.content[roomId]);
+  return real ?? sampleContent();
 }
