@@ -1,7 +1,7 @@
 // While a room is being worked on: three stages in plain words, one after
 // the other, each ticking off as it finishes. There is no bar to watch run
 // out; when the last stage is done the screen hands straight on to the reveal.
-import { motion, playHaptic, Text, useTheme } from "@sajao/ui";
+import { Button, motion, playHaptic, Text, useTheme } from "@sajao/ui";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
@@ -19,6 +19,9 @@ export const HANDOVER_MS = 700;
 
 const breathe = { from: { opacity: 0.35 }, to: { opacity: 1 } };
 const easing = cubicBezier(...motion.ease.bezier);
+
+/** Failure reasons the app has words for; any other gets the general message. */
+const KNOWN_REASONS = ["no_walls", "upload"];
 
 type StageState = "done" | "current" | "next";
 
@@ -72,9 +75,12 @@ function StageRow({ stage, state }: { stage: GenerationStage; state: StageState 
 export function GeneratingScreen({
   roomId,
   onDone,
+  onLeave,
   source,
   designs = true,
 }: {
+  /** A stage failed and the person chose to go back to My home. */
+  onLeave?: () => void;
   roomId: string;
   /** False for a kind of space that gets no designs yet: the designing stage is left out. */
   designs?: boolean;
@@ -102,6 +108,30 @@ export function GeneratingScreen({
     const timer = setTimeout(() => done.current(), HANDOVER_MS);
     return () => clearTimeout(timer);
   }, [progress.done]);
+
+  if (progress.failed) {
+    // Say plainly what happened and what to do; the scan itself is never lost.
+    const reason = KNOWN_REASONS.includes(progress.failed) ? progress.failed : "unknown";
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.canvas }}>
+        <View
+          testID="generating-failed"
+          style={{
+            flex: 1,
+            padding: spacing.gutter,
+            paddingTop: spacing.sheetBottom * 2,
+            gap: spacing.sheetBottom,
+          }}
+        >
+          <Text variant="title" accessibilityRole="header">
+            {t("generating.failed.title")}
+          </Text>
+          <Text tone="secondary">{t(`generating.failed.${reason}`)}</Text>
+          {onLeave ? <Button label={t("generating.failed.back")} onPress={onLeave} /> : null}
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.canvas }}>

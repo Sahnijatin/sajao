@@ -16,7 +16,12 @@ export interface GenerationSource {
    * Calls back with the number of stages finished, 0 to 3, each time it
    * grows. Returns a function that stops watching.
    */
-  watch(roomId: string, onFinished: (finished: number) => void): () => void;
+  watch(
+    roomId: string,
+    onFinished: (finished: number) => void,
+    /** A stage failed: the server's short reason code, or "upload". */
+    onFailed?: (reason: string) => void,
+  ): () => void;
 }
 
 /** How long the stand-in spends on each stage. */
@@ -47,6 +52,8 @@ export interface GenerationProgress {
   /** The stage being worked on; null once all are finished. */
   current: GenerationStage | null;
   done: boolean;
+  /** Why it stopped, when a stage failed; null otherwise. */
+  failed: string | null;
 }
 
 export function progressOf(
@@ -54,7 +61,12 @@ export function progressOf(
   stages: readonly GenerationStage[] = GENERATION_STAGES,
 ): GenerationProgress {
   const count = Math.min(stages.length, Math.max(0, Math.floor(finished)));
-  return { finished: count, current: stages[count] ?? null, done: count >= stages.length };
+  return {
+    finished: count,
+    current: stages[count] ?? null,
+    done: count >= stages.length,
+    failed: null,
+  };
 }
 
 export function useGeneration(
@@ -63,10 +75,16 @@ export function useGeneration(
   stages: readonly GenerationStage[] = GENERATION_STAGES,
 ): GenerationProgress {
   const [finished, setFinished] = useState(0);
+  const [failed, setFailed] = useState<string | null>(null);
   useEffect(() => {
     setFinished(0);
+    setFailed(null);
     // Progress only ever moves forward, whatever order reports arrive in.
-    return source.watch(roomId, (count) => setFinished((before) => Math.max(before, count)));
+    return source.watch(
+      roomId,
+      (count) => setFinished((before) => Math.max(before, count)),
+      setFailed,
+    );
   }, [roomId, source]);
-  return progressOf(finished, stages);
+  return { ...progressOf(finished, stages), failed };
 }

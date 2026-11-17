@@ -18,6 +18,10 @@ The Sajao app: Expo with Expo Router, two native tabs, English and Hindi, and a 
 | `src/uploads` | Photo resizing and resumable uploads through signed URLs. |
 | `src/utils` | Length and INR formatting. |
 
+## Real rooms
+
+With `EXPO_PUBLIC_API_URL` set, a confirmed scan becomes a room on the server: `src/rooms/room-source.ts` waits for the upload, creates the room, follows its job stage by stage and reads its `SpaceTwin`. `room-api.ts` holds the pure mapping (stages done, failure reasons, twin to room content) and `room-client.ts` the typed network client. Designs and photos are not read yet.
+
 ## Samples
 
 Stand-in content (the sample room, designs, space profile, and the drawn stills) shows only where `samplesAllowed()` in `src/rooms/samples.ts` says so: development and preview builds. A store or closed-test build shows none of it; where real data is missing a screen is skipped or says the room is being prepared.

@@ -180,3 +180,42 @@ describe("generating for a space with no designs", () => {
     }
   });
 });
+
+describe("generating: a stage that fails", () => {
+  const failing = (reason: string): GenerationSource => ({
+    watch(_roomId, _onFinished, onFailed) {
+      onFailed?.(reason);
+      return () => {};
+    },
+  });
+
+  it("says what happened in plain words and offers the way back", async () => {
+    const onLeave = jest.fn();
+    const onDone = jest.fn();
+    await show(
+      <GeneratingScreen
+        roomId="r"
+        onDone={onDone}
+        onLeave={onLeave}
+        source={failing("no_walls")}
+      />,
+    );
+    expect(screen.getByRole("header", { name: "We couldn't finish this room" })).toBeTruthy();
+    expect(screen.getByText(/^We couldn't find the walls\./)).toBeTruthy();
+    expect(screen.queryByText("Measuring your walls")).toBeNull();
+    await fireEvent.press(screen.getByRole("button", { name: "Back to My home" }));
+    expect(onLeave).toHaveBeenCalledTimes(1);
+    expect(onDone).not.toHaveBeenCalled();
+  });
+
+  it("never shows a reason code: an unknown one gets the general message", async () => {
+    await show(<GeneratingScreen roomId="r" onDone={jest.fn()} source={failing("gpu_oom_17")} />);
+    expect(screen.getByText(/^Something went wrong on our side\./)).toBeTruthy();
+    expect(screen.queryByText(/gpu_oom_17/)).toBeNull();
+  });
+
+  it("an upload that failed says so", async () => {
+    await show(<GeneratingScreen roomId="r" onDone={jest.fn()} source={failing("upload")} />);
+    expect(screen.getByText(/^Your scan didn't upload\./)).toBeTruthy();
+  });
+});
