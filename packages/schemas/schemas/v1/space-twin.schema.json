@@ -93,6 +93,9 @@
     },
     "inventory": {
       "$ref": "#/$defs/Inventory"
+    },
+    "free_floor": {
+      "$ref": "#/$defs/FreeFloor"
     }
   },
   "$defs": {
@@ -302,6 +305,19 @@
         "object_type": {
           "$ref": "#/$defs/ObjectType",
           "description": "What kind of thing it is. Built-ins are not objects: they are in the shell's built_ins."
+        },
+        "footprint": {
+          "$ref": "#/$defs/Footprint"
+        },
+        "redesign": {
+          "$ref": "#/$defs/Redesign"
+        },
+        "hero_masks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HeroMask"
+          },
+          "description": "One per hero view this thing is visible in."
         }
       }
     },
@@ -840,6 +856,9 @@
               "$ref": "common.schema.json#/$defs/UnitScore"
             }
           }
+        },
+        "footprint": {
+          "$ref": "#/$defs/Footprint"
         }
       }
     },
@@ -908,6 +927,98 @@
           "items": {
             "$ref": "#/$defs/InventoryItem"
           }
+        }
+      }
+    },
+    "Footprint": {
+      "description": "Where a thing stands on the floor plan: its box seen from above, in the space frame. From the fused geometry, never from a model.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["polygon", "width", "depth", "on_floor"],
+      "properties": {
+        "polygon": {
+          "$ref": "common.schema.json#/$defs/Polygon"
+        },
+        "width": {
+          "$ref": "common.schema.json#/$defs/Dimension",
+          "description": "The longer side, with its error band: each edge may be off by up to that band."
+        },
+        "depth": {
+          "$ref": "common.schema.json#/$defs/Dimension",
+          "description": "The shorter side, with its error band."
+        },
+        "on_floor": {
+          "type": "boolean",
+          "description": "Whether it takes up floor: false for things on a wall or hanging from the ceiling, whose box does not reach down to the floor."
+        }
+      }
+    },
+    "Redesign": {
+      "description": "Whether a redesign keeps this thing or may replace it. The rule keeps fixtures (fans, lights, AC units, switchboards, geysers) and lets everything else be replaced; the person can change it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "source"],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": ["keep", "replace"]
+        },
+        "source": {
+          "type": "string",
+          "enum": ["rule", "user"]
+        }
+      }
+    },
+    "HeroMask": {
+      "description": "Where a thing is in one hero photo, for taking it out of that photo.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hero_view_id", "mask", "visible_share", "source"],
+      "properties": {
+        "hero_view_id": {
+          "$ref": "common.schema.json#/$defs/LocalId",
+          "description": "A hero view in viewing.hero_views."
+        },
+        "mask": {
+          "$ref": "common.schema.json#/$defs/StorageKey",
+          "description": "PNG, white where the thing is, at the keyframe's resolution. Not dilated."
+        },
+        "visible_share": {
+          "$ref": "common.schema.json#/$defs/UnitScore",
+          "description": "Share of the thing's box that is in frame and not hidden behind something nearer."
+        },
+        "source": {
+          "type": "string",
+          "enum": ["detected", "prompted"],
+          "description": "detected: the detector's own mask in this keyframe. prompted: segmented from the thing's box projected into the photo."
+        }
+      }
+    },
+    "FreeFloor": {
+      "description": "Floor a redesign can use: the floor polygon minus the footprints of everything kept that stands on the floor (objects marked keep, and built-ins).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["area_m2", "error_band_m2", "floor_area_m2", "kept_ids"],
+      "properties": {
+        "area_m2": {
+          "type": "number",
+          "minimum": 0
+        },
+        "error_band_m2": {
+          "type": "number",
+          "minimum": 0,
+          "description": "From the walls' and footprints' error bands along their edges."
+        },
+        "floor_area_m2": {
+          "type": "number",
+          "minimum": 0
+        },
+        "kept_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/LocalId"
+          },
+          "description": "Objects and built-ins whose footprints were taken out."
         }
       }
     }

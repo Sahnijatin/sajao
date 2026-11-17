@@ -42,6 +42,10 @@ class Settings(BaseSettings):
     # per-kind limits. Larger files are refused before any part is sent.
     storage_max_object_bytes: int | None = Field(default=None, gt=0)
 
+    # The Modal app whose functions run the durable pipeline. Without it the
+    # API records what it would have started and starts nothing (dev, tests).
+    pipeline_modal_app: str | None = None
+
     # Apps older than this are told to update. "0.0.0" allows every version.
     min_app_version: str = Field(default="0.0.0", pattern=r"^\d+\.\d+\.\d+$")
 

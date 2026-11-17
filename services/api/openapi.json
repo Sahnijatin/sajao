@@ -80,6 +80,108 @@
         "title": "ArPose",
         "type": "object"
       },
+      "Brief": {
+        "additionalProperties": false,
+        "description": "Per-room choices on top of the taste profile. With the space profile and the catalog, the only input the design engine reads.",
+        "properties": {
+          "budget": {
+            "$ref": "#/components/schemas/Budget"
+          },
+          "consider_vastu": {
+            "title": "Consider Vastu",
+            "type": "boolean"
+          },
+          "created_at": {
+            "description": "UTC instant, RFC 3339.",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "intent": {
+            "enum": [
+              "refresh",
+              "full_makeover",
+              "rearrange_only"
+            ],
+            "title": "Intent",
+            "type": "string"
+          },
+          "keep_item_ids": {
+            "description": "Existing items in the space profile to keep.",
+            "items": {
+              "$ref": "#/components/schemas/LocalId"
+            },
+            "title": "Keep Item Ids",
+            "type": "array"
+          },
+          "must_haves": {
+            "description": "Product categories that must appear.",
+            "items": {
+              "$ref": "#/components/schemas/MustHave"
+            },
+            "title": "Must Haves",
+            "type": "array"
+          },
+          "schema_version": {
+            "description": "Contract version of the object. Minor versions only add optional fields.",
+            "pattern": "^1\\.[0-9]+$",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "space_profile_id": {
+            "format": "uuid",
+            "title": "Space Profile Id",
+            "type": "string"
+          },
+          "taste_profile_id": {
+            "format": "uuid",
+            "title": "Taste Profile Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "id",
+          "space_profile_id",
+          "taste_profile_id",
+          "created_at",
+          "intent",
+          "budget",
+          "must_haves",
+          "keep_item_ids",
+          "consider_vastu"
+        ],
+        "title": "Brief",
+        "type": "object"
+      },
+      "Budget": {
+        "additionalProperties": false,
+        "properties": {
+          "flexibility": {
+            "description": "strict is never relaxed; stretch_10 allows up to 10% over.",
+            "enum": [
+              "strict",
+              "stretch_10"
+            ],
+            "title": "Flexibility",
+            "type": "string"
+          },
+          "limit": {
+            "$ref": "#/components/schemas/Money"
+          }
+        },
+        "required": [
+          "limit",
+          "flexibility"
+        ],
+        "title": "Budget",
+        "type": "object"
+      },
       "CameraIntrinsics": {
         "additionalProperties": false,
         "properties": {
@@ -515,6 +617,21 @@
         "title": "CompletedUpload",
         "type": "object"
       },
+      "CreateRoom": {
+        "additionalProperties": false,
+        "properties": {
+          "capture_id": {
+            "format": "uuid",
+            "title": "Capture Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "capture_id"
+        ],
+        "title": "CreateRoom",
+        "type": "object"
+      },
       "CreateUpload": {
         "properties": {
           "content_type": {
@@ -542,6 +659,57 @@
           "size_bytes"
         ],
         "title": "CreateUpload",
+        "type": "object"
+      },
+      "DesignsStatus": {
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "designs": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Designs"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "room_id": {
+            "title": "Room Id",
+            "type": "string"
+          },
+          "stages": {
+            "items": {
+              "$ref": "#/components/schemas/StageStatus"
+            },
+            "title": "Stages",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "room_id",
+          "created_at",
+          "status",
+          "stages"
+        ],
+        "title": "DesignsStatus",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -627,6 +795,12 @@
         "title": "LiveDetection",
         "type": "object"
       },
+      "LocalId": {
+        "description": "Identifier that is unique inside its parent object, for example a wall or a design item.",
+        "pattern": "^[a-z0-9_-]{1,40}$",
+        "title": "LocalId",
+        "type": "string"
+      },
       "Me": {
         "properties": {
           "is_guest": {
@@ -644,6 +818,34 @@
         ],
         "title": "Me",
         "type": "object"
+      },
+      "Money": {
+        "additionalProperties": false,
+        "description": "A price. Set only from retailer data, never by a generative model.",
+        "properties": {
+          "amount_minor": {
+            "description": "Amount in paise.",
+            "minimum": 0.0,
+            "title": "Amount Minor",
+            "type": "integer"
+          },
+          "currency": {
+            "const": "INR",
+            "title": "Currency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "currency",
+          "amount_minor"
+        ],
+        "title": "Money",
+        "type": "object"
+      },
+      "MustHave": {
+        "minLength": 1,
+        "title": "MustHave",
+        "type": "string"
       },
       "Part": {
         "properties": {
@@ -740,6 +942,25 @@
         "title": "RegisterCapture",
         "type": "object"
       },
+      "RequestDesigns": {
+        "additionalProperties": false,
+        "properties": {
+          "brief": {
+            "$ref": "#/components/schemas/Brief"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "brief"
+        ],
+        "title": "RequestDesigns",
+        "type": "object"
+      },
       "ResumeUpload": {
         "properties": {
           "key": {
@@ -788,11 +1009,92 @@
         "title": "ReviewWindow",
         "type": "object"
       },
+      "RoomList": {
+        "properties": {
+          "rooms": {
+            "items": {
+              "$ref": "#/components/schemas/RoomStatus"
+            },
+            "title": "Rooms",
+            "type": "array"
+          }
+        },
+        "required": [
+          "rooms"
+        ],
+        "title": "RoomList",
+        "type": "object"
+      },
+      "RoomStatus": {
+        "properties": {
+          "capture_id": {
+            "title": "Capture Id",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "stages": {
+            "items": {
+              "$ref": "#/components/schemas/StageStatus"
+            },
+            "title": "Stages",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "capture_id",
+          "created_at",
+          "status",
+          "stages"
+        ],
+        "title": "RoomStatus",
+        "type": "object"
+      },
       "RotationItem": {
         "maximum": 1.0,
         "minimum": -1.0,
         "title": "RotationItem",
         "type": "number"
+      },
+      "StageStatus": {
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "stage": {
+            "title": "Stage",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stage",
+          "status"
+        ],
+        "title": "StageStatus",
+        "type": "object"
       },
       "UploadPlan": {
         "properties": {
@@ -1022,6 +1324,254 @@
         "summary": "Get Me",
         "tags": [
           "account"
+        ]
+      }
+    },
+    "/v1/rooms": {
+      "get": {
+        "description": "The caller's rooms, newest first, each with its job status.",
+        "operationId": "listRooms",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Rooms",
+        "tags": [
+          "rooms"
+        ]
+      },
+      "post": {
+        "description": "Create the room for a registered capture and start measuring it. Safe to repeat.",
+        "operationId": "createRoom",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRoom"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Room",
+        "tags": [
+          "rooms"
+        ]
+      }
+    },
+    "/v1/rooms/{room_id}": {
+      "get": {
+        "description": "One room and its job status by stage.",
+        "operationId": "getRoom",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "room_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Room Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Room",
+        "tags": [
+          "rooms"
+        ]
+      }
+    },
+    "/v1/rooms/{room_id}/designs": {
+      "get": {
+        "description": "The room's latest design request: its job status and, once ready, the three Designs.",
+        "operationId": "getDesigns",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "room_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Room Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DesignsStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Designs",
+        "tags": [
+          "rooms"
+        ]
+      },
+      "post": {
+        "description": "Ask for designs for a room with a brief. Safe to repeat with the same id.",
+        "operationId": "requestDesigns",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "room_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Room Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestDesigns"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DesignsStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Request Designs",
+        "tags": [
+          "rooms"
+        ]
+      }
+    },
+    "/v1/rooms/{room_id}/twin": {
+      "get": {
+        "description": "The room's SpaceTwin: its measurements, what is in it and its hero views.",
+        "operationId": "getRoomTwin",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "room_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Room Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Getroomtwin",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Room Twin",
+        "tags": [
+          "rooms"
         ]
       }
     },
