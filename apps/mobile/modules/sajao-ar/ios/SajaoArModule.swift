@@ -48,6 +48,12 @@ public final class SajaoArModule: Module {
       Prop("lite") { (view: SajaoArView, value: Bool) in
         view.lite = value
       }
+      Prop("overlay") { (view: SajaoArView, value: Bool) in
+        view.overlay = value
+      }
+      Prop("capturePaused") { (view: SajaoArView, value: Bool) in
+        view.capturePaused = value
+      }
       Prop("reducedMotion") { (view: SajaoArView, value: Bool) in
         view.reducedMotion = value
       }
