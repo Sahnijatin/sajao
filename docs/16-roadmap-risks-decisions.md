@@ -78,3 +78,21 @@ These supersede earlier rows where they conflict; earlier rows are kept as histo
 | Third-party register | Engineering may use any model, library or dataset (including for training); all are listed in docs/24 for the legal team, who approve separately | Legal team instruction; speed and best technology first |
 
 Open: final product name after domain, store and trademark checks.
+
+### Launch scope decisions
+
+These supersede earlier rows and the phases table where they conflict; earlier rows are kept as history.
+
+| Decision | Choice | Reason |
+| --- | --- | --- |
+| Launch scope | Redesign on your own hero photos, measured plan, shopping list; the 3D twin viewer, room splat, 3D models of your own items, catalog matches for them and rearrange-only mode move to after launch | The splat holds only near the capture path, removal inside it fails at room scale, its GPU cost alone exceeds the cost-per-room target, and the phone viewer is unmeasured; the catalog, design engine and render come first |
+| Render choice | Product fidelity is a hard gate; the blind vote chooses among passing approaches; the winner is built fresh and the evaluation harness is not merged | Guided edits of the photo lost product shape in most checked placements; an exciting render of a product you cannot buy breaks commercial utility |
+| Catalog admission | Only products that pass the fidelity gate in the launch approach appear in designs | A product we cannot render honestly cannot be recommended honestly |
+| Spaces at launch | Designs for living rooms and bedrooms only; any space can still be scanned and measured | Two room types can be built, curated and gated on the golden set in time |
+| Development catalog | About 50 hand-curated real products as development data; feeds through the same path when approved | The design engine and render cannot wait for affiliate approvals |
+| Sign-in at launch | Google, Apple and guest; Truecaller and WhatsApp OTP after launch | Enough to launch; each extra method costs days |
+| Hosting at launch | The interim API host and storage stay; the move to the long-term hosts happens after launch behind the same interfaces | No user-visible gain before launch |
+| Also after launch | Subscription entitlements, paint and flooring preview, rentals; the share reel moves first if the schedule slips | Not needed for scan, redesign and shop |
+| Detector dataset | Stopped after the pilot; labelling on hold until the legal review | Off the critical path; the server detector is prompted, not trained |
+| Spend control | One GPU spend cap for the workspace, split by work area; a limit on rooms per person and a global daily cap at launch | One day of unshared budgets used the month's credit and stopped work mid-run |
+| Schedule | Planned backwards from the Play closed test | A personal developer account must run the closed test for 14 continuous days before production access |

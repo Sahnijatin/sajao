@@ -151,3 +151,51 @@ def fit_upright_box(
         kept = [(float(p[a]), float(p[b])) for p in points]
     cu, cv, length, width, yaw = min_area_rect(kept)
     return _make_box(cu, cv, (z0 + z1) / 2.0, length, width, z1 - z0, yaw, up_axis)
+
+
+def _clip(subject: list[Vec2], clip: Sequence[Vec2]) -> list[Vec2]:
+    """Sutherland-Hodgman: the part of convex `subject` inside convex `clip` (both CCW)."""
+    out = subject
+    for i in range(len(clip)):
+        a, b = clip[i], clip[(i + 1) % len(clip)]
+        points, out = out, []
+        for j in range(len(points)):
+            p, q = points[j], points[(j + 1) % len(points)]
+            p_in, q_in = _cross(a, b, p) >= 0, _cross(a, b, q) >= 0
+            if p_in:
+                out.append(p)
+            if p_in != q_in:
+                dx, dy = q[0] - p[0], q[1] - p[1]
+                ex, ey = b[0] - a[0], b[1] - a[1]
+                t = (ex * (a[1] - p[1]) - ey * (a[0] - p[0])) / (ex * dy - ey * dx)
+                out.append((p[0] + t * dx, p[1] + t * dy))
+        if not out:
+            return []
+    return out
+
+
+def _area(polygon: Sequence[Vec2]) -> float:
+    return (
+        abs(
+            sum(
+                polygon[i][0] * polygon[(i + 1) % len(polygon)][1]
+                - polygon[(i + 1) % len(polygon)][0] * polygon[i][1]
+                for i in range(len(polygon))
+            )
+        )
+        / 2.0
+    )
+
+
+def box_overlap(a: UprightBox, b: UprightBox) -> tuple[float, float]:
+    """3D intersection over union, and the share of the smaller box inside the other."""
+    low = max(a.vertical_range()[0], b.vertical_range()[0])
+    high = min(a.vertical_range()[1], b.vertical_range()[1])
+    if high <= low:
+        return 0.0, 0.0
+    shared = _area(_clip(a.footprint(), b.footprint())) * (high - low)
+    if shared <= 0.0:
+        return 0.0, 0.0
+    union = a.volume() + b.volume() - shared
+    smaller = min(a.volume(), b.volume())
+    return shared / union, shared / smaller if smaller > 0 else 0.0

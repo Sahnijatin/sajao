@@ -85,6 +85,7 @@ const mockRecorder = {
   onSensor: jest.fn(),
   onDetections: jest.fn(),
   discardKeyframes: jest.fn(async () => {}),
+  setReviewOpen: jest.fn(),
 };
 const mockFinish = jest.fn(async () => ({ captureId: "capture-1", state: {}, files: [] }));
 jest.mock("../../modules/sajao-ar", () => {
@@ -113,6 +114,8 @@ jest.mock("@/capture/package/use-capture-recorder", () => ({
     onSensor: mockRecorder.onSensor,
     onDetections: mockRecorder.onDetections,
     finish: mockFinish,
+    setReviewOpen: mockRecorder.setReviewOpen,
+    capturePaused: false,
   }),
 }));
 
@@ -316,10 +319,13 @@ describe("review before upload", () => {
     expect(mockRecorder.onSensor).toHaveBeenCalledTimes(1);
     expect(mockRecorder.onDetections).toHaveBeenCalledTimes(1);
     expect(mockRecorder.discardKeyframes).toHaveBeenCalledWith(["file:///k2.jpg"]);
+    // The recorder is told, so it pauses the native view and notes the window.
+    expect(mockRecorder.setReviewOpen.mock.calls).toEqual([[true]]);
 
     // Back in the scan, recording carries on.
     await fireEvent.press(screen.getByRole("button", { name: "Scan a bit more" }));
     await keyframe("file:///k3.jpg");
+    expect(mockRecorder.setReviewOpen.mock.calls).toEqual([[true], [false]]);
     expect(mockRecorder.onKeyframe).toHaveBeenCalledTimes(2);
     expect(mockRecorder.discardKeyframes).toHaveBeenCalledTimes(1);
   });
