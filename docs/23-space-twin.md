@@ -2,6 +2,12 @@
 
 Every scan becomes a full 3D digital twin of the space: the room itself and every object in it, each as its own editable item. People rearrange, remove, replace and redesign on the twin, and the render, the plan and the shopping list are all derived from it.
 
+## Status at launch
+
+The full twin is the direction, not the launch. At launch the twin supplies what the redesign needs: the capture package, the measured shell (walls, floor, ceiling, doors and windows with error bands), the object inventory with boxes, and hero views with a safe viewing region. The redesign is shown on those hero photos, with a measured plan and a shopping list.
+
+After launch: the room splat and its viewer on the phone, 3D models of your own items, catalog matches for your own items, removal inside the splat, and rearrange-only mode. What the evidence showed: the splat reads like a soft photo near the capture path and breaks down away from it; removing an object inside the splat leaves a visible ghost at room scale, so removal for redesigns is 2D inpainting on hero keyframes; and frame rate on a budget phone has not been measured on a device. The sections below describe the full twin and stay as the design for that work.
+
 ## Why this is new
 
 | What exists | What it lacks |
