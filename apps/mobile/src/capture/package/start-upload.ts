@@ -19,6 +19,8 @@ export async function startCaptureUpload(
 ): Promise<void> {
   useCaptureStore.getState().setDevice(device);
   let videoSkipped = false;
+  // What this scan really cost to upload, shown once it is up.
+  let bytes = 0;
   const config = configResult.ok ? configResult.config : null;
   if (!config?.apiUrl || !config.supabase) {
     setStatus({ state: "waiting", finished: 0, total: 0 });
@@ -42,9 +44,11 @@ export async function startCaptureUpload(
     await uploadAndRegister(local, device, {
       async uploadFile(file) {
         const spec = uploadSpec(file.kind);
+        const source = fileSource(file.uri, spec.kind, spec.contentType);
+        bytes += source.sizeBytes;
         return uploadResumable({
           localId: file.localId,
-          source: fileSource(file.uri, spec.kind, spec.contentType),
+          source,
           api,
           putPart,
           store: uploadStateStore,
@@ -66,7 +70,13 @@ export async function startCaptureUpload(
       },
       mediaId: (captureId) => mediaIdFor(captureId, uuidV4),
     });
-    setStatus({ state: "done", finished: 1, total: 1, ...(videoSkipped ? { videoSkipped } : {}) });
+    setStatus({
+      state: "done",
+      finished: 1,
+      total: 1,
+      bytes,
+      ...(videoSkipped ? { videoSkipped } : {}),
+    });
   } catch (error) {
     setStatus({
       state: "failed",

@@ -52,7 +52,7 @@ async def captures(request: pytest.FixtureRequest) -> AsyncIterator[CaptureStore
                 ).fetchone()
                 if row is None or row[0] is None:
                     await connection.execute(migration.read_bytes())
-            await connection.execute("truncate public.captures")
+            await connection.execute("truncate public.captures cascade")
         yield PostgresCaptureStore(pool)
     finally:
         await pool.close()

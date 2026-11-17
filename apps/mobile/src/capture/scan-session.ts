@@ -51,11 +51,21 @@ import {
   updateMesh,
 } from "./mesh-tracker";
 import {
+  addMeterSample,
+  canFinishAnyway,
+  EMPTY_METER,
+  meterDone,
+  meterFraction,
+  type MeterState,
+} from "./coverage-meter";
+import {
   addMotionSample,
   EMPTY_MOTION_COVERAGE,
   type MotionCoverage,
+  MAX_PITCH_DEGREES,
   motionDone,
   motionFraction,
+  rejectMotionSample,
 } from "./motion-coverage";
 import { type MotionSample, wrapDegrees } from "./pose";
 
@@ -118,6 +128,11 @@ export interface ScanState {
    * so a scan that turns simple at ten seconds keeps what it earned.
    */
   motionCoverage: MotionCoverage;
+  /**
+   * The coverage meter: the loop round the space and the sweeps from inside
+   * it, from AR positions. It gates Done on every phone whose AR tracks.
+   */
+  meter: MeterState;
   /** Whether the latest AR camera frame was sharp, and when it was judged. */
   sharp: { ok: boolean; atMs: number } | null;
   /** Since when AR tracking has seen too little to track well; null while it sees enough. */
@@ -150,6 +165,7 @@ export const INITIAL_SCAN: ScanState = {
   recentFrames: [],
   mode: initialMode("ios"),
   motionCoverage: EMPTY_MOTION_COVERAGE,
+  meter: EMPTY_METER,
   sharp: null,
   lowDetailSinceMs: null,
 };
@@ -341,17 +357,33 @@ export function scanReducer(tier: "standard" | "low") {
           stepMs(state, event.atMs),
         );
         const still = judged.guardrails.motion === "good" && !judged.pause.paused;
+        const motion = {
+          yaw: event.yaw,
+          pitch: event.pitch,
+          turnDegPerS: turnRate,
+          steady: still,
+          sharp: sharpNow(judged, event.atMs),
+          position: event.position ?? null,
+          atMs: event.atMs,
+        };
+        // The meter takes a pose under the same gates as motion coverage:
+        // slow, steady, sharp, and within 60 degrees of level.
+        const counts =
+          event.position != null &&
+          rejectMotionSample(motion) === null &&
+          Math.abs(event.pitch) <= MAX_PITCH_DEGREES;
         const withMotion: ScanState = {
           ...judged,
-          motionCoverage: addMotionSample(judged.motionCoverage, {
-            yaw: event.yaw,
-            pitch: event.pitch,
-            turnDegPerS: turnRate,
-            steady: still,
-            sharp: sharpNow(judged, event.atMs),
-            position: event.position ?? null,
-            atMs: event.atMs,
-          }),
+          motionCoverage: addMotionSample(judged.motionCoverage, motion),
+          meter:
+            counts && event.position
+              ? addMeterSample(judged.meter, {
+                  position: event.position,
+                  yaw: event.yaw,
+                  pitch: event.pitch,
+                  atMs: event.atMs,
+                })
+              : judged.meter,
         };
         // Facing a direction earns nothing by itself; coverage comes from
         // sharp, slow frames that land on walls and floor (arSurfaces). Older
@@ -500,6 +532,7 @@ export const SURFACE_DONE_SHARE = 0.7;
 
 /** Enough has been mapped for "Done" to make sense. */
 export function canFinish(state: ScanState): boolean {
+  if (isMeter(state)) return meterDone(state.meter);
   if (isSimple(state)) return motionDone(state.motionCoverage);
   const covered = state.surfacesSeen
     ? surfaceFraction(state.surfaces) >= SURFACE_DONE_SHARE
@@ -509,12 +542,14 @@ export function canFinish(state: ScanState): boolean {
 
 /** Recent samples (AR) or frames (2D) were rejected for turning fast or blur. */
 export function shouldShowSlowDown(state: ScanState): boolean {
+  if (isMeter(state)) return tooManyRejected(state.motionCoverage.recent);
   if (isSimple(state)) return tooManyRejected(state.motionCoverage.recent);
   return state.surfacesSeen ? shouldSlowDown(state.surfaces) : tooManyRejected(state.recentFrames);
 }
 
 /** 0 to 1, shown as the share mapped. */
 export function mappedShare(state: ScanState): number {
+  if (isMeter(state)) return meterFraction(state.meter);
   if (isSimple(state)) return motionFraction(state.motionCoverage);
   return state.surfacesSeen
     ? surfaceFraction(state.surfaces)
@@ -551,4 +586,18 @@ export function shouldStepBack(state: ScanState): boolean {
     state.clockMs - state.lowDetailSinceMs >= STEP_BACK_AFTER_MS &&
     state.guardrails.light === "good"
   );
+}
+
+/**
+ * The coverage meter decides Done: AR is tracking and has given positions.
+ * A phone whose AR never tracks has no positions, and keeps the simple
+ * scan's heading and steady-time rule.
+ */
+export function isMeter(state: ScanState): boolean {
+  return state.poseSource === "ar" && state.meter.samples > 0;
+}
+
+/** Coverage has not moved for a minute: the person may finish with what there is. */
+export function canFinishEarly(state: ScanState): boolean {
+  return isMeter(state) && state.clockMs !== null && canFinishAnyway(state.meter, state.clockMs);
 }

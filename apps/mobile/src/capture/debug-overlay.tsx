@@ -4,11 +4,19 @@
 import { Text } from "@sajao/ui";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
+import { loopOf, type MeterState, SECTORS, sweepsOf } from "./coverage-meter";
 import { headingShare } from "./motion-coverage";
 import type { ScanState } from "./scan-session";
 import type { ScanDebug } from "./use-scan-session";
 
 const round = (value: number, digits = 0) => value.toFixed(digits);
+
+/** The coverage meter in one line: loop sectors and metres, sweeps counted of needed. */
+function meterLine(meter: MeterState): string {
+  const loop = loopOf(meter);
+  const sweeps = sweepsOf(meter, loop);
+  return `loop ${loop.count}/${SECTORS} ${meter.pathM.toFixed(1)} m, sweeps ${sweeps.counted}/${sweeps.needed}`;
+}
 
 export function scanDebugLines(
   debug: ScanDebug,
@@ -36,6 +44,7 @@ export function scanDebugLines(
     ["usable", round(state.usableFrames)],
     ["error", debug.diagnostics.lastError ?? "-"],
     ["mode", `${state.mode.mode}${state.mode.reason ? ` (${state.mode.reason})` : ""}`],
+    ["meter", meterLine(state.meter)],
     ["heading", `${round(headingShare(state.motionCoverage) * 100)}%`],
     ["moved", `${round(state.motionCoverage.pathM, 1)} m`],
     [
