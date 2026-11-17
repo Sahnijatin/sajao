@@ -2,6 +2,7 @@ import shutil
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Literal
 
 import pytest
 from pydantic import HttpUrl, ValidationError
@@ -389,7 +390,7 @@ def test_is_blocked_spots_the_bot_check_and_rate_limits() -> None:
     assert not is_blocked("ERROR: ffmpeg exited with code 187")
 
 
-def clip(status: str, error: str | None = None) -> ClipRecord:
+def clip(status: Literal["ok", "failed"], error: str | None = None) -> ClipRecord:
     return ClipRecord(
         video_id="aaaaaaaaaaa",
         start_s=0,
