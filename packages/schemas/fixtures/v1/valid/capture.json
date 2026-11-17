@@ -99,6 +99,13 @@
         "at_ms": 1800
       }
     ],
-    "sensor_log": "captures/c1/sensors.jsonl"
+    "sensor_log": "captures/c1/sensors.jsonl",
+    "video_start_ms": 640,
+    "review_windows": [
+      {
+        "start_ms": 41200,
+        "end_ms": 52900
+      }
+    ]
   }
 }

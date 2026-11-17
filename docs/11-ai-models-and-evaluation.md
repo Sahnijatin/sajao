@@ -28,7 +28,7 @@ The twin risk spike (`services/spikes/twin-risk/`, report in `eval/twin-risk/`) 
 
 ## Indian-home detector dataset
 
-The on-device detector knows COCO classes, not Indian home objects. `services/dataset` builds a labelled set of real Indian rooms in six stages: find YouTube home tours, screen them with Gemini for room segments, download only kept segments, sample frames without near-duplicates or blur, auto-label behind the model gateway with a hand-checked sample, and version the result on Modal storage. Licenses are recorded per source; the set is for internal training only. Its first use is the Indian-object test set for the twin's detector (below). Property listing photos are added only after the YouTube pilot report.
+The on-device detector knows COCO classes, not Indian home objects. `services/dataset` builds a labelled set of real Indian rooms in six stages: find YouTube home tours, screen them with Gemini for room segments, download only kept segments, sample frames without near-duplicates or blur, auto-label behind the model gateway with a hand-checked sample, and version the result on Modal storage. Licenses are recorded per source; the set is for internal training only. Its first use is the Indian-object test set for the twin's detector (below). Property listing photos are added only after the YouTube pilot report. The pipeline is stopped after the pilot, and labelling is on hold until the legal review of the register.
 
 ## Object detection for the twin
 
@@ -36,7 +36,9 @@ The twin finds objects on the server with an open-vocabulary detector, prompted 
 
 ## Render bake-off
 
-Real rooms run through Gemini 3 Pro Image, Gemini 3.1 Flash Image, Seedream, FLUX.2 and Qwen-Image-Edit with the same guide and product references, scored blind on excitement, product fidelity and structure. The winner becomes the primary; the cheaper runner-up becomes the fallback in the gateway. The bake-off reruns whenever a candidate model changes.
+The bake-off compares ways of making the redesigned image on the same rooms, designs and products: a pure composite built by code, a composite with a lighting pass, the same on the sharpest real keyframe, and guided edits of the photo by image models. Every image gets the same automatic checks, and people vote blind on "I want this room".
+
+Product fidelity is a hard gate: an approach is eligible only if it keeps products recognisable, and the vote chooses among eligible approaches only. Guided edit stays in the vote for comparison. The winner is logged in Notion "Decisions" and then built fresh as a durable render step in `services/workers`, behind the gateway and the schemas; the evaluation harness is evidence and is not merged. The same per-product gate is the catalog admission check (see [Catalog](07-catalog-and-3d-assets.md)). The bake-off reruns whenever a candidate model changes.
 
 ## Golden set
 

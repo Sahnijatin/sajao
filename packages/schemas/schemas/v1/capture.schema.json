@@ -178,13 +178,18 @@
           "$ref": "common.schema.json#/$defs/StorageKey",
           "description": "The scan video, when recorded."
         },
+        "video_start_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "When the scan video's first frame was taken, in milliseconds from the start of the capture, so the video can be lined up with the keyframes and the sensor log."
+        },
         "keyframes": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/CaptureKeyframe"
           },
           "minItems": 1,
-          "maxItems": 120
+          "maxItems": 200
         },
         "planes": {
           "$ref": "common.schema.json#/$defs/StorageKey",
@@ -209,6 +214,26 @@
         "sensor_log": {
           "$ref": "common.schema.json#/$defs/StorageKey",
           "description": "Motion, pose and light readings over time, as JSON lines."
+        },
+        "review_windows": {
+          "type": "array",
+          "maxItems": 50,
+          "description": "Times when the review was open over the scan, in milliseconds from the start of the capture. The phone was lowered then: frames of the video inside a window are not part of the scan and are dropped on the server.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["start_ms", "end_ms"],
+            "properties": {
+              "start_ms": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "end_ms": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
         }
       }
     },

@@ -94,3 +94,18 @@ def test_fusion_groups_by_the_twin_vocabulary() -> None:
         ]
     )
     assert sorted(i.label for i in inst) == ["sofa", "wardrobe"]
+
+
+def test_overlap_of_boxes_gives_iou_and_containment() -> None:
+    from sajao_workers.twin.geometry import UprightBox, box_overlap
+
+    big = UprightBox((0.0, 0.0, 0.5), 2.0, 1.0, 1.0, 0.0, 2)
+    inside = UprightBox((0.5, 0.0, 0.5), 0.5, 0.5, 0.5, 0.0, 2)
+    apart = UprightBox((5.0, 0.0, 0.5), 1.0, 1.0, 1.0, 0.0, 2)
+    turned = UprightBox((0.0, 0.0, 0.5), 2.0, 1.0, 1.0, math.pi / 2, 2)
+
+    iou, contained = box_overlap(big, inside)
+    assert contained == pytest.approx(1.0) and iou == pytest.approx(0.125 / 2.0)
+    assert box_overlap(big, apart) == (0.0, 0.0)
+    iou, contained = box_overlap(big, turned)  # a cross: 1 x 1 of each 2 x 1 footprint
+    assert iou == pytest.approx(1.0 / 3.0) and contained == pytest.approx(0.5)

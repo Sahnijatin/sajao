@@ -59,6 +59,14 @@ class SajaoArView(context: Context, appContext: AppContext) :
 
   var lite = false
   var reducedMotion = false
+  // False draws the camera image only: no planes, points, links or labels.
+  // Planes are still followed and the floor found, so capture and coverage
+  // are unchanged.
+  @Volatile private var overlay = true
+  // True while the app's review is open: no keyframe is saved. The AR
+  // session keeps running. ARCore's recording cannot pause, so the app also
+  // writes the review window into the package for the server to drop.
+  @Volatile var capturePaused = false
 
   private val container = FrameLayout(context)
   private val surface = GLSurfaceView(context)
@@ -190,6 +198,11 @@ class SajaoArView(context: Context, appContext: AppContext) :
   fun setActive(active: Boolean) {
     wantsActive = active
     if (active) resume() else pause()
+  }
+
+  fun setOverlay(shown: Boolean) {
+    overlay = shown
+    labelLayer.visibility = if (shown) View.VISIBLE else View.GONE
   }
 
   fun setTorch(on: Boolean) {
@@ -455,8 +468,10 @@ class SajaoArView(context: Context, appContext: AppContext) :
           accumulatePoints(frame)
         }
         drawPlanes(session, now)
-        drawPoints()
-        projectLabels()
+        if (overlay) {
+          drawPoints()
+          projectLabels()
+        }
         if (now - lastSurfacesAt > 250) {
           lastSurfacesAt = now
           sendSurfaces(frame)
@@ -554,7 +569,7 @@ class SajaoArView(context: Context, appContext: AppContext) :
           }
           brightness = copy.meanBrightness()
           latestSharpness = SurfaceSample.lumaSharpness(copy.y, copy.width, copy.height, copy.yRowStride)
-          capture?.offer(copy, latestSharpness, snapshot, raw)
+          if (!capturePaused) capture?.offer(copy, latestSharpness, snapshot, raw)
           val rays = snapshot.camera
           if (rays != null && detector.isAvailable && !detector.isBusy) {
             detector.detect(copy) { found, milliseconds ->
@@ -724,8 +739,10 @@ class SajaoArView(context: Context, appContext: AppContext) :
       if (current == null || current.isStale(plane)) outlineOf(plane)?.let { planeOutlines[plane] = it }
     }
     planeOutlines.keys.retainAll(seen)
-    for ((plane, outline) in planeOutlines) {
-      drawOutline(plane, outline, now)
+    if (overlay) {
+      for ((plane, outline) in planeOutlines) {
+        drawOutline(plane, outline, now)
+      }
     }
     planeCount = planeOutlines.size
     // Every plane ARCore has ever reported in this session, by what became

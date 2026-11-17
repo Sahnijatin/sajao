@@ -257,3 +257,26 @@ def test_low_resolution_depth_is_scaled_to_the_mask_without_blending() -> None:
     assert scaled.shape == (4, 6)
     assert set(np.unique(scaled).tolist()) <= {0.0, 1.0, 2.0, 3.0}  # no blended depths
     assert scaled[0, 0] == 1.0 and scaled[3, 5] == 3.0 and scaled[0, 5] == 0.0
+
+
+def test_fusion_says_per_label_why_nothing_was_placed() -> None:
+    per_label: dict[str, dict[str, int]] = {}
+
+    build_objects(frames_seeing_box(n=2), up_axis=1, depth_source="lidar", per_label=per_label)
+
+    assert per_label["sofa"] == {"detected": 2, "lifted": 2, "few_frames": 1, "implausible": 0}
+
+
+def test_small_items_get_their_own_minimum_size() -> None:
+    mask, depth = box_scene(0.0)
+    # A 10 cm item: the 1 m box face seen at a tenth of the depth, from four frames.
+    small = [
+        FrameMasks(f"kf{i}", camera_at(0.0), K, depth * 0.1, [("clock", 0.9, mask, f"m{i}")])
+        for i in range(4)
+    ]
+    per_label: dict[str, dict[str, int]] = {}
+
+    assert build_objects(small, 1, "lidar", per_label=per_label) == []
+    assert per_label["clock"]["implausible"] == 1
+    (clock,) = build_objects(small, 1, "lidar", min_size={"clock": 0.05})
+    assert clock["box"]["length"]["value_m"] == pytest.approx(0.1, abs=0.03)

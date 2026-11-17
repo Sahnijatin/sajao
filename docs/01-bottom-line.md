@@ -31,3 +31,14 @@ Honesty labels: "Illustrative render" on images, "Estimated ±X cm" on unverifie
 | Later | Vastu home visit; own trained taste and ranking models; carpentry and built-ins |
 
 Nothing is picked up front: you scan whatever you want redone (a whole room, a corner, a balcony) and the app works out what it is and how much of it there is. Living rooms and bedrooms are the quality bar at launch; other spaces ship with a lighter template set, labelled as such, until golden-set tests pass. Rearrange-only mode uses the same journey with your existing items as the catalog.
+
+## Launch scope
+
+Where this section differs from the tiers table or the paragraph above, this section holds.
+
+- **What launches.** A redesign shown on your own hero photos, a measured plan, and a shopping list of real products that fit. All three are still views of one `Design`.
+- **After launch.** The 3D twin viewer, the room splat, 3D models of your own items, catalog matches for your own items, and rearrange-only mode. The capture package, the measured shell, the object inventory and the hero views stay, because the design engine and the render need them.
+- **Rooms.** Designs for living rooms and bedrooms only. Any space can still be scanned; other spaces get their photos, measurements and inventory, and a plain note that designs for that kind of space are coming.
+- **Render.** Product fidelity is a hard gate. The blind vote chooses only among render approaches that pass it, and a product enters the launch catalog only if it passes in the launch approach.
+- **Also after launch.** Truecaller and WhatsApp sign-in (launch has Google, Apple and guest), subscription entitlements, the move of the API and media to their long-term hosts, paint and flooring preview, and rentals. The share reel is the first item to move if the schedule slips.
+- **Cost control.** One GPU spend cap for the workspace, split by work area, and at launch a limit on rooms per person with a global daily cap.

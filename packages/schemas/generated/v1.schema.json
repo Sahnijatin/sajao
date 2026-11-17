@@ -528,13 +528,18 @@
           "$ref": "#/$defs/StorageKey",
           "description": "The scan video, when recorded."
         },
+        "video_start_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "When the scan video's first frame was taken, in milliseconds from the start of the capture, so the video can be lined up with the keyframes and the sensor log."
+        },
         "keyframes": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/CaptureKeyframe"
           },
           "minItems": 1,
-          "maxItems": 120
+          "maxItems": 200
         },
         "planes": {
           "$ref": "#/$defs/StorageKey",
@@ -559,6 +564,29 @@
         "sensor_log": {
           "$ref": "#/$defs/StorageKey",
           "description": "Motion, pose and light readings over time, as JSON lines."
+        },
+        "review_windows": {
+          "type": "array",
+          "maxItems": 50,
+          "description": "Times when the review was open over the scan, in milliseconds from the start of the capture. The phone was lowered then: frames of the video inside a window are not part of the scan and are dropped on the server.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "start_ms",
+              "end_ms"
+            ],
+            "properties": {
+              "start_ms": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "end_ms": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
         }
       }
     },
@@ -1039,6 +1067,39 @@
         },
         "width": {
           "$ref": "#/$defs/Dimension"
+        }
+      }
+    },
+    "HeroView": {
+      "description": "A view the twin is shown from: the pose of a real keyframe, chosen by code for how much of the room it shows, its sharpness and its framing. Never a pose a model made up.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "keyframe_id",
+        "coverage",
+        "sharpness",
+        "orbit"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "keyframe_id": {
+          "$ref": "#/$defs/LocalId",
+          "description": "The keyframe whose pose, intrinsics and photo this view uses."
+        },
+        "coverage": {
+          "$ref": "#/$defs/UnitScore",
+          "description": "Share of the scanned room this view shows."
+        },
+        "sharpness": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Variance of the Laplacian of the keyframe; higher is sharper."
+        },
+        "orbit": {
+          "$ref": "#/$defs/ViewOrbit"
         }
       }
     },
@@ -2135,6 +2196,30 @@
         }
       }
     },
+    "SafeRegion": {
+      "title": "SafeRegion",
+      "description": "Where the camera may stand: within radius_m of any anchor. Anchors are the keyframe camera positions along the capture path, in the space frame. A viewing limit, not a room measurement.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "anchors",
+        "radius_m"
+      ],
+      "properties": {
+        "anchors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Point3"
+          },
+          "minItems": 1
+        },
+        "radius_m": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        }
+      }
+    },
     "ScaleEvidence": {
       "description": "Independent scale anchors and whether they agree.",
       "type": "object",
@@ -2649,6 +2734,9 @@
           "maxItems": 4,
           "description": "Compressed room splats for viewing on the phone, one per device tier. Colour only; built from the room splat."
         },
+        "viewing": {
+          "$ref": "#/$defs/Viewing"
+        },
         "inventory": {
           "$ref": "#/$defs/Inventory"
         }
@@ -3127,6 +3215,53 @@
     "Uuid": {
       "type": "string",
       "format": "uuid"
+    },
+    "Viewing": {
+      "description": "Where the twin may be shown from. The room splat only holds up near where the phone stood, so the viewer and the reveal use only the hero views, their orbits, and camera positions inside the safe region.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hero_views",
+        "safe_region"
+      ],
+      "properties": {
+        "hero_views": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HeroView"
+          },
+          "minItems": 1,
+          "maxItems": 10,
+          "description": "Six to ten views when the capture allows, best first."
+        },
+        "safe_region": {
+          "$ref": "#/$defs/SafeRegion"
+        }
+      }
+    },
+    "ViewOrbit": {
+      "title": "ViewOrbit",
+      "description": "How far the camera may move and turn around a hero view. Viewing limits, not room measurements.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_offset_m",
+        "max_yaw_deg"
+      ],
+      "properties": {
+        "max_offset_m": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Largest distance of the camera from the hero pose, in metres."
+        },
+        "max_yaw_deg": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 90,
+          "description": "Largest turn about the vertical axis, either way."
+        }
+      }
     },
     "Wall": {
       "type": "object",
