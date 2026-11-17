@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import contextlib
 import json
+import os
 from pathlib import Path
 
 import modal
@@ -308,7 +309,7 @@ claude_image = (
     .add_local_dir(HERE / "bk", "/root/bk")
 )
 
-app = modal.App("sajao-render-bakeoff")
+app = modal.App(os.environ.get("BAKEOFF_APP", "sajao-render-bakeoff"))  # separate billing per task
 # The gated 3D models build heavy images; a separate app keeps their builds from
 # blocking every other stage.
 gated = modal.App("sajao-render-bakeoff-gated")
@@ -754,6 +755,29 @@ def drawing_index() -> dict:
             "input": v.get("input"),
             "drawings": [i for i in v.get("clean", []) if is_drawing(load_rgba(d.name, i))],
         }
+    return out
+
+
+catalog_vol = modal.Volume.from_name("sajao-catalog", create_if_missing=True)
+
+
+@app.function(image=asset_image, volumes={"/bk": bk_vol, "/cat": catalog_vol}, timeout=1800, cpu=2)
+def copy_to_catalog(items: list[tuple[str, list[int]]]) -> dict:
+    """Copy listing photos into the private catalog volume (development data, never shipped)."""
+    import shutil
+
+    out = {}
+    for lid, views in items:
+        dst = Path("/cat/photos") / lid
+        dst.mkdir(parents=True, exist_ok=True)
+        done = []
+        for i in views:
+            src = Path("/bk/listings") / lid / f"{i}.jpg"
+            if src.exists():
+                shutil.copyfile(src, dst / f"{i}.jpg")
+                done.append(f"photos/{lid}/{i}.jpg")
+        out[lid] = done
+    catalog_vol.commit()
     return out
 
 
