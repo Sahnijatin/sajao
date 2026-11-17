@@ -105,6 +105,14 @@ async def test_running_again_does_no_work_twice_and_resumes_after_a_failure(
 
     assert again.outcome == "done"
     assert calls == ["b", "c"]  # a's stored result was reused
+    # a went straight to done: the app never sees a finished stage running again.
+    assert [m[:2] for m in board.moves[-5:]] == [
+        ("a", "done"),
+        ("b", "running"),
+        ("b", "done"),
+        ("c", "running"),
+        ("c", "done"),
+    ]
     assert board.moves[-1][:2] == ("c", "done")
 
 

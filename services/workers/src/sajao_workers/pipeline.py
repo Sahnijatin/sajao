@@ -95,11 +95,13 @@ async def run_stages(
             logger.error("stage %s of room %s lacks %s", stage.name, room_id, missing)
             await board.set_stage(room_id, stage.name, "failed", "input_missing", request_id)
             return Run("failed", known, gpu_seconds, cost)
-        await board.set_stage(room_id, stage.name, "running", None, request_id)
+        inputs = {name: known[name] for name in stage.needs}
+        stored = runner.store.read_manifest(runner.key(stage.step, inputs, params or {}))
+        if stored is None:
+            # A stage whose result is stored never shows as running again.
+            await board.set_stage(room_id, stage.name, "running", None, request_id)
         try:
-            result = await runner.run(
-                stage.step, {name: known[name] for name in stage.needs}, params or {}
-            )
+            result = await runner.run(stage.step, inputs, params or {})
         except StepBusyError:
             # Another worker has it and will move the board when it finishes.
             return Run("busy", known, gpu_seconds, cost)
