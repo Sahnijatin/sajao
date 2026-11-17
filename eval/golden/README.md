@@ -7,6 +7,8 @@ M="uv run --with modal[api-proxy-support]==1.6.4 modal run services/workers/gpu/
 $M::golden_room --capture path/to/capture-folder --tape path/to/sheet.json
 ```
 
+Add `--no-splat` to build the twin without the splat: the shell, objects, inventory, hero views and the AR measurements do not need it, and it is the launch shape. A sparse scan fails the splat's quality gate only after minutes of GPU training, and with the splat on that stops the whole run.
+
 ## AR measurements against the tape
 
 Fit is checked against what the phone measured, so the first question of a golden room is how far the phone's own walls, floor, ceiling, doors and windows are from the tape. That needs no GPU and no twin:
