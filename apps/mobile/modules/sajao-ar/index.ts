@@ -161,6 +161,19 @@ export interface SajaoArViewProps {
   torch: boolean;
   lite: boolean;
   reducedMotion: boolean;
+  /**
+   * False draws the camera image only: no mesh, planes, points, glow or
+   * labels. Capture, coverage events and the package are unchanged. Defaults
+   * to true, so a screen that does not pass it keeps the overlay.
+   */
+  overlay?: boolean;
+  /**
+   * True while the review is open: the native view records no keyframe, and
+   * on iOS no video frame. The AR session keeps running, and recording
+   * carries on once it is false again. ARCore's video cannot pause, so the
+   * recorder also writes the review window into the package.
+   */
+  capturePaused?: boolean;
   labels: ArLabelProp[];
   /** Records a capture package while set; empty records nothing. */
   captureId?: string;
