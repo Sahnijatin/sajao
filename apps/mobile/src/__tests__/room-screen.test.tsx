@@ -422,3 +422,64 @@ describe("the plan on the Room tab", () => {
     expect(screen.queryByTestId("room-plan-slot")).toBeNull();
   });
 });
+
+describe("shopping list: photos and per-item fit", () => {
+  const [value, match, bold] = real.looks as [
+    RoomContent["looks"][number],
+    RoomContent["looks"][number],
+    RoomContent["looks"][number],
+  ];
+  const [sofa, lamp, ...rest] = match.design.items;
+  const withFits = {
+    ...real,
+    looks: [
+      value,
+      {
+        ...match,
+        design: {
+          ...match.design,
+          items: [
+            { ...sofa, fit: { status: "fits", clearance_m: 0.12 } },
+            { ...lamp, fit: { status: "does_not_fit" } },
+            ...rest,
+          ],
+        } as unknown as typeof match.design,
+      },
+      bold,
+    ],
+  };
+
+  it("shows each real product's photo, and none for samples", async () => {
+    const view = await show(real);
+    await openTab("Shopping list");
+    expect(screen.getByTestId("shopping-photo-sofa").props.source).toEqual({
+      uri: "https://cdn.example.com/products/sofa-oak-3s/front.jpg",
+    });
+    await view.unmount();
+    await show();
+    await openTab("Shopping list");
+    expect(screen.queryByTestId("shopping-photo-sofa")).toBeNull();
+  });
+
+  it("says how each item fits, with the space to spare when the verifier gave it", async () => {
+    await show(withFits);
+    await openTab("Shopping list");
+    expect(screen.getByText("Fits with 12 cm to spare")).toBeTruthy();
+    expect(screen.getByText("Does not fit here")).toBeTruthy();
+    // Items without their own verdict keep the design's.
+    expect(screen.getAllByText("Fits your room")).toHaveLength(2);
+  });
+
+  it("does not offer to buy an item that does not fit", async () => {
+    await show(withFits);
+    await openTab("Shopping list");
+    expect(
+      screen.getByRole("button", { name: "Buy Paper shade floor lamp" }).props.accessibilityState
+        .disabled,
+    ).toBe(true);
+    expect(
+      screen.getByRole("button", { name: "Buy Oak frame three seater sofa" }).props
+        .accessibilityState.disabled,
+    ).toBe(false);
+  });
+});
