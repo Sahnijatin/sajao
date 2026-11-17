@@ -17,7 +17,9 @@
       "done": "Scan uploaded",
       "doneNoVideo": "Scan uploaded without its video (the video was too large)",
       "failed": "Upload paused. Nothing is lost",
-      "retry": "Try again"
+      "retry": "Try again",
+      "doneSize": "Scan uploaded ({{megabytes}} MB)",
+      "doneNoVideoSize": "Scan uploaded without its video, which was too large ({{megabytes}} MB)"
     }
   },
   "capture": {
