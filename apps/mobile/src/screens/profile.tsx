@@ -47,14 +47,14 @@ export function ProfileScreen() {
 
       <Setting title={t("profile.units")}>
         <Chip
-          label={t("profile.unitsCm")}
-          selected={units === "cm"}
-          onPress={() => setUnits("cm")}
-        />
-        <Chip
           label={t("profile.unitsFtIn")}
           selected={units === "ft_in"}
           onPress={() => setUnits("ft_in")}
+        />
+        <Chip
+          label={t("profile.unitsCm")}
+          selected={units === "cm"}
+          onPress={() => setUnits("cm")}
         />
         <Text variant="caption" tone="tertiary">
           {t("profile.unitsExample", { length: formatLength(3.4, units, t) })}

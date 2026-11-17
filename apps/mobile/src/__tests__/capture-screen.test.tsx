@@ -371,7 +371,8 @@ describe("review before upload", () => {
     expect(screen.getByRole("header", { name: "Nearly there" })).toBeTruthy();
     expect(screen.getByText("One or more walls")).toBeTruthy();
     expect(screen.getByText("The floor")).toBeTruthy();
-    expect(screen.getByText("About 410 cm by 340 cm")).toBeTruthy();
+    // Feet and inches unless centimetres are chosen in settings.
+    expect(screen.getByText("About 13 ft 5 in by 11 ft 2 in")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Rescan this part" })).toBeTruthy();
   });
 
