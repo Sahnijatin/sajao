@@ -139,3 +139,113 @@ async def run_room(room_id: str) -> str:
 async def run_designs(room_id: str, request_id: str) -> str:
     """Design stages are not handed over yet: the request stays queued."""
     return "queued"
+
+
+class _UserFiles:
+    """Deletes every file in one user's folder of the captures bucket."""
+
+    def __init__(self) -> None:
+        self._files = _CaptureFiles()
+
+    def erase(self, user_id: str) -> int:
+        client, bucket = self._files._client, self._files._bucket
+        deleted = 0
+        while True:
+            # Listed again from the start each time: what was deleted is gone.
+            page = client.list_objects_v2(Bucket=bucket, Prefix=f"{user_id}/", MaxKeys=500)
+            keys = [item["Key"] for item in page.get("Contents", [])]
+            if not keys:
+                return deleted
+            # One by one: this store refuses the batch delete call.
+            for key in keys:
+                client.delete_object(Bucket=bucket, Key=key)
+            deleted += len(keys)
+
+
+class _SignIn:
+    """Deletes the user's sign-in account through the auth service's admin API."""
+
+    async def erase(self, user_id: str) -> None:
+        import asyncio
+        import os
+        import urllib.error
+        import urllib.request
+
+        key = os.environ["SAJAO_PIPELINE_STORAGE_TOKEN"]
+        request = urllib.request.Request(  # noqa: S310
+            f"{os.environ['SAJAO_AUTH_ISSUER'].rstrip('/')}/admin/users/{user_id}",
+            method="DELETE",
+            headers={"Authorization": f"Bearer {key}", "apikey": key},
+        )
+
+        def send() -> None:
+            try:
+                urllib.request.urlopen(request, timeout=30).close()  # noqa: S310
+            except urllib.error.HTTPError as error:
+                if error.code != 404:  # already gone is fine
+                    raise
+
+        await asyncio.to_thread(send)
+
+
+@app.function(
+    image=image,
+    secrets=[modal.Secret.from_name("sajao-api"), modal.Secret.from_name("sajao-pipeline")],
+    max_containers=2,
+    timeout=900,
+    retries=2,
+)
+async def delete_account(user_id: str) -> int:
+    """Erase one user's files, rows and sign-in account. Safe to call again."""
+    import os
+
+    from psycopg_pool import AsyncConnectionPool
+
+    from sajao_api.accounts import PostgresAccountStore, erase_account
+
+    pool = AsyncConnectionPool(
+        os.environ["SAJAO_DATABASE_URL"],
+        open=False,
+        min_size=1,
+        max_size=2,
+        kwargs={"prepare_threshold": None, "autocommit": True},
+    )
+    await pool.open()
+    try:
+        accounts = PostgresAccountStore(pool)
+        if await accounts.deletion_finished(user_id) is None:
+            return 0  # nobody asked: never erase on a bare call
+        return await erase_account(user_id, accounts, _UserFiles(), _SignIn())
+    finally:
+        await pool.close()
+
+
+@app.function(
+    image=image,
+    secrets=[modal.Secret.from_name("sajao-api")],
+    schedule=modal.Period(hours=1),
+    timeout=120,
+)
+async def sweep_account_deletions() -> int:
+    """Start again any erasure that was asked for and did not finish."""
+    import os
+
+    from psycopg_pool import AsyncConnectionPool
+
+    from sajao_api.accounts import PostgresAccountStore
+
+    pool = AsyncConnectionPool(
+        os.environ["SAJAO_DATABASE_URL"],
+        open=False,
+        min_size=1,
+        max_size=1,
+        kwargs={"prepare_threshold": None, "autocommit": True},
+    )
+    await pool.open()
+    try:
+        waiting = await PostgresAccountStore(pool).unfinished_deletions()
+    finally:
+        await pool.close()
+    for user_id in waiting:
+        await delete_account.spawn.aio(user_id)
+    return len(waiting)
