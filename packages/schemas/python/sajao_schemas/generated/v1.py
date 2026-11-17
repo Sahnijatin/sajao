@@ -157,6 +157,24 @@ class LocalId(RootModel[str]):
     ]
 
 
+class MeasurementConfidence(BaseModel):
+    """
+    How a room's lengths were measured. taped: a tape value the person entered checked or set them. ar_measured: the phone's AR (planes or LiDAR) measured them. estimated: a depth model guessed them from pictures, as for imported photos and videos; the app shows sizes with measure to confirm and makes no fit claim.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    level: Literal["taped", "ar_measured", "estimated"]
+    basis: Annotated[
+        Literal["tape", "ar_planes", "lidar", "depth_model"],
+        Field(description="Where the room's lengths came from."),
+    ]
+    tape_values: Annotated[
+        int | None, Field(description="Tape values the person entered for this room.", ge=0)
+    ] = None
+
+
 class Money(BaseModel):
     """
     A price. Set only from retailer data, never by a generative model.
@@ -2096,3 +2114,9 @@ class SpaceTwin(BaseModel):
     viewing: Viewing | None = None
     inventory: Inventory | None = None
     free_floor: FreeFloor | None = None
+    confidence: Annotated[
+        MeasurementConfidence | None,
+        Field(
+            description="How far the room's measurements can be trusted. Fit claims only at taped or ar_measured."
+        ),
+    ] = None

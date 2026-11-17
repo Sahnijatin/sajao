@@ -506,5 +506,10 @@
     "error_band_m2": 0.74,
     "floor_area_m2": 14.28,
     "kept_ids": ["almirah-1", "b1"]
+  },
+  "confidence": {
+    "level": "ar_measured",
+    "basis": "lidar",
+    "tape_values": 0
   }
 }
