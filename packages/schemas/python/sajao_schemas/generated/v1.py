@@ -308,6 +308,18 @@ class RotateEdit(BaseModel):
     ]
 
 
+class SafeRegion(BaseModel):
+    """
+    Where the camera may stand: within radius_m of any anchor. Anchors are the keyframe camera positions along the capture path, in the space frame. A viewing limit, not a room measurement.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    anchors: Annotated[list[Point3], Field(min_length=1)]
+    radius_m: Annotated[float, Field(gt=0.0, le=1.0)]
+
+
 class ScaleAnchor(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -441,6 +453,28 @@ class TasteEmbedding(BaseModel):
 
 class UnitScore(RootModel[float]):
     root: Annotated[float, Field(description="A score from 0 to 1.", ge=0.0, le=1.0)]
+
+
+class ViewOrbit(BaseModel):
+    """
+    How far the camera may move and turn around a hero view. Viewing limits, not room measurements.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    max_offset_m: Annotated[
+        float,
+        Field(
+            description="Largest distance of the camera from the hero pose, in metres.",
+            ge=0.0,
+            le=1.0,
+        ),
+    ]
+    max_yaw_deg: Annotated[
+        float,
+        Field(description="Largest turn about the vertical axis, either way.", ge=0.0, le=90.0),
+    ]
 
 
 class Budget(BaseModel):
@@ -729,6 +763,38 @@ class Fixture(BaseModel):
     offset: Dimension
     mount_height: Dimension
     width: Dimension | None = None
+
+
+class HeroView(BaseModel):
+    """
+    A view the twin is shown from: the pose of a real keyframe, chosen by code for how much of the room it shows, its sharpness and its framing. Never a pose a model made up.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    keyframe_id: Annotated[
+        str,
+        Field(
+            description="The keyframe whose pose, intrinsics and photo this view uses.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    coverage: Annotated[
+        float, Field(description="Share of the scanned room this view shows.", ge=0.0, le=1.0)
+    ]
+    sharpness: Annotated[
+        float,
+        Field(description="Variance of the Laplacian of the keyframe; higher is sharper.", ge=0.0),
+    ]
+    orbit: ViewOrbit
 
 
 class Inventory(BaseModel):
@@ -1435,6 +1501,25 @@ class TwinObject(BaseModel):
     ] = None
 
 
+class Viewing(BaseModel):
+    """
+    Where the twin may be shown from. The room splat only holds up near where the phone stood, so the viewer and the reveal use only the hero views, their orbits, and camera positions inside the safe region.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    hero_views: Annotated[
+        list[HeroView],
+        Field(
+            description="Six to ten views when the capture allows, best first.",
+            max_length=10,
+            min_length=1,
+        ),
+    ]
+    safe_region: SafeRegion
+
+
 class Wall(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -1881,4 +1966,5 @@ class SpaceTwin(BaseModel):
             max_length=4,
         ),
     ] = None
+    viewing: Viewing | None = None
     inventory: Inventory | None = None
