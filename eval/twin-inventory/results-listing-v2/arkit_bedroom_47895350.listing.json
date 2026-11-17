@@ -1,0 +1,566 @@
+{
+  "scene": "arkit_bedroom_47895350",
+  "detectors": "listing",
+  "inventory": {
+    "items": [
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "bed",
+        "prompts": ["single bed", "wooden bed"],
+        "type": "furniture"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "table",
+        "prompts": ["desk", "dining table", "wooden table"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "office chair",
+        "prompts": ["desk chair", "gaming chair"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "television",
+        "prompts": ["tv", "flat screen tv"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "soundbar",
+        "prompts": ["speaker bar"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "ceiling light",
+        "prompts": ["chandelier", "pendant light"],
+        "type": "fixture"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "computer monitor",
+        "prompts": ["screen", "monitor"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "computer tower",
+        "prompts": ["pc cabinet"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "switchboard",
+        "prompts": ["light switch"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "floor vent",
+        "prompts": ["grille", "floor heater grille", "trench heater"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "wall shelf",
+        "prompts": ["wall-mounted shelf", "floating shelf"],
+        "type": "wall_item"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "curtain",
+        "prompts": ["sheer curtain", "net curtain"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "roller blind",
+        "prompts": ["window blind"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "bedsheet",
+        "prompts": ["bed sheet"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "rug",
+        "prompts": ["carpet", "area rug"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "acupressure mat",
+        "prompts": ["shakti mat", "massage mat"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "acupressure pillow",
+        "prompts": ["bolster", "pillow"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "book",
+        "prompts": ["book row"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "board game",
+        "prompts": [],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "record",
+        "prompts": ["vinyl record", "record rack", "lp record"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "record holder",
+        "prompts": ["record rack"],
+        "type": "decor"
+      },
+      {
+        "count": 2,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "decorative ball",
+        "prompts": ["decor sphere"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "tablet",
+        "prompts": ["digital frame"],
+        "type": "decor"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "photo frame",
+        "prompts": ["picture frame"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "movie poster",
+        "prompts": ["poster", "print"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "showpiece",
+        "prompts": ["figurine"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "metal case",
+        "prompts": ["briefcase"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "board game box",
+        "prompts": ["game box", "box"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "cabinet",
+        "prompts": ["sideboard", "low cabinet"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "jigsaw puzzle",
+        "prompts": ["puzzle"],
+        "type": "decor"
+      }
+    ],
+    "keyframes": ["kf0000", "kf0093", "kf0115", "kf0172", "kf0181", "kf0192", "kf0203", "kf0210"],
+    "listed_by": ["gemini-3-flash-preview", "claude-opus-5-5"]
+  },
+  "recall": {
+    "listed": {
+      "furniture": {
+        "items": "5 of 8",
+        "item_recall": 0.62,
+        "instance_recall": 0.62
+      },
+      "fixture": {
+        "items": "3 of 5",
+        "item_recall": 0.6,
+        "instance_recall": 0.5
+      },
+      "textile": {
+        "items": "3 of 3",
+        "item_recall": 1.0,
+        "instance_recall": 1.0
+      },
+      "decor": {
+        "items": "4 of 8",
+        "item_recall": 0.5,
+        "instance_recall": 0.56
+      },
+      "built_in": {
+        "items": "1 of 1",
+        "item_recall": 1.0,
+        "instance_recall": 1.0
+      },
+      "all": {
+        "items": "16 of 25",
+        "item_recall": 0.64,
+        "instance_recall": 0.63
+      }
+    },
+    "placed": {
+      "furniture": {
+        "items": "0 of 8",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "fixture": {
+        "items": "0 of 5",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "textile": {
+        "items": "0 of 3",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "decor": {
+        "items": "0 of 8",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "built_in": {
+        "items": "0 of 1",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "all": {
+        "items": "0 of 25",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      }
+    },
+    "per_item": [
+      {
+        "name": "bed",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "desk",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 2,
+        "placed": 0
+      },
+      {
+        "name": "office chair",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "wooden chair",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "table",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "wall shelf",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "chest of drawers",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "glass cabinet",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "pet hutch",
+        "type": "decor",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "monitor",
+        "type": "fixture",
+        "hand": 2,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "computer tower",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "laptop",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "television",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "soundbar",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "drying rack",
+        "type": "decor",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "ironing board",
+        "type": "decor",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "keyboard",
+        "type": "decor",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "rug",
+        "type": "textile",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "curtain",
+        "type": "textile",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "pillow",
+        "type": "textile",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "board games",
+        "type": "decor",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "books",
+        "type": "decor",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "photo frame",
+        "type": "decor",
+        "hand": 2,
+        "listed": 2,
+        "placed": 0
+      },
+      {
+        "name": "foam roller",
+        "type": "decor",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "floor convector",
+        "type": "built_in",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      }
+    ],
+    "hand_total": 27,
+    "listed_total": 34,
+    "placed_total": 0,
+    "missed_by_listing": [
+      "wooden chair",
+      "table",
+      "glass cabinet",
+      "pet hutch",
+      "laptop",
+      "television",
+      "ironing board",
+      "keyboard",
+      "foam roller"
+    ],
+    "listed_not_placed": [
+      "bed",
+      "desk",
+      "office chair",
+      "wall shelf",
+      "chest of drawers",
+      "monitor",
+      "computer tower",
+      "soundbar",
+      "drying rack",
+      "rug",
+      "curtain",
+      "pillow",
+      "board games",
+      "books",
+      "photo frame",
+      "floor convector"
+    ],
+    "matches": {
+      "listed": {
+        "bed": "bed",
+        "desk": "table",
+        "office chair": "office chair",
+        "wall shelf": "wall shelf",
+        "chest of drawers": "cabinet",
+        "monitor": "television",
+        "computer tower": "computer tower",
+        "soundbar": "soundbar",
+        "rug": "rug",
+        "curtain": "curtain",
+        "pillow": "acupressure pillow",
+        "board games": "board game",
+        "books": "book",
+        "photo frame": "photo frame",
+        "drying rack": "record",
+        "floor convector": "floor vent"
+      },
+      "placed": {}
+    }
+  },
+  "listing_by_geometry": {
+    "annotated": 10,
+    "covered": 8,
+    "by_class": {
+      "bed": {
+        "annotated": 1,
+        "listed": 1,
+        "covered": 1
+      },
+      "cabinet": {
+        "annotated": 2,
+        "listed": 1,
+        "covered": 1
+      },
+      "chair": {
+        "annotated": 2,
+        "listed": 1,
+        "covered": 1
+      },
+      "shelf": {
+        "annotated": 1,
+        "listed": 1,
+        "covered": 1
+      },
+      "table": {
+        "annotated": 2,
+        "listed": 2,
+        "covered": 2
+      },
+      "tv_monitor": {
+        "annotated": 2,
+        "listed": 3,
+        "covered": 2
+      }
+    }
+  },
+  "inventory_meta": {
+    "items": 30,
+    "keyframes": 8,
+    "listed_by": {
+      "list": "gemini-3-flash-preview",
+      "cross_check": "claude-opus-5-5"
+    },
+    "per_model": {
+      "gemini-3-flash-preview": 27,
+      "claude-opus-5-5": 24
+    },
+    "failed": []
+  },
+  "charged_micro_inr": 5505013
+}
