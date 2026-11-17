@@ -165,6 +165,8 @@ cpu_image = (
     modal.Image.debian_slim(python_version="3.13")
     .pip_install("numpy==2.2.6", "pillow==11.3.0", "opencv-python-headless==4.12.0.88")
     .pip_install("pydantic==2.14.3")
+    # Vision models for the room inventory (Gemini on Vertex AI, Claude).
+    .pip_install("httpx==0.28.1", "google-auth[requests]==2.62.2", "anthropic==2.8.0")
     .pip_install("imageio==2.37.0", "imageio-ffmpeg==0.6.0")  # review videos
     .env({"PYTHONUNBUFFERED": "1"})
     .add_local_dir(SRC, "/root/sajao_workers")
@@ -179,8 +181,13 @@ app = modal.App("sajao-twin-worker")
 vol = modal.Volume.from_name("sajao-twin", create_if_missing=True)
 spike_vol = modal.Volume.from_name("sajao-twin-risk")
 STORE_ROOT = Path("/vol/artifacts")
+# Credentials for the inventory's vision models: GCP_SA_KEY and GCP_PROJECT_ID; ANTHROPIC_API_KEY.
+VISION_SECRETS = [modal.Secret.from_name("gcp"), modal.Secret.from_name("anthropic-secret")]
 # Splat training state, so a preempted run resumes (see splat_gpu.train).
 CHECKPOINTS = Path("/vol/checkpoints")
+
+
+GDINO_PROMPTS_PER_PASS = 16
 
 
 class InputError(Exception):
@@ -266,7 +273,8 @@ def detect(model: str, payload: dict[str, Any]) -> dict[str, Any]:
 
     Detectors are prompted with `prompts` (a description per class, same order as
     `vocabulary`) and report each detection under its class name. `min_score`
-    overrides the detector's score threshold (benchmarks only).
+    overrides the detector's score threshold (benchmarks, and the retry for listed
+    items not placed).
     """
     import torch
     import torchvision
@@ -289,18 +297,27 @@ def detect(model: str, payload: dict[str, Any]) -> dict[str, Any]:
             labels = [vocabulary[int(c)] for c in found.boxes.cls.tolist()]
         elif model.startswith("IDEA-Research/grounding-dino"):
             processor, network = _hf(model, "detect")
-            inputs = processor(images=pil, text=". ".join(prompts) + ".", return_tensors="pt")
-            with torch.no_grad():
-                out = network(**inputs.to("cuda"))
-            result = processor.post_process_grounded_object_detection(
-                out,
-                inputs.input_ids,
-                threshold=float(payload.get("min_score", 0.30)),
-                text_threshold=0.25,
-                target_sizes=[(height, width)],
-            )[0]
-            boxes, scores = result["boxes"].float(), result["scores"].float()
-            labels = [by_prompt.get(str(x).lower().strip(), "") for x in result["text_labels"]]
+            # Its text encoder reads at most 256 tokens: a room's inventory goes in chunks.
+            parts = []
+            for start in range(0, len(prompts), GDINO_PROMPTS_PER_PASS):
+                chunk = prompts[start : start + GDINO_PROMPTS_PER_PASS]
+                inputs = processor(images=pil, text=". ".join(chunk) + ".", return_tensors="pt")
+                with torch.no_grad():
+                    out = network(**inputs.to("cuda"))
+                parts.append(
+                    processor.post_process_grounded_object_detection(
+                        out,
+                        inputs.input_ids,
+                        threshold=float(payload.get("min_score", 0.30)),
+                        text_threshold=0.25,
+                        target_sizes=[(height, width)],
+                    )[0]
+                )
+            boxes = torch.cat([r["boxes"].float() for r in parts])
+            scores = torch.cat([r["scores"].float() for r in parts])
+            labels = [
+                by_prompt.get(str(x).lower().strip(), "") for r in parts for x in r["text_labels"]
+            ]
         elif model.startswith("google/owlv2"):
             processor, network = _hf(model, "detect")
             inputs = processor(text=[prompts], images=pil, return_tensors="pt")
@@ -1183,29 +1200,77 @@ async def _compress(payload: Any) -> Any:
     return reply
 
 
+def _inventory_gateways(ledger: Any) -> tuple[Any, Any]:
+    """The lister (Gemini on Vertex AI, Flash then Flash-Lite) and the cross-check (Claude)."""
+    import os
+
+    from sajao_gateway import ModelGateway
+    from sajao_workers.vision import (
+        CLAUDE_OPUS,
+        GEMINI_3_FLASH,
+        GEMINI_35_FLASH_LITE,
+        ClaudeVision,
+        GoogleTokens,
+        VertexGeminiVision,
+    )
+
+    tokens = GoogleTokens()
+    project = os.environ["GCP_PROJECT_ID"]
+    lister = ModelGateway(
+        [
+            VertexGeminiVision("gemini-flash", GEMINI_3_FLASH, project=project, tokens=tokens),
+            VertexGeminiVision(
+                "gemini-flash-lite", GEMINI_35_FLASH_LITE, project=project, tokens=tokens
+            ),
+        ],
+        ledger=ledger,
+    )
+    checker = ModelGateway([ClaudeVision("claude", CLAUDE_OPUS)], ledger=ledger)
+    return lister, checker
+
+
+async def _objects(runner: Any, ledger: Any, frames: str, detectors: str = "") -> tuple[Any, Any]:
+    """The inventory, then the objects found from it (durable steps)."""
+    from sajao_gateway import ModelGateway
+    from sajao_workers.models import detect_chain, detector_order, segment_chain
+    from sajao_workers.twin.inventory_step import inventory_step
+    from sajao_workers.twin.objects_step import objects_step
+
+    inventory = await runner.run(
+        inventory_step(*_inventory_gateways(ledger)), {"frames": frames}, {}
+    )
+    chosen = {"SAJAO_DETECTORS": detectors} if detectors else {}
+    objects = await runner.run(
+        objects_step(
+            ModelGateway(
+                detect_chain(volume_invoke("twin_detect"), order=detector_order(chosen)),
+                ledger=ledger,
+            ),
+            ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger),
+        ),
+        {"frames": frames, "inventory": inventory.outputs["inventory"]},
+        # The step's key does not name the detector chain: keep other chains' runs apart.
+        chosen,
+    )
+    return inventory, objects
+
+
 async def _build_twin(
     store: Any, runner: Any, ledger: Any, capture: dict[str, Any], manifest: dict[str, Any]
 ) -> dict[str, Any]:
-    """Objects, splat, phone splats and the twin, each a durable step (stored results reused)."""
+    """Inventory, objects, splat, phone splats and the twin, each a durable step (stored
+    results reused)."""
     import json
     import uuid
 
     from sajao_gateway import ModelGateway
-    from sajao_workers.models import detect_chain, segment_chain, splat_chain
+    from sajao_workers.models import splat_chain
     from sajao_workers.twin.assemble_step import assemble_step
-    from sajao_workers.twin.objects_step import objects_step
     from sajao_workers.twin.phone_step import phone_splat_step
     from sajao_workers.twin.splat_step import splat_step
 
     frames = store.put_blob(json.dumps(manifest).encode())
-    objects = await runner.run(
-        objects_step(
-            ModelGateway(detect_chain(volume_invoke("twin_detect")), ledger=ledger),
-            ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger),
-        ),
-        {"frames": frames},
-        {},
-    )
+    inventory, objects = await _objects(runner, ledger, frames)
     splat = await runner.run(
         splat_step(
             ModelGateway(splat_chain(volume_invoke("twin_splat", run_splat)), ledger=ledger)
@@ -1221,6 +1286,8 @@ async def _build_twin(
             "frames": frames,
             "objects": objects.outputs["objects"],
             "openings": objects.outputs["openings"],
+            "built_ins": objects.outputs["built_ins"],
+            "inventory": objects.outputs["inventory"],
             "splat": splat.outputs["splat"],
             "phone": store.put_blob(json.dumps(dict(phone.meta)).encode()),
             **phone.outputs,
@@ -1232,7 +1299,14 @@ async def _build_twin(
         },
     )
     vol.commit()
-    return {"frames": frames, "objects": objects, "splat": splat, "phone": phone, "twin": twin}
+    return {
+        "frames": frames,
+        "inventory": inventory,
+        "objects": objects,
+        "splat": splat,
+        "phone": phone,
+        "twin": twin,
+    }
 
 
 def _ledger() -> Any:
@@ -1244,7 +1318,12 @@ def _ledger() -> Any:
 
 
 @app.function(
-    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=8, memory=16384, timeout=7200
+    image=cpu_image,
+    volumes={"/work": vol, "/vol": spike_vol},
+    cpu=8,
+    memory=16384,
+    timeout=7200,
+    secrets=VISION_SECRETS,
 )
 def twin_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
     """A whole twin from one ARKitScenes room turned into an AR world (y up), end to end."""
@@ -1292,7 +1371,12 @@ def twin_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
 
 
 @app.function(
-    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=8, memory=16384, timeout=7200
+    image=cpu_image,
+    volumes={"/work": vol, "/vol": spike_vol},
+    cpu=8,
+    memory=16384,
+    timeout=7200,
+    secrets=VISION_SECRETS,
 )
 def edit_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
     """Edits on one ARKitScenes room's twin: move and turn the largest sofa, remove a
@@ -1393,7 +1477,12 @@ def _capture_file(root: Path, key: str) -> bytes:
 
 
 @app.function(
-    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=8, memory=16384, timeout=7200
+    image=cpu_image,
+    volumes={"/work": vol, "/vol": spike_vol},
+    cpu=8,
+    memory=16384,
+    timeout=7200,
+    secrets=VISION_SECRETS,
 )
 def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
     """An uploaded capture to its twin, and the twin's accuracy against the tape sheet."""
@@ -1441,8 +1530,14 @@ def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
             depth_meta = dict(estimated.meta)
         built = await _build_twin(store, runner, ledger, capture, manifest)
         twin = json.loads(store.read_blob(built["twin"].outputs["twin"]))
-        report = accuracy_report(twin, read_sheet(sheet))
-        charged = sum(built[k].cost_micro_inr for k in ("objects", "splat", "phone"))
+        truth, to_space = None, None
+        if (root / "ground_truth.json").is_file():  # an annotated dataset room
+            from sajao_workers.twin.edits import space_transform
+
+            truth = json.loads((root / "ground_truth.json").read_text())
+            to_space = space_transform(twin["keyframes"], manifest["frames"])
+        report = accuracy_report(twin, read_sheet(sheet), truth=truth, to_space=to_space)
+        charged = sum(built[k].cost_micro_inr for k in ("inventory", "objects", "splat", "phone"))
         return {
             "twin": twin,
             "report": report,
@@ -1556,6 +1651,21 @@ def golden_fixture_cpu(scene: str, keyframes: int) -> str:
     }
     Capture.model_validate(capture)
     (root / "capture.json").write_text(json.dumps(capture, indent=1))
+    # Annotated boxes the capture saw, in its AR world: for box size errors (golden.py).
+    from twin_gpu.objects import gt_boxes, gt_seen
+
+    up_axis = int(np.argmax(np.abs(np.asarray(cams["up"], dtype=np.float64))))
+    gts = gt_boxes(scene, up_axis)
+    truth = [
+        {
+            "label": g.label,
+            "center": [round(float(v), 4) for v in turn @ np.asarray(g.box.center)],
+            "size_m": [round(g.box.length, 3), round(g.box.width, 3), round(g.box.height, 3)],
+        }
+        for g, seen in zip(gts, gt_seen(scene, gts), strict=True)
+        if seen
+    ]
+    (root / "ground_truth.json").write_text(json.dumps(truth, indent=1))
     vol.commit()
     return str(root)
 
@@ -1769,6 +1879,107 @@ def twin_smoke(scene: str = "arkit_living_47331265", keyframes: int = 120) -> No
     import json
 
     print(json.dumps(twin_smoke_cpu.remote(scene, keyframes), indent=1))
+
+
+@app.function(
+    image=cpu_image,
+    volumes={"/work": vol, "/vol": spike_vol},
+    cpu=8,
+    memory=16384,
+    timeout=3600,
+    secrets=VISION_SECRETS,
+)
+def inventory_eval_cpu(
+    scene: str, keyframes: int, hand: dict[str, Any], detectors: str
+) -> dict[str, Any]:
+    """One ARKitScenes room: the inventory, the objects placed from it, and recall per type
+    against the hand inventory (eval/twin-inventory)."""
+    import asyncio
+    import json
+
+    from sajao_workers.inventory_recall import (
+        big_item_placement,
+        listing_recall_by_geometry,
+        recall_report,
+    )
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    manifest = _arkit_manifest(store, scene, keyframes)
+    runner = StepRunner(store, max_attempts=1)
+    frames = store.put_blob(json.dumps(manifest).encode())
+    inventory, objects = asyncio.run(_objects(runner, _ledger(), frames, detectors))
+    vol.commit()
+
+    def read(result: Any, name: str) -> Any:
+        return json.loads(store.read_blob(result.outputs[name]))
+
+    listed = read(inventory, "inventory")
+    placed, built_ins = read(objects, "objects"), read(objects, "built_ins")
+    from twin_gpu.objects import gt_boxes, gt_seen
+
+    gts = gt_boxes(scene, manifest["up_axis"])
+    truth = [
+        {"label": g.label, "center": list(g.box.center), "yaw": g.box.yaw,
+         "size_m": [g.box.length, g.box.width, g.box.height]}
+        for g, seen in zip(gts, gt_seen(scene, gts), strict=True)
+        if seen
+    ]  # fmt: skip
+    return {
+        "scene": scene,
+        "detectors": detectors or "default",
+        "recall": recall_report(hand, listed, placed, built_ins),
+        "inventory": listed,
+        "placement": read(objects, "inventory"),
+        "objects": [
+            {
+                "category": o["category"],
+                "type": o["object_type"],
+                "frames": o["frames"],
+                "size_m": [o["box"][k]["value_m"] for k in ("length", "width", "height")],
+            }
+            for o in placed
+        ]
+        + [{"category": b["category"], "type": "built_in"} for b in built_ins],
+        "boxes": [
+            {k: o[k] for k in ("category", "confidence", "frames", "box", "object_type", "up_axis")}
+            for o in placed
+        ]
+        + [{k: b[k] for k in ("category", "confidence", "frames", "box")} for b in built_ins],
+        "ground_truth": truth,
+        "listing_by_geometry": listing_recall_by_geometry(truth, listed["items"]),
+        "big_item_placement": big_item_placement([*placed, *built_ins], truth),
+        "inventory_meta": dict(inventory.meta),
+        "objects_meta": dict(objects.meta),
+        "charged_micro_inr": inventory.cost_micro_inr + objects.cost_micro_inr,
+    }
+
+
+@app.local_entrypoint()
+def inventory_eval(
+    detectors: str = "", keyframes: int = 120, out: str = "", rooms: str = ""
+) -> None:
+    """Recall per type on the ARKit rooms with hand inventories; one result file per room."""
+    import json
+
+    hand_dir = Path(__file__).parents[3] / "eval" / "twin-inventory" / "hand"
+    wanted = set(rooms.split(",")) if rooms else None
+    hands = {
+        p.stem: json.loads(p.read_text())
+        for p in sorted(hand_dir.glob("*.json"))
+        if wanted is None or p.stem in wanted
+    }
+    target = Path(out or "inventory-runs")
+    target.mkdir(parents=True, exist_ok=True)
+    args = [(scene, keyframes, hand, detectors) for scene, hand in hands.items()]
+    for result in inventory_eval_cpu.starmap(args, return_exceptions=True):
+        if isinstance(result, BaseException):
+            print(f"failed: {type(result).__name__}: {result}")
+            continue
+        name = f"{result['scene']}.{result['detectors'].replace(',', '-')}.json"
+        (target / name).write_text(json.dumps(result, indent=1) + "\n")
+        print(result["scene"], json.dumps(result["recall"]["listed"]["all"]),
+              json.dumps(result["recall"]["placed"]["all"]))  # fmt: skip
 
 
 @app.function(

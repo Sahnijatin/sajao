@@ -11,8 +11,8 @@ no-LiDAR benchmark; the golden-set evals recalibrate it.
 
 import io
 import math
-from collections.abc import Sequence
-from dataclasses import dataclass
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass, replace
 from typing import Any, Literal
 
 import numpy as np
@@ -42,6 +42,8 @@ VOXEL_M = 0.05
 MAX_POINTS_PER_MASK = 4000
 MIN_POINTS_PER_MASK = 50
 MIN_FRAMES = 3
+# Core voxels an instance needs for a box; small items (a clock, a switchboard) cover few.
+MIN_CORE_POINTS, MIN_CORE_POINTS_SMALL = 8, 3
 # A box outside these sizes is not a piece of furniture or decor: a fusion error.
 MIN_SIZE_M, MAX_SIZE_M = 0.15, 4.0
 # Large furniture that views often see in pieces (the arms of an L-shaped sofa).
@@ -211,32 +213,63 @@ def _join_pieces(
     return pool
 
 
+def _count(per_label: dict[str, dict[str, int]] | None, label: str, what: str) -> None:
+    if per_label is not None:
+        counts = per_label.setdefault(
+            label, {"detected": 0, "lifted": 0, "few_frames": 0, "implausible": 0}
+        )
+        counts[what] += 1
+
+
 def fitted_objects(
-    instances: Sequence[Instance], up_axis: int, stats: dict[str, int] | None = None
+    instances: Sequence[Instance],
+    up_axis: int,
+    stats: dict[str, int] | None = None,
+    min_size: Mapping[str, float] | None = None,
+    per_label: dict[str, dict[str, int]] | None = None,
 ) -> list[tuple[str, UprightBox, int, list[int]]]:
     """Boxes for instances seen often enough, with touching pieces joined and
-    implausible sizes dropped: (label, box, frames seen, observation keys)."""
+    implausible sizes dropped: (label, box, frames seen, observation keys).
+
+    `min_size` lowers the smallest plausible size for some labels (a clock, a
+    switchboard); `per_label` counts the instances dropped for each reason."""
     fitted = []
     for instance in instances:
         seen = len(instance.frames)
         if seen < MIN_FRAMES:
+            _count(per_label, instance.label, "few_frames")
             continue
         core = instance.core_points(max(2, math.ceil(0.15 * seen)))
-        if len(core) < 8:
+        small = (min_size or {}).get(instance.label, MIN_SIZE_M) < MIN_SIZE_M
+        if len(core) < (MIN_CORE_POINTS_SMALL if small else MIN_CORE_POINTS):
+            _count(per_label, instance.label, "implausible")  # seen enough, too small for a box
             continue
+        box = fit_upright_box(core, up_axis)
+        if small:
+            # Core points are voxel centroids, half a voxel in from each face: on a
+            # small item that is a large share of its size, so add the voxel back.
+            box = replace(
+                box,
+                length=box.length + VOXEL_M,
+                width=box.width + VOXEL_M,
+                height=box.height + VOXEL_M,
+            )
         fitted.append(
             _Fitted(
                 instance.label,
                 set(instance.frames),
                 sorted(key for _, key in instance.members),
                 np.asarray(core),
-                fit_upright_box(core, up_axis),
+                box,
             )
         )
     out = []
     for item in _join_pieces(fitted, up_axis, stats):
-        if MIN_SIZE_M <= max(item.box.length, item.box.height) <= MAX_SIZE_M:
+        smallest = (min_size or {}).get(item.label, MIN_SIZE_M)
+        if smallest <= max(item.box.length, item.box.height) <= MAX_SIZE_M:
             out.append((item.label, item.box, len(item.frames), sorted(item.keys)))
+        else:
+            _count(per_label, item.label, "implausible")
     return out
 
 
@@ -245,20 +278,26 @@ def build_objects(
     up_axis: int,
     depth_source: DepthSource,
     stats: dict[str, int] | None = None,
+    min_size: Mapping[str, float] | None = None,
+    per_label: dict[str, dict[str, int]] | None = None,
 ) -> list[dict[str, Any]]:
     """Fuse every frame's masks into objects with boxes, most-seen first.
 
     `stats`, when given, counts how fusion separated and joined objects
     (ambiguous views dropped, merges and joins blocked, pieces joined), so the
-    golden-set evals can track both kinds of error.
+    golden-set evals can track both kinds of error. `per_label` counts, per
+    label, masks detected and lifted and instances dropped (too few frames,
+    implausible size), so an item that was listed but not placed has a reason.
     """
     views: list[tuple[str, str]] = []
     observations = []
     for index, frame in enumerate(frames):
         for label, score, mask, blob in frame.masks:
+            _count(per_label, label, "detected")
             points = lift_mask(mask, frame.depth, frame.intrinsics, frame.c2w, seed=len(views))
             if len(points) == 0:
                 continue
+            _count(per_label, label, "lifted")
             observations.append(
                 Observation(index, label, score, voxelize(points, VOXEL_M), key=len(views))
             )
@@ -267,7 +306,7 @@ def build_objects(
 
     objects: list[dict[str, Any]] = []
     instances = merge_instances(fuse(observations, stats=stats), stats=stats)
-    for label, box, seen, keys in fitted_objects(instances, up_axis, stats):
+    for label, box, seen, keys in fitted_objects(instances, up_axis, stats, min_size, per_label):
         objects.append(
             {
                 "category": label,
