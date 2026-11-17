@@ -200,10 +200,10 @@ async def test_job_status_follows_the_stages_and_the_twin_appears_when_ready(
 async def test_a_failed_stage_shows_as_failed_with_its_reason(backend: Backend) -> None:
     async with backend.client() as api:
         room = await room_for(api)
-        await backend.rooms.set_stage(room["id"], "measure", "failed", "The scan had no walls.")
+        await backend.rooms.set_stage(room["id"], "measure", "failed", "no_walls")
         failed = (await api.get(f"/v1/rooms/{room['id']}", headers=headers())).json()
         assert failed["status"] == "failed"
-        assert failed["stages"][0]["detail"] == "The scan had no walls."
+        assert failed["stages"][0]["detail"] == "no_walls"
 
 
 async def test_designs_are_requested_once_the_room_is_ready_and_read_back(

@@ -43,7 +43,7 @@ create table public.pipeline_stages (
     status text not null default 'queued'
         check (status in ('queued', 'running', 'done', 'failed')),
     attempts integer not null default 0,
-    -- Why it failed, in plain words for the app. Never a stack trace.
+    -- Why it failed: a short reason code the app turns into words. Never a stack trace.
     detail text,
     user_id uuid not null,
     updated_at timestamptz not null default now()

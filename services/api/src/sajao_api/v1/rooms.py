@@ -45,7 +45,7 @@ class StageStatus(BaseModel):
     status: str
     """queued, running, done or failed."""
     detail: str | None = None
-    """Why it failed, in plain words."""
+    """Why it failed: a short reason code the app turns into words, such as no_walls."""
 
 
 class RoomStatus(BaseModel):
