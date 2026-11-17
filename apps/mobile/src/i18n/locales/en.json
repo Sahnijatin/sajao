@@ -151,7 +151,7 @@
       "walkWalls": "Walk along the walls",
       "keepGoing": "Keep going round",
       "standMiddle": "Now stand in the middle and turn slowly",
-      "tiltDown": "Tilt down a little",
+      "tiltWall": "On each wall, tilt slowly up to the ceiling, then down to the floor",
       "oneMoreSpot": "One more spot, over there",
       "meterDone": "Done"
     },
