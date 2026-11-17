@@ -1,7 +1,10 @@
 import { useRouter } from "expo-router";
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { Alert } from "react-native";
 import { startCaptureUpload } from "@/capture/package/start-upload";
 import { afterReview } from "@/rooms/flow";
+import { importFromGallery } from "@/rooms/media-import";
 import { roomSpaceProfile } from "@/rooms/room-space";
 import { CaptureScreen } from "@/screens/capture";
 import { useRooms } from "@/state/rooms";
@@ -13,7 +16,18 @@ export default function CaptureRoute() {
   const router = useRouter();
   // The room made from this scan, once it is confirmed on the review.
   const roomId = useRef<string | null>(null);
-  // Choosing gallery photos arrives with its own task.
+  const { t } = useTranslation();
+
+  // Photos or a video the person already has: picked, then uploaded like a scan.
+  const usePhotos = async () => {
+    const result = await importFromGallery();
+    if (result.status === "problem") {
+      Alert.alert(t("import.problemTitle"), t(`import.problems.${result.problem}`));
+    } else if (result.status === "imported") {
+      router.back();
+    }
+  };
+
   return (
     <CaptureScreen
       onClose={() => router.back()}
@@ -36,7 +50,7 @@ export default function CaptureRoute() {
         roomId.current = useRooms.getState().addRoomForCapture(capture.captureId).id;
         void startCaptureUpload(capture, device);
       }}
-      onUsePhotos={() => router.back()}
+      onUsePhotos={() => void usePhotos()}
     />
   );
 }

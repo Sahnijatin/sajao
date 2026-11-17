@@ -2,7 +2,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ThemeProvider } from "@sajao/ui";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import "@/i18n";
-import { registerMediaImporter } from "@/rooms/media-import";
 import type { RoomArea } from "@/rooms/room-content";
 import { AreasScreen } from "@/screens/areas";
 import { ImportMediaScreen } from "@/screens/import-media";
@@ -33,7 +32,6 @@ const area = (id: string, spaceType: RoomArea["spaceType"]): RoomArea => ({
 
 beforeEach(async () => {
   mockHaptic.mockClear();
-  registerMediaImporter(null);
   await AsyncStorage.clear();
   await act(async () => {
     useSettings.setState({ language: null, units: "cm" });
@@ -75,54 +73,51 @@ describe("which area to redesign", () => {
 });
 
 describe("use photos or a video", () => {
-  const picked = {
-    status: "picked" as const,
-    media: [
-      { uri: "file://a.jpg", kind: "photo" as const, durationS: null },
-      { uri: "file://b.mov", kind: "video" as const, durationS: 30 },
-    ],
-  };
-
-  it("says sizes from photos are estimates, before anything is chosen", async () => {
+  it("says sizes from pictures are estimates, before anything is chosen", async () => {
     await wrap(<ImportMediaScreen onImported={jest.fn()} onScan={jest.fn()} />);
     expect(screen.getByText(/^Sizes from photos are estimates\./)).toBeTruthy();
-    expect(screen.queryByTestId("import-chosen")).toBeNull();
+    expect(screen.queryByTestId("import-problem")).toBeNull();
   });
 
-  it("shows what was chosen and, with nothing to take it, says so without a dead button", async () => {
-    await wrap(
-      <ImportMediaScreen onImported={jest.fn()} onScan={jest.fn()} pick={async () => picked} />,
-    );
-    await fireEvent.press(screen.getByRole("button", { name: "Choose photos or a video" }));
-    expect(screen.getByText("Chosen: 1 photos, 1 videos")).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Use these" })).toBeNull();
-    expect(screen.getByText(/not switched on in this build/)).toBeTruthy();
-  });
-
-  it("hands the media to the importer and goes on to the new room", async () => {
-    const importer = jest.fn(async () => ({ roomId: "room-9" }));
-    registerMediaImporter(importer);
+  it("goes on to the new room once the pictures are chosen", async () => {
     const onImported = jest.fn();
     await wrap(
-      <ImportMediaScreen onImported={onImported} onScan={jest.fn()} pick={async () => picked} />,
+      <ImportMediaScreen
+        onImported={onImported}
+        onScan={jest.fn()}
+        importMedia={async () => ({ status: "imported", roomId: "room-9" })}
+      />,
     );
     await fireEvent.press(screen.getByRole("button", { name: "Choose photos or a video" }));
-    await fireEvent.press(screen.getByRole("button", { name: "Use these" }));
-    expect(importer).toHaveBeenCalledWith(picked.media);
     expect(onImported).toHaveBeenCalledWith("room-9");
+    expect(mockHaptic).toHaveBeenCalledWith("roomVerified");
   });
 
-  it("says why when the photo library is refused, and offers the scan", async () => {
+  it("stays put when the picker is closed", async () => {
+    const onImported = jest.fn();
+    await wrap(
+      <ImportMediaScreen
+        onImported={onImported}
+        onScan={jest.fn()}
+        importMedia={async () => ({ status: "cancelled" })}
+      />,
+    );
+    await fireEvent.press(screen.getByRole("button", { name: "Choose photos or a video" }));
+    expect(onImported).not.toHaveBeenCalled();
+    expect(screen.queryByTestId("import-problem")).toBeNull();
+  });
+
+  it("says why the pictures cannot be used, and offers the scan", async () => {
     const onScan = jest.fn();
     await wrap(
       <ImportMediaScreen
         onImported={jest.fn()}
         onScan={onScan}
-        pick={async () => ({ status: "denied" })}
+        importMedia={async () => ({ status: "problem", problem: "photosAndVideo" })}
       />,
     );
     await fireEvent.press(screen.getByRole("button", { name: "Choose photos or a video" }));
-    expect(screen.getByTestId("import-problem")).toBeTruthy();
+    expect(screen.getByText("Please choose photos or one video, not both.")).toBeTruthy();
     await fireEvent.press(screen.getByRole("button", { name: "Scan the room instead" }));
     expect(onScan).toHaveBeenCalledTimes(1);
   });

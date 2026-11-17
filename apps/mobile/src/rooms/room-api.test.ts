@@ -71,7 +71,8 @@ describe("the twin from the server", () => {
     const content = contentFromTwin(twinFixture as never);
     expect(content.sample).toBe(false);
     expect(content.spaceType).toBe("living_room");
-    expect(content.measures?.walls).toHaveLength(4);
+    expect(content.measures?.walls).toHaveLength(3);
+    expect(content.confidence).toBe("measured");
     expect(content.shell?.floor_polygon).toHaveLength(4);
     expect(content.direction?.sources).toContain("compass");
     // Photos and designs are not in this read.

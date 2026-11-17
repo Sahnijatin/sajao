@@ -1,93 +1,56 @@
-// Photos and videos already on the phone, as a way in beside the scan. A
-// room made from them is measured at the "estimated" level and says
-// "measure to confirm". This file is the app's side only: choosing the
-// media, and the hand-off to the importer that sends it to the same
-// pipeline as a scan. The importer belongs with the upload code; until one
-// is registered the way in shows only in development and preview builds.
+// Photos or a video already on the phone, as a way in beside the scan. The
+// picking and the capture made from the pictures belong to the gallery
+// import (src/import); this is the one place the app turns that into a room
+// on My home and starts its upload, for both ways in: "Use photos or a
+// video" on My home and the same offer on the scan screen. A room made this
+// way is at the estimated level and says "measure to confirm".
+import { Platform } from "react-native";
+import { startCaptureUpload } from "@/capture/package/start-upload";
+import type { ImportProblem } from "@/import/gallery-import";
+import type { PickResult } from "@/import/pick";
 import { previewScreensEnabled } from "@/preview-screens";
+import { useCaptureStore } from "@/state/capture";
+import { useRooms } from "@/state/rooms";
 
-export interface PickedMedia {
-  uri: string;
-  kind: "photo" | "video";
-  /** Seconds, for a video. */
-  durationS: number | null;
-}
-
-/** The most photos and videos one room can be made from. */
-export const MAX_MEDIA = 20;
-
-/** Sends the chosen media to the pipeline; resolves with the new room's id. */
-export type MediaImporter = (media: readonly PickedMedia[]) => Promise<{ roomId: string }>;
-
-let importer: MediaImporter | null = null;
-
-/** Called once by the upload code when it can take photos and videos. */
-export function registerMediaImporter(next: MediaImporter | null): void {
-  importer = next;
-}
-
-export function mediaImporter(): MediaImporter | null {
-  return importer;
-}
-
-/** Whether "Use photos or a video" is offered: when it leads somewhere, or in a build for trying things. */
-export function importOffered(): boolean {
-  return importer !== null || previewScreensEnabled();
-}
-
-export type PickResult =
-  | { status: "picked"; media: PickedMedia[] }
+export type ImportResult =
+  | { status: "imported"; roomId: string }
   | { status: "cancelled" }
-  /** The phone said no to the photo library. */
-  | { status: "denied" }
-  /** This build was made before the picker was added. */
-  | { status: "unavailable" };
+  | { status: "problem"; problem: ImportProblem | "failed" };
 
-export interface Picker {
-  requestMediaLibraryPermissionsAsync(): Promise<{ granted: boolean }>;
-  launchImageLibraryAsync(options: Record<string, unknown>): Promise<{
-    canceled: boolean;
-    assets?: { uri: string; type?: string | null; duration?: number | null }[] | null;
-  }>;
+/**
+ * Whether My home offers "Use photos or a video". The pictures upload today,
+ * but the server does not make a room from them yet, so the offer waits in
+ * development and preview builds until it does.
+ */
+export function importOffered(): boolean {
+  return previewScreensEnabled();
 }
 
-async function loadPicker(): Promise<Picker | null> {
-  try {
-    // Loaded here, not at the top: an installed build from before the picker
-    // was added must still open, and say so when this is tapped.
-    return (await import("expo-image-picker")) as unknown as Picker;
-  } catch {
-    return null;
-  }
+async function pickFromPhone(): Promise<PickResult> {
+  // Loaded here, not at the top: a build from before the picker was added
+  // must still open, and say so when this is tapped.
+  const { pickFromGallery } = await import("@/import/pick");
+  return pickFromGallery();
 }
 
-/** Opens the phone's own photo picker for photos and videos. */
-export async function pickMedia(
-  load: () => Promise<Picker | null> = loadPicker,
-): Promise<PickResult> {
-  const picker = await load();
-  if (!picker) return { status: "unavailable" };
+/** Choose photos or one video, make them a room on My home, and start the upload. */
+export async function importFromGallery(
+  pick: () => Promise<PickResult> = pickFromPhone,
+): Promise<ImportResult> {
   try {
-    const permission = await picker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) return { status: "denied" };
-    const result = await picker.launchImageLibraryAsync({
-      mediaTypes: ["images", "videos"],
-      allowsMultipleSelection: true,
-      selectionLimit: MAX_MEDIA,
-      // The files go up as they are: nothing is cropped or recompressed here.
-      allowsEditing: false,
-      quality: 1,
+    const picked = await pick();
+    if (picked.state === "cancelled") return { status: "cancelled" };
+    if (picked.state === "problem") return { status: "problem", problem: picked.problem };
+    useCaptureStore.getState().setLast(picked.capture);
+    // The pictures become a room on My home at once, like a scan.
+    const room = useRooms.getState().addRoomForCapture(picked.capture.captureId);
+    void startCaptureUpload(picked.capture, {
+      platform: Platform.OS === "ios" ? "ios" : "android",
+      tier: "standard",
+      has_ar: false,
     });
-    if (result.canceled || !result.assets?.length) return { status: "cancelled" };
-    return {
-      status: "picked",
-      media: result.assets.slice(0, MAX_MEDIA).map((asset) => ({
-        uri: asset.uri,
-        kind: asset.type === "video" ? "video" : "photo",
-        durationS: asset.type === "video" && asset.duration ? asset.duration / 1000 : null,
-      })),
-    };
+    return { status: "imported", roomId: room.id };
   } catch {
-    return { status: "unavailable" };
+    return { status: "problem", problem: "failed" };
   }
 }

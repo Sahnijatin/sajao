@@ -4,7 +4,7 @@
 // position and rotation the solver (or a person) gave it. Pure geometry;
 // nothing here places, sizes or measures anything.
 import type { Design, SpaceTwin } from "@sajao/schemas";
-import { type EdgeKind, edgeKinds } from "./room-shape";
+import { type EdgeKind, edgeKinds, isWall } from "./room-shape";
 
 type Shell = SpaceTwin["shell"];
 export type PlanShell = Pick<Shell, "floor_polygon" | "walls" | "openings">;
@@ -144,7 +144,8 @@ export function designPlan(
     y: outline.reduce((sum, point) => sum + point.y, 0) / outline.length,
   };
 
-  const walls = shell.walls.map((wall) => {
+  // Only walls carry a length on the plan; an open side is drawn, not measured.
+  const walls = shell.walls.filter(isWall).map((wall) => {
     const from = place(wall.start);
     const to = place(wall.end);
     const mid = { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 };
@@ -199,6 +200,7 @@ export function designPlan(
     .slice(0, MAX_CLEARANCES);
 
   const widestBand = shell.walls
+    .filter(isWall)
     .filter((wall) => wall.length.source !== "measured")
     .reduce((widest, wall) => Math.max(widest, wall.length.error_band_m), 0);
 

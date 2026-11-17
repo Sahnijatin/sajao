@@ -4,6 +4,7 @@
 // and error band. Pure. Nothing here estimates or rounds a dimension.
 import type { Dimension, SpaceTwin } from "@sajao/schemas";
 import { floorArea } from "@/space/space-profile";
+import { isWall } from "./room-shape";
 
 export interface WallMeasure {
   id: string;
@@ -51,7 +52,8 @@ const volume = (item: ItemMeasure) => item.width.value_m * item.depth.value_m * 
 
 export function measuresFromTwin(twin: SpaceTwin): RoomMeasures {
   const { shell } = twin;
-  const walls = shell.walls.map((wall, index) => ({
+  // An open side of the floor is not a wall and is not listed as one.
+  const walls = shell.walls.filter(isWall).map((wall, index) => ({
     id: wall.id,
     number: index + 1,
     length: wall.length,

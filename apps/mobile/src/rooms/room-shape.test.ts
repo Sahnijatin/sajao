@@ -1,4 +1,4 @@
-import { confidenceOf, edgeKinds, fitClaimsAllowed } from "./room-shape";
+import { confidenceOf, edgeKinds, fitClaimsAllowed, isWall } from "./room-shape";
 
 const point = (x_m: number, y_m: number) => ({ x_m, y_m });
 const wall = (
@@ -59,15 +59,25 @@ describe("which edges of the floor are walls", () => {
   });
 });
 
+describe("an edge the twin marks open", () => {
+  it("is open even though it is listed among the walls", () => {
+    const box = [point(0, 0), point(4, 0), point(4, 3), point(0, 3)];
+    const walls = box.map((from, i) => ({
+      ...wall(`w${i}`, from, box[(i + 1) % 4]!),
+      ...(i === 2 ? { kind: "open" as const } : { kind: "wall" as const }),
+    }));
+    expect(edgeKinds({ floor_polygon: box, walls })).toEqual(["wall", "wall", "open", "wall"]);
+    expect(walls.filter(isWall)).toHaveLength(3);
+  });
+});
+
 describe("the room's confidence level", () => {
-  it("is what the server says, and nothing when it says nothing", () => {
-    expect(confidenceOf({ confidence_level: "taped" })).toBe("taped");
-    expect(confidenceOf({ confidence_level: "measured" })).toBe("measured");
-    expect(confidenceOf({ confidence_level: "ar_measured" })).toBe("measured");
-    expect(confidenceOf({ confidence_level: "estimated" })).toBe("estimated");
+  it("is what the twin says, and nothing when it says nothing", () => {
+    expect(confidenceOf({ confidence: { level: "taped" } })).toBe("taped");
+    expect(confidenceOf({ confidence: { level: "ar_measured" } })).toBe("measured");
+    expect(confidenceOf({ confidence: { level: "estimated" } })).toBe("estimated");
     expect(confidenceOf({})).toBeNull();
-    expect(confidenceOf({ confidence_level: "certain" })).toBeNull();
-    expect(confidenceOf(null)).toBeNull();
+    expect(confidenceOf({ confidence: { level: "certain" } })).toBeNull();
   });
 
   it("allows fit claims for taped and measured rooms only", () => {

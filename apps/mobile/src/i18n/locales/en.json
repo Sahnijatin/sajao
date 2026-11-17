@@ -17,18 +17,21 @@
       "uploading": "Uploading your scan, {{finished}} of {{total}}",
       "starting": "Uploading your scan",
       "done": "Scan uploaded",
-      "doneNoVideo": "Scan uploaded without its video (the video was too large)",
+      "doneNoVideo": "Scan uploaded",
       "failed": "Upload paused. Nothing is lost",
       "retry": "Try again",
       "doneSize": "Scan uploaded ({{megabytes}} MB)",
-      "doneNoVideoSize": "Scan uploaded without its video, which was too large ({{megabytes}} MB)"
+      "doneNoVideoSize": "Scan uploaded ({{megabytes}} MB)",
+      "notificationTitle": "Uploading your scan",
+      "notificationText": "You can keep using your phone"
     },
     "room": {
       "measuring": "Measuring your room",
       "measured": "Room measured",
       "failed": {
         "no_walls": "We could not find the walls in this scan. Please scan again and walk around the room",
-        "other": "We could not measure this room. Please scan again"
+        "other": "We could not measure this room. Please scan again",
+        "no_ar_data": "Your pictures are uploaded. Rooms from photos and videos are not ready yet"
       }
     },
     "usePhotos": "Use photos or a video"
@@ -134,8 +137,8 @@
       "walkWalls": "Walk along the walls",
       "keepGoing": "Keep going round",
       "standMiddle": "Now stand in the middle and turn slowly",
-      "tiltDown": "Tilt down a little",
-      "oneMoreSpot": "One more spot, over there"
+      "oneMoreSpot": "One more spot, over there",
+      "tiltWall": "On each wall, tilt slowly up to the ceiling, then down to the floor"
     },
     "keepGoing": "Keep going",
     "torchOn": "Use the torch",
@@ -154,6 +157,9 @@
     "noAr": {
       "title": "This phone can't measure a room by scanning",
       "body": "Scanning needs a phone that supports AR. Yours can still get a redesign and a shopping list: use photos of your space instead."
+    },
+    "hints": {
+      "tiltWall": "On each wall, tilt slowly up to the ceiling, then down to the floor"
     }
   },
   "review": {
@@ -192,7 +198,8 @@
       "no_walls": "We couldn't find the walls. Scan the room again, keeping the walls in view as you go.",
       "upload": "Your scan didn't upload. Check your connection, then try again from My home. Nothing is lost.",
       "unknown": "Something went wrong on our side. Your scan is saved, and you can try again from My home.",
-      "back": "Back to My home"
+      "back": "Back to My home",
+      "no_ar_data": "Your pictures are uploaded. Rooms from photos and videos are not ready yet"
     }
   },
   "reveal": {
@@ -516,15 +523,17 @@
     "tipLight": "Use pictures taken in good light.",
     "estimated": "Sizes from photos are estimates. Scan the room, or measure it, to confirm what fits.",
     "choose": "Choose photos or a video",
-    "chooseAgain": "Choose again",
-    "use": "Use these",
     "scanInstead": "Scan the room instead",
-    "chosen": "Chosen: {{photos}} photos, {{videos}} videos",
-    "notYet": "Making a room from these is not switched on in this build yet.",
-    "problem": {
-      "denied": "Sajao needs access to your photos. You can allow it in Settings.",
-      "unavailable": "Choosing photos needs the latest version of the app.",
-      "failed": "We could not use these. Please try again."
-    }
+    "problemTitle": "We could not use that",
+    "problems": {
+      "nothing": "Nothing was chosen. Pick some photos of the room, or one video.",
+      "tooManyPhotos": "Please choose 20 photos or fewer.",
+      "photosAndVideo": "Please choose photos or one video, not both.",
+      "severalVideos": "Please choose one video.",
+      "videoTooShort": "That video is very short. Choose one of 5 seconds or more.",
+      "videoTooLong": "That video is long. Choose one of 2 minutes or less.",
+      "failed": "Something went wrong opening your photos. Please try again."
+    },
+    "tipCount": "Choose up to 20 photos, or one video of 5 seconds to 2 minutes."
   }
 }

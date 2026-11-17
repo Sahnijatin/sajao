@@ -30,16 +30,11 @@ const object = (id: string, width: number, depth: number, height: number) => ({
 describe("room measures from the twin", () => {
   const measures = measuresFromTwin(twin);
 
-  it("numbers the walls in order and keeps each length with its source and band", () => {
+  it("numbers the walls in order, leaves out the open side, and keeps each length with its source and band", () => {
     expect(measures.walls).toEqual([
       { id: "w1", number: 1, length: { value_m: 4.2, source: "measured", error_band_m: 0.01 } },
       { id: "w2", number: 2, length: { value_m: 3.4, source: "estimated", error_band_m: 0.12 } },
       { id: "w3", number: 3, length: { value_m: 4.2, source: "estimated", error_band_m: 0.15 } },
-      {
-        id: "w4",
-        number: 4,
-        length: { value_m: 3.4, source: "user_confirmed", error_band_m: 0.12 },
-      },
     ]);
     expect(measures.ceiling).toEqual(twin.shell.ceiling_height);
   });
@@ -51,7 +46,8 @@ describe("room measures from the twin", () => {
   it("lists doors and windows with the wall each is in", () => {
     expect(measures.openings.map(({ id, kind, wallNumber }) => ({ id, kind, wallNumber }))).toEqual(
       [
-        { id: "d1", kind: "door", wallNumber: 4 },
+        // The door is in the open side, which is not a numbered wall.
+        { id: "d1", kind: "door", wallNumber: null },
         { id: "win1", kind: "window", wallNumber: 1 },
       ],
     );

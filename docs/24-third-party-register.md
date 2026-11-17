@@ -2,6 +2,14 @@
 
 Every model, library and dataset used to build, train or evaluate Sajao is listed here for the legal team, who review it separately. Engineering adds a row when something is first used; review never blocks engineering.
 
+## Legal review list
+
+Items engineering flags for the legal team to read before any shipped use. Each has a full row in the table below.
+
+- DINOv3 (Meta, DINOv3 License): custom license with trade-control use restrictions, an indemnity to Meta, termination on suit, and terms Meta can change unilaterally. Used for the fidelity gate (evaluation and catalog admission), not in the app.
+- nvdiffrast (NVIDIA Source Code License, non-commercial): used by the fidelity gate's pose search. Fine for evaluation; a gate that admits products in production needs another rasteriser or an NVIDIA license.
+- Development catalog listing photos (IKEA India, Wooden Street): retailer terms grant no reuse; development only until each source grants image permission.
+
 | Name | Type | Used for | Source | License as stated by the source | Training use | Added by task |
 | --- | --- | --- | --- | --- | --- | --- |
 | Expo, React Native, Supabase and coding guideline skills | Agent skills | Development guidance | See `.claude/skills/THIRD_PARTY_NOTICES.md` | MIT | No | Repo agent setup |
@@ -59,7 +67,8 @@ Every model, library and dataset used to build, train or evaluate Sajao is liste
 | expo-font 58.0.12 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
 | expo-haptics 58.0.8 | Library (npm) | App and service code in apps/mobile, packages/ui | https://github.com/expo/expo | MIT | No | Existing |
 | expo-image-manipulator 58.0.16 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
-| expo-image-picker 58.0.10 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Add a room from photos or a video |
+| expo-image-picker 58.0.10 | Library (npm) | Gallery import in apps/mobile: the system photo and video picker | https://github.com/expo/expo | MIT | No | Added for SJ-34 |
+| expo-video-thumbnails 58.0.3 | Library (npm) | Gallery import in apps/mobile: frames taken from a picked video on the phone | https://github.com/expo/expo | MIT | No | Added for SJ-34 |
 | expo-linking 58.0.17 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
 | expo-localization 58.0.5 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
 | expo-router 58.0.31 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
@@ -151,6 +160,13 @@ Every model, library and dataset used to build, train or evaluate Sajao is liste
 | ARKitScenes (Apple), validation scenes 47331265, 41159541, 41159566, 47430034, 47895350 | Dataset | Phone video frames, ARKit poses, LiDAR depth and annotated 3D boxes as ground truth | https://github.com/apple/ARKitScenes | ARKitScenes license file: non-commercial grant, plus a commercial grant for licensees under 700 million monthly active users | No | SJ-116 twin risk spike |
 | Replica (Meta), frl_apartment_0 and apartment_1 | Dataset | Photoreal apartment scenes for splat quality | https://github.com/facebookresearch/Replica-Dataset | Replica Dataset Research Terms: non-commercial research or educational use | No | SJ-116 twin risk spike |
 | Mip-NeRF 360 (Google), room, kitchen, counter | Dataset | Real indoor photos with COLMAP poses for splat quality | https://jonbarron.info/mipnerf360/ | No license stated on the source page | No | SJ-116 twin risk spike |
+| IKEA India and Wooden Street listing photos and data (development catalog: 50 products, 185 photos) | Dataset (fetched) | Development catalog (SJ-151) for the design engine and render before affiliate approval; fidelity gate input. Development data only: photos on the private volume `sajao-catalog`, never shipped or committed | https://www.ikea.com/in/en/, https://www.woodenstreet.com | Retailer website terms; no license granted for reuse. Every development product is flagged until its source grants image permission and a permitted route (engineering rule 9) | No | SJ-151 development catalog |
+| BiRefNet `ZhengPeng7/BiRefNet`, revision e2bf8e44 | Model | Background removal of listing photos (replaces RMBG-1.4, which is non-commercial) | https://huggingface.co/ZhengPeng7/BiRefNet | MIT | No | SJ-24 render bake-off, SJ-151 fidelity gate |
+| TripoSG `VAST-AI/TripoSG`, revision 2c1c516d; code at commit fc5c4099 | Model and library | Image-to-3D for product assets: the fidelity gate's asset and render-ready assets | https://github.com/VAST-AI-Research/TripoSG | MIT | No | SJ-24 render bake-off, SJ-151 fidelity gate |
+| diso 0.1.4 | Library | Mesh extraction inside TripoSG | https://github.com/SarahWeiii/diso | Not checked yet: legal to confirm | No | SJ-24 render bake-off |
+| DINOv3 ViT-L/16 `facebook/dinov3-vitl16-pretrain-lvd1689m`, revision ea8dc286 | Model | Image encoder for the product fidelity gate (embedding similarity of each product to its held-out listing photos) (results stored on development catalog products). Evaluation only; not in the app | https://huggingface.co/facebook/dinov3-vitl16-pretrain-lvd1689m | DINOv3 License (Meta), gated; access approved for the founder's Hugging Face account. Non-exclusive, worldwide, non-transferable, royalty-free license to use, reproduce, modify and distribute, with no commercial-use exclusion. Conditions: redistribution only under the same agreement with a copy of it; acknowledge DINOv3 in published research; no reverse engineering; comply with trade controls (no ITAR, military, nuclear, espionage or weapons uses); license ends for anyone who sues Meta over the materials, with an indemnity to Meta; California law; Meta may amend the terms and continued use means acceptance. On the legal review list | No | SJ-24 render bake-off, SJ-151 fidelity gate |
+| nvdiffrast v0.4.0 | Library | Rasterising assets for the fidelity gate's pose search (evaluation only) | https://github.com/NVlabs/nvdiffrast | NVIDIA Source Code License (non-commercial). Evaluation only; a shipped gate needs another rasteriser or an NVIDIA license | No | SJ-24 render bake-off |
+| timm 1.0.15, kornia 0.8.1, einops 0.8.1, scikit-image 0.25.2, omegaconf 2.3.0, jaxtyping, typeguard | Library | Dependencies of BiRefNet and TripoSG | https://pypi.org | Apache 2.0 (timm, kornia), MIT (einops, jaxtyping, typeguard), BSD (scikit-image, omegaconf) | No | SJ-24 render bake-off |
 
 
 Libraries are the direct dependencies in the workspace manifests (`package.json`, `pyproject.toml`) and the native modules; their own dependencies are not listed one by one. Versions are those installed when the row was added; the lockfiles hold the exact versions in use.

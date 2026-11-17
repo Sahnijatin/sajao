@@ -85,10 +85,11 @@ describe("Room tab", () => {
   it("lists every wall by letter with a clean length, and no source until it is tapped", async () => {
     await show();
     const walls = within(screen.getByTestId("room-walls"));
-    for (const letter of ["A", "B", "C", "D"])
-      expect(walls.getByText(`Wall ${letter}`)).toBeTruthy();
+    for (const letter of ["A", "B", "C"]) expect(walls.getByText(`Wall ${letter}`)).toBeTruthy();
+    // The fourth side of this room is open: it is not listed as a wall.
+    expect(walls.queryByText("Wall D")).toBeNull();
     expect(walls.getAllByText("420 cm")).toHaveLength(2);
-    expect(walls.getAllByText("340 cm")).toHaveLength(2);
+    expect(walls.getAllByText("340 cm")).toHaveLength(1);
     expect(screen.queryByTestId("measure-provenance")).toBeNull();
     expect(screen.queryByText(/to within/)).toBeNull();
   });
@@ -96,8 +97,8 @@ describe("Room tab", () => {
   it("marks a value approx. only when its band is wider than 5 cm", async () => {
     await show();
     const walls = within(screen.getByTestId("room-walls"));
-    // Wall A is measured to 1 cm; walls B, C and D have bands of 12 to 15 cm.
-    expect(walls.getAllByText("approx.")).toHaveLength(3);
+    // Wall A is measured to 1 cm; walls B and C have bands of 12 and 15 cm.
+    expect(walls.getAllByText("approx.")).toHaveLength(2);
     expect(walls.getByRole("button", { name: "Wall A, 420 cm" })).toBeTruthy();
     expect(walls.getByRole("button", { name: "Wall B, approx. 340 cm" })).toBeTruthy();
     // Doors and windows here are within 5 cm, so they carry no label.
@@ -112,8 +113,8 @@ describe("Room tab", () => {
     await fireEvent.press(wallA);
     expect(walls.getByText("Measured, to within 1 cm")).toBeTruthy();
     expect(screen.getAllByTestId("measure-provenance")).toHaveLength(1);
-    await fireEvent.press(walls.getByRole("button", { name: "Wall D, approx. 340 cm" }));
-    expect(walls.getByText("Confirmed by you, to within 12 cm")).toBeTruthy();
+    await fireEvent.press(walls.getByRole("button", { name: "Wall C, approx. 420 cm" }));
+    expect(walls.getByText("Estimated, to within 15 cm")).toBeTruthy();
     await fireEvent.press(wallA);
     expect(walls.queryByText("Measured, to within 1 cm")).toBeNull();
   });
@@ -121,12 +122,13 @@ describe("Room tab", () => {
   it("lists doors and windows with their wall and size", async () => {
     await show();
     const openings = within(screen.getByTestId("room-openings"));
-    expect(openings.getByText("Door on wall D")).toBeTruthy();
+    // The door is in the open side, which is not a wall and has no letter.
+    expect(openings.getByText("Door")).toBeTruthy();
     expect(openings.getByText("90 cm wide, 205 cm high")).toBeTruthy();
     expect(openings.getByText("Window on wall A")).toBeTruthy();
     expect(openings.getByText("150 cm wide, 120 cm high")).toBeTruthy();
     // A door's width and height share a line: the wider band is the one shown.
-    await fireEvent.press(openings.getByText("Door on wall D"));
+    await fireEvent.press(openings.getByText("Door"));
     expect(openings.getByText("Estimated, to within 5 cm")).toBeTruthy();
   });
 
@@ -387,8 +389,10 @@ describe("the plan on the Room tab", () => {
     expect(screen.getByText("Floor plan, Best match")).toBeTruthy();
     const plan = within(screen.getByTestId("room-plan"));
     expect(screen.getByLabelText("Plan of your room with 4 items")).toBeTruthy();
+    // Three walls carry a length; the open side is drawn dashed and explained.
     expect(plan.getAllByText("420 cm")).toHaveLength(2);
-    expect(plan.getAllByText("340 cm")).toHaveLength(2);
+    expect(plan.getAllByText("340 cm")).toHaveLength(1);
+    expect(screen.getByTestId("room-plan-open")).toBeTruthy();
     // The sofa stands 12.5 cm off the far wall.
     expect(plan.getByText("13 cm")).toBeTruthy();
     expect(

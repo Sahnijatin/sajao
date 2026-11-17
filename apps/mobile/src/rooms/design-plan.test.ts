@@ -80,7 +80,9 @@ describe("the plan", () => {
   });
 
   it("labels every wall with its measured length, outside the room", () => {
-    expect(plan.walls.map((wall) => wall.metres)).toEqual([4.2, 3.4, 4.2, 3.4]);
+    // The fourth side is open: drawn, not measured.
+    expect(plan.walls.map((wall) => wall.metres)).toEqual([4.2, 3.4, 4.2]);
+    expect(plan.edges.map((edge) => edge.kind)).toEqual(["wall", "wall", "wall", "open"]);
     const bottomWall = plan.walls[0];
     const lowestCorner = Math.max(...plan.outline.map((p) => p.y));
     expect(bottomWall?.at.y).toBeGreaterThan(lowestCorner);
@@ -99,7 +101,7 @@ describe("the plan", () => {
     expect(plan.clearances[0]?.itemId).toBe("sofa");
     expect(round(plan.clearances[0]?.metres ?? 0)).toBe(0.125);
 
-    const flush = { ...bestMatch, items: [at(sofa, 0.975, 1)] } as Design;
+    const flush = { ...bestMatch, items: [at(sofa, 2, 0.425)] } as Design;
     expect(designPlan(flush, shell, box).clearances).toEqual([]);
     expect(AGAINST_WALL_M).toBe(0.05);
   });
@@ -121,7 +123,7 @@ describe("the plan", () => {
     const empty = designPlan(null, shell, box);
     expect(empty.items).toEqual([]);
     expect(empty.clearances).toEqual([]);
-    expect(empty.walls).toHaveLength(4);
+    expect(empty.walls).toHaveLength(3);
   });
 });
 

@@ -9,6 +9,7 @@ import {
   meterHint,
   meterMissing,
   meterParts,
+  tiltsOf,
   type MeterState,
   nextSweepSpot,
   sweepsOf,
@@ -50,12 +51,27 @@ function loop(state: MeterState, width = 4, depth = 3.5, share = 1): MeterState 
   return next;
 }
 
-/** Stand on one spot and turn slowly through `degrees`, looking down for a share of it. */
+/** Tilt slowly up to the ceiling and down to the floor, facing each of `walls` in turn. */
+function tiltWalls(
+  state: MeterState,
+  spot: { x: number; z: number },
+  walls = [0, 90, 180, 270],
+): MeterState {
+  let next = state;
+  for (const yaw of walls) {
+    for (const pitch of [0, 15, 30, 15, 0, -15, -30, -15, 0]) {
+      next = addMeterSample(next, { position: spot, yaw: yaw + 10, pitch, atMs: tick() });
+    }
+  }
+  return next;
+}
+
+/** Stand on one spot and turn slowly through `degrees`, level. */
 function sweep(
   state: MeterState,
   spot: { x: number; z: number },
   degrees = 360,
-  downShare = 0.4,
+  downShare = 0,
 ): MeterState {
   let next = state;
   const samples = Math.round(degrees / 3);
@@ -91,6 +107,7 @@ describe("coverage meter", () => {
 
     state = sweep(state, { x: 1.4, z: 1.75 }); // over a metre from the one that counted
     expect(sweepsOf(state).counted).toBe(2);
+    state = tiltWalls(state, MIDDLE);
     expect(meterDone(state)).toBe(true);
     expect(meterHint(state)).toBe("meterDone");
     expect(meterFraction(state)).toBe(1);
@@ -129,14 +146,46 @@ describe("coverage meter", () => {
     expect(missing.sweepsNeeded).toBe(2);
   });
 
-  it("a sweep that never looks down asks for a tilt and does not count", () => {
+  it("a level scan is not done: each wall needs one tilt up and one tilt down", () => {
     let state = loop(EMPTY_METER);
-    state = sweep(state, MIDDLE, 360, 0);
-    expect(sweepsOf(state).counted).toBe(0);
-    expect(meterHint(state)).toBe("tiltDown");
-    expect(meterMissing(state).floorLook).toBe(true);
-    state = sweep(state, MIDDLE, 360, 0.6);
-    expect(sweepsOf(state).counted).toBe(1);
+    state = sweep(state, MIDDLE);
+    state = sweep(state, { x: 1.4, z: 1.75 });
+    expect(sweepsOf(state).complete).toBe(true);
+    expect(tiltsOf(state).count).toBe(0);
+    expect(meterDone(state)).toBe(false);
+    expect(meterHint(state)).toBe("tiltWall");
+    expect(meterMissing(state).wallTilts).toBe(4);
+    expect(meterParts(state).sweeps).toBeLessThan(1);
+
+    state = tiltWalls(state, MIDDLE, [0, 90, 180]);
+    expect(tiltsOf(state).quarters).toEqual([true, true, true, false]);
+    expect(meterDone(state)).toBe(false);
+    expect(meterMissing(state).wallTilts).toBe(1);
+
+    state = tiltWalls(state, MIDDLE, [270]);
+    expect(meterDone(state)).toBe(true);
+    expect(meterHint(state)).toBe("meterDone");
+    expect(meterParts(state).sweeps).toBe(1);
+  });
+
+  it("the tilt up and the tilt down need not be in the same picture or the same pass", () => {
+    let state = EMPTY_METER;
+    for (const yaw of [10, 100, 190, 280]) {
+      state = addMeterSample(state, { position: MIDDLE, yaw, pitch: 25, atMs: tick() });
+    }
+    expect(tiltsOf(state).count).toBe(0); // the ceiling end only
+    for (const yaw of [50, 140, 230, 320]) {
+      state = addMeterSample(state, { position: MIDDLE, yaw, pitch: -25, atMs: tick() });
+    }
+    expect(tiltsOf(state).complete).toBe(true);
+  });
+
+  it("looking only down, as at the floor, tilts no wall", () => {
+    let state = EMPTY_METER;
+    for (let yaw = 0; yaw < 360; yaw += 10) {
+      state = addMeterSample(state, { position: MIDDLE, yaw, pitch: -30, atMs: tick() });
+    }
+    expect(tiltsOf(state).count).toBe(0);
   });
 
   it("a sweep beside the wall is the loop again, not a view from the middle", () => {
@@ -154,6 +203,7 @@ describe("coverage meter", () => {
     expect(loopOf(state).complete).toBe(true);
     state = sweep(state, { x: 0.9, z: 0.8 });
     expect(sweepsOf(state).needed).toBe(1);
+    state = tiltWalls(state, { x: 0.9, z: 0.8 });
     expect(meterDone(state)).toBe(true);
   });
 
@@ -194,6 +244,7 @@ describe("coverage meter", () => {
     let state = loop(EMPTY_METER);
     state = sweep(state, MIDDLE);
     state = sweep(state, { x: 1.4, z: 1.75 });
+    state = tiltWalls(state, MIDDLE);
     expect(canFinishAnyway(state, clock + 10 * FINISH_ANYWAY_AFTER_MS)).toBe(false);
   });
 
