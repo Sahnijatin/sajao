@@ -104,8 +104,17 @@ def generate_arms(room: str, design_id: str, model: str, arms: list[str]) -> dic
             return r["passed"], r["iou"] + r["emb"], r
 
         t0 = time.time()
+        prep = Path("/bk/rooms") / room / "c3" / d["variant"] / "prep.json"
+        types = json.loads(prep.read_text()).get("types") if prep.exists() else None
         res = passes.arm_b(
-            model, photo, m3["region"], d["render_items"], m3["full"], refs, check_item
+            model,
+            photo,
+            m3["region"],
+            d["render_items"],
+            m3["full"],
+            refs,
+            check_item,
+            remove_types=types,
         )
         _write(
             base / f"B_{model}",

@@ -29,6 +29,7 @@ GATEWAY_SRC = (
 )
 
 MAX_GPUS = 3
+BIG_GPU = ["H100", "A100-80GB"]  # edit models need 80 GB; first free
 SMALL_GPU = ["L4", "A10G", "L40S"]  # first free; L4 capacity is sometimes short
 RENDER_GPUS = 2  # renders run beside a one-GPU gate pipeline
 CU124 = "https://download.pytorch.org/whl/cu124"
@@ -362,7 +363,7 @@ def triposg(lids: list[str]) -> list[dict]:
 
 @gated.function(
     image=trellis_image,
-    gpu="H100",
+    gpu=BIG_GPU,
     volumes=VOLS,
     timeout=3600,
     max_containers=2,
@@ -384,7 +385,12 @@ def trellis2(lids: list[str]) -> list[dict]:
 
 
 @gated.function(
-    image=sam3d_image, gpu="H100", volumes=VOLS, timeout=3600, max_containers=2, secrets=[hf_secret]
+    image=sam3d_image,
+    gpu=BIG_GPU,
+    volumes=VOLS,
+    timeout=3600,
+    max_containers=2,
+    secrets=[hf_secret],
 )
 def sam3d(lids: list[str]) -> list[dict]:
     from bk.assets import run_sam3d
@@ -523,7 +529,7 @@ def c3_prep(room: str, design_id: str, n: int = 4) -> dict:
 
 @app.function(
     image=gen_image,
-    gpu="H100",
+    gpu=BIG_GPU,
     volumes=TWIN_VOLS,
     timeout=3600,
     max_containers=RENDER_GPUS,
@@ -566,7 +572,7 @@ def compose(room: str, design_id: str, planted: str = "") -> dict:
 
 @app.function(
     image=gen_image,
-    gpu="H100",
+    gpu=BIG_GPU,
     volumes=TWIN_VOLS,
     timeout=3600,
     max_containers=RENDER_GPUS,

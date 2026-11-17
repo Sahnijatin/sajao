@@ -469,16 +469,19 @@ def c3_inpaint(room: str, variant: str, model: str = "qwen", baseline: bool = Fa
             "reprojected_px": int(valid.sum()),
             "model_filled_px": int(holes.sum()),
         }
-        if holes.sum() > 200:
+        # Always one clean-up edit: repaint uncovered areas and the border ring (seams and
+        # fragments the hero never saw); the reprojected core stays locked.
+        core = cv2.erode(valid.astype(np.uint8), np.ones((31, 31), np.uint8)).astype(bool)
+        work = holes | (v["mask"] & ~core)
+        if work.sum() > 200:
             p2 = (
                 prompt
                 + " Image 2 shows the same room from another angle, already emptied; match it."
             )
-            core = cv2.erode(valid.astype(np.uint8), np.ones((31, 31), np.uint8)).astype(bool)
             fills[fi], acc, dt = remove_edit(
                 model,
                 seeded,
-                holes,
+                work,
                 prot[fi] | core,
                 p2,
                 [fills[hero]],

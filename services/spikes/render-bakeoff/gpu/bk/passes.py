@@ -182,6 +182,7 @@ def arm_b(
     check_item,
     retries: int = 2,
     seed0: int = 1,
+    remove_types: list[str] | None = None,
 ) -> dict:
     """photo: keyframe (uint8, render size). clear_region: removed furniture (bool).
     items: render items; full_masks[i]: item i's silhouette from the composite (the
@@ -195,7 +196,19 @@ def arm_b(
     leftover = clear_region & ~cv2.dilate(union.astype(np.uint8), np.ones((5, 5), np.uint8)).astype(
         bool
     )
-    if leftover.sum() > 200:
+    if clear_region.sum() > 200 and remove_types is not None:
+        # Instruction removal of everything the design clears (same method as arm C3, on
+        # this single photo): grey areas invite the model to paint new furniture.
+        from bk.removal2d import protect_mask, remove_edit, remove_prompt
+
+        pm, _ = protect_mask(img)
+        pm = cv2.dilate(pm.astype(np.uint8), np.ones((7, 7), np.uint8)).astype(bool)
+        img, _, dt = remove_edit(
+            model, img, clear_region & ~pm, pm, remove_prompt(remove_types), [], seed0
+        )
+        t_total += dt
+        log.append({"step": "remove", "seconds": round(dt, 2), "px": int(clear_region.sum())})
+    elif leftover.sum() > 200:
         img, dt = region_edit(model, img, leftover, CLEAN_PROMPT, [], seed0)
         t_total += dt
         log.append({"step": "clean", "seconds": round(dt, 2), "px": int(leftover.sum())})

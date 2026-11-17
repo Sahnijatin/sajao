@@ -559,8 +559,39 @@ def blender_render(
     }
 
 
-def kept_object_depth(room, original, labels, variant, k, c2w, w, h) -> np.ndarray:
-    """Depth of the furniture the design keeps (labelled objects not removed); inf elsewhere."""
+def displaced_ids(room: str, footprints: list[dict], frac: float = 0.25) -> list[int]:
+    """Kept objects whose floor box overlaps a new product's footprint by more than `frac`.
+    The layout assumes that floor is clear, so such an object (often a mislabelled piece of
+    furniture the clear set missed) cannot stay in the redesigned room."""
+    import cv2
+
+    boxes = json.loads((room_dir(room) / "survey.json").read_text())["boxes"]
+    polys = [np.asarray(f["corners"], np.float32) for f in footprints if f.get("corners")]
+    out = []
+    g = np.linspace(-0.45, 0.45, 7)
+    for b in boxes:
+        a = np.radians(b.get("yaw_deg", 0.0))
+        ca, sa = np.cos(a), np.sin(a)
+        pts = [
+            (
+                b["center"][0] + u * b["size"][0] * ca - v * b["size"][1] * sa,
+                b["center"][1] + u * b["size"][0] * sa + v * b["size"][1] * ca,
+            )
+            for u in g
+            for v in g
+        ]
+        hit = sum(
+            any(cv2.pointPolygonTest(pg, (float(x), float(y)), False) >= 0 for pg in polys)
+            for x, y in pts
+        )
+        if hit / len(pts) > frac:
+            out.append(int(b["id"]))
+    return out
+
+
+def kept_object_depth(room, original, labels, variant, k, c2w, w, h, footprints=()) -> np.ndarray:
+    """Depth of the furniture the design keeps (labelled objects not removed, and not
+    standing where a new product goes); inf elsewhere."""
     import torch
 
     if labels is None:
@@ -569,6 +600,8 @@ def kept_object_depth(room, original, labels, variant, k, c2w, w, h) -> np.ndarr
     rm = room_dir(room) / f"removed_{variant}.npy"
     if variant != "original" and rm.exists():
         keep &= ~np.load(rm)
+    if footprints:
+        keep &= ~np.isin(labels, displaced_ids(room, list(footprints)))
     if not keep.any():
         return np.full((h, w), np.inf)
     _, depth, alpha = render_splat(original, k, c2w, w, h, mask=torch.from_numpy(keep).cuda())
@@ -638,7 +671,9 @@ def composite(
     pdepth = np.where(a > 0.01, br["depth"], np.inf)
     # Products are hidden only by furniture the design keeps, never by the room shell or
     # by floaters left where furniture was removed.
-    occl = kept_object_depth(room, original, labels, variant, k, c2w, w, h)
+    occl = kept_object_depth(room, original, labels, variant, k, c2w, w, h, br["footprints"])
+    if region is not None and region.any():
+        occl = np.where(region, np.inf, occl)  # C3: nothing stands where the photo was emptied
     visible_px = (a > 0.01) & ~(np.isfinite(occl) & (occl < pdepth - 0.03))
     # Shadows land only where a catcher (floor or wall) is the surface the twin shows there.
     fdepth = floor_depth(k, c2w, w, h, fr)
