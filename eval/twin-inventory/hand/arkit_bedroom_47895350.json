@@ -1,0 +1,156 @@
+{
+  "room": "arkit_bedroom_47895350",
+  "source": "hand inventory from 24 evenly spaced frames; small clutter grouped; scanning-marker posters on the floor excluded",
+  "items": [
+    {
+      "name": "bed",
+      "type": "furniture",
+      "count": 1,
+      "aliases": []
+    },
+    {
+      "name": "desk",
+      "type": "furniture",
+      "count": 1,
+      "aliases": ["table"]
+    },
+    {
+      "name": "office chair",
+      "type": "furniture",
+      "count": 1,
+      "aliases": ["chair", "desk chair"]
+    },
+    {
+      "name": "wooden chair",
+      "type": "furniture",
+      "count": 1,
+      "aliases": ["chair"]
+    },
+    {
+      "name": "table",
+      "type": "furniture",
+      "count": 1,
+      "aliases": ["dining table", "desk"]
+    },
+    {
+      "name": "wall shelf",
+      "type": "furniture",
+      "count": 1,
+      "aliases": ["shelf", "bookshelf"]
+    },
+    {
+      "name": "chest of drawers",
+      "type": "furniture",
+      "count": 1,
+      "aliases": ["drawers", "cabinet", "dresser"]
+    },
+    {
+      "name": "glass cabinet",
+      "type": "furniture",
+      "count": 1,
+      "aliases": ["terrarium", "display cabinet", "cabinet"]
+    },
+    {
+      "name": "pet hutch",
+      "type": "decor",
+      "count": 1,
+      "aliases": ["cage", "hutch"]
+    },
+    {
+      "name": "monitor",
+      "type": "fixture",
+      "count": 2,
+      "aliases": ["computer monitor", "screen", "tv"]
+    },
+    {
+      "name": "computer tower",
+      "type": "fixture",
+      "count": 1,
+      "aliases": ["pc", "computer"]
+    },
+    {
+      "name": "laptop",
+      "type": "fixture",
+      "count": 1,
+      "aliases": ["computer"]
+    },
+    {
+      "name": "television",
+      "type": "fixture",
+      "count": 1,
+      "aliases": ["tv"]
+    },
+    {
+      "name": "soundbar",
+      "type": "fixture",
+      "count": 1,
+      "aliases": ["speaker"]
+    },
+    {
+      "name": "drying rack",
+      "type": "decor",
+      "count": 1,
+      "aliases": ["clothes rack", "rack"]
+    },
+    {
+      "name": "ironing board",
+      "type": "decor",
+      "count": 1,
+      "aliases": []
+    },
+    {
+      "name": "keyboard",
+      "type": "decor",
+      "count": 1,
+      "aliases": []
+    },
+    {
+      "name": "rug",
+      "type": "textile",
+      "count": 1,
+      "aliases": ["carpet"]
+    },
+    {
+      "name": "curtain",
+      "type": "textile",
+      "count": 1,
+      "aliases": ["drape"]
+    },
+    {
+      "name": "pillow",
+      "type": "textile",
+      "count": 1,
+      "aliases": ["cushion"]
+    },
+    {
+      "name": "board games",
+      "type": "decor",
+      "count": 1,
+      "aliases": ["games", "boxes"]
+    },
+    {
+      "name": "books",
+      "type": "decor",
+      "count": 1,
+      "aliases": ["book"]
+    },
+    {
+      "name": "photo frame",
+      "type": "decor",
+      "count": 2,
+      "aliases": ["picture frame", "framed picture"]
+    },
+    {
+      "name": "foam roller",
+      "type": "decor",
+      "count": 1,
+      "aliases": []
+    },
+    {
+      "name": "floor convector",
+      "type": "built_in",
+      "count": 1,
+      "aliases": ["heater", "radiator", "vent"]
+    }
+  ]
+}

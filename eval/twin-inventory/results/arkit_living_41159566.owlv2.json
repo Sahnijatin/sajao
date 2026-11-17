@@ -1,0 +1,3323 @@
+{
+ "scene": "arkit_living_41159566",
+ "detectors": "owlv2",
+ "recall": {
+  "listed": {
+   "furniture": {
+    "items": "5 of 6",
+    "item_recall": 0.83,
+    "instance_recall": 0.62
+   },
+   "fixture": {
+    "items": "3 of 3",
+    "item_recall": 1.0,
+    "instance_recall": 0.75
+   },
+   "wall_item": {
+    "items": "1 of 1",
+    "item_recall": 1.0,
+    "instance_recall": 0.6
+   },
+   "textile": {
+    "items": "5 of 5",
+    "item_recall": 1.0,
+    "instance_recall": 0.67
+   },
+   "decor": {
+    "items": "8 of 13",
+    "item_recall": 0.62,
+    "instance_recall": 0.56
+   },
+   "built_in": {
+    "items": "2 of 3",
+    "item_recall": 0.67,
+    "instance_recall": 0.5
+   },
+   "all": {
+    "items": "24 of 31",
+    "item_recall": 0.77,
+    "instance_recall": 0.61
+   }
+  },
+  "placed": {
+   "furniture": {
+    "items": "5 of 6",
+    "item_recall": 0.83,
+    "instance_recall": 0.88
+   },
+   "fixture": {
+    "items": "2 of 3",
+    "item_recall": 0.67,
+    "instance_recall": 0.5
+   },
+   "wall_item": {
+    "items": "1 of 1",
+    "item_recall": 1.0,
+    "instance_recall": 1.0
+   },
+   "textile": {
+    "items": "5 of 5",
+    "item_recall": 1.0,
+    "instance_recall": 1.0
+   },
+   "decor": {
+    "items": "7 of 13",
+    "item_recall": 0.54,
+    "instance_recall": 0.5
+   },
+   "built_in": {
+    "items": "2 of 3",
+    "item_recall": 0.67,
+    "instance_recall": 0.5
+   },
+   "all": {
+    "items": "22 of 31",
+    "item_recall": 0.71,
+    "instance_recall": 0.76
+   }
+  },
+  "per_item": [
+   {
+    "name": "sofa",
+    "type": "furniture",
+    "hand": 2,
+    "listed": 1,
+    "placed": 4
+   },
+   {
+    "name": "armchair",
+    "type": "furniture",
+    "hand": 2,
+    "listed": 1,
+    "placed": 3
+   },
+   {
+    "name": "ottoman",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 4
+   },
+   {
+    "name": "carved chair",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 0,
+    "placed": 0
+   },
+   {
+    "name": "wall cabinet",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 2
+   },
+   {
+    "name": "side table",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 2
+   },
+   {
+    "name": "table lamp",
+    "type": "fixture",
+    "hand": 2,
+    "listed": 1,
+    "placed": 0
+   },
+   {
+    "name": "wall light",
+    "type": "fixture",
+    "hand": 1,
+    "listed": 2,
+    "placed": 1
+   },
+   {
+    "name": "telescope",
+    "type": "decor",
+    "hand": 1,
+    "listed": 0,
+    "placed": 0
+   },
+   {
+    "name": "light switch",
+    "type": "fixture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 5
+   },
+   {
+    "name": "framed picture",
+    "type": "wall_item",
+    "hand": 10,
+    "listed": 6,
+    "placed": 25
+   },
+   {
+    "name": "rug",
+    "type": "textile",
+    "hand": 4,
+    "listed": 2,
+    "placed": 6
+   },
+   {
+    "name": "sheepskin rug",
+    "type": "textile",
+    "hand": 1,
+    "listed": 3,
+    "placed": 10
+   },
+   {
+    "name": "curtain",
+    "type": "textile",
+    "hand": 3,
+    "listed": 2,
+    "placed": 6
+   },
+   {
+    "name": "throw blanket",
+    "type": "textile",
+    "hand": 3,
+    "listed": 2,
+    "placed": 5
+   },
+   {
+    "name": "cushion",
+    "type": "textile",
+    "hand": 4,
+    "listed": 3,
+    "placed": 22
+   },
+   {
+    "name": "vase",
+    "type": "decor",
+    "hand": 1,
+    "listed": 1,
+    "placed": 4
+   },
+   {
+    "name": "bowl",
+    "type": "decor",
+    "hand": 2,
+    "listed": 1,
+    "placed": 6
+   },
+   {
+    "name": "potted plant",
+    "type": "decor",
+    "hand": 2,
+    "listed": 1,
+    "placed": 2
+   },
+   {
+    "name": "candle",
+    "type": "decor",
+    "hand": 2,
+    "listed": 0,
+    "placed": 0
+   },
+   {
+    "name": "bottle",
+    "type": "decor",
+    "hand": 1,
+    "listed": 3,
+    "placed": 4
+   },
+   {
+    "name": "firewood",
+    "type": "decor",
+    "hand": 1,
+    "listed": 1,
+    "placed": 2
+   },
+   {
+    "name": "board games",
+    "type": "decor",
+    "hand": 1,
+    "listed": 0,
+    "placed": 0
+   },
+   {
+    "name": "cds",
+    "type": "decor",
+    "hand": 1,
+    "listed": 1,
+    "placed": 62
+   },
+   {
+    "name": "picture frame",
+    "type": "decor",
+    "hand": 3,
+    "listed": 7,
+    "placed": 0
+   },
+   {
+    "name": "fireplace tools",
+    "type": "decor",
+    "hand": 1,
+    "listed": 1,
+    "placed": 5
+   },
+   {
+    "name": "basket",
+    "type": "decor",
+    "hand": 1,
+    "listed": 0,
+    "placed": 0
+   },
+   {
+    "name": "candle stand",
+    "type": "decor",
+    "hand": 1,
+    "listed": 0,
+    "placed": 0
+   },
+   {
+    "name": "bookshelves",
+    "type": "built_in",
+    "hand": 1,
+    "listed": 1,
+    "placed": 14
+   },
+   {
+    "name": "fireplace",
+    "type": "built_in",
+    "hand": 1,
+    "listed": 1,
+    "placed": 3
+   },
+   {
+    "name": "radiator",
+    "type": "built_in",
+    "hand": 2,
+    "listed": 0,
+    "placed": 0
+   }
+  ],
+  "hand_total": 59,
+  "listed_total": 65,
+  "placed_total": 256,
+  "missed_by_listing": [
+   "carved chair",
+   "telescope",
+   "candle",
+   "board games",
+   "basket",
+   "candle stand",
+   "radiator"
+  ],
+  "listed_not_placed": [
+   "table lamp",
+   "picture frame"
+  ],
+  "matches": {
+   "listed": {
+    "sofa": "sofa",
+    "armchair": "armchair",
+    "ottoman": "ottoman",
+    "wall cabinet": "cabinet",
+    "wall light": "wall light",
+    "light switch": "switchboard",
+    "framed picture": "framed painting",
+    "rug": "patterned rug",
+    "sheepskin rug": "shaggy rug",
+    "curtain": "curtain",
+    "throw blanket": "blanket",
+    "cushion": "cushion",
+    "vase": "glass vase",
+    "bowl": "bowl of pine cones",
+    "potted plant": "potted plant",
+    "bottle": "bottle",
+    "firewood": "firewood",
+    "cds": "book",
+    "picture frame": "framed picture",
+    "fireplace tools": "fireplace tool",
+    "bookshelves": "bookshelf",
+    "fireplace": "fireplace",
+    "side table": "coffee table",
+    "table lamp": "pendant light"
+   },
+   "placed": {
+    "sofa": "sofa",
+    "armchair": "armchair",
+    "ottoman": "ottoman",
+    "wall cabinet": "cabinet",
+    "wall light": "wall light",
+    "light switch": "switchboard",
+    "framed picture": "framed picture",
+    "curtain": "curtain",
+    "throw blanket": "blanket",
+    "cushion": "cushion",
+    "potted plant": "potted plant",
+    "bottle": "bottle",
+    "firewood": "firewood",
+    "cds": "book",
+    "fireplace tools": "fireplace tool",
+    "bookshelves": "bookshelf",
+    "fireplace": "fireplace",
+    "side table": "coffee table",
+    "rug": "patterned rug",
+    "sheepskin rug": "small rug",
+    "vase": "glass vase",
+    "bowl": "decorative bowl"
+   }
+  }
+ },
+ "inventory": {
+  "items": [
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "sofa",
+    "prompts": [
+     "couch",
+     "leather sofa"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "coffee table",
+    "prompts": [
+     "center table",
+     "wooden table",
+     "centre table"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "ladder",
+    "prompts": [
+     "wooden ladder",
+     "step ladder",
+     "library ladder"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "cabinet",
+    "prompts": [
+     "sideboard",
+     "small cupboard"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "ottoman",
+    "prompts": [
+     "footstool",
+     "pouf",
+     "floor cushion"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "wall light",
+    "prompts": [
+     "spotlight",
+     "sconce",
+     "wall spotlight"
+    ],
+    "type": "fixture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "pendant light",
+    "prompts": [
+     "hanging lamp",
+     "ceiling light",
+     "pendant lamp"
+    ],
+    "type": "fixture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "switchboard",
+    "prompts": [
+     "electric socket",
+     "power outlet"
+    ],
+    "type": "fixture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "bannister",
+    "prompts": [
+     "handrail",
+     "stair railing",
+     "banister"
+    ],
+    "type": "fixture"
+   },
+   {
+    "count": 6,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "framed painting",
+    "prompts": [
+     "wall art",
+     "picture frame"
+    ],
+    "type": "wall_item"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "curtain rod",
+    "prompts": [
+     "curtain pole"
+    ],
+    "type": "wall_item"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "patterned rug",
+    "prompts": [
+     "kilim",
+     "carpet",
+     "kilim rug"
+    ],
+    "type": "textile"
+   },
+   {
+    "count": 3,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "shaggy rug",
+    "prompts": [
+     "sheepskin rug",
+     "faux fur rug",
+     "fur rug"
+    ],
+    "type": "textile"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "small rug",
+    "prompts": [
+     "floor mat"
+    ],
+    "type": "textile"
+   },
+   {
+    "count": 3,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "cushion",
+    "prompts": [
+     "pillow",
+     "throw pillow"
+    ],
+    "type": "textile"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "blanket",
+    "prompts": [
+     "throw",
+     "quilt",
+     "throw blanket"
+    ],
+    "type": "textile"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "curtain",
+    "prompts": [
+     "drape"
+    ],
+    "type": "textile"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "potted plant",
+    "prompts": [
+     "houseplant",
+     "plant"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "book",
+    "prompts": [
+     "book collection",
+     "book stack",
+     "magazine"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "magazine",
+    "prompts": [],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "decorative bowl",
+    "prompts": [
+     "pinecone bowl"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "decorative tray",
+    "prompts": [
+     "plate",
+     "dish"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "figurine",
+    "prompts": [
+     "showpiece",
+     "statue",
+     "ceramic figurine"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 3,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "bottle",
+    "prompts": [
+     "glass bottle"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "small bowl",
+    "prompts": [],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "fireplace tool set",
+    "prompts": [],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "firewood",
+    "prompts": [
+     "log"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "waveboard",
+    "prompts": [
+     "skateboard"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "bookshelf",
+    "prompts": [
+     "built-in shelf"
+    ],
+    "type": "built_in"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "fireplace",
+    "prompts": [
+     "brick chimney",
+     "brick chimney breast"
+    ],
+    "type": "built_in"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "log niche",
+    "prompts": [
+     "wood storage"
+    ],
+    "type": "built_in"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "wooden beam",
+    "prompts": [
+     "exposed beam",
+     "roof truss",
+     "ceiling beam"
+    ],
+    "type": "built_in"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "armchair",
+    "prompts": [
+     "blue chair",
+     "upholstered chair"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "built-in bookshelf",
+    "prompts": [
+     "bookcase",
+     "wall shelf"
+    ],
+    "type": "built_in"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "log storage shelf",
+    "prompts": [
+     "firewood shelf",
+     "wood store"
+    ],
+    "type": "built_in"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "skylight",
+    "prompts": [
+     "roof window"
+    ],
+    "type": "fixture"
+   },
+   {
+    "count": 7,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "framed picture",
+    "prompts": [
+     "painting",
+     "photo frame",
+     "artwork"
+    ],
+    "type": "wall_item"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "bowl of pine cones",
+    "prompts": [
+     "bowl",
+     "pine cone"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "glass vase",
+    "prompts": [
+     "vase",
+     "glass jar"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "fireplace tool",
+    "prompts": [
+     "fire iron"
+    ],
+    "type": "decor"
+   }
+  ],
+  "keyframes": [
+   "kf0000",
+   "kf0018",
+   "kf0158",
+   "kf0167",
+   "kf0176",
+   "kf0215",
+   "kf0231",
+   "kf0264"
+  ],
+  "listed_by": [
+   "gemini-3-flash-preview",
+   "claude-opus-5-5"
+  ]
+ },
+ "placement": {
+  "items_listed": 40,
+  "listed_by": [
+   "gemini-3-flash-preview",
+   "claude-opus-5-5"
+  ],
+  "unplaced": [
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "waveboard",
+    "reason": "not_seen_in_enough_frames",
+    "tried": [
+     "owlv2: waveboard",
+     "owlv2: skateboard (min score 0.1)"
+    ],
+    "type": "decor"
+   }
+  ]
+ },
+ "objects": [
+  {
+   "category": "sofa",
+   "type": "furniture",
+   "frames": 16,
+   "size_m": [
+    2.278,
+    1.004,
+    0.643
+   ]
+  },
+  {
+   "category": "curtain",
+   "type": "textile",
+   "frames": 16,
+   "size_m": [
+    0.386,
+    0.199,
+    1.511
+   ]
+  },
+  {
+   "category": "patterned rug",
+   "type": "textile",
+   "frames": 15,
+   "size_m": [
+    2.794,
+    2.198,
+    0.096
+   ]
+  },
+  {
+   "category": "patterned rug",
+   "type": "textile",
+   "frames": 14,
+   "size_m": [
+    1.996,
+    0.89,
+    0.085
+   ]
+  },
+  {
+   "category": "potted plant",
+   "type": "decor",
+   "frames": 14,
+   "size_m": [
+    0.421,
+    0.337,
+    0.639
+   ]
+  },
+  {
+   "category": "patterned rug",
+   "type": "textile",
+   "frames": 13,
+   "size_m": [
+    2.178,
+    1.258,
+    0.108
+   ]
+  },
+  {
+   "category": "coffee table",
+   "type": "furniture",
+   "frames": 13,
+   "size_m": [
+    1.08,
+    0.577,
+    0.369
+   ]
+  },
+  {
+   "category": "sofa",
+   "type": "furniture",
+   "frames": 13,
+   "size_m": [
+    0.967,
+    0.942,
+    0.658
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 11,
+   "size_m": [
+    0.333,
+    0.24,
+    0.307
+   ]
+  },
+  {
+   "category": "sofa",
+   "type": "furniture",
+   "frames": 11,
+   "size_m": [
+    1.551,
+    0.661,
+    0.533
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 11,
+   "size_m": [
+    0.586,
+    0.339,
+    0.472
+   ]
+  },
+  {
+   "category": "curtain",
+   "type": "textile",
+   "frames": 11,
+   "size_m": [
+    0.481,
+    0.194,
+    1.331
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 10,
+   "size_m": [
+    0.251,
+    0.176,
+    0.134
+   ]
+  },
+  {
+   "category": "glass vase",
+   "type": "decor",
+   "frames": 10,
+   "size_m": [
+    0.334,
+    0.296,
+    0.416
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 10,
+   "size_m": [
+    1.158,
+    0.6,
+    0.196
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 10,
+   "size_m": [
+    0.448,
+    0.341,
+    0.326
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 9,
+   "size_m": [
+    0.548,
+    0.134,
+    0.534
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 9,
+   "size_m": [
+    1.65,
+    0.323,
+    1.511
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 9,
+   "size_m": [
+    0.392,
+    0.115,
+    0.277
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 9,
+   "size_m": [
+    0.372,
+    0.319,
+    0.14
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 9,
+   "size_m": [
+    0.497,
+    0.097,
+    0.474
+   ]
+  },
+  {
+   "category": "curtain",
+   "type": "textile",
+   "frames": 9,
+   "size_m": [
+    0.316,
+    0.218,
+    1.934
+   ]
+  },
+  {
+   "category": "blanket",
+   "type": "textile",
+   "frames": 9,
+   "size_m": [
+    0.56,
+    0.523,
+    0.378
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 8,
+   "size_m": [
+    0.945,
+    0.11,
+    0.625
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 8,
+   "size_m": [
+    0.62,
+    0.174,
+    0.79
+   ]
+  },
+  {
+   "category": "decorative bowl",
+   "type": "decor",
+   "frames": 8,
+   "size_m": [
+    0.39,
+    0.361,
+    0.171
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 8,
+   "size_m": [
+    0.378,
+    0.202,
+    0.294
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 8,
+   "size_m": [
+    0.408,
+    0.371,
+    0.255
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 8,
+   "size_m": [
+    0.597,
+    0.424,
+    0.237
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 8,
+   "size_m": [
+    0.495,
+    0.38,
+    0.221
+   ]
+  },
+  {
+   "category": "curtain",
+   "type": "textile",
+   "frames": 8,
+   "size_m": [
+    0.341,
+    0.145,
+    1.338
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 8,
+   "size_m": [
+    0.469,
+    0.209,
+    0.352
+   ]
+  },
+  {
+   "category": "curtain rod",
+   "type": "wall_item",
+   "frames": 8,
+   "size_m": [
+    1.305,
+    0.219,
+    0.149
+   ]
+  },
+  {
+   "category": "pendant light",
+   "type": "fixture",
+   "frames": 8,
+   "size_m": [
+    0.419,
+    0.36,
+    0.541
+   ]
+  },
+  {
+   "category": "cabinet",
+   "type": "furniture",
+   "frames": 8,
+   "size_m": [
+    0.533,
+    0.208,
+    0.617
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 7,
+   "size_m": [
+    0.489,
+    0.244,
+    0.257
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 7,
+   "size_m": [
+    0.387,
+    0.219,
+    0.325
+   ]
+  },
+  {
+   "category": "small rug",
+   "type": "textile",
+   "frames": 7,
+   "size_m": [
+    0.953,
+    0.566,
+    0.076
+   ]
+  },
+  {
+   "category": "framed painting",
+   "type": "wall_item",
+   "frames": 7,
+   "size_m": [
+    0.443,
+    0.089,
+    0.472
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 7,
+   "size_m": [
+    1.501,
+    0.232,
+    2.182
+   ]
+  },
+  {
+   "category": "small rug",
+   "type": "textile",
+   "frames": 7,
+   "size_m": [
+    0.702,
+    0.536,
+    0.155
+   ]
+  },
+  {
+   "category": "glass vase",
+   "type": "decor",
+   "frames": 7,
+   "size_m": [
+    0.241,
+    0.184,
+    0.342
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 7,
+   "size_m": [
+    0.398,
+    0.39,
+    0.272
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 7,
+   "size_m": [
+    0.588,
+    0.559,
+    0.239
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 7,
+   "size_m": [
+    0.318,
+    0.097,
+    0.309
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 7,
+   "size_m": [
+    0.351,
+    0.186,
+    0.167
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 7,
+   "size_m": [
+    0.643,
+    0.41,
+    0.138
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 6,
+   "size_m": [
+    0.387,
+    0.339,
+    0.345
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 6,
+   "size_m": [
+    0.376,
+    0.163,
+    0.346
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 6,
+   "size_m": [
+    0.494,
+    0.116,
+    0.378
+   ]
+  },
+  {
+   "category": "pendant light",
+   "type": "fixture",
+   "frames": 6,
+   "size_m": [
+    0.534,
+    0.279,
+    0.747
+   ]
+  },
+  {
+   "category": "fireplace tool",
+   "type": "decor",
+   "frames": 6,
+   "size_m": [
+    0.407,
+    0.263,
+    0.571
+   ]
+  },
+  {
+   "category": "pendant light",
+   "type": "fixture",
+   "frames": 6,
+   "size_m": [
+    0.413,
+    0.222,
+    0.798
+   ]
+  },
+  {
+   "category": "framed painting",
+   "type": "wall_item",
+   "frames": 6,
+   "size_m": [
+    0.682,
+    0.087,
+    0.796
+   ]
+  },
+  {
+   "category": "framed painting",
+   "type": "wall_item",
+   "frames": 6,
+   "size_m": [
+    0.404,
+    0.084,
+    0.387
+   ]
+  },
+  {
+   "category": "blanket",
+   "type": "textile",
+   "frames": 6,
+   "size_m": [
+    0.6,
+    0.449,
+    0.468
+   ]
+  },
+  {
+   "category": "decorative bowl",
+   "type": "decor",
+   "frames": 6,
+   "size_m": [
+    0.383,
+    0.251,
+    0.133
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 6,
+   "size_m": [
+    0.391,
+    0.216,
+    0.245
+   ]
+  },
+  {
+   "category": "firewood",
+   "type": "decor",
+   "frames": 6,
+   "size_m": [
+    0.502,
+    0.469,
+    0.268
+   ]
+  },
+  {
+   "category": "small rug",
+   "type": "textile",
+   "frames": 6,
+   "size_m": [
+    1.084,
+    1.012,
+    0.082
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 6,
+   "size_m": [
+    0.556,
+    0.407,
+    0.331
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 6,
+   "size_m": [
+    0.332,
+    0.239,
+    0.131
+   ]
+  },
+  {
+   "category": "skylight",
+   "type": "fixture",
+   "frames": 6,
+   "size_m": [
+    1.065,
+    0.182,
+    0.336
+   ]
+  },
+  {
+   "category": "skylight",
+   "type": "fixture",
+   "frames": 6,
+   "size_m": [
+    0.645,
+    0.102,
+    1.188
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 6,
+   "size_m": [
+    0.859,
+    0.228,
+    0.339
+   ]
+  },
+  {
+   "category": "magazine",
+   "type": "decor",
+   "frames": 6,
+   "size_m": [
+    0.425,
+    0.299,
+    0.143
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 6,
+   "size_m": [
+    0.788,
+    0.416,
+    0.355
+   ]
+  },
+  {
+   "category": "blanket",
+   "type": "textile",
+   "frames": 6,
+   "size_m": [
+    0.781,
+    0.435,
+    0.457
+   ]
+  },
+  {
+   "category": "decorative bowl",
+   "type": "decor",
+   "frames": 6,
+   "size_m": [
+    0.191,
+    0.156,
+    0.123
+   ]
+  },
+  {
+   "category": "patterned rug",
+   "type": "textile",
+   "frames": 6,
+   "size_m": [
+    1.48,
+    1.39,
+    0.078
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 5,
+   "size_m": [
+    0.433,
+    0.236,
+    0.244
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 5,
+   "size_m": [
+    0.759,
+    0.095,
+    0.529
+   ]
+  },
+  {
+   "category": "coffee table",
+   "type": "furniture",
+   "frames": 5,
+   "size_m": [
+    0.434,
+    0.341,
+    0.305
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.196,
+    0.086,
+    0.132
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.232,
+    0.102,
+    0.137
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.118,
+    0.105,
+    0.276
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.383,
+    0.346,
+    0.304
+   ]
+  },
+  {
+   "category": "magazine",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.17,
+    0.137,
+    0.068
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.432,
+    0.183,
+    0.125
+   ]
+  },
+  {
+   "category": "shaggy rug",
+   "type": "textile",
+   "frames": 5,
+   "size_m": [
+    0.859,
+    0.485,
+    0.077
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 5,
+   "size_m": [
+    0.389,
+    0.332,
+    0.101
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.731,
+    0.287,
+    0.249
+   ]
+  },
+  {
+   "category": "ottoman",
+   "type": "furniture",
+   "frames": 5,
+   "size_m": [
+    0.366,
+    0.36,
+    0.248
+   ]
+  },
+  {
+   "category": "bottle",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.228,
+    0.158,
+    0.282
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.47,
+    0.177,
+    0.32
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.336,
+    0.11,
+    0.217
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.49,
+    0.201,
+    0.289
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.309,
+    0.171,
+    0.206
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.686,
+    0.116,
+    0.196
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.116,
+    0.07,
+    0.181
+   ]
+  },
+  {
+   "category": "shaggy rug",
+   "type": "textile",
+   "frames": 5,
+   "size_m": [
+    0.749,
+    0.686,
+    0.078
+   ]
+  },
+  {
+   "category": "small rug",
+   "type": "textile",
+   "frames": 5,
+   "size_m": [
+    0.914,
+    0.673,
+    0.079
+   ]
+  },
+  {
+   "category": "shaggy rug",
+   "type": "textile",
+   "frames": 5,
+   "size_m": [
+    1.035,
+    0.567,
+    0.092
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 5,
+   "size_m": [
+    0.643,
+    0.077,
+    0.401
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 5,
+   "size_m": [
+    0.835,
+    0.178,
+    0.323
+   ]
+  },
+  {
+   "category": "blanket",
+   "type": "textile",
+   "frames": 5,
+   "size_m": [
+    0.668,
+    0.221,
+    0.308
+   ]
+  },
+  {
+   "category": "blanket",
+   "type": "textile",
+   "frames": 5,
+   "size_m": [
+    0.705,
+    0.264,
+    0.318
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 5,
+   "size_m": [
+    0.432,
+    0.323,
+    0.322
+   ]
+  },
+  {
+   "category": "magazine",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.305,
+    0.304,
+    0.065
+   ]
+  },
+  {
+   "category": "wall light",
+   "type": "fixture",
+   "frames": 5,
+   "size_m": [
+    0.428,
+    0.269,
+    0.377
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 4,
+   "size_m": [
+    0.193,
+    0.106,
+    0.177
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 4,
+   "size_m": [
+    0.091,
+    0.088,
+    0.132
+   ]
+  },
+  {
+   "category": "switchboard",
+   "type": "fixture",
+   "frames": 4,
+   "size_m": [
+    0.235,
+    0.105,
+    0.194
+   ]
+  },
+  {
+   "category": "decorative bowl",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.386,
+    0.3,
+    0.223
+   ]
+  },
+  {
+   "category": "framed painting",
+   "type": "wall_item",
+   "frames": 4,
+   "size_m": [
+    0.456,
+    0.077,
+    0.536
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.157,
+    0.073,
+    0.224
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.201,
+    0.066,
+    0.149
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.183,
+    0.109,
+    0.13
+   ]
+  },
+  {
+   "category": "decorative tray",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.84,
+    0.297,
+    0.099
+   ]
+  },
+  {
+   "category": "small rug",
+   "type": "textile",
+   "frames": 4,
+   "size_m": [
+    0.992,
+    0.666,
+    0.126
+   ]
+  },
+  {
+   "category": "armchair",
+   "type": "furniture",
+   "frames": 4,
+   "size_m": [
+    0.73,
+    0.357,
+    0.665
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 4,
+   "size_m": [
+    0.257,
+    0.141,
+    0.201
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 4,
+   "size_m": [
+    0.397,
+    0.308,
+    0.293
+   ]
+  },
+  {
+   "category": "bottle",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.144,
+    0.084,
+    0.141
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 4,
+   "size_m": [
+    0.181,
+    0.085,
+    0.131
+   ]
+  },
+  {
+   "category": "small bowl",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.098,
+    0.062,
+    0.071
+   ]
+  },
+  {
+   "category": "figurine",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.161,
+    0.073,
+    0.329
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.13,
+    0.074,
+    0.174
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.088,
+    0.055,
+    0.387
+   ]
+  },
+  {
+   "category": "fireplace tool",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.187,
+    0.116,
+    0.474
+   ]
+  },
+  {
+   "category": "firewood",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.283,
+    0.107,
+    0.342
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.242,
+    0.072,
+    0.169
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.19,
+    0.068,
+    0.153
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.313,
+    0.121,
+    0.323
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.382,
+    0.312,
+    0.148
+   ]
+  },
+  {
+   "category": "decorative tray",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.223,
+    0.169,
+    0.181
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 4,
+   "size_m": [
+    0.754,
+    0.294,
+    0.483
+   ]
+  },
+  {
+   "category": "ottoman",
+   "type": "furniture",
+   "frames": 4,
+   "size_m": [
+    0.589,
+    0.24,
+    0.56
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.336,
+    0.225,
+    0.12
+   ]
+  },
+  {
+   "category": "skylight",
+   "type": "fixture",
+   "frames": 4,
+   "size_m": [
+    0.572,
+    0.337,
+    1.252
+   ]
+  },
+  {
+   "category": "skylight",
+   "type": "fixture",
+   "frames": 4,
+   "size_m": [
+    0.851,
+    0.162,
+    0.98
+   ]
+  },
+  {
+   "category": "small rug",
+   "type": "textile",
+   "frames": 4,
+   "size_m": [
+    1.482,
+    0.743,
+    0.078
+   ]
+  },
+  {
+   "category": "sofa",
+   "type": "furniture",
+   "frames": 4,
+   "size_m": [
+    1.46,
+    0.702,
+    0.392
+   ]
+  },
+  {
+   "category": "glass vase",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.176,
+    0.173,
+    0.345
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.386,
+    0.155,
+    0.265
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.087,
+    0.062,
+    0.176
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.423,
+    0.2,
+    0.479
+   ]
+  },
+  {
+   "category": "pendant light",
+   "type": "fixture",
+   "frames": 4,
+   "size_m": [
+    0.135,
+    0.066,
+    0.166
+   ]
+  },
+  {
+   "category": "bottle",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.152,
+    0.076,
+    0.256
+   ]
+  },
+  {
+   "category": "switchboard",
+   "type": "fixture",
+   "frames": 4,
+   "size_m": [
+    0.142,
+    0.072,
+    0.119
+   ]
+  },
+  {
+   "category": "bannister",
+   "type": "fixture",
+   "frames": 3,
+   "size_m": [
+    1.004,
+    0.091,
+    0.083
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 3,
+   "size_m": [
+    0.164,
+    0.152,
+    0.126
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 3,
+   "size_m": [
+    0.371,
+    0.161,
+    0.222
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 3,
+   "size_m": [
+    0.238,
+    0.179,
+    0.208
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 3,
+   "size_m": [
+    0.126,
+    0.101,
+    0.157
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 3,
+   "size_m": [
+    0.146,
+    0.137,
+    0.114
+   ]
+  },
+  {
+   "category": "pendant light",
+   "type": "fixture",
+   "frames": 3,
+   "size_m": [
+    0.247,
+    0.183,
+    0.227
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 3,
+   "size_m": [
+    0.158,
+    0.092,
+    0.196
+   ]
+  },
+  {
+   "category": "small rug",
+   "type": "textile",
+   "frames": 3,
+   "size_m": [
+    0.447,
+    0.231,
+    0.073
+   ]
+  },
+  {
+   "category": "small rug",
+   "type": "textile",
+   "frames": 3,
+   "size_m": [
+    0.173,
+    0.104,
+    0.107
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.141,
+    0.137,
+    0.148
+   ]
+  },
+  {
+   "category": "decorative tray",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.774,
+    0.314,
+    0.085
+   ]
+  },
+  {
+   "category": "pendant light",
+   "type": "fixture",
+   "frames": 3,
+   "size_m": [
+    0.258,
+    0.23,
+    0.879
+   ]
+  },
+  {
+   "category": "pendant light",
+   "type": "fixture",
+   "frames": 3,
+   "size_m": [
+    0.085,
+    0.054,
+    0.083
+   ]
+  },
+  {
+   "category": "decorative tray",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.335,
+    0.292,
+    0.223
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.388,
+    0.081,
+    0.442
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.09,
+    0.065,
+    0.171
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.309,
+    0.099,
+    0.181
+   ]
+  },
+  {
+   "category": "fireplace tool set",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.391,
+    0.111,
+    0.351
+   ]
+  },
+  {
+   "category": "decorative bowl",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.167,
+    0.139,
+    0.108
+   ]
+  },
+  {
+   "category": "magazine",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.315,
+    0.137,
+    0.213
+   ]
+  },
+  {
+   "category": "small rug",
+   "type": "textile",
+   "frames": 3,
+   "size_m": [
+    1.506,
+    0.91,
+    0.076
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 3,
+   "size_m": [
+    0.412,
+    0.355,
+    0.35
+   ]
+  },
+  {
+   "category": "fireplace tool",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.22,
+    0.07,
+    0.207
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.205,
+    0.081,
+    0.246
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.148,
+    0.105,
+    0.327
+   ]
+  },
+  {
+   "category": "figurine",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.125,
+    0.054,
+    0.097
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.338,
+    0.138,
+    0.339
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.36,
+    0.086,
+    0.18
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.141,
+    0.083,
+    0.175
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.194,
+    0.074,
+    0.168
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.162,
+    0.074,
+    0.184
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.258,
+    0.198,
+    0.368
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.079,
+    0.052,
+    0.182
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.267,
+    0.085,
+    0.224
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.482,
+    0.229,
+    0.292
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.187,
+    0.103,
+    0.186
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.655,
+    0.175,
+    0.275
+   ]
+  },
+  {
+   "category": "decorative tray",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.3,
+    0.221,
+    0.107
+   ]
+  },
+  {
+   "category": "switchboard",
+   "type": "fixture",
+   "frames": 3,
+   "size_m": [
+    0.077,
+    0.06,
+    0.087
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.38,
+    0.201,
+    0.276
+   ]
+  },
+  {
+   "category": "shaggy rug",
+   "type": "textile",
+   "frames": 3,
+   "size_m": [
+    1.092,
+    0.721,
+    0.124
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 3,
+   "size_m": [
+    0.57,
+    0.302,
+    0.641
+   ]
+  },
+  {
+   "category": "armchair",
+   "type": "furniture",
+   "frames": 3,
+   "size_m": [
+    0.777,
+    0.67,
+    0.594
+   ]
+  },
+  {
+   "category": "ottoman",
+   "type": "furniture",
+   "frames": 3,
+   "size_m": [
+    0.368,
+    0.159,
+    0.555
+   ]
+  },
+  {
+   "category": "bowl of pine cones",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.098,
+    0.076,
+    0.072
+   ]
+  },
+  {
+   "category": "curtain rod",
+   "type": "wall_item",
+   "frames": 3,
+   "size_m": [
+    0.813,
+    0.171,
+    0.169
+   ]
+  },
+  {
+   "category": "curtain rod",
+   "type": "wall_item",
+   "frames": 3,
+   "size_m": [
+    0.451,
+    0.144,
+    0.105
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 3,
+   "size_m": [
+    0.135,
+    0.067,
+    0.124
+   ]
+  },
+  {
+   "category": "curtain",
+   "type": "textile",
+   "frames": 3,
+   "size_m": [
+    0.272,
+    0.172,
+    0.793
+   ]
+  },
+  {
+   "category": "skylight",
+   "type": "fixture",
+   "frames": 3,
+   "size_m": [
+    0.442,
+    0.279,
+    0.782
+   ]
+  },
+  {
+   "category": "framed painting",
+   "type": "wall_item",
+   "frames": 3,
+   "size_m": [
+    0.454,
+    0.061,
+    0.234
+   ]
+  },
+  {
+   "category": "patterned rug",
+   "type": "textile",
+   "frames": 3,
+   "size_m": [
+    0.841,
+    0.393,
+    0.08
+   ]
+  },
+  {
+   "category": "fireplace tool",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.349,
+    0.229,
+    0.24
+   ]
+  },
+  {
+   "category": "patterned rug",
+   "type": "textile",
+   "frames": 3,
+   "size_m": [
+    0.976,
+    0.727,
+    0.082
+   ]
+  },
+  {
+   "category": "ladder",
+   "type": "furniture",
+   "frames": 3,
+   "size_m": [
+    0.622,
+    0.54,
+    0.542
+   ]
+  },
+  {
+   "category": "skylight",
+   "type": "fixture",
+   "frames": 3,
+   "size_m": [
+    0.31,
+    0.149,
+    0.804
+   ]
+  },
+  {
+   "category": "skylight",
+   "type": "fixture",
+   "frames": 3,
+   "size_m": [
+    0.146,
+    0.087,
+    0.737
+   ]
+  },
+  {
+   "category": "curtain",
+   "type": "textile",
+   "frames": 3,
+   "size_m": [
+    0.229,
+    0.121,
+    0.609
+   ]
+  },
+  {
+   "category": "switchboard",
+   "type": "fixture",
+   "frames": 3,
+   "size_m": [
+    0.078,
+    0.052,
+    0.073
+   ]
+  },
+  {
+   "category": "switchboard",
+   "type": "fixture",
+   "frames": 3,
+   "size_m": [
+    0.072,
+    0.052,
+    0.074
+   ]
+  },
+  {
+   "category": "cushion",
+   "type": "textile",
+   "frames": 3,
+   "size_m": [
+    0.458,
+    0.344,
+    0.152
+   ]
+  },
+  {
+   "category": "armchair",
+   "type": "furniture",
+   "frames": 3,
+   "size_m": [
+    0.396,
+    0.394,
+    0.224
+   ]
+  },
+  {
+   "category": "decorative tray",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.137,
+    0.113,
+    0.057
+   ]
+  },
+  {
+   "category": "bottle",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.085,
+    0.054,
+    0.142
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.188,
+    0.09,
+    0.287
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.053,
+    0.05,
+    0.182
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.147,
+    0.094,
+    0.186
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.138,
+    0.088,
+    0.182
+   ]
+  },
+  {
+   "category": "small rug",
+   "type": "textile",
+   "frames": 3,
+   "size_m": [
+    0.81,
+    0.308,
+    0.095
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.306,
+    0.112,
+    0.102
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.068,
+    0.051,
+    0.226
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.059,
+    0.052,
+    0.291
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.086,
+    0.052,
+    0.153
+   ]
+  },
+  {
+   "category": "skylight",
+   "type": "fixture",
+   "frames": 3,
+   "size_m": [
+    1.663,
+    0.145,
+    0.333
+   ]
+  },
+  {
+   "category": "framed picture",
+   "type": "wall_item",
+   "frames": 3,
+   "size_m": [
+    0.53,
+    0.073,
+    0.685
+   ]
+  },
+  {
+   "category": "ottoman",
+   "type": "furniture",
+   "frames": 3,
+   "size_m": [
+    0.392,
+    0.246,
+    0.149
+   ]
+  },
+  {
+   "category": "decorative tray",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.315,
+    0.272,
+    0.104
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.084,
+    0.053,
+    0.177
+   ]
+  },
+  {
+   "category": "decorative bowl",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.122,
+    0.096,
+    0.084
+   ]
+  },
+  {
+   "category": "fireplace tool",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.23,
+    0.183,
+    0.785
+   ]
+  },
+  {
+   "category": "bannister",
+   "type": "fixture",
+   "frames": 3,
+   "size_m": [
+    0.647,
+    0.096,
+    0.155
+   ]
+  },
+  {
+   "category": "glass vase",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.224,
+    0.114,
+    0.19
+   ]
+  },
+  {
+   "category": "cabinet",
+   "type": "furniture",
+   "frames": 3,
+   "size_m": [
+    0.368,
+    0.073,
+    0.598
+   ]
+  },
+  {
+   "category": "potted plant",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.21,
+    0.127,
+    0.127
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.164,
+    0.107,
+    0.222
+   ]
+  },
+  {
+   "category": "shaggy rug",
+   "type": "textile",
+   "frames": 3,
+   "size_m": [
+    0.561,
+    0.267,
+    0.072
+   ]
+  },
+  {
+   "category": "figurine",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.109,
+    0.106,
+    0.443
+   ]
+  },
+  {
+   "category": "fireplace",
+   "type": "built_in"
+  },
+  {
+   "category": "fireplace",
+   "type": "built_in"
+  },
+  {
+   "category": "log niche",
+   "type": "built_in"
+  },
+  {
+   "category": "bookshelf",
+   "type": "built_in"
+  },
+  {
+   "category": "bookshelf",
+   "type": "built_in"
+  },
+  {
+   "category": "wooden beam",
+   "type": "built_in"
+  },
+  {
+   "category": "log niche",
+   "type": "built_in"
+  },
+  {
+   "category": "wooden beam",
+   "type": "built_in"
+  },
+  {
+   "category": "bookshelf",
+   "type": "built_in"
+  },
+  {
+   "category": "bookshelf",
+   "type": "built_in"
+  },
+  {
+   "category": "built-in bookshelf",
+   "type": "built_in"
+  },
+  {
+   "category": "bookshelf",
+   "type": "built_in"
+  },
+  {
+   "category": "log storage shelf",
+   "type": "built_in"
+  },
+  {
+   "category": "bookshelf",
+   "type": "built_in"
+  },
+  {
+   "category": "bookshelf",
+   "type": "built_in"
+  },
+  {
+   "category": "built-in bookshelf",
+   "type": "built_in"
+  },
+  {
+   "category": "wooden beam",
+   "type": "built_in"
+  },
+  {
+   "category": "log storage shelf",
+   "type": "built_in"
+  },
+  {
+   "category": "bookshelf",
+   "type": "built_in"
+  },
+  {
+   "category": "fireplace",
+   "type": "built_in"
+  },
+  {
+   "category": "bookshelf",
+   "type": "built_in"
+  },
+  {
+   "category": "bookshelf",
+   "type": "built_in"
+  },
+  {
+   "category": "built-in bookshelf",
+   "type": "built_in"
+  },
+  {
+   "category": "bookshelf",
+   "type": "built_in"
+  },
+  {
+   "category": "bookshelf",
+   "type": "built_in"
+  },
+  {
+   "category": "wooden beam",
+   "type": "built_in"
+  },
+  {
+   "category": "bookshelf",
+   "type": "built_in"
+  },
+  {
+   "category": "bookshelf",
+   "type": "built_in"
+  }
+ ],
+ "inventory_meta": {
+  "items": 40,
+  "keyframes": 8,
+  "listed_by": {
+   "list": "gemini-3-flash-preview",
+   "cross_check": "claude-opus-5-5"
+  },
+  "per_model": {
+   "gemini-3-flash-preview": 32,
+   "claude-opus-5-5": 29
+  },
+  "failed": []
+ },
+ "objects_meta": {
+  "detector": "owlv2",
+  "segmenter": "sam2.1-large",
+  "fusion": {
+   "ambiguous_views_dropped": 364,
+   "merges_blocked": 37182,
+   "pieces_joined": 3,
+   "joins_blocked": 3
+  },
+  "built_ins": 28,
+  "unplaced": 1,
+  "retried": 5,
+  "objects": 228,
+  "opening_masks": 72
+ },
+ "charged_micro_inr": 0
+}

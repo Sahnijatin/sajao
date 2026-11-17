@@ -193,9 +193,9 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
   });
   const captureSensor = capture.onSensor;
   // True while the review is open. The phone is being read, not pointed at
-  // the room, so nothing seen then may go into the package: keyframes are
-  // deleted, and detections and sensor readings are not recorded. The scan
-  // video is recorded by the native view and cannot be paused from here.
+  // the room, so nothing seen then may go into the package. The recorder
+  // pauses the native view and notes the review window; on top of that the
+  // screen records no detections or sensor readings from that time.
   const reviewing = useRef(false);
   // Motion sensor readings go into the package's sensor log in every mode.
   const onImu = useCallback(
@@ -276,10 +276,17 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
     const timer = setTimeout(() => setRescanFor(null), RESCAN_NUDGE_MS);
     return () => clearTimeout(timer);
   }, [rescanFor]);
+  const setReviewOpen = capture.setReviewOpen;
+  const openReview = useCallback(() => {
+    // The recorder pauses and notes the review window before anything shows.
+    setReviewOpen(true);
+    setReview(scanSummary(state));
+  }, [setReviewOpen, state]);
   const onRescan = useCallback(() => {
+    setReviewOpen(false);
     setRescanFor(review?.missing[0] ?? null);
     setReview(null);
-  }, [review]);
+  }, [review, setReviewOpen]);
   // A pause to fix something always comes first.
   const pointAt = instruction.tone === "fix" ? null : rescanFor;
   const instructionId = pointAt
@@ -340,7 +347,11 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
         <ArView
           ref={capture.viewRef}
           captureId={capture.captureId}
+          // While the review is open the native view records no keyframe and,
+          // on iOS, no video frame.
+          capturePaused={capture.capturePaused}
           onArKeyframe={({ nativeEvent }) => {
+            // A build from before the pause prop still sends keyframes: delete them.
             if (reviewing.current) {
               void capture.viewRef.current?.discardKeyframes([nativeEvent.uri]);
             } else {
@@ -352,8 +363,9 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
           torch={torch}
           lite={tier === "low"}
           reducedMotion={reducedMotion}
-          // Live labels are diagnostics. The mesh is drawn by the native view
-          // and stays until it takes a prop to hide it.
+          // The mesh, planes and live labels are diagnostics: the scan shows
+          // the camera image only, unless the debug flag is on.
+          overlay={showDebug}
           labels={showDebug ? labelProps : NO_LABELS}
           onArStatus={({ nativeEvent }) => {
             // A session that cannot start falls back to the 2D scan.
@@ -508,12 +520,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
                 />
               </View>
             ) : null}
-            <DoneRing
-              progress={share}
-              ready={ready}
-              busy={finishing}
-              onPress={() => setReview(scanSummary(state))}
-            />
+            <DoneRing progress={share} ready={ready} busy={finishing} onPress={openReview} />
           </View>
         </>
       )}

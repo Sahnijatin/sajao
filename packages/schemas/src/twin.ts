@@ -4,7 +4,14 @@
 // list all read one source. Nothing here invents a dimension: moved and
 // rotated boxes keep their measured sizes, replaced and added items take
 // their catalog sizes.
-import type { SpaceProfile, SpaceTwin, TwinEdit, TwinObject } from "./generated/v1";
+import type {
+  Keyframe,
+  Point3,
+  SpaceProfile,
+  SpaceTwin,
+  TwinEdit,
+  TwinObject,
+} from "./generated/v1";
 
 export interface EditProblem {
   edit_id: string;
@@ -165,5 +172,47 @@ export function spaceProfileFromTwin(
       })),
     direction: structuredClone(twin.direction),
     scale: structuredClone(twin.scale),
+  };
+}
+
+// The room splat only holds up near where the phone stood. A viewer or reveal
+// shows the twin from a hero view, inside its orbit, or from a camera position
+// inside the safe region, and from nowhere else.
+
+/** The keyframe behind each hero view, best first. A view whose keyframe is missing is skipped. */
+export function heroKeyframes(twin: SpaceTwin): Keyframe[] {
+  const byId = new Map(twin.keyframes.map((keyframe) => [keyframe.id, keyframe]));
+  return (twin.viewing?.hero_views ?? []).flatMap((view) => {
+    const keyframe = byId.get(view.keyframe_id);
+    return keyframe ? [keyframe] : [];
+  });
+}
+
+const distance = (a: Point3, b: Point3): number =>
+  Math.hypot(a.x_m - b.x_m, a.y_m - b.y_m, a.z_m - b.z_m);
+
+/** Whether a camera position may be shown. A twin without viewing limits allows none. */
+export function insideSafeRegion(twin: SpaceTwin, position: Point3): boolean {
+  const region = twin.viewing?.safe_region;
+  if (!region) return false;
+  return region.anchors.some((anchor) => distance(anchor, position) <= region.radius_m);
+}
+
+/** The position moved to the nearest point of the safe region; unchanged when already inside. */
+export function clampToSafeRegion(twin: SpaceTwin, position: Point3): Point3 | undefined {
+  const region = twin.viewing?.safe_region;
+  if (!region) return undefined;
+  let nearest = region.anchors[0];
+  if (!nearest) return undefined;
+  for (const anchor of region.anchors) {
+    if (distance(anchor, position) < distance(nearest, position)) nearest = anchor;
+  }
+  const gap = distance(nearest, position);
+  if (gap <= region.radius_m) return { ...position };
+  const pull = region.radius_m / gap;
+  return {
+    x_m: nearest.x_m + (position.x_m - nearest.x_m) * pull,
+    y_m: nearest.y_m + (position.y_m - nearest.y_m) * pull,
+    z_m: nearest.z_m + (position.z_m - nearest.z_m) * pull,
   };
 }

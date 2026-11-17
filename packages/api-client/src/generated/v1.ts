@@ -308,6 +308,11 @@ export interface components {
              */
             planes?: string | null;
             /**
+             * Review Windows
+             * @description Times when the review was open over the scan, in milliseconds from the start of the capture. The phone was lowered then: frames of the video inside a window are not part of the scan and are dropped on the server.
+             */
+            review_windows?: components["schemas"]["ReviewWindow"][] | null;
+            /**
              * Scene Mesh
              * @description LiDAR scene mesh with surface classes, when the phone has LiDAR.
              */
@@ -322,6 +327,11 @@ export interface components {
              * @description The scan video, when recorded.
              */
             video?: string | null;
+            /**
+             * Video Start Ms
+             * @description When the scan video's first frame was taken, in milliseconds from the start of the capture, so the video can be lined up with the keyframes and the sensor log.
+             */
+            video_start_ms?: number | null;
         };
         /**
          * CompassReading
@@ -442,6 +452,13 @@ export interface components {
             size_bytes: number;
             /** Upload Id */
             upload_id: string;
+        };
+        /** ReviewWindow */
+        ReviewWindow: {
+            /** End Ms */
+            end_ms: number;
+            /** Start Ms */
+            start_ms: number;
         };
         /** RotationItem */
         RotationItem: number;

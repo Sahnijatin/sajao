@@ -2,7 +2,13 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { Dimension, SpaceTwin, TwinEdit } from "./generated/v1";
-import { applyEdits, spaceProfileFromTwin } from "./twin";
+import {
+  applyEdits,
+  clampToSafeRegion,
+  heroKeyframes,
+  insideSafeRegion,
+  spaceProfileFromTwin,
+} from "./twin";
 import { validate } from "./validate";
 
 const fixture = JSON.parse(
@@ -123,6 +129,36 @@ describe("SpaceProfile is a view of the twin", () => {
       ["almirah-1", "remove"],
     ]);
     expect(profile.existing_items[0]?.width).toEqual(fixture.objects[0]?.box.width);
+  });
+});
+
+describe("viewing limits", () => {
+  it("gives the keyframe behind each hero view and skips a view whose keyframe is gone", () => {
+    expect(heroKeyframes(fixture).map((keyframe) => keyframe.id)).toEqual(["k1"]);
+    const orphan = structuredClone(fixture);
+    orphan.viewing!.hero_views[0]!.keyframe_id = "k9";
+    expect(heroKeyframes(orphan)).toEqual([]);
+  });
+
+  it("allows a camera within the radius of an anchor and nowhere else", () => {
+    expect(insideSafeRegion(fixture, { x_m: 2.2, y_m: 2.8, z_m: 1.4 })).toBe(true);
+    expect(insideSafeRegion(fixture, { x_m: 2.5, y_m: 2.8, z_m: 1.4 })).toBe(false);
+  });
+
+  it("pulls a camera outside the region back to its edge and leaves one inside alone", () => {
+    const pulled = clampToSafeRegion(fixture, { x_m: 3.0, y_m: 2.8, z_m: 1.4 });
+    expect(pulled?.x_m).toBeCloseTo(2.3);
+    expect(insideSafeRegion(fixture, { ...pulled!, x_m: pulled!.x_m - 1e-9 })).toBe(true);
+    const inside = { x_m: 2.1, y_m: 2.8, z_m: 1.4 };
+    expect(clampToSafeRegion(fixture, inside)).toEqual(inside);
+  });
+
+  it("allows no free camera on a twin without viewing limits", () => {
+    const bare = structuredClone(fixture);
+    delete bare.viewing;
+    expect(insideSafeRegion(bare, { x_m: 2.0, y_m: 2.8, z_m: 1.4 })).toBe(false);
+    expect(clampToSafeRegion(bare, { x_m: 2.0, y_m: 2.8, z_m: 1.4 })).toBeUndefined();
+    expect(heroKeyframes(bare)).toEqual([]);
   });
 });
 
