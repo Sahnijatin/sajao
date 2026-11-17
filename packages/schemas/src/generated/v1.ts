@@ -1187,6 +1187,10 @@ id: LocalId
 start: Point2
 end: Point2
 length: Dimension
+/**
+ * What this edge of the floor polygon is. wall (the default when absent): a wall was seen here, from near the floor to near the ceiling. open: no wall was seen between the walls on either side: a doorway, the way into the next area, or a stretch that was not scanned. Open edges are passable, never a surface to place things against.
+ */
+kind?: ("wall" | "open")
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
