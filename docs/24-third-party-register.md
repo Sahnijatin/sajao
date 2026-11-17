@@ -102,6 +102,8 @@ Every model, library and dataset used to build, train or evaluate Sajao is liste
 | pytest 9.2.0 | Library (Python) | Build and test tooling in root | https://github.com/pytest-dev/pytest | MIT | No | Existing |
 | pytest-asyncio 1.5.0 | Library (Python) | Build and test tooling in root | https://github.com/pytest-dev/pytest-asyncio | Apache-2.0 | No | Existing |
 | ruff 0.17.5 | Library (Python) | Build and test tooling in root | https://github.com/astral-sh/ruff | MIT | No | Existing |
+| Hypothesis 6.170.15 | Library (Python) | Property tests for the solver, verifier and relaxation order | https://github.com/HypothesisWorks/hypothesis | MPL-2.0 | No | SJ-53 Verifier and relaxation order |
+| sortedcontainers 2.4.0 | Library (Python) | Dependency of Hypothesis, test tooling only | https://github.com/grantjenks/python-sortedcontainers | Apache-2.0 | No | SJ-53 Verifier and relaxation order |
 | structlog 26.1.0 | Library (Python) | Service code in services/api | https://github.com/hynek/structlog | MIT OR Apache-2.0 | No | Existing |
 | types-jsonschema 4.26.0.20261006 | Library (Python) | Build and test tooling in root | https://github.com/python/typeshed | Apache-2.0 | No | Existing |
 | uvicorn 0.54.0 | Library (Python) | Service code in services/api | https://github.com/encode/uvicorn | BSD-3-Clause | No | Existing |
