@@ -9,7 +9,7 @@ import { type UploadStatus, useCaptureStore } from "@/state/capture";
 /** The message key and its values for an upload state; null when there is nothing to show. */
 export function uploadMessage(
   upload: UploadStatus,
-): { key: string; values?: Record<string, number> } | null {
+): { key: string; values?: Record<string, number | string> } | null {
   switch (upload.state) {
     case "idle":
       return null;
@@ -22,11 +22,21 @@ export function uploadMessage(
             values: { finished: upload.finished, total: upload.total },
           }
         : { key: "home.upload.starting" };
-    case "done":
-      return { key: upload.videoSkipped ? "home.upload.doneNoVideo" : "home.upload.done" };
+    case "done": {
+      const key = upload.videoSkipped ? "home.upload.doneNoVideo" : "home.upload.done";
+      // The size is only known for files sent in this run, not ones skipped as already up.
+      return upload.bytes
+        ? { key: `${key}Size`, values: { megabytes: megabytes(upload.bytes) } }
+        : { key };
+    }
     case "failed":
       return { key: "home.upload.failed" };
   }
+}
+
+/** Bytes as megabytes with one decimal, for example "84.3". */
+export function megabytes(bytes: number): string {
+  return (bytes / (1024 * 1024)).toFixed(1);
 }
 
 export function UploadStatus() {

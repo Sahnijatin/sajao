@@ -15,6 +15,8 @@ export interface UploadStatus {
   error?: string;
   /** The video was over the server's size limit and was left out. */
   videoSkipped?: boolean;
+  /** Bytes sent for this scan, once it is uploaded. */
+  bytes?: number;
 }
 
 interface CaptureStore {

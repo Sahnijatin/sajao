@@ -1,6 +1,8 @@
-// Picks the keyframes the twin is built from: the sharpest frame for each
-// direction the phone pointed, so the set covers the space without
-// near-duplicates. Pure; the camera hands in candidates as it sees them.
+// Picks the keyframes the server measures and rebuilds from: the sharpest
+// frame for each viewpoint, where a viewpoint is a place the phone stood and
+// a direction it looked from there. Walking the room keeps adding keyframes
+// that turning on one spot cannot, and time alone never adds one. Pure; the
+// camera hands in candidates as it sees them.
 
 export interface KeyframeCandidate {
   /** Local file of the full-resolution frame, kept until upload. */
@@ -12,7 +14,13 @@ export interface KeyframeCandidate {
   /** Where the phone pointed, degrees; null when the phone has no pose. */
   yaw: number | null;
   pitch: number | null;
+  /** Where the phone stood on the floor plan, metres; missing or null without AR tracking. */
+  x?: number | null;
+  z?: number | null;
 }
+
+/** Side of a square of floor that counts as one place to stand. */
+export const PLACE_CELL_M = 0.5;
 
 /** Directions are grouped into cells this wide... */
 export const YAW_CELL_DEGREES = 30;
@@ -30,7 +38,7 @@ export const TIME_CELL_MS = 1500;
 export const MIN_SHARPNESS = 1;
 /** A cell's keyframe is replaced only by a clearly sharper frame. */
 const REPLACE_MARGIN = 1.1;
-export const MAX_KEYFRAMES = 120;
+export const MAX_KEYFRAMES = 200;
 
 export function cellOf(candidate: KeyframeCandidate): string {
   if (candidate.yaw === null || candidate.pitch === null) {
@@ -39,7 +47,10 @@ export function cellOf(candidate: KeyframeCandidate): string {
   const turned = ((candidate.yaw % 360) + 360) % 360;
   const sector = Math.floor(turned / YAW_CELL_DEGREES);
   const band = PITCH_BANDS.filter((edge) => candidate.pitch! > edge).length;
-  return `d${sector}-${band}`;
+  const direction = `d${sector}-${band}`;
+  const { x, z } = candidate;
+  if (typeof x !== "number" || typeof z !== "number") return direction;
+  return `p${Math.floor(x / PLACE_CELL_M)}_${Math.floor(z / PLACE_CELL_M)}-${direction}`;
 }
 
 export type KeyframeSet = ReadonlyMap<string, KeyframeCandidate>;
