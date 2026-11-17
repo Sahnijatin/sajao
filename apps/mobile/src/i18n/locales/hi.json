@@ -426,7 +426,12 @@
     "unitsExample": "3.4 मीटर की दीवार {{length}} दिखेगी",
     "gallery": "कंपोनेंट गैलरी",
     "spacePreview": "स्पेस प्रोफ़ाइल प्रीव्यू",
-    "tastePreview": "पसंद प्रीव्यू"
+    "tastePreview": "पसंद प्रीव्यू",
+    "tasteTitle": "आपकी पसंद और बजट",
+    "tasteNone": "बताइए आपको क्या पसंद है और आप कितना ख़र्च करना चाहते हैं। एक मिनट लगेगा।",
+    "tasteBudget": "बजट {{amount}}",
+    "tasteChange": "बदलें",
+    "tasteStart": "मेरी पसंद बताएँ"
   },
   "languages": {
     "en": "English",
@@ -453,7 +458,9 @@
     "capture": "स्कैन",
     "generating": "डिज़ाइन हो रहा है",
     "reveal": "आपका कमरा",
-    "room": "कमरा"
+    "room": "कमरा",
+    "space": "आपकी जगह",
+    "taste": "आपकी पसंद"
   },
   "import": {
     "problemTitle": "हम इसका उपयोग नहीं कर पाए",

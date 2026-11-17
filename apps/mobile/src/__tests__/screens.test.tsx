@@ -8,6 +8,7 @@ import { ProfileScreen } from "@/screens/profile";
 import { useCaptureStore } from "@/state/capture";
 import { useRooms } from "@/state/rooms";
 import { useSettings } from "@/state/settings";
+import { useTaste } from "@/state/taste";
 
 const mockPush = jest.fn();
 jest.mock("expo-router", () => {
@@ -41,6 +42,7 @@ beforeEach(async () => {
   await AsyncStorage.clear();
   await act(async () => {
     useRooms.setState({ rooms: [] });
+    useTaste.setState({ answers: null });
     useCaptureStore.setState({ upload: { state: "idle", finished: 0, total: 0 } });
     useSettings.setState({ language: null, units: "cm" });
     await i18n.changeLanguage("en");
@@ -145,6 +147,43 @@ describe("Profile", () => {
   it("is usable as a guest", async () => {
     await show(<ProfileScreen />);
     expect(screen.getByText("You are browsing as a guest")).toBeTruthy();
+  });
+
+  it("offers taste and budget before they are set, and shows them with Change after", async () => {
+    const view = await show(<ProfileScreen />);
+    await fireEvent.press(screen.getByRole("button", { name: "Set my taste" }));
+    expect(mockPush).toHaveBeenLastCalledWith("/taste");
+    await act(async () => {
+      useTaste.getState().setAnswers({
+        context: { age_band: "25_34", household: ["couple"], tenure: "owned" },
+        swipes: [],
+        attributes: {
+          palette_warmth: 0.7,
+          saturation: 0.4,
+          boldness: 0.4,
+          clutter_tolerance: 0.3,
+          formality: 0.5,
+          trend_vs_timeless: 0.6,
+        },
+        style_blend: [{ style: "japandi", weight: 1 }],
+        traits: ["warm_tones", "natural_wood"],
+        budget: { limit: { currency: "INR", amount_minor: 15000000 }, flexibility: "strict" },
+        must_haves: [],
+        consider_vastu: false,
+      });
+    });
+    await view.rerender(
+      <ThemeProvider tier="standard" reducedMotion>
+        <ProfileScreen />
+      </ThemeProvider>,
+    );
+    expect(screen.getByText("Warm tones · Natural wood")).toBeTruthy();
+    expect(screen.getByText("Budget ₹1,50,000")).toBeTruthy();
+    await fireEvent.press(screen.getByRole("button", { name: "Change" }));
+    expect(mockPush).toHaveBeenLastCalledWith("/taste");
+    // The answers are kept on the phone for the next room.
+    const stored = JSON.parse((await AsyncStorage.getItem("sajao.taste")) ?? "{}");
+    expect(stored.state.answers.budget.limit.amount_minor).toBe(15000000);
   });
 
   it("switches units between centimetres and feet and inches, and remembers", async () => {
