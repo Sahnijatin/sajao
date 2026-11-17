@@ -14,6 +14,55 @@ You scan whatever you want redone: a whole room, a corner, a balcony or any area
 
 Works on any Android or iPhone. Translucent glass guides over the camera (level line, "step back", "include a corner", "turn on lights"), a coverage ring, and sharpness and blur checks running on the device without AI. Gallery upload is allowed. ARKit or ARCore poses are attached when the phone has them, but never required. Compass headings are averaged during capture for Vastu. Uploads are compressed on the phone and resumable in the background.
 
+## Coverage meter (spec, not built yet)
+
+The twin is sharp where the phone stood and falls apart away from it. On the first room measured, held-out views with a training camera within 30 cm scored 22.3 dB PSNR and views 50 to 80 cm from any training camera scored 16.1 dB, with twice the perceptual error (numbers: "Render quality" in the golden-room report; limits: "Where the twin can be shown from" in `docs/23-space-twin.md`). No trainer setting closes a gap like that; views from where the phone stood do. Today Done is offered after turning through most of a circle and walking about 3 m, which one spot by the door satisfies. The meter replaces that rule on phones with AR tracking, in both scan modes. It reads AR poses only: no model, nothing sent to a server, and it never sets a dimension.
+
+**What you are asked to do**
+
+1. **Loop.** Walk once around the space, near the walls, with the camera facing across the room at chest height.
+2. **Sweeps.** Stand in the middle and turn slowly through a full circle. Then do the same from one or two more spots, at least a metre apart. A space too small for that needs one sweep.
+3. **Done** unlocks when the loop and the sweeps are complete.
+
+**What the meter counts**
+
+A pose sample is accepted under the gates the simple scan already uses (tracking normal, turning slower than the limit, steady, sharp picture, pitch within 60 degrees of level, samples at least 90 ms apart, steps between 2 cm and 50 cm).
+
+| Part | Rule | Complete when |
+| --- | --- | --- |
+| Loop | Accepted positions are binned by bearing from the centre of everything walked so far, in 12 sectors of 30 degrees. A sector counts when a position in it is at least 60% of the median distance from that centre, so standing in the middle and turning fills nothing | 10 of 12 sectors, and the walked path is at least 6 m |
+| Sweep | Accepted samples within 40 cm of one spot, binned by heading in 12 sectors of 30 degrees | 10 of 12 sectors from that spot |
+| Sweeps | Complete sweeps whose spots are at least 1 m apart and at least 80 cm inside the loop path | 2. A space under 2.5 m across needs 1 |
+| Floor look | Share of sweep samples pitched 15 to 45 degrees down, so the floor and low furniture are seen from the middle | 25% of each sweep's samples |
+
+Done is enabled when every row is complete and the scan has its minimum accepted samples. The centre of the loop moves as you walk, so loop sectors are recounted from the stored positions on every sample (at most a few thousand points).
+
+**What you see**
+
+- The progress ring in two parts: loop, then sweeps. It never goes backwards.
+- The mini map draws the floor cells walked (50 cm cells), the loop sectors still missing, and a marker where the next sweep should be: the largest gap inside the loop.
+- Hints, one at a time, from the motion state: "Walk along the walls", "Keep going round", "Now stand in the middle and turn slowly", "Tilt down a little", "One more spot, over there", "Done". The existing guardrail hints (light, speed, shake) take priority.
+- A haptic tick per new sector, a success haptic when the loop closes and when a sweep completes. Theme, motion presets and reduced motion as on every screen; strings in English and Hindi.
+
+**Keyframes for the twin**
+
+Keyframes are kept today as the sharpest per direction (30 degree yaw sectors, three pitch bands), wherever the phone stood. A loop and three sweeps need the sharpest per place and direction: one keyframe per 50 cm floor cell, 30 degree yaw sector and pitch band, with the limit raised from 120 to 200. This is a change to the capture package and its upload size, so it is its own task and needs the founder's approval before it is built.
+
+**The package records the result**
+
+`Capture.package` gains a `coverage` summary (loop sectors, sweep spots with their sectors, metres walked, whether the gate passed), so the server and the golden-room report can relate twin quality to how the room was scanned. A schema change, in its own pull request.
+
+**Phones without AR tracking** keep the simple scan's heading and steady-time rule. They have no poses, so they get no room splat today.
+
+**Open questions for the founder**
+
+- Whether a "Finish anyway" appears after a minute without progress (the twin would then be shown from hero views only). The guardrails already never block; this gate would be the first that does.
+- The keyframe limit of 200: about two thirds more upload per scan.
+
+**How we know it works**
+
+Each golden room is scanned twice: once to the current rule and once to the meter. The meter passes when the second scan's far-from-path render scores are within 2 dB PSNR of its near-path scores, and a still from the middle of the room is usable in the review pack.
+
 ## Capture package
 
 An AR scan records one package for the twin (schema: `Capture.package`). The phone captures; the server understands.
