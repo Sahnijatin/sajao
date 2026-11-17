@@ -31,7 +31,7 @@ from sajao_workers.twin.inventory import (
 )
 
 # Bump when this step's logic, prompt or pinned model chains change.
-VERSION = 1
+VERSION = 2
 LONG_SIDE = 1024
 
 

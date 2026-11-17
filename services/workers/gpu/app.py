@@ -1902,7 +1902,7 @@ def twin_smoke(scene: str = "arkit_living_47331265", keyframes: int = 120) -> No
     secrets=VISION_SECRETS,
 )
 def inventory_eval_cpu(
-    scene: str, keyframes: int, hand: dict[str, Any], detectors: str
+    scene: str, keyframes: int, hand: dict[str, Any], detectors: str, listing_only: bool = False
 ) -> dict[str, Any]:
     """One ARKitScenes room: the inventory, the objects placed from it, and recall per type
     against the hand inventory (eval/twin-inventory)."""
@@ -1920,6 +1920,26 @@ def inventory_eval_cpu(
     manifest = _arkit_manifest(store, scene, keyframes)
     runner = StepRunner(store, max_attempts=1)
     frames = store.put_blob(json.dumps(manifest).encode())
+    if listing_only:  # the vision models' list alone: no GPU
+        from twin_gpu.objects import gt_boxes, gt_seen
+
+        from sajao_workers.twin.inventory_step import inventory_step
+
+        step = inventory_step(*_inventory_gateways(_ledger()))
+        listing = asyncio.run(runner.run(step, {"frames": frames}, {}))
+        vol.commit()
+        listed = json.loads(store.read_blob(listing.outputs["inventory"]))
+        gts = gt_boxes(scene, manifest["up_axis"])
+        seen = [{"label": g.label} for g, ok in zip(gts, gt_seen(scene, gts), strict=True) if ok]
+        return {
+            "scene": scene,
+            "detectors": "listing",
+            "inventory": listed,
+            "recall": recall_report(hand, listed, [], []),
+            "listing_by_geometry": listing_recall_by_geometry(seen, listed["items"]),
+            "inventory_meta": dict(listing.meta),
+            "charged_micro_inr": listing.cost_micro_inr,
+        }
     inventory, objects = asyncio.run(_objects(runner, _ledger(), frames, detectors))
     vol.commit()
 
@@ -1969,7 +1989,7 @@ def inventory_eval_cpu(
 
 @app.local_entrypoint()
 def inventory_eval(
-    detectors: str = "", keyframes: int = 120, out: str = "", rooms: str = ""
+    detectors: str = "", keyframes: int = 120, out: str = "", rooms: str = "", listing: bool = False
 ) -> None:
     """Recall per type on the ARKit rooms with hand inventories; one result file per room."""
     import json
@@ -1983,15 +2003,16 @@ def inventory_eval(
     }
     target = Path(out or "inventory-runs")
     target.mkdir(parents=True, exist_ok=True)
-    args = [(scene, keyframes, hand, detectors) for scene, hand in hands.items()]
+    args = [(scene, keyframes, hand, detectors, listing) for scene, hand in hands.items()]
     for result in inventory_eval_cpu.starmap(args, return_exceptions=True):
         if isinstance(result, BaseException):
             print(f"failed: {type(result).__name__}: {result}")
             continue
         name = f"{result['scene']}.{result['detectors'].replace(',', '-')}.json"
         (target / name).write_text(json.dumps(result, indent=1) + "\n")
+        geometry = result["listing_by_geometry"]
         print(result["scene"], json.dumps(result["recall"]["listed"]["all"]),
-              json.dumps(result["recall"]["placed"]["all"]))  # fmt: skip
+              f"geometry {geometry['covered']} of {geometry['annotated']}")  # fmt: skip
 
 
 @app.function(

@@ -36,6 +36,18 @@ Gemini alone covers about 27 and Claude alone about 29: the merged list beats ei
 
 Sofa recall understates the listing: ARKitScenes calls a 0.9 m armchair a sofa, and the models call it an armchair. Pooling seating (chair, sofa, stool) gives 12 of 17: the models undercount seats in three of the four rooms, usually by one or two.
 
+### Counting seats per group (prompt `twin_inventory@2`)
+
+The listing prompt now asks the models to count seats group by group (chairs around each table, including ones pushed under it; sofas, armchairs, stools and ottomans in each sitting area) before answering. One listing-only run per prompt version on the five rooms (`inventory_eval --listing`, Rs 26):
+
+| | Prompt v1 | Prompt v2 | Real |
+| --- | --- | --- | --- |
+| Seats covered, against annotated boxes | 12 | 14 | 17 |
+| Seats covered, against the hand inventories | 19 | 21 | 29 |
+| All annotated classes covered | 30 | 29 | 38 |
+
+Seating improves a little. The largest gap stays: the dining chairs in living room 41159541 are listed as 2 of 7 by both prompts, most likely because the eight keyframes do not show the chairs pushed under the table. The all-class total moves by one item in one room, within run-to-run variation of a single run.
+
 ## Placed in 3D, per detector
 
 End to end with objects step version 10 (de-duplication on), on all five rooms. "Kinds" counts hand items with at least one object of a matching name; instance recall counts items, up to the number placed.
@@ -49,10 +61,10 @@ An earlier run without de-duplication (version 7) gave Grounding DINO 81 of 131,
 
 ## De-duplication
 
-Objects step version 10 keeps one object per real thing (`dedupe` in `twin/inventory.py`):
+Objects step version 10 keeps one object per real thing (version 11 adds the stacked and tall rules in point 2) (`dedupe` in `twin/inventory.py`):
 
 1. Boxes are one thing when they overlap (IoU at least 0.3, or at least 60% of the smaller inside the larger when their volumes are within a factor of about 3: a cushion on a sofa is not the sofa), or when they are the same kind of thing (head noun: armchair and dining chair are both chairs) with centres within 0.3 m at overlapping heights: the back and the seat of one chair. The group pools its views and takes the name most of them gave.
-2. The best box of each listed item is never merged into a different kind of thing, so every listed item keeps one object (photo frame and painting stay two).
+2. Boxes are never one thing when they are different kinds one above the other (a TV on its stand: centres further apart in height than half the shorter box), or when one is at least 1.5 m tall and the other is under three quarters of its height (version 11). The best box of each listed item is never merged into a different kind of thing, so every listed item keeps one object (photo frame and painting stay two).
 3. A group seen far less than the best of its name (under 35% of its pooled frames times confidence) and in fewer than 4 frames is dropped: detectors put a common name (book, box) on many things briefly.
 
 A cap on count per listed item was tried and rejected: the vision models undercount, so capping loses real items.
@@ -72,7 +84,7 @@ For a launch without the 3D twin: are the big things (bed, sofa, table, chair, c
 | Grounding DINO | 33 of 38 | 8 cm | 19 cm | 12% | 22% |
 | YOLOE | 35 of 38 | 9 cm | 32 cm | 13% | 19% |
 
-Footprints come out a little small on average (thin parts such as chair legs and table edges have few depth points). Misses are stools, chairs, small tables and one cabinet. Every size comes from the fused LiDAR geometry with its error band; no model sets one.
+Footprints come out a little small on average (thin parts such as chair legs and table edges have few depth points). Misses are stools, chairs, small tables and one tall cabinet (0.5 by 0.46 m, 2 m high) that no detector boxed at its full height, so no merge rule can recover it. With the version 11 rules, offline on the same boxes, Grounding DINO places 34 of 38 (median centre error 8 cm). Every size comes from the fused LiDAR geometry with its error band; no model sets one.
 
 ## Cost
 

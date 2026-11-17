@@ -80,7 +80,8 @@ async def test_both_models_list_from_eight_small_keyframes_and_the_lists_merge(
     sent = gemini.calls[0]
     assert len(sent.blobs) == 8
     assert max(Image.open(io.BytesIO(sent.blobs[0])).size) == 1024
-    assert sent.prompt_id == "twin_inventory@1"
+    assert sent.prompt_id == "twin_inventory@2"
+    assert "how many chairs are around" in sent.payload["prompt"]  # seats counted per group
     assert result.cost_micro_inr == 10_000
     assert result.meta["keyframes"] == len(inventory["keyframes"]) == 8
 
