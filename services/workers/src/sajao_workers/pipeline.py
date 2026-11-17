@@ -160,7 +160,13 @@ async def run_room(
 ) -> Run:
     """Run a room's stages from its registered capture. Safe to call again at any point."""
     blobs = {"capture": runner.store.put_blob(json.dumps(capture, sort_keys=True).encode())}
-    planes_key = (capture.get("package") or {}).get("planes")
+    package = capture.get("package") or {}
+    planes_key = package.get("planes")
+    if not planes_key and (package.get("ar") or {}).get("tracking") == "none" and stages:
+        # Imported photos or video: there is nothing the phone measured. The
+        # room is estimated from the pictures by another path, not built yet.
+        await rooms.set_stage(room_id, stages[0].name, "failed", "no_ar_data")
+        return Run("failed", blobs)
     if planes_key:
         try:
             blobs["planes"] = runner.store.put_blob(files.read(planes_key))
