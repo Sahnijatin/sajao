@@ -12,18 +12,49 @@ export interface PendingUpload {
   device: CaptureDeviceInfo;
 }
 
+// The recorder keeps keyframes and poses in Maps, which JSON would write as
+// empty objects: they are stored as lists of entries and rebuilt on load.
+interface Stored {
+  local: Omit<LocalCapture, "state"> & {
+    state: Omit<LocalCapture["state"], "keyframes" | "poses"> & {
+      keyframes: [string, unknown][];
+      poses: [string, unknown][];
+    };
+  };
+  device: CaptureDeviceInfo;
+}
+
 export async function savePendingUpload(pending: PendingUpload): Promise<void> {
-  await AsyncStorage.setItem(KEY, JSON.stringify(pending));
+  const { state } = pending.local;
+  const stored: Stored = {
+    device: pending.device,
+    local: {
+      ...pending.local,
+      state: { ...state, keyframes: [...state.keyframes], poses: [...state.poses] },
+    },
+  };
+  await AsyncStorage.setItem(KEY, JSON.stringify(stored));
 }
 
 export async function loadPendingUpload(): Promise<PendingUpload | null> {
   const raw = await AsyncStorage.getItem(KEY);
   if (!raw) return null;
   try {
-    const value = JSON.parse(raw) as Partial<PendingUpload>;
-    return value.local?.captureId && value.local.files && value.device
-      ? (value as PendingUpload)
-      : null;
+    const value = JSON.parse(raw) as Partial<Stored>;
+    const local = value.local;
+    if (!local?.captureId || !local.files || !value.device) return null;
+    if (!Array.isArray(local.state?.keyframes) || !Array.isArray(local.state.poses)) return null;
+    return {
+      device: value.device,
+      local: {
+        ...local,
+        state: {
+          ...local.state,
+          keyframes: new Map(local.state.keyframes),
+          poses: new Map(local.state.poses),
+        },
+      } as LocalCapture,
+    };
   } catch {
     return null;
   }
