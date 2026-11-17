@@ -15,3 +15,7 @@ uv run sajao-catalog coverage --catalog data/development/catalog.jsonl [--placea
 - **Photos** stay on the private Modal volume `sajao-catalog`; entries hold their paths, never the files.
 
 Feeds add a module under `adapters/` and register it in `ADAPTERS`.
+
+## Showing flagged products
+
+Development products keep `image_use_permitted: false` and their flags. Whether a build may show them is one setting (Decision SJ-DEC-84): `SAJAO_SHOW_FLAGGED_PRODUCTS` on the server and `EXPO_PUBLIC_SHOW_FLAGGED_PRODUCTS` in the app, set to `1` in the `development`, `preview` and `closed-test` EAS profiles and absent from `production`, the store release. `sajao_catalog.visibility.may_show` applies it: live products always, development products only where the setting is on.
