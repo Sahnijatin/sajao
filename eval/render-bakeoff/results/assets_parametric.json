@@ -1558,5 +1558,1401 @@
   "faces": 54,
   "textured": false,
   "input_view": 2
+ },
+ {
+  "id": "ikea_90618502",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   0.07,
+   0.045,
+   0.02
+  ],
+  "build_seconds": 1.33,
+  "faces": 554,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_90620350",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   2.04,
+   1.02,
+   0.82
+  ],
+  "build_seconds": 0.14,
+  "faces": 1236,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s79443368",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   2.24,
+   0.9,
+   0.74
+  ],
+  "build_seconds": 0.12,
+  "faces": 1356,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s69625203",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   1.8,
+   0.88,
+   0.66
+  ],
+  "build_seconds": 0.11,
+  "faces": 886,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_20575450",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   1.26,
+   0.76,
+   0.61
+  ],
+  "build_seconds": 0.09,
+  "faces": 1224,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s49471268",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   1.52,
+   0.76,
+   0.73
+  ],
+  "build_seconds": 0.11,
+  "faces": 1336,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_80361494",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   1.28,
+   0.85,
+   0.78
+  ],
+  "build_seconds": 0.11,
+  "faces": 1224,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_50541595",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   2.36,
+   1.53,
+   0.9
+  ],
+  "build_seconds": 0.13,
+  "faces": 1536,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s49241183",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   0.01,
+   0.76,
+   0.04
+  ],
+  "build_seconds": 0.09,
+  "faces": 450,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_80441759",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   1.17,
+   0.55,
+   1.76
+  ],
+  "build_seconds": 0.07,
+  "faces": 48,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_10407928",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   1.17,
+   0.5,
+   1.9
+  ],
+  "build_seconds": 0.07,
+  "faces": 480,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_40417092",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   1.2,
+   0.516,
+   2.02
+  ],
+  "build_seconds": 0.07,
+  "faces": 48,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_70378683",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   1.242,
+   0.6,
+   2.005
+  ],
+  "build_seconds": 0.07,
+  "faces": 348,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_30460892",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   0.8,
+   0.5,
+   1.87
+  ],
+  "build_seconds": 0.06,
+  "faces": 36,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_40375134",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   0.6,
+   0.6,
+   0.43
+  ],
+  "build_seconds": 0.08,
+  "faces": 480,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_50503292",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   0.55,
+   0.494,
+   1.857
+  ],
+  "build_seconds": 0.06,
+  "faces": 24,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s59478085",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   2.5,
+   0.6,
+   2.012
+  ],
+  "build_seconds": 0.08,
+  "faces": 60,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_10339331",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   0.74,
+   0.51,
+   1.49
+  ],
+  "build_seconds": 0.06,
+  "faces": 24,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_40571979",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_20368832",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   0.8,
+   0.5,
+   1.72
+  ],
+  "build_seconds": 0.08,
+  "faces": 354,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s89304338",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   2.0,
+   0.6,
+   2.364
+  ],
+  "build_seconds": 0.08,
+  "faces": 636,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s99562794",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   2.0,
+   0.66,
+   2.012
+  ],
+  "build_seconds": 0.07,
+  "faces": 60,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s99442184",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   2.45,
+   0.57,
+   2.0
+  ],
+  "build_seconds": 0.07,
+  "faces": 54,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s09128565",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "almirah",
+  "template_matches_category": true,
+  "size_m": [
+   1.75,
+   0.58,
+   2.012
+  ],
+  "build_seconds": 0.08,
+  "faces": 36,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ws_isla-floral-designed-mother-of-pearl-coffee-table",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.914,
+   0.914,
+   0.457
+  ],
+  "build_seconds": 0.12,
+  "faces": 102,
+  "textured": false,
+  "input_view": null
+ },
+ {
+  "id": "ws_mariana-coffee-table",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.813,
+   0.813,
+   0.457
+  ],
+  "build_seconds": 0.06,
+  "faces": 102,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_caramel-side-end-table-honey-finish",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "table",
+  "template_matches_category": false,
+  "size_m": [
+   0.508,
+   0.508,
+   0.61
+  ],
+  "build_seconds": 0.08,
+  "faces": 168,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_dome-round-end-table-honey-finish",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.66,
+   0.66,
+   0.635
+  ],
+  "build_seconds": 0.06,
+  "faces": 102,
+  "textured": false,
+  "input_view": 2
+ },
+ {
+  "id": "ws_valeno-side-end-table",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.43200000000000005,
+   0.35600000000000004,
+   0.5589999999999999
+  ],
+  "build_seconds": 0.07,
+  "faces": 174,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ikea_10608837",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.98,
+   0.59,
+   0.45
+  ],
+  "build_seconds": 0.07,
+  "faces": 254,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_50534104",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.97,
+   0.97,
+   0.64
+  ],
+  "build_seconds": 0.07,
+  "faces": 260,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_40161557",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   1.16,
+   0.78,
+   0.49
+  ],
+  "build_seconds": 0.06,
+  "faces": 180,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_10590408",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.88,
+   0.88,
+   0.45
+  ],
+  "build_seconds": 0.06,
+  "faces": 58,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_80482052",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.53,
+   0.5,
+   0.63
+  ],
+  "build_seconds": 0.09,
+  "faces": 174,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_60570827",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.71,
+   0.5,
+   0.47
+  ],
+  "build_seconds": 0.06,
+  "faces": 180,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_20534153",
+  "model": "parametric",
+  "template": "table",
+  "category": "table",
+  "template_matches_category": true,
+  "size_m": [
+   0.9,
+   0.9,
+   0.63
+  ],
+  "build_seconds": 0.06,
+  "faces": 174,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s09297191",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.97,
+   0.89,
+   1.03
+  ],
+  "build_seconds": 0.07,
+  "faces": 736,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_80605430",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.47,
+   0.39,
+   0.77
+  ],
+  "build_seconds": 0.08,
+  "faces": 436,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_80363426",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.49,
+   0.42,
+   0.9
+  ],
+  "build_seconds": 0.07,
+  "faces": 210,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_90614170",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.52,
+   0.49,
+   0.88
+  ],
+  "build_seconds": 0.06,
+  "faces": 324,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_50561041",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.51,
+   0.46,
+   0.8
+  ],
+  "build_seconds": 0.07,
+  "faces": 404,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_80566749",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.55,
+   0.51,
+   0.75
+  ],
+  "build_seconds": 0.08,
+  "faces": 436,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_30594033",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.48,
+   0.42,
+   0.88
+  ],
+  "build_seconds": 0.07,
+  "faces": 210,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_50579215",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.41,
+   0.4,
+   0.87
+  ],
+  "build_seconds": 0.07,
+  "faces": 210,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_90610426",
+  "model": "parametric",
+  "template": "chair",
+  "category": "chair",
+  "template_matches_category": true,
+  "size_m": [
+   0.47,
+   0.44,
+   0.8
+  ],
+  "build_seconds": 0.08,
+  "faces": 436,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s29270280",
+  "model": "parametric",
+  "template": "sofa",
+  "category": "sofa",
+  "template_matches_category": true,
+  "size_m": [
+   1.64,
+   0.89,
+   0.78
+  ],
+  "build_seconds": 0.1,
+  "faces": 1224,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s89240983",
+  "model": "parametric",
+  "template": "bed",
+  "category": "bed",
+  "template_matches_category": true,
+  "size_m": [
+   0.49,
+   0.62,
+   0.768
+  ],
+  "build_seconds": 0.17,
+  "faces": 600,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_40597781",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_30542162",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_50510400",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_20437699",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_90325472",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_60405955",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_10314024",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_s29387355",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_60487753",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_30580074",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_00440829",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_40476835",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ws_hailey-wall-mounted-tv-unit-exotic-teak",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   1.3719999999999999,
+   0.33,
+   1.092
+  ],
+  "build_seconds": 0.15,
+  "faces": 60,
+  "textured": false,
+  "input_view": 3
+ },
+ {
+  "id": "ws_adroit-wall-mounted-tv-unit-exotic-teak-finish",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   1.219,
+   0.203,
+   0.165
+  ],
+  "build_seconds": 0.08,
+  "faces": 12,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_lynton-large-tv-unit-honey-finish",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   1.626,
+   0.406,
+   0.5589999999999999
+  ],
+  "build_seconds": 0.13,
+  "faces": 140,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_allan-tv-unit-walnut-finish",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   1.626,
+   0.406,
+   0.508
+  ],
+  "build_seconds": 0.18,
+  "faces": 140,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_jett-tv-unit-honey-finish",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   1.702,
+   0.457,
+   0.61
+  ],
+  "build_seconds": 0.14,
+  "faces": 422,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ikea_60353536",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   1.8,
+   0.41,
+   0.49
+  ],
+  "build_seconds": 0.13,
+  "faces": 134,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_00352573",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   1.6,
+   0.42,
+   0.45
+  ],
+  "build_seconds": 0.13,
+  "faces": 42,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s59569448",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   1.466,
+   0.392,
+   0.596
+  ],
+  "build_seconds": 0.27,
+  "faces": 60,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_20294520",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   1.8,
+   0.4,
+   0.38
+  ],
+  "build_seconds": 0.09,
+  "faces": 116,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_30413527",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   1.48,
+   0.47,
+   0.57
+  ],
+  "build_seconds": 0.09,
+  "faces": 140,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_80507057",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   1.814,
+   0.42100000000000004,
+   0.451
+  ],
+  "build_seconds": 0.09,
+  "faces": 158,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s29398698",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   2.58,
+   0.41,
+   1.9
+  ],
+  "build_seconds": 0.08,
+  "faces": 42,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s09545346",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   3.4,
+   0.41,
+   2.02
+  ],
+  "build_seconds": 0.11,
+  "faces": 42,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s49565243",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   2.325,
+   0.32,
+   0.9640000000000001
+  ],
+  "build_seconds": 0.28,
+  "faces": 36,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s69580997",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   2.8,
+   0.35,
+   0.35
+  ],
+  "build_seconds": 0.11,
+  "faces": 60,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s99571835",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   3.7739999999999996,
+   0.47100000000000003,
+   2.008
+  ],
+  "build_seconds": 0.07,
+  "faces": 24,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s79494659",
+  "model": "parametric",
+  "template": "tv_unit",
+  "category": "tv_unit",
+  "template_matches_category": true,
+  "size_m": [
+   2.26,
+   0.38,
+   0.9
+  ],
+  "build_seconds": 0.21,
+  "faces": 428,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ws_rachit-sheesham-wood-and-cane-door-brass-piping-book-shelf-t",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   1.168,
+   0.368,
+   2.3369999999999997
+  ],
+  "build_seconds": 0.09,
+  "faces": 54,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ws_keller-wall-shelf-walnut-finish",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.8640000000000001,
+   0.203,
+   0.203
+  ],
+  "build_seconds": 0.06,
+  "faces": 42,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ws_mark-wall-shelf-exotic-teak-finish",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.813,
+   0.17800000000000002,
+   0.381
+  ],
+  "build_seconds": 0.06,
+  "faces": 30,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ws_jace-wall-shelf-with-key-holders-exotic-teak-frosty-white-fi",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.305,
+   0.127,
+   0.17800000000000002
+  ],
+  "build_seconds": 0.06,
+  "faces": 48,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_jace-wall-shelf-with-key-holders-flowery-wenge-frosty-white-",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.305,
+   0.127,
+   0.17800000000000002
+  ],
+  "build_seconds": 0.08,
+  "faces": 48,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_dispito-wall-shelf-exotic-teak-ice-beech-finish",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.584,
+   0.17800000000000002,
+   1.422
+  ],
+  "build_seconds": 0.06,
+  "faces": 30,
+  "textured": false,
+  "input_view": 3
+ },
+ {
+  "id": "ws_jace-wall-shelf-with-key-holders-flowery-wenge-finish",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.305,
+   0.127,
+   0.17800000000000002
+  ],
+  "build_seconds": 0.07,
+  "faces": 48,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_alex-wall-shelf-with-key-holders-flowery-wenge-finish",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.35600000000000004,
+   0.127,
+   0.17800000000000002
+  ],
+  "build_seconds": 0.1,
+  "faces": 36,
+  "textured": false,
+  "input_view": 1
+ },
+ {
+  "id": "ws_alex-wall-shelf-with-key-holders-flowery-wenge-frosty-white-",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_60483873",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.6,
+   0.25,
+   1.16
+  ],
+  "build_seconds": 0.09,
+  "faces": 54,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_10351686",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.6,
+   0.35,
+   1.9
+  ],
+  "build_seconds": 0.07,
+  "faces": 48,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_s49545354",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_60186401",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.6,
+   0.35,
+   1.48
+  ],
+  "build_seconds": 0.08,
+  "faces": 54,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_30214679",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.51,
+   0.36,
+   1.75
+  ],
+  "build_seconds": 0.09,
+  "faces": 60,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_30636660",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_s29336568",
+  "model": "parametric",
+  "template": "almirah",
+  "category": "shelf",
+  "template_matches_category": false,
+  "size_m": [
+   2.7,
+   0.37,
+   1.98
+  ],
+  "build_seconds": 0.08,
+  "faces": 102,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_70311070",
+  "skipped": "no template (none)"
+ },
+ {
+  "id": "ikea_00417579",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.53,
+   0.53,
+   1.55
+  ],
+  "build_seconds": 0.07,
+  "faces": 54,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_10428327",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.6,
+   0.27,
+   0.74
+  ],
+  "build_seconds": 0.07,
+  "faces": 48,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_70431317",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.8,
+   0.38,
+   1.6
+  ],
+  "build_seconds": 0.06,
+  "faces": 54,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_20351884",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.765,
+   0.39,
+   1.465
+  ],
+  "build_seconds": 0.08,
+  "faces": 42,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_90409297",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.8,
+   0.35,
+   0.81
+  ],
+  "build_seconds": 0.06,
+  "faces": 48,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_90574918",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.4,
+   0.35,
+   0.96
+  ],
+  "build_seconds": 1.21,
+  "faces": 48,
+  "textured": false,
+  "input_view": 0
+ },
+ {
+  "id": "ikea_20174216",
+  "model": "parametric",
+  "template": "shelf",
+  "category": "shelf",
+  "template_matches_category": true,
+  "size_m": [
+   0.61,
+   0.32,
+   1.6
+  ],
+  "build_seconds": 0.07,
+  "faces": 54,
+  "textured": false,
+  "input_view": 0
  }
 ]

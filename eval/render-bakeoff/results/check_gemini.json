@@ -1,0 +1,1061 @@
+[
+ {
+  "room": "arkit_living_41159566",
+  "design": "41159566_best_value",
+  "B_gemini": {
+   "items": [
+    {
+     "present": true,
+     "area": 0.3111319986979167,
+     "iou": 0.7086100384474474,
+     "edge_shift_px": 10.0,
+     "emb": 0.6196651458740234,
+     "de": 7.222769655483738,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.004064127604166667,
+     "iou": 0.6311513463324049,
+     "edge_shift_px": 11.0,
+     "emb": 0.5334610939025879,
+     "de": 18.85698156189322,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.0
+    }
+   ],
+   "room": {
+    "edge_f1": 0.8721017280163644,
+    "depth_rel": 0.23143018782138824,
+    "passed": false
+   },
+   "invented": {
+    "invented": [
+     {
+      "box": [
+       990.2646484375,
+       280.2596435546875,
+       1264.92578125,
+       362.54229736328125
+      ],
+      "conf": 0.7288685441017151,
+      "label": "coffee table"
+     }
+    ],
+    "passed": false
+   },
+   "aesthetic": 7.0,
+   "passed": false,
+   "thresholds": {
+    "min_area": 0.002,
+    "iou": 0.9,
+    "edge_px": 8.0,
+    "emb": 0.8,
+    "de": 8.0,
+    "edge_f1": 0.7,
+    "depth_rel": 0.08,
+    "invented_conf": 0.35,
+    "aesthetic": 6.0
+   },
+   "seconds": 40.2
+  },
+  "wall_s": 58
+ },
+ {
+  "room": "arkit_living_41159566",
+  "design": "41159566_best_match",
+  "B_gemini": {
+   "items": [
+    {
+     "present": true,
+     "area": 0.26433919270833334,
+     "iou": 0.8925864622353864,
+     "edge_shift_px": 18.0,
+     "emb": 0.8252447843551636,
+     "de": 5.010863196385399,
+     "position_ok": false,
+     "recognisable_ok": true,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.057467447916666664,
+     "iou": 0.7095454434430033,
+     "edge_shift_px": 20.0,
+     "emb": 0.5876394510269165,
+     "de": 2.6184342281068433,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.006034342447916666,
+     "iou": 0.5047073388420235,
+     "edge_shift_px": 23.0,
+     "emb": 0.7560083866119385,
+     "de": 21.59652859888038,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.06758544921875,
+     "iou": 0.6861289929628276,
+     "edge_shift_px": 22.0,
+     "emb": 0.6705993413925171,
+     "de": 8.312126596001889,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.009140625,
+     "iou": 0.3877273579598725,
+     "edge_shift_px": 21.0,
+     "emb": 0.4720296859741211,
+     "de": 5.112610787566794,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.0
+    }
+   ],
+   "room": {
+    "edge_f1": 0.8872854914196567,
+    "depth_rel": 0.05156628414988518,
+    "passed": true
+   },
+   "invented": {
+    "invented": [],
+    "passed": true
+   },
+   "aesthetic": 7.0,
+   "passed": false,
+   "thresholds": {
+    "min_area": 0.002,
+    "iou": 0.9,
+    "edge_px": 8.0,
+    "emb": 0.8,
+    "de": 8.0,
+    "edge_f1": 0.7,
+    "depth_rel": 0.08,
+    "invented_conf": 0.35,
+    "aesthetic": 6.0
+   },
+   "seconds": 39.7
+  },
+  "wall_s": 58
+ },
+ {
+  "room": "frl_apartment_0",
+  "design": "0_best_value",
+  "B_gemini": {
+   "items": [
+    {
+     "present": true,
+     "area": 0.16801025390625,
+     "iou": 0.8589754115184106,
+     "edge_shift_px": 28.0,
+     "emb": 0.8184685111045837,
+     "de": 3.9917641778398645,
+     "position_ok": false,
+     "recognisable_ok": true,
+     "passed": false
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.0006453450520833334
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.0
+    }
+   ],
+   "room": {
+    "edge_f1": 0.8969853780331034,
+    "depth_rel": 0.04701341688632965,
+    "passed": true
+   },
+   "invented": {
+    "invented": [],
+    "passed": true
+   },
+   "aesthetic": 7.0,
+   "passed": false,
+   "thresholds": {
+    "min_area": 0.002,
+    "iou": 0.9,
+    "edge_px": 8.0,
+    "emb": 0.8,
+    "de": 8.0,
+    "edge_f1": 0.7,
+    "depth_rel": 0.08,
+    "invented_conf": 0.35,
+    "aesthetic": 6.0
+   },
+   "seconds": 1.1
+  },
+  "wall_s": 4
+ },
+ {
+  "room": "arkit_living_41159566",
+  "design": "41159566_bold",
+  "B_gemini": {
+   "items": [
+    {
+     "present": true,
+     "area": 0.17814615885416665,
+     "iou": 0.7737312753228466,
+     "edge_shift_px": 33.0,
+     "emb": 0.6929328441619873,
+     "de": 6.4690100903986565,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.035987141927083334,
+     "iou": 0.3208054448371813,
+     "edge_shift_px": 31.0,
+     "emb": 0.6545023918151855,
+     "de": 5.913149001386502,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.025259602864583335,
+     "iou": 0.6897796206711203,
+     "edge_shift_px": 21.0,
+     "emb": 0.6569944024085999,
+     "de": 4.01483359932268,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.18923014322916668,
+     "iou": 0.3745662511245341,
+     "edge_shift_px": 22.0,
+     "emb": 0.7105278372764587,
+     "de": 8.057362551680871,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.00734619140625,
+     "iou": 0.4843457713891897,
+     "edge_shift_px": 30.0,
+     "emb": 0.536506175994873,
+     "de": 7.304845826492197,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.0
+    }
+   ],
+   "room": {
+    "edge_f1": 0.8620540810160093,
+    "depth_rel": 0.0673799216747284,
+    "passed": true
+   },
+   "invented": {
+    "invented": [],
+    "passed": true
+   },
+   "aesthetic": 7.0,
+   "passed": false,
+   "thresholds": {
+    "min_area": 0.002,
+    "iou": 0.9,
+    "edge_px": 8.0,
+    "emb": 0.8,
+    "de": 8.0,
+    "edge_f1": 0.7,
+    "depth_rel": 0.08,
+    "invented_conf": 0.35,
+    "aesthetic": 6.0
+   },
+   "seconds": 2.1
+  },
+  "wall_s": 6
+ },
+ {
+  "room": "frl_apartment_0",
+  "design": "0_bold",
+  "B_gemini": {
+   "items": [
+    {
+     "present": true,
+     "area": 0.05704264322916667,
+     "iou": 0.77891677735018,
+     "edge_shift_px": 20.0,
+     "emb": 0.832744300365448,
+     "de": 9.732451940275336,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.021476236979166667,
+     "iou": 0.4396666035233946,
+     "edge_shift_px": 20.0,
+     "emb": 0.7801917195320129,
+     "de": 11.796368990594914,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.01590087890625,
+     "iou": 0.7877913332458787,
+     "edge_shift_px": 41.0,
+     "emb": 0.6593594551086426,
+     "de": 7.981582285437384,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.06250732421875,
+     "iou": 0.6083976006855184,
+     "edge_shift_px": 23.0,
+     "emb": 0.759139895439148,
+     "de": 7.352784241959132,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.0015885416666666667
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.0
+    }
+   ],
+   "room": {
+    "edge_f1": 0.93955173546255,
+    "depth_rel": 0.07527299225330353,
+    "passed": true
+   },
+   "invented": {
+    "invented": [
+     {
+      "box": [
+       0.0112457275390625,
+       492.73828125,
+       151.75975036621094,
+       899.4888916015625
+      ],
+      "conf": 0.4205087423324585,
+      "label": "stool"
+     }
+    ],
+    "passed": false
+   },
+   "aesthetic": 7.0,
+   "passed": false,
+   "thresholds": {
+    "min_area": 0.002,
+    "iou": 0.9,
+    "edge_px": 8.0,
+    "emb": 0.8,
+    "de": 8.0,
+    "edge_f1": 0.7,
+    "depth_rel": 0.08,
+    "invented_conf": 0.35,
+    "aesthetic": 6.0
+   },
+   "seconds": 1.7
+  },
+  "wall_s": 3
+ },
+ {
+  "room": "frl_apartment_0",
+  "design": "0_best_match",
+  "B_gemini": {
+   "items": [
+    {
+     "present": true,
+     "area": 0.12619222005208333,
+     "iou": 0.8626136516260139,
+     "edge_shift_px": 18.0,
+     "emb": 0.7623769044876099,
+     "de": 1.5340169028505393,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.025821940104166666,
+     "iou": 0.4647654536166121,
+     "edge_shift_px": 12.0,
+     "emb": 0.7846429347991943,
+     "de": 7.474975216291373,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.0052294921875,
+     "iou": 0.5667507217775829,
+     "edge_shift_px": 32.0,
+     "emb": 0.4196470379829407,
+     "de": 12.808403026097597,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.0189990234375,
+     "iou": 0.4732766602137867,
+     "edge_shift_px": 30.0,
+     "emb": 0.6583051681518555,
+     "de": 10.464711334544512,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.00017333984375
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.0
+    }
+   ],
+   "room": {
+    "edge_f1": 0.8940497942254265,
+    "depth_rel": 0.07374299317598343,
+    "passed": true
+   },
+   "invented": {
+    "invented": [],
+    "passed": true
+   },
+   "aesthetic": 7.0,
+   "passed": false,
+   "thresholds": {
+    "min_area": 0.002,
+    "iou": 0.9,
+    "edge_px": 8.0,
+    "emb": 0.8,
+    "de": 8.0,
+    "edge_f1": 0.7,
+    "depth_rel": 0.08,
+    "invented_conf": 0.35,
+    "aesthetic": 6.0
+   },
+   "seconds": 2.8
+  },
+  "wall_s": 5
+ },
+ {
+  "room": "arkit_living_41159541",
+  "design": "41159541_best_value",
+  "B_gemini": {
+   "items": [
+    {
+     "present": true,
+     "area": 0.28319417317708334,
+     "iou": 0.5227104234029717,
+     "edge_shift_px": 5.0,
+     "emb": 0.572019100189209,
+     "de": 4.943867186582498,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.0
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.0
+    }
+   ],
+   "room": {
+    "edge_f1": 0.33194505839026495,
+    "depth_rel": 0.17913302779197693,
+    "passed": false
+   },
+   "invented": {
+    "invented": [],
+    "passed": true
+   },
+   "aesthetic": 5.0,
+   "passed": false,
+   "thresholds": {
+    "min_area": 0.002,
+    "iou": 0.9,
+    "edge_px": 8.0,
+    "emb": 0.8,
+    "de": 8.0,
+    "edge_f1": 0.7,
+    "depth_rel": 0.08,
+    "invented_conf": 0.35,
+    "aesthetic": 6.0
+   },
+   "seconds": 1.1
+  },
+  "wall_s": 2
+ },
+ {
+  "room": "arkit_living_41159541",
+  "design": "41159541_best_match",
+  "B_gemini": {
+   "items": [
+    {
+     "present": true,
+     "area": 0.18594319661458333,
+     "iou": 0.5658349569480233,
+     "edge_shift_px": 29.0,
+     "emb": 0.5511661767959595,
+     "de": 16.85154600161916,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.09818115234375,
+     "iou": 0.6827530495193472,
+     "edge_shift_px": 42.0,
+     "emb": 0.7417020797729492,
+     "de": 5.788891326410073,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.016763509114583332,
+     "iou": 0.40188755491246597,
+     "edge_shift_px": 40.0,
+     "emb": 0.6971634030342102,
+     "de": 8.58208726110512,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.08197509765625,
+     "iou": 0.6252709878875873,
+     "edge_shift_px": 26.0,
+     "emb": 0.6930683851242065,
+     "de": 18.236151092812804,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.0
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.0
+    }
+   ],
+   "room": {
+    "edge_f1": 1.0,
+    "depth_rel": 0.14515580236911774,
+    "passed": false
+   },
+   "invented": {
+    "invented": [],
+    "passed": true
+   },
+   "aesthetic": 5.0,
+   "passed": false,
+   "thresholds": {
+    "min_area": 0.002,
+    "iou": 0.9,
+    "edge_px": 8.0,
+    "emb": 0.8,
+    "de": 8.0,
+    "edge_f1": 0.7,
+    "depth_rel": 0.08,
+    "invented_conf": 0.35,
+    "aesthetic": 6.0
+   },
+   "seconds": 1.8
+  },
+  "wall_s": 3
+ },
+ {
+  "room": "arkit_living_41159541",
+  "design": "41159541_bold",
+  "B_gemini": {
+   "items": [
+    {
+     "present": true,
+     "area": 0.12808919270833333,
+     "iou": 0.6471888199044475,
+     "edge_shift_px": 20.0,
+     "emb": 0.6169033050537109,
+     "de": 10.146370097374277,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.09472900390625,
+     "iou": 0.7137789285818777,
+     "edge_shift_px": 21.0,
+     "emb": 0.8027576208114624,
+     "de": 6.669984455895231,
+     "position_ok": false,
+     "recognisable_ok": true,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.03607828776041667,
+     "iou": 0.4428331291489786,
+     "edge_shift_px": 18.0,
+     "emb": 0.7609507441520691,
+     "de": 9.002420106386332,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.2811572265625,
+     "iou": 0.4903448771216407,
+     "edge_shift_px": 53.0,
+     "emb": 0.7300134897232056,
+     "de": 6.670356817519897,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.00024007161458333332
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.0
+    }
+   ],
+   "room": {
+    "edge_f1": 1.0,
+    "depth_rel": 0.09156245738267899,
+    "passed": false
+   },
+   "invented": {
+    "invented": [
+     {
+      "box": [
+       1042.2646484375,
+       80.62184143066406,
+       1061.275146484375,
+       120.92100524902344
+      ],
+      "conf": 0.38037654757499695,
+      "label": "bottle"
+     }
+    ],
+    "passed": false
+   },
+   "aesthetic": 6.0,
+   "passed": false,
+   "thresholds": {
+    "min_area": 0.002,
+    "iou": 0.9,
+    "edge_px": 8.0,
+    "emb": 0.8,
+    "de": 8.0,
+    "edge_f1": 0.7,
+    "depth_rel": 0.08,
+    "invented_conf": 0.35,
+    "aesthetic": 6.0
+   },
+   "seconds": 1.8
+  },
+  "wall_s": 3
+ },
+ {
+  "room": "arkit_living_47331265",
+  "design": "47331265_best_value",
+  "B_gemini": {
+   "items": [
+    {
+     "present": true,
+     "area": 0.19873128255208333,
+     "iou": 0.8360943563932711,
+     "edge_shift_px": 13.0,
+     "emb": 0.7369996309280396,
+     "de": 4.6610731333386015,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.00043212890625
+    },
+    {
+     "present": true,
+     "area": 0.00778076171875,
+     "iou": 0.8732841535157344,
+     "edge_shift_px": 5.0,
+     "emb": 0.41279345750808716,
+     "de": 19.00853988416802,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    }
+   ],
+   "room": {
+    "edge_f1": 0.9148367885248258,
+    "depth_rel": 0.07867905497550964,
+    "passed": true
+   },
+   "invented": {
+    "invented": [],
+    "passed": true
+   },
+   "aesthetic": 6.0,
+   "passed": false,
+   "thresholds": {
+    "min_area": 0.002,
+    "iou": 0.9,
+    "edge_px": 8.0,
+    "emb": 0.8,
+    "de": 8.0,
+    "edge_f1": 0.7,
+    "depth_rel": 0.08,
+    "invented_conf": 0.35,
+    "aesthetic": 6.0
+   },
+   "seconds": 1.3
+  },
+  "wall_s": 3
+ },
+ {
+  "room": "arkit_living_47331265",
+  "design": "47331265_best_match",
+  "B_gemini": {
+   "items": [
+    {
+     "present": true,
+     "area": 0.08226969401041667,
+     "iou": 0.7777823120368255,
+     "edge_shift_px": 55.0,
+     "emb": 0.6650741696357727,
+     "de": 4.262726784882801,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.032601725260416665,
+     "iou": 0.5612719065321295,
+     "edge_shift_px": 44.0,
+     "emb": 0.6524977684020996,
+     "de": 2.542958398634654,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.007588704427083333,
+     "iou": 0.4259470996264959,
+     "edge_shift_px": 23.0,
+     "emb": 0.6745044589042664,
+     "de": 17.07540073783904,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.025543619791666666,
+     "iou": 0.49750261550403296,
+     "edge_shift_px": 23.0,
+     "emb": 0.6028084754943848,
+     "de": 2.000896479570419,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.00095458984375
+    },
+    {
+     "present": true,
+     "area": 0.01223876953125,
+     "iou": 0.7857851034824638,
+     "edge_shift_px": 4.0,
+     "emb": 0.5443041324615479,
+     "de": 9.811903442679261,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    }
+   ],
+   "room": {
+    "edge_f1": 0.5694812465904636,
+    "depth_rel": 0.1240377426147461,
+    "passed": false
+   },
+   "invented": {
+    "invented": [
+     {
+      "box": [
+       1226.920654296875,
+       207.33355712890625,
+       1280.0,
+       336.28570556640625
+      ],
+      "conf": 0.8073509931564331,
+      "label": "tv"
+     },
+     {
+      "box": [
+       263.75225830078125,
+       119.75442504882812,
+       294.46234130859375,
+       165.60580444335938
+      ],
+      "conf": 0.3796829283237457,
+      "label": "vase"
+     },
+     {
+      "box": [
+       74.00152587890625,
+       0.137237548828125,
+       185.31680297851562,
+       393.65203857421875
+      ],
+      "conf": 0.3682720959186554,
+      "label": "curtain"
+     },
+     {
+      "box": [
+       211.2263641357422,
+       111.58643341064453,
+       255.1365509033203,
+       166.37030029296875
+      ],
+      "conf": 0.3665968179702759,
+      "label": "dog"
+     }
+    ],
+    "passed": false
+   },
+   "aesthetic": 7.0,
+   "passed": false,
+   "thresholds": {
+    "min_area": 0.002,
+    "iou": 0.9,
+    "edge_px": 8.0,
+    "emb": 0.8,
+    "de": 8.0,
+    "edge_f1": 0.7,
+    "depth_rel": 0.08,
+    "invented_conf": 0.35,
+    "aesthetic": 6.0
+   },
+   "seconds": 2.0
+  },
+  "wall_s": 4
+ },
+ {
+  "room": "arkit_living_47331265",
+  "design": "47331265_bold",
+  "B_gemini": {
+   "items": [
+    {
+     "present": true,
+     "area": 0.0542578125,
+     "iou": 0.75467139589277,
+     "edge_shift_px": 19.0,
+     "emb": 0.5758699178695679,
+     "de": 2.667344041631399,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.029522298177083333,
+     "iou": 0.46255497596399714,
+     "edge_shift_px": 31.0,
+     "emb": 0.7334593534469604,
+     "de": 0.6279961155785971,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.01440673828125,
+     "iou": 0.5704116258483328,
+     "edge_shift_px": 20.0,
+     "emb": 0.7164021730422974,
+     "de": 2.7597593746829556,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": true,
+     "area": 0.08199869791666667,
+     "iou": 0.6132627140739416,
+     "edge_shift_px": 21.0,
+     "emb": 0.7804964184761047,
+     "de": 3.3548637745371184,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    },
+    {
+     "present": false,
+     "passed": false,
+     "reason": "not visible in composite",
+     "area": 0.0009879557291666667
+    },
+    {
+     "present": true,
+     "area": 0.007576497395833334,
+     "iou": 0.8742806983321955,
+     "edge_shift_px": 5.0,
+     "emb": 0.5853418111801147,
+     "de": 10.61252171065813,
+     "position_ok": false,
+     "recognisable_ok": false,
+     "passed": false
+    }
+   ],
+   "room": {
+    "edge_f1": 0.5641131888764396,
+    "depth_rel": 0.11867432296276093,
+    "passed": false
+   },
+   "invented": {
+    "invented": [
+     {
+      "box": [
+       1226.990478515625,
+       207.01995849609375,
+       1280.0,
+       336.4005126953125
+      ],
+      "conf": 0.804807722568512,
+      "label": "tv"
+     },
+     {
+      "box": [
+       263.8000183105469,
+       119.47760772705078,
+       294.5835876464844,
+       166.124755859375
+      ],
+      "conf": 0.5180830359458923,
+      "label": "vase"
+     },
+     {
+      "box": [
+       75.4869384765625,
+       0.0,
+       201.61215209960938,
+       394.4086608886719
+      ],
+      "conf": 0.5077765583992004,
+      "label": "curtain"
+     }
+    ],
+    "passed": false
+   },
+   "aesthetic": 7.0,
+   "passed": false,
+   "thresholds": {
+    "min_area": 0.002,
+    "iou": 0.9,
+    "edge_px": 8.0,
+    "emb": 0.8,
+    "de": 8.0,
+    "edge_f1": 0.7,
+    "depth_rel": 0.08,
+    "invented_conf": 0.35,
+    "aesthetic": 6.0
+   },
+   "seconds": 2.0
+  },
+  "wall_s": 3
+ }
+]

@@ -18,7 +18,7 @@ import tempfile
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[4]
-ARMS = ["A", "C1_qwen", "C2_qwen", "C3_qwen", "B_qwen", "B_gemini"]
+ARMS = ["A", "C1_qwen", "C2_qwen", "C3_qwen", "C3L_qwen", "B_qwen", "B_gemini"]
 STUDY = "s1"
 # The ARKit bedroom is left out: its capture has no frame that shows the design zone
 # (close-ups only), so every arm would render it equally badly.
@@ -81,7 +81,7 @@ def main(out: Path, arms: list[str]) -> None:
     images = [images[i] for i in order]
     key = [key[i] for i in order]
     groups = len({x["group"] for x in images})
-    manifest = {"study": STUDY, "groups_per_voter": min(groups, 7), "images": images}
+    manifest = {"study": STUDY, "groups_per_voter": min(groups, 6), "images": images}
     (out / "manifest.json").write_text(json.dumps(manifest))
     kdir = REPO / "eval" / "render-bakeoff" / "voting"
     (kdir / "key.json").write_text(json.dumps({"study": STUDY, "images": key}, indent=1))
