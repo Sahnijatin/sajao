@@ -1,0 +1,1127 @@
+{
+  "ikea_00352573": {
+    "clean": [0, 1, 3],
+    "input": 0,
+    "drawings": [3]
+  },
+  "ikea_00411997": {
+    "clean": [0, 3, 6],
+    "input": 0,
+    "drawings": [0, 3]
+  },
+  "ikea_00417579": {
+    "clean": [0, 1, 2],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_00440829": {
+    "clean": [0, 4],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_00522047": {
+    "clean": [0, 1, 2, 3, 4, 6, 8],
+    "input": 0,
+    "drawings": [8]
+  },
+  "ikea_00582036": {
+    "clean": [0, 1, 3, 4],
+    "input": 0,
+    "drawings": [3]
+  },
+  "ikea_00586553": {
+    "clean": [0, 1, 2, 3, 4],
+    "input": 0,
+    "drawings": [2]
+  },
+  "ikea_00594614": {
+    "clean": [0, 3, 6],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_00598216": {
+    "clean": [0, 3],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_10314024": {
+    "clean": [0, 2],
+    "input": 0,
+    "drawings": [0]
+  },
+  "ikea_10339331": {
+    "clean": [0, 1, 2, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_10351686": {
+    "clean": [0, 1, 3],
+    "input": 0,
+    "drawings": [3]
+  },
+  "ikea_10407928": {
+    "clean": [0, 1, 2, 3, 6, 7],
+    "input": 0,
+    "drawings": [7]
+  },
+  "ikea_10428327": {
+    "clean": [0, 6, 7, 9],
+    "input": 0,
+    "drawings": [6]
+  },
+  "ikea_10478124": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_10500356": {
+    "clean": [0, 1, 3, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_10535544": {
+    "clean": [0, 1, 2, 4, 5],
+    "input": 0,
+    "drawings": [4]
+  },
+  "ikea_10590408": {
+    "clean": [0, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_10604349": {
+    "clean": [0, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_10608837": {
+    "clean": [0, 4],
+    "input": 0,
+    "drawings": [4]
+  },
+  "ikea_10615526": {
+    "clean": [0, 1],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_10623357": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_10629161": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_20174216": {
+    "clean": [0, 4, 6, 7],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_20294520": {
+    "clean": [0, 3],
+    "input": 0,
+    "drawings": [3]
+  },
+  "ikea_20321321": {
+    "clean": [4],
+    "input": null,
+    "drawings": []
+  },
+  "ikea_20351884": {
+    "clean": [0, 1, 2, 3, 4, 8],
+    "input": 0,
+    "drawings": [8]
+  },
+  "ikea_20352987": {
+    "clean": [0, 1, 2, 3, 4],
+    "input": 0,
+    "drawings": [3]
+  },
+  "ikea_20368832": {
+    "clean": [0, 2, 3, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_20405047": {
+    "clean": [0, 1, 2, 5],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_20437699": {
+    "clean": [0, 1],
+    "input": 1,
+    "drawings": []
+  },
+  "ikea_20465772": {
+    "clean": [],
+    "input": null,
+    "drawings": []
+  },
+  "ikea_20500407": {
+    "clean": [0, 1],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_20518271": {
+    "clean": [0, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_20519765": {
+    "clean": [],
+    "input": null,
+    "drawings": []
+  },
+  "ikea_20534153": {
+    "clean": [0, 1, 2, 6, 8],
+    "input": 0,
+    "drawings": [0, 2, 8]
+  },
+  "ikea_20568223": {
+    "clean": [0, 1, 2, 4, 5],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_20575450": {
+    "clean": [0, 1, 2, 4, 6, 10],
+    "input": 0,
+    "drawings": [10]
+  },
+  "ikea_20619072": {
+    "clean": [0, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_20623074": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_20623470": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_20625780": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_30214679": {
+    "clean": [0, 1, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_30413527": {
+    "clean": [0, 1, 3, 4, 5],
+    "input": 0,
+    "drawings": [4, 5]
+  },
+  "ikea_30437241": {
+    "clean": [0, 2, 3, 4, 5],
+    "input": 0,
+    "drawings": [3]
+  },
+  "ikea_30437811": {
+    "clean": [],
+    "input": null,
+    "drawings": []
+  },
+  "ikea_30460892": {
+    "clean": [0, 1, 2, 3, 4],
+    "input": 0,
+    "drawings": [3, 4]
+  },
+  "ikea_30492317": {
+    "clean": [0, 1, 2, 5],
+    "input": 0,
+    "drawings": [0, 1, 2, 5]
+  },
+  "ikea_30503655": {
+    "clean": [0, 3, 5],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_30504631": {
+    "clean": [0, 8],
+    "input": 0,
+    "drawings": [8]
+  },
+  "ikea_30542162": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_30575812": {
+    "clean": [0, 1, 2, 5, 6],
+    "input": 0,
+    "drawings": [5, 6]
+  },
+  "ikea_30580074": {
+    "clean": [0, 6],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_30594033": {
+    "clean": [0, 2, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_30636660": {
+    "clean": [],
+    "input": null,
+    "drawings": []
+  },
+  "ikea_30638777": {
+    "clean": [0],
+    "input": 0,
+    "drawings": [0]
+  },
+  "ikea_30651392": {
+    "clean": [0, 2, 3],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_40161557": {
+    "clean": [0, 1, 2, 3],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_40375134": {
+    "clean": [0, 1, 2, 3, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_40417092": {
+    "clean": [0, 1, 2],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_40453768": {
+    "clean": [0, 1, 2, 4],
+    "input": 0,
+    "drawings": [0, 1, 4]
+  },
+  "ikea_40456917": {
+    "clean": [0, 1, 2, 3, 4, 6],
+    "input": 0,
+    "drawings": [6]
+  },
+  "ikea_40476835": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_40551226": {
+    "clean": [0, 1, 2, 3, 6],
+    "input": 0,
+    "drawings": [6]
+  },
+  "ikea_40571979": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_40573681": {
+    "clean": [0, 1, 5, 11],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_40587174": {
+    "clean": [],
+    "input": null,
+    "drawings": []
+  },
+  "ikea_40597781": {
+    "clean": [0, 1, 3],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_40623233": {
+    "clean": [0, 5],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_40623474": {
+    "clean": [],
+    "input": null,
+    "drawings": []
+  },
+  "ikea_50314814": {
+    "clean": [],
+    "input": null,
+    "drawings": []
+  },
+  "ikea_50409893": {
+    "clean": [0, 1, 4, 5, 6],
+    "input": 0,
+    "drawings": [4, 5]
+  },
+  "ikea_50483878": {
+    "clean": [0, 3, 4],
+    "input": 0,
+    "drawings": [3, 4]
+  },
+  "ikea_50497583": {
+    "clean": [0, 7, 10, 11],
+    "input": 0,
+    "drawings": [0, 10]
+  },
+  "ikea_50503292": {
+    "clean": [0, 2, 3, 4],
+    "input": 0,
+    "drawings": [4]
+  },
+  "ikea_50510400": {
+    "clean": [0, 2, 3, 5, 6, 7, 8],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_50534104": {
+    "clean": [0, 1, 2, 8],
+    "input": 0,
+    "drawings": [8]
+  },
+  "ikea_50541595": {
+    "clean": [0, 1, 6],
+    "input": 0,
+    "drawings": [6]
+  },
+  "ikea_50561041": {
+    "clean": [0, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_50579055": {
+    "clean": [0, 7],
+    "input": 0,
+    "drawings": [0]
+  },
+  "ikea_50579215": {
+    "clean": [0, 2, 4, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_50597318": {
+    "clean": [0, 1],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_50646413": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_60186401": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_60353536": {
+    "clean": [0, 1, 2, 3, 4, 5],
+    "input": 0,
+    "drawings": [0, 4, 5]
+  },
+  "ikea_60404913": {
+    "clean": [0],
+    "input": 0,
+    "drawings": [0]
+  },
+  "ikea_60405955": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_60458755": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_60459712": {
+    "clean": [],
+    "input": null,
+    "drawings": []
+  },
+  "ikea_60483873": {
+    "clean": [0, 1, 4],
+    "input": 0,
+    "drawings": [4]
+  },
+  "ikea_60487753": {
+    "clean": [0, 1, 2],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_60563577": {
+    "clean": [],
+    "input": null,
+    "drawings": []
+  },
+  "ikea_60570827": {
+    "clean": [0, 1, 3],
+    "input": 0,
+    "drawings": [3]
+  },
+  "ikea_60602041": {
+    "clean": [0, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_70311070": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_70378683": {
+    "clean": [0, 1, 2],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_70431317": {
+    "clean": [0, 3, 4, 5],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_70524458": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_70533491": {
+    "clean": [0, 1, 2, 4],
+    "input": 0,
+    "drawings": [4]
+  },
+  "ikea_70535895": {
+    "clean": [0, 1, 2, 4],
+    "input": 0,
+    "drawings": [4]
+  },
+  "ikea_70638723": {
+    "clean": [0, 2],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_80361494": {
+    "clean": [0, 1, 2, 3, 7],
+    "input": 0,
+    "drawings": [1, 7]
+  },
+  "ikea_80363426": {
+    "clean": [0, 1, 2, 6],
+    "input": 0,
+    "drawings": [6]
+  },
+  "ikea_80441759": {
+    "clean": [0, 1, 2, 4, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_80482052": {
+    "clean": [0, 3, 9],
+    "input": 0,
+    "drawings": [9]
+  },
+  "ikea_80498939": {
+    "clean": [0, 1, 5, 6],
+    "input": 0,
+    "drawings": [0, 6]
+  },
+  "ikea_80507057": {
+    "clean": [0, 1, 4, 5],
+    "input": 0,
+    "drawings": [4, 5]
+  },
+  "ikea_80566749": {
+    "clean": [0, 4, 5, 7, 8],
+    "input": 0,
+    "drawings": [7]
+  },
+  "ikea_80573580": {
+    "clean": [0, 2],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_80576319": {
+    "clean": [0, 5],
+    "input": 0,
+    "drawings": [0, 5]
+  },
+  "ikea_80581919": {
+    "clean": [0, 1, 5, 6, 8, 10, 11],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_80605430": {
+    "clean": [0, 4],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_90325472": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_90409297": {
+    "clean": [0, 1, 2, 3, 4],
+    "input": 0,
+    "drawings": [3]
+  },
+  "ikea_90409754": {
+    "clean": [0, 2],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_90520355": {
+    "clean": [0, 1, 2, 3, 7],
+    "input": 0,
+    "drawings": [7]
+  },
+  "ikea_90574918": {
+    "clean": [0, 6],
+    "input": 0,
+    "drawings": [6]
+  },
+  "ikea_90581914": {
+    "clean": [0, 1, 4, 5, 6],
+    "input": 0,
+    "drawings": [4]
+  },
+  "ikea_90610426": {
+    "clean": [0, 2, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_90614170": {
+    "clean": [0, 4, 8],
+    "input": 0,
+    "drawings": [8]
+  },
+  "ikea_90618502": {
+    "clean": [0, 1],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_90620350": {
+    "clean": [0, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_90630330": {
+    "clean": [0, 2],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s09128565": {
+    "clean": [0, 1, 2],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s09297191": {
+    "clean": [0, 1, 2, 6],
+    "input": 0,
+    "drawings": [1, 2, 6]
+  },
+  "ikea_s09432306": {
+    "clean": [0, 1, 2],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s09545346": {
+    "clean": [0, 1, 3, 5, 6, 8, 9, 10],
+    "input": 0,
+    "drawings": [8, 9, 10]
+  },
+  "ikea_s19625328": {
+    "clean": [0, 3, 4],
+    "input": 0,
+    "drawings": [4]
+  },
+  "ikea_s29270280": {
+    "clean": [0, 4, 9],
+    "input": 0,
+    "drawings": [4, 9]
+  },
+  "ikea_s29308527": {
+    "clean": [0, 1],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s29336568": {
+    "clean": [0, 1, 2],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s29387355": {
+    "clean": [0, 1],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s29398698": {
+    "clean": [0, 2, 4, 5, 7, 8, 9],
+    "input": 0,
+    "drawings": [7, 8, 9]
+  },
+  "ikea_s39270312": {
+    "clean": [0, 7, 8],
+    "input": 0,
+    "drawings": [7, 8]
+  },
+  "ikea_s39551722": {
+    "clean": [0, 1, 2],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s39581837": {
+    "clean": [0, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_s39585821": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s39620339": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s39626280": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s49241183": {
+    "clean": [0, 1, 3, 4, 8, 10],
+    "input": 0,
+    "drawings": [10]
+  },
+  "ikea_s49395019": {
+    "clean": [0, 2, 7],
+    "input": 0,
+    "drawings": [7]
+  },
+  "ikea_s49471268": {
+    "clean": [0, 1, 4],
+    "input": 0,
+    "drawings": [4]
+  },
+  "ikea_s49482832": {
+    "clean": [0, 1, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_s49545354": {
+    "clean": [0, 7, 8],
+    "input": 0,
+    "drawings": [7, 8]
+  },
+  "ikea_s49565243": {
+    "clean": [0, 1, 4, 5, 6],
+    "input": 0,
+    "drawings": [5, 6]
+  },
+  "ikea_s59478085": {
+    "clean": [0, 2],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s59536306": {
+    "clean": [0, 1, 2, 3],
+    "input": 0,
+    "drawings": [0, 1, 2]
+  },
+  "ikea_s59569448": {
+    "clean": [0, 1, 3, 4],
+    "input": 0,
+    "drawings": [3, 4]
+  },
+  "ikea_s69200643": {
+    "clean": [0, 9],
+    "input": 0,
+    "drawings": [0, 9]
+  },
+  "ikea_s69449691": {
+    "clean": [0, 1, 4],
+    "input": 0,
+    "drawings": [4]
+  },
+  "ikea_s69510607": {
+    "clean": [0, 7],
+    "input": 0,
+    "drawings": [7]
+  },
+  "ikea_s69528344": {
+    "clean": [0, 1, 2, 6],
+    "input": 0,
+    "drawings": [6]
+  },
+  "ikea_s69580997": {
+    "clean": [0, 1, 6, 7, 8],
+    "input": 0,
+    "drawings": [0, 6, 7, 8]
+  },
+  "ikea_s69615336": {
+    "clean": [0],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s69625203": {
+    "clean": [0, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_s79443368": {
+    "clean": [0, 2, 7],
+    "input": 0,
+    "drawings": [0, 7]
+  },
+  "ikea_s79494659": {
+    "clean": [0, 6, 7],
+    "input": 0,
+    "drawings": [6, 7]
+  },
+  "ikea_s79561309": {
+    "clean": [0, 1, 2],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s79627659": {
+    "clean": [0, 1, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ikea_s89198465": {
+    "clean": [0, 9],
+    "input": 0,
+    "drawings": [9]
+  },
+  "ikea_s89240983": {
+    "clean": [0, 1, 5, 7],
+    "input": 0,
+    "drawings": [7]
+  },
+  "ikea_s89304338": {
+    "clean": [0, 1, 2, 3, 4, 5, 6],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s89432369": {
+    "clean": [0, 1, 2],
+    "input": 0,
+    "drawings": [1, 2]
+  },
+  "ikea_s89500966": {
+    "clean": [0, 1, 2],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s99442184": {
+    "clean": [0, 1, 2, 3],
+    "input": 0,
+    "drawings": [2, 3]
+  },
+  "ikea_s99502371": {
+    "clean": [0, 1, 2, 3, 4],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s99562794": {
+    "clean": [0, 1, 2, 3],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s99571835": {
+    "clean": [0, 1],
+    "input": 0,
+    "drawings": []
+  },
+  "ikea_s99613524": {
+    "clean": [0, 2],
+    "input": 0,
+    "drawings": [2]
+  },
+  "ikea_s99628653": {
+    "clean": [0, 1, 5],
+    "input": 0,
+    "drawings": [5]
+  },
+  "ws_adire-lounge-chair-cream-robins": {
+    "clean": [0, 1, 2, 3, 6],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_adolph-bed-honey-finish": {
+    "clean": [0, 1, 3, 4],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_adolph-bedside-table-honey-finish": {
+    "clean": [0, 1, 2, 3, 4],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_adolph-queen-size-bed-walnut-finish": {
+    "clean": [0, 1, 3, 4],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_adolph-wardrobe-honey-finish": {
+    "clean": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_adroit-wall-mounted-tv-unit-exotic-teak-finish": {
+    "clean": [1, 4, 5],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_alex-wall-shelf-with-key-holders-flowery-wenge-finish": {
+    "clean": [0, 1, 2, 3, 4, 5, 6],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_alex-wall-shelf-with-key-holders-flowery-wenge-frosty-white-": {
+    "clean": [0, 1, 2, 3, 4, 5, 6, 7],
+    "input": 3,
+    "drawings": [7]
+  },
+  "ws_allan-bedside-honey-finish": {
+    "clean": [0, 2, 3],
+    "input": 2,
+    "drawings": []
+  },
+  "ws_allan-tv-unit-walnut-finish": {
+    "clean": [0, 1, 2, 3, 4, 5],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_bryson-bedside-table-walnut-finish": {
+    "clean": [0, 2, 3, 4],
+    "input": 2,
+    "drawings": []
+  },
+  "ws_cambrey-1-door-with-3-drawers-wardrobe-walnut-finish": {
+    "clean": [0, 1, 2, 3, 4],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_caramel-side-end-table-honey-finish": {
+    "clean": [0, 1, 2, 3, 4, 5],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_charles-2-door-multi-utility-wardrobe-walnut-finish": {
+    "clean": [0, 1, 2, 3, 4, 5],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_citroen-1-door-multi-utility-wardrobe-walnut-finish": {
+    "clean": [0, 1, 2, 3, 4],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_crisper-lounge-chair-bubble-robins": {
+    "clean": [0, 2, 3, 4],
+    "input": 4,
+    "drawings": []
+  },
+  "ws_crisper-lounge-chair-cotton-grey-robins": {
+    "clean": [0, 2, 3, 4, 5],
+    "input": 4,
+    "drawings": []
+  },
+  "ws_danon-lounge-chair-blue-stripe": {
+    "clean": [0, 1, 2, 3, 4, 8, 9, 11],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_denzel-bedside-table-walnut-finish": {
+    "clean": [0, 1, 2],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_dispito-wall-shelf-exotic-teak-ice-beech-finish": {
+    "clean": [0, 3, 4, 5, 6],
+    "input": 3,
+    "drawings": []
+  },
+  "ws_dome-round-end-table-honey-finish": {
+    "clean": [0, 2, 3, 4, 5, 6],
+    "input": 2,
+    "drawings": []
+  },
+  "ws_emboss-1-door-multi-utility-wardrobe-honey-finish": {
+    "clean": [0, 1, 2, 3, 4, 5],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish": {
+    "clean": [0, 1, 2, 3, 5, 6, 7, 8, 9],
+    "input": 5,
+    "drawings": []
+  },
+  "ws_ferguson-bedside-table-walnut-finish": {
+    "clean": [0, 1, 2, 3, 4],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_florian-bedside-table-honey-finish": {
+    "clean": [0, 1, 2, 3, 5, 6],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_greta-book-shelf-honey-finish": {
+    "clean": [0, 1, 2, 3, 4, 5],
+    "input": 4,
+    "drawings": []
+  },
+  "ws_hailey-wall-mounted-tv-unit-exotic-teak": {
+    "clean": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+    "input": 3,
+    "drawings": []
+  },
+  "ws_harvey-tv-unit-frosty-white": {
+    "clean": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "input": 1,
+    "drawings": [6]
+  },
+  "ws_henry-l-shape-right-arm-corner-sofa-indigo-blue": {
+    "clean": [0, 1, 2, 3, 4, 6],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_holden-1-door-multi-utility-wardrobe-walnut-finish": {
+    "clean": [0, 1, 2, 3, 4, 5],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_isla-floral-designed-mother-of-pearl-coffee-table": {
+    "clean": [0, 2],
+    "input": null,
+    "drawings": []
+  },
+  "ws_jace-wall-shelf-with-key-holders-exotic-teak-frosty-white-fi": {
+    "clean": [0, 1, 3, 4, 5],
+    "input": 1,
+    "drawings": [5]
+  },
+  "ws_jace-wall-shelf-with-key-holders-flowery-wenge-finish": {
+    "clean": [0, 1, 2, 3, 4, 5],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_jace-wall-shelf-with-key-holders-flowery-wenge-frosty-white-": {
+    "clean": [0, 1, 3, 4, 5, 6],
+    "input": 1,
+    "drawings": [5]
+  },
+  "ws_javier-bookshelf-honey-finish": {
+    "clean": [0, 1, 2, 3, 4, 5, 6, 7],
+    "input": 2,
+    "drawings": []
+  },
+  "ws_jett-tv-unit-honey-finish": {
+    "clean": [0, 1, 4, 5, 6, 9, 10, 11],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_juniper-book-shelf-honey": {
+    "clean": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s": {
+    "clean": [0, 1, 2, 3],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_keller-wall-shelf-walnut-finish": {
+    "clean": [0, 2, 3, 4],
+    "input": 0,
+    "drawings": []
+  },
+  "ws_kelvin-arm-chair-with-cane-cream-robins": {
+    "clean": [0, 1, 3, 5, 6, 7, 8, 9],
+    "input": 5,
+    "drawings": []
+  },
+  "ws_knot-floor-lamp": {
+    "clean": [],
+    "input": null,
+    "drawings": []
+  },
+  "ws_lotus-premium-ash-wood-bed-with-brass-inlay-queen-size-teak-": {
+    "clean": [1, 7],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_lynton-large-tv-unit-honey-finish": {
+    "clean": [0, 1, 3, 4, 5, 6, 7],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_mariana-coffee-table": {
+    "clean": [0, 1, 2, 3, 4, 5, 7, 8],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_mark-wall-shelf-exotic-teak-finish": {
+    "clean": [0, 1, 3, 4, 5, 6],
+    "input": 0,
+    "drawings": []
+  },
+  "ws_melvina-tv-unit-honey-finish": {
+    "clean": [0, 1, 2, 3, 4, 5, 6],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_morse-bedside-table-honey-finish": {
+    "clean": [0, 1, 2, 3, 4, 5],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_orwell-round-coffee-table-honey-finish": {
+    "clean": [0, 1, 2, 3, 4],
+    "input": 2,
+    "drawings": []
+  },
+  "ws_rachit-sheesham-wood-and-cane-door-brass-piping-book-shelf-t": {
+    "clean": [0, 1, 2, 3, 4, 5, 6, 7],
+    "input": 0,
+    "drawings": []
+  },
+  "ws_radiant-tv-unit-frosty-white-finish": {
+    "clean": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "input": 1,
+    "drawings": [9]
+  },
+  "ws_swirl-bedside-table": {
+    "clean": [0, 1, 2, 3],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_thrace-lounge-chair-salmon-pink": {
+    "clean": [0, 1, 2, 3, 4, 5, 6, 11],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_udaya-sheesham-wood-arm-chair-green-stripe-teak-finish": {
+    "clean": [0, 2, 3],
+    "input": null,
+    "drawings": []
+  },
+  "ws_valeno-side-end-table": {
+    "clean": [0, 1, 2, 3, 4, 5],
+    "input": 1,
+    "drawings": []
+  },
+  "ws_walken-queen-size-bed-honey-finish": {
+    "clean": [1, 2, 5, 6],
+    "input": 1,
+    "drawings": []
+  }
+}

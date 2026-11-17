@@ -1,0 +1,3842 @@
+[
+  {
+    "room": "arkit_living_41159566",
+    "design": "41159566_best_value",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "A": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C1_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C2_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3L_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "B_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 16
+  },
+  {
+    "room": "arkit_living_41159566",
+    "design": "41159566_bold",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "A": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 2.9076700031066904,
+          "embedding": 0.7136085033416748,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 5.3728077971514665,
+          "embedding": 0.6150097846984863,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 2.896511311450038,
+          "embedding": 0.7396101951599121,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C1_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.9692899482910834,
+          "colour_de": 5.297424896832779,
+          "embedding": 0.7715345621109009,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.8582146505265877,
+          "colour_de": 13.05331066850889,
+          "embedding": 0.5674924850463867,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.9552067381316999,
+          "colour_de": 2.887136261902205,
+          "embedding": 0.7137027978897095,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C2_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.9765429317956573,
+          "colour_de": 4.779770450009417,
+          "embedding": 0.7344820499420166,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.9831848688224527,
+          "colour_de": 5.959951281031633,
+          "embedding": 0.5350127220153809,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.9939890050141968,
+          "colour_de": 3.058796686944229,
+          "embedding": 0.7110711336135864,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.9726095751854349,
+          "colour_de": 3.120117212846424,
+          "embedding": 0.7065752744674683,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.9963737149275964,
+          "colour_de": 4.874773970439379,
+          "embedding": 0.5902692079544067,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.9950609053996727,
+          "colour_de": 1.432708299497916,
+          "embedding": 0.7271932363510132,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3L_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.9982097705922521,
+          "colour_de": 2.921587397819879,
+          "embedding": 0.7315857410430908,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.9983023730138375,
+          "colour_de": 4.881179866496372,
+          "embedding": 0.5871913433074951,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.9981789486463518,
+          "colour_de": 1.4368391878203728,
+          "embedding": 0.6238974332809448,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "B_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.836145414559393,
+          "colour_de": 2.6836394126246748,
+          "embedding": 0.827715277671814,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.7870195464417394,
+          "colour_de": 6.205663918962789,
+          "embedding": 0.6847833395004272,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.6980495393083642,
+          "colour_de": 2.3703848060813417,
+          "embedding": 0.8718440532684326,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": false,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["silhouette"]
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 13
+  },
+  {
+    "room": "arkit_living_41159566",
+    "design": "41159566_best_match",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "A": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 6.521904126956163,
+          "embedding": 0.7927086353302002,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 5.613473102760834,
+          "embedding": 0.6535704135894775,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 4.790213106525629,
+          "embedding": 0.6719792485237122,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C1_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.9714193475488693,
+          "colour_de": 4.882913281647738,
+          "embedding": 0.8131203055381775,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.9230506285844506,
+          "colour_de": 7.584212792176668,
+          "embedding": 0.8434879779815674,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.9541833980646436,
+          "colour_de": 3.5547252051539604,
+          "embedding": 0.7253683805465698,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C2_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.9782419242389031,
+          "colour_de": 4.890817868601875,
+          "embedding": 0.767094075679779,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.9899580928283387,
+          "colour_de": 5.799289365229892,
+          "embedding": 0.7368147373199463,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.968149623727313,
+          "colour_de": 3.415704800834159,
+          "embedding": 0.7029606103897095,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.9782555914887004,
+          "colour_de": 4.977506832743578,
+          "embedding": 0.7557777166366577,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.9921359665630014,
+          "colour_de": 4.402875803176057,
+          "embedding": 0.7279863357543945,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.9820412320910561,
+          "colour_de": 3.4395746219886596,
+          "embedding": 0.5930682420730591,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3L_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.9981081616481775,
+          "colour_de": 4.914025210545291,
+          "embedding": 0.7666783332824707,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.9984855429129387,
+          "colour_de": 4.424593694088161,
+          "embedding": 0.704393208026886,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.9956741975972745,
+          "colour_de": 3.3574611159144934,
+          "embedding": 0.6510580778121948,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "B_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.8817117846732294,
+          "colour_de": 7.371573859365672,
+          "embedding": 0.8496854305267334,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.7637815112818656,
+          "colour_de": 2.21217580066278,
+          "embedding": 0.7600351572036743,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.6175096157302563,
+          "colour_de": 3.665300454021858,
+          "embedding": 0.849839448928833,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": false,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["silhouette"]
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 30
+  },
+  {
+    "room": "frl_apartment_0",
+    "design": "0_best_value",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "A": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C1_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C2_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3L_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "B_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 3
+  },
+  {
+    "room": "frl_apartment_0",
+    "design": "0_bold",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "A": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 6.7587218235564155,
+          "embedding": 0.7719632983207703,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 7.8803415301296775,
+          "embedding": 0.7700645327568054,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 8.520523037070525,
+          "embedding": 0.8725075125694275,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C1_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.9381993931155689,
+          "colour_de": 3.076591279955602,
+          "embedding": 0.8184455633163452,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.7058102652825836,
+          "colour_de": 8.999163069120364,
+          "embedding": 0.7687115669250488,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.8777136206973726,
+          "colour_de": 6.080411916504109,
+          "embedding": 0.838881254196167,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C2_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.962400946511116,
+          "colour_de": 3.2671399011445064,
+          "embedding": 0.7531641125679016,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.8651740884023377,
+          "colour_de": 8.741815009620664,
+          "embedding": 0.7495460510253906,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.927299770135665,
+          "colour_de": 6.7928620726606495,
+          "embedding": 0.8329033255577087,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.9750456566895763,
+          "colour_de": 5.60188388598366,
+          "embedding": 0.7860938906669617,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.9658652534777695,
+          "colour_de": 12.397958417041782,
+          "embedding": 0.7613270282745361,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.9453652265736192,
+          "colour_de": 6.073926910475872,
+          "embedding": 0.843060314655304,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3L_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.9969334341258861,
+          "colour_de": 5.566180181121417,
+          "embedding": 0.7857775092124939,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.7956572159795258,
+          "colour_de": 11.748471492778823,
+          "embedding": 0.6541361808776855,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.9957590361445783,
+          "colour_de": 6.1210025855245656,
+          "embedding": 0.8452586531639099,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "B_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.8183144793651559,
+          "colour_de": 2.858269910840317,
+          "embedding": 0.8705549836158752,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.6419152961723185,
+          "colour_de": 4.0529081021457625,
+          "embedding": 0.7831019163131714,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": false,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["silhouette"]
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.82117695814339,
+          "colour_de": 2.4974985455342806,
+          "embedding": 0.8820653557777405,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 9
+  },
+  {
+    "room": "arkit_living_41159541",
+    "design": "41159541_best_value",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "A": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C1_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C2_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3L_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "B_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 2
+  },
+  {
+    "room": "frl_apartment_0",
+    "design": "0_best_match",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "A": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 14.883353794173066,
+          "embedding": 0.8893749117851257,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 9.461300732888752,
+          "embedding": 0.8261823654174805,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 10.322514402945373,
+          "embedding": 0.9181358218193054,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C1_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.941221494102228,
+          "colour_de": 7.69908482597339,
+          "embedding": 0.8624764680862427,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.8711808738160709,
+          "colour_de": 7.27990384436335,
+          "embedding": 0.8314896821975708,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.8709677419354839,
+          "colour_de": 4.243323112521419,
+          "embedding": 0.9086916446685791,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C2_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.9651737110910276,
+          "colour_de": 7.711666124312942,
+          "embedding": 0.8807986974716187,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.9864848411055643,
+          "colour_de": 7.77169154827605,
+          "embedding": 0.8105472922325134,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.9183251074669638,
+          "colour_de": 4.31540964012781,
+          "embedding": 0.886637806892395,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.9578372291844778,
+          "colour_de": 11.9164762821002,
+          "embedding": 0.8739279508590698,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.9875746132293823,
+          "colour_de": 9.001371324235105,
+          "embedding": 0.8222419023513794,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.9325984881281428,
+          "colour_de": 5.631714144016151,
+          "embedding": 0.878964364528656,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3L_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.9975481421209655,
+          "colour_de": 11.992728479394314,
+          "embedding": 0.8801262378692627,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.998199525329405,
+          "colour_de": 9.094735027650701,
+          "embedding": 0.8272439241409302,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.9914415051633895,
+          "colour_de": 6.267082888656487,
+          "embedding": 0.8775173425674438,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "B_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.8526125121917235,
+          "colour_de": 2.6232416992995895,
+          "embedding": 0.8924812078475952,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.7113856468835361,
+          "colour_de": 1.3210399124057521,
+          "embedding": 0.9273439049720764,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.8806876606683804,
+          "colour_de": 0.7533458672008244,
+          "embedding": 0.9356080293655396,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 15
+  },
+  {
+    "room": "arkit_living_41159541",
+    "design": "41159541_best_match",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "A": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 18.009998155991422,
+          "embedding": 0.8133842945098877,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 7.553546829261045,
+          "embedding": 0.8377125263214111,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 4.712752415841394,
+          "embedding": 0.9428911805152893,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C1_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.9307392021556824,
+          "colour_de": 8.29448024861397,
+          "embedding": 0.8919282555580139,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.9294617862990545,
+          "colour_de": 4.877046416626401,
+          "embedding": 0.8349898457527161,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.8749569351615792,
+          "colour_de": 5.75171775646804,
+          "embedding": 0.9429013133049011,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C2_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.9481156879929886,
+          "colour_de": 8.921642768538979,
+          "embedding": 0.8386040925979614,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.9916480157213822,
+          "colour_de": 3.6069179777245366,
+          "embedding": 0.8440052270889282,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.912847483095417,
+          "colour_de": 5.7403459727121895,
+          "embedding": 0.9393609762191772,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.437694030560624,
+          "colour_de": 17.56065658256233,
+          "embedding": 0.7332266569137573,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": false,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["silhouette", "colour"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.9965818527454852,
+          "colour_de": 6.488685656013722,
+          "embedding": 0.8462311029434204,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.9563357375194457,
+          "colour_de": 3.1960362454744584,
+          "embedding": 0.9410110712051392,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3L_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.9972008335295712,
+          "colour_de": 16.1641904792014,
+          "embedding": 0.8655087351799011,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.9986727324320118,
+          "colour_de": 6.487820590760905,
+          "embedding": 0.850715160369873,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.9952637086262919,
+          "colour_de": 3.1521325373142046,
+          "embedding": 0.9340128898620605,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "B_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.78898086736172,
+          "colour_de": 7.221520008874826,
+          "embedding": 0.8294011354446411,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.8200433171148361,
+          "colour_de": 2.0378863853782225,
+          "embedding": 0.9108332395553589,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.5688405797101449,
+          "colour_de": 1.8099738478359615,
+          "embedding": 0.64788419008255,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": false,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["silhouette"]
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 11
+  },
+  {
+    "room": "arkit_living_47331265",
+    "design": "47331265_best_value",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "A": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        }
+      ],
+      "C1_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "silhouette": 0.9668818996042491,
+          "status": "unverifiable"
+        }
+      ],
+      "C2_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "silhouette": 0.9777193904361534,
+          "status": "unverifiable"
+        }
+      ],
+      "C3_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "silhouette": 0.9876829139909464,
+          "status": "unverifiable"
+        }
+      ],
+      "C3L_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "silhouette": 0.9986161379604003,
+          "status": "unverifiable"
+        }
+      ],
+      "B_qwen": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "silhouette": 0.884396410305896,
+          "status": "unverifiable"
+        }
+      ]
+    },
+    "wall_s": 4
+  },
+  {
+    "room": "arkit_living_41159541",
+    "design": "41159541_bold",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "A": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 5.046054493222559,
+          "embedding": 0.5920953750610352,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 7.8352480694862905,
+          "embedding": 0.8609278202056885,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 4.7229936490852165,
+          "embedding": 0.8762989044189453,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C1_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.9417853020392458,
+          "colour_de": 1.0208404998755365,
+          "embedding": 0.6818195581436157,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.9058942929385723,
+          "colour_de": 1.564119964103954,
+          "embedding": 0.8608912229537964,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.876145420449218,
+          "colour_de": 4.911811448793098,
+          "embedding": 0.9229497909545898,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C2_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.9457531584062197,
+          "colour_de": 1.2384292145754041,
+          "embedding": 0.5564172863960266,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.9795782726660233,
+          "colour_de": 2.593474905602012,
+          "embedding": 0.8424108028411865,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.9299094299413958,
+          "colour_de": 4.544903341219706,
+          "embedding": 0.8726415634155273,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.9837166687729053,
+          "colour_de": 4.1992909757187125,
+          "embedding": 0.5851686000823975,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.991772479917077,
+          "colour_de": 5.616304834615574,
+          "embedding": 0.8227867484092712,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.9364582001108411,
+          "colour_de": 0.9322261698682659,
+          "embedding": 0.9154016971588135,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3L_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.9967312571940959,
+          "colour_de": 4.197038099537912,
+          "embedding": 0.5717349052429199,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.9976082566331326,
+          "colour_de": 5.816586269267437,
+          "embedding": 0.8532344102859497,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.99490454514573,
+          "colour_de": 1.0451399694352521,
+          "embedding": 0.8803828954696655,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "B_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.836632386223718,
+          "colour_de": 3.0088773113236913,
+          "embedding": 0.7497411966323853,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.6751634078999268,
+          "colour_de": 6.632614184428752,
+          "embedding": 0.8574742078781128,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": false,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["silhouette"]
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.4779551152693695,
+          "colour_de": 3.880678259783435,
+          "embedding": 0.7951645851135254,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": false,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["silhouette"]
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 17
+  },
+  {
+    "room": "arkit_living_47331265",
+    "design": "47331265_best_match",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "A": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 13.898606021892707,
+          "embedding": 0.7161784172058105,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 6.397368486025252,
+          "embedding": 0.805361807346344,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 8.880188395970304,
+          "embedding": 0.7883529663085938,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        }
+      ],
+      "C1_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.9212056571795921,
+          "colour_de": 10.655543702512775,
+          "embedding": 0.7636091709136963,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.8849833717063188,
+          "colour_de": 13.092498254331328,
+          "embedding": 0.8459957838058472,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.6190376305743173,
+          "colour_de": 9.24085009245439,
+          "embedding": 0.8233374953269958,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": false,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["silhouette"]
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "silhouette": 0.9704103318620239,
+          "status": "unverifiable"
+        }
+      ],
+      "C2_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.9735043116929538,
+          "colour_de": 10.222944125401245,
+          "embedding": 0.7437756061553955,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.9853922307112881,
+          "colour_de": 1.6213072236240236,
+          "embedding": 0.7137157917022705,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.7870711173160723,
+          "colour_de": 9.43767679620589,
+          "embedding": 0.7611044049263,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "silhouette": 0.9768263620675487,
+          "status": "unverifiable"
+        }
+      ],
+      "C3_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.9327141881897827,
+          "colour_de": 16.41081081629709,
+          "embedding": 0.7306642532348633,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.986668821200614,
+          "colour_de": 1.0122336369784044,
+          "embedding": 0.8389557003974915,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.798160514048129,
+          "colour_de": 9.106886967484055,
+          "embedding": 0.7787882089614868,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "silhouette": 0.9815181518151815,
+          "status": "unverifiable"
+        }
+      ],
+      "C3L_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.9974122446494352,
+          "colour_de": 16.710714219544975,
+          "embedding": 0.7264899611473083,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.9968443102369487,
+          "colour_de": 1.1539287251907029,
+          "embedding": 0.8252595067024231,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.995404219761855,
+          "colour_de": 8.720663739439576,
+          "embedding": 0.7825508117675781,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "silhouette": 0.9986562526245066,
+          "status": "unverifiable"
+        }
+      ],
+      "B_qwen": [
+        {
+          "item": "sofa",
+          "name": "GAMMALBYN 3-seat sofa",
+          "listing": "ikea_10615526",
+          "tier": "mesh",
+          "silhouette": 0.7446562541395214,
+          "colour_de": 10.741795498087377,
+          "embedding": 0.868842601776123,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "Orwell Round Coffee Table (Honey Finish)",
+          "listing": "ws_orwell-round-coffee-table-honey-finish",
+          "tier": "mesh",
+          "silhouette": 0.7181811953319478,
+          "colour_de": 3.1441506211604504,
+          "embedding": 0.9048622846603394,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "\u00c5RSUNDA Armchair",
+          "listing": "ikea_70535895",
+          "tier": "mesh",
+          "silhouette": 0.4239818497563162,
+          "colour_de": 6.81167594866288,
+          "embedding": 0.8789129257202148,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": false,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["silhouette"]
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "silhouette": 0.835952771913363,
+          "status": "unverifiable"
+        }
+      ]
+    },
+    "wall_s": 10
+  },
+  {
+    "room": "arkit_living_47331265",
+    "design": "47331265_bold",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "A": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 3.5644342409750784,
+          "embedding": 0.27643638849258423,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": false
+          },
+          "status": "fail",
+          "drift": ["embedding"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 7.178567444381574,
+          "embedding": 0.7550270557403564,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 9.38905808890936,
+          "embedding": 0.6448826789855957,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C1_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.6653414532771925,
+          "colour_de": 4.32219954870874,
+          "embedding": 0.5388180613517761,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": false,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["silhouette"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.8275756804884253,
+          "colour_de": 7.0995301174868,
+          "embedding": 0.8124141097068787,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.7186854275312408,
+          "colour_de": 6.721554223880947,
+          "embedding": 0.555720329284668,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C2_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.6938108956127635,
+          "colour_de": 1.681237869891189,
+          "embedding": 0.48213842511177063,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": false,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["silhouette"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.9617978755358947,
+          "colour_de": 2.16831478662282,
+          "embedding": 0.7622241377830505,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.8362912509593247,
+          "colour_de": 6.981356442817121,
+          "embedding": 0.5764697790145874,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.8369802340186422,
+          "colour_de": 1.3999192991548013,
+          "embedding": 0.32955366373062134,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": false
+          },
+          "status": "fail",
+          "drift": ["embedding"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.9843080113206489,
+          "colour_de": 3.0722038511591543,
+          "embedding": 0.7219458818435669,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.8285782329125982,
+          "colour_de": 9.62298012358284,
+          "embedding": 0.6188961267471313,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "C3L_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.9953588378739806,
+          "colour_de": 1.278236391783339,
+          "embedding": 0.236465185880661,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": false
+          },
+          "status": "fail",
+          "drift": ["embedding"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.9898351725493499,
+          "colour_de": 4.043084173854244,
+          "embedding": 0.7560527324676514,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.9928583671370622,
+          "colour_de": 8.931194768700038,
+          "embedding": 0.6496836543083191,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ],
+      "B_qwen": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 0.5691455320082649,
+          "colour_de": 2.7124834852354645,
+          "embedding": 0.6069256067276001,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": false,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["silhouette"]
+        },
+        {
+          "item": "coffee_table",
+          "name": "NODELAND Coffee table",
+          "listing": "ikea_20500407",
+          "tier": "mesh",
+          "silhouette": 0.6001503266714205,
+          "colour_de": 5.723098447397123,
+          "embedding": 0.8678933382034302,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": false,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["silhouette"]
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 0.5176210668852226,
+          "colour_de": 3.84501560273675,
+          "embedding": 0.8508219122886658,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": false,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["silhouette"]
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "status": "unknown",
+          "reason": "rug: no valid check yet"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 15
+  }
+]

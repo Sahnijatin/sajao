@@ -1,0 +1,887 @@
+[
+  {
+    "room": "arkit_living_41159566",
+    "design": "41159566_best_value",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "C3base": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        },
+        {
+          "item": "floor_lamp",
+          "name": "PILSKOTT LED floor lamp",
+          "listing": "ikea_10478124",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 13
+  },
+  {
+    "room": "arkit_living_41159566",
+    "design": "41159566_best_match",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "C3base": [
+        {
+          "item": "sofa",
+          "name": "LANDSKRONA 3-seat sofa",
+          "listing": "ikea_s39270312",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 3.818960956385077,
+          "embedding": 0.8010961413383484,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "BORGEBY Coffee table",
+          "listing": "ikea_10500356",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 3.539408471490794,
+          "embedding": 0.6491596698760986,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SK\u00c5LBODA Armchair",
+          "listing": "ikea_00582036",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 6.19620927155454,
+          "embedding": 0.45728155970573425,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": false
+          },
+          "status": "fail",
+          "drift": ["embedding"]
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        },
+        {
+          "item": "floor_lamp",
+          "name": "PILSKOTT LED floor lamp",
+          "listing": "ikea_10478124",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 14
+  },
+  {
+    "room": "frl_apartment_0",
+    "design": "0_best_value",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "C3base": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        },
+        {
+          "item": "floor_lamp",
+          "name": "PILSKOTT LED floor lamp",
+          "listing": "ikea_10478124",
+          "tier": "mesh",
+          "status": "not in view"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 3
+  },
+  {
+    "room": "arkit_living_41159566",
+    "design": "41159566_bold",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "C3base": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 2.9208445894519084,
+          "embedding": 0.7192301750183105,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "KRAGSTA Coffee table",
+          "listing": "ikea_30651392",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 5.699413196913021,
+          "embedding": 0.6886980533599854,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 3.0155654115558175,
+          "embedding": 0.7462504506111145,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "silhouette": 1.0,
+          "colour_de": 8.427437962969698,
+          "embedding": 0.5329435467720032,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "floor_lamp",
+          "name": "PILSKOTT LED floor lamp",
+          "listing": "ikea_10478124",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 6
+  },
+  {
+    "room": "frl_apartment_0",
+    "design": "0_best_match",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "C3base": [
+        {
+          "item": "sofa",
+          "name": "UPP\u00c5KRA 3-seat modular sofa",
+          "listing": "ikea_s39620339",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        },
+        {
+          "item": "coffee_table",
+          "name": "BORGEBY Coffee table",
+          "listing": "ikea_10500356",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 6.9498024721562475,
+          "embedding": 0.7251062393188477,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SK\u00c5LBODA Armchair",
+          "listing": "ikea_00582036",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 7.750018469871391,
+          "embedding": 0.8175894618034363,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        },
+        {
+          "item": "floor_lamp",
+          "name": "PILSKOTT LED floor lamp",
+          "listing": "ikea_10478124",
+          "tier": "mesh",
+          "status": "not in view"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 3
+  },
+  {
+    "room": "arkit_living_41159541",
+    "design": "41159541_best_value",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "C3base": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        },
+        {
+          "item": "floor_lamp",
+          "name": "PILSKOTT LED floor lamp",
+          "listing": "ikea_10478124",
+          "tier": "mesh",
+          "status": "not in view"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 2
+  },
+  {
+    "room": "frl_apartment_0",
+    "design": "0_bold",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "C3base": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 6.482458410393817,
+          "embedding": 0.7903698682785034,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "KRAGSTA Coffee table",
+          "listing": "ikea_30651392",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 15.280233201892841,
+          "embedding": 0.8741106986999512,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": false,
+            "embedding": true
+          },
+          "status": "fail",
+          "drift": ["colour"]
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 8.318895301256898,
+          "embedding": 0.8639520406723022,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "silhouette": 1.0,
+          "colour_de": 9.130231055693711,
+          "embedding": 0.3750384449958801,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": false
+          },
+          "status": "fail",
+          "drift": ["embedding"]
+        },
+        {
+          "item": "floor_lamp",
+          "name": "PILSKOTT LED floor lamp",
+          "listing": "ikea_10478124",
+          "tier": "mesh",
+          "status": "not in view"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 3
+  },
+  {
+    "room": "arkit_living_41159541",
+    "design": "41159541_best_match",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "C3base": [
+        {
+          "item": "sofa",
+          "name": "LANDSKRONA 3-seat sofa",
+          "listing": "ikea_s39270312",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 7.512880624249711,
+          "embedding": 0.7307806611061096,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "BORGEBY Coffee table",
+          "listing": "ikea_10500356",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 2.404456371966828,
+          "embedding": 0.7994681596755981,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SK\u00c5LBODA Armchair",
+          "listing": "ikea_00582036",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 8.815884770472966,
+          "embedding": 0.8040573596954346,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        },
+        {
+          "item": "floor_lamp",
+          "name": "PILSKOTT LED floor lamp",
+          "listing": "ikea_10478124",
+          "tier": "mesh",
+          "status": "not in view"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 3
+  },
+  {
+    "room": "arkit_living_41159541",
+    "design": "41159541_bold",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "C3base": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 2.5342741776934807,
+          "embedding": 0.6891536712646484,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "KRAGSTA Coffee table",
+          "listing": "ikea_30651392",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 7.786793254613908,
+          "embedding": 0.8323776125907898,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 1.316363447823809,
+          "embedding": 0.8704416155815125,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "silhouette": 1.0,
+          "colour_de": 5.978557143465138,
+          "embedding": 0.3074359893798828,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": false
+          },
+          "status": "fail",
+          "drift": ["embedding"]
+        },
+        {
+          "item": "floor_lamp",
+          "name": "PILSKOTT LED floor lamp",
+          "listing": "ikea_10478124",
+          "tier": "mesh",
+          "status": "not in view"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "status": "not in view"
+        }
+      ]
+    },
+    "wall_s": 3
+  },
+  {
+    "room": "arkit_living_47331265",
+    "design": "47331265_best_value",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "C3base": [
+        {
+          "item": "rug",
+          "name": "STOENSE Rug, low pile",
+          "listing": "ikea_10629161",
+          "tier": "rug",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        },
+        {
+          "item": "floor_lamp",
+          "name": "PILSKOTT LED floor lamp",
+          "listing": "ikea_10478124",
+          "tier": "mesh",
+          "status": "not in view"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        }
+      ]
+    },
+    "wall_s": 2
+  },
+  {
+    "room": "arkit_living_47331265",
+    "design": "47331265_best_match",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "C3base": [
+        {
+          "item": "sofa",
+          "name": "LANDSKRONA 3-seat sofa",
+          "listing": "ikea_s39270312",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 4.00753155227759,
+          "embedding": 0.7733529806137085,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "BORGEBY Coffee table",
+          "listing": "ikea_10500356",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 3.748376956153803,
+          "embedding": 0.68836909532547,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SK\u00c5LBODA Armchair",
+          "listing": "ikea_00582036",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 7.555683312811468,
+          "embedding": 0.649474024772644,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "J\u00c4RNV\u00c4G Rug, low pile",
+          "listing": "ikea_20623074",
+          "tier": "rug",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        },
+        {
+          "item": "floor_lamp",
+          "name": "PILSKOTT LED floor lamp",
+          "listing": "ikea_10478124",
+          "tier": "mesh",
+          "status": "not in view"
+        },
+        {
+          "item": "wall_art",
+          "name": "BLODFL\u00c4DER Picture",
+          "listing": "ikea_40623474",
+          "tier": "art",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        }
+      ]
+    },
+    "wall_s": 3
+  },
+  {
+    "room": "arkit_living_47331265",
+    "design": "47331265_bold",
+    "dinov3_revision": "ea8dc2863c51be0a264bab82070e3e8836b02d51",
+    "thresholds": {
+      "silhouette": 0.7,
+      "colour": 10.0,
+      "embedding": 0.475
+    },
+    "arms": {
+      "C3base": [
+        {
+          "item": "sofa",
+          "name": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+          "listing": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 1.57191032175068,
+          "embedding": 0.6668645739555359,
+          "held_out_photos": 3,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "coffee_table",
+          "name": "KRAGSTA Coffee table",
+          "listing": "ikea_30651392",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 5.560017840587217,
+          "embedding": 0.7923414707183838,
+          "held_out_photos": 2,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "armchair",
+          "name": "SOTEN\u00c4S Armchair",
+          "listing": "ikea_90581914",
+          "tier": "mesh",
+          "silhouette": 1.0,
+          "colour_de": 2.4181705348561255,
+          "embedding": 0.6565216183662415,
+          "held_out_photos": 4,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": true
+          },
+          "status": "pass",
+          "drift": []
+        },
+        {
+          "item": "rug",
+          "name": "ELSYSTEM Rug, low pile",
+          "listing": "ikea_50597318",
+          "tier": "rug",
+          "silhouette": 1.0,
+          "colour_de": 4.6940620845465055,
+          "embedding": 0.3753144145011902,
+          "held_out_photos": 1,
+          "ok": {
+            "silhouette": true,
+            "colour": true,
+            "embedding": false
+          },
+          "status": "fail",
+          "drift": ["embedding"]
+        },
+        {
+          "item": "floor_lamp",
+          "name": "PILSKOTT LED floor lamp",
+          "listing": "ikea_10478124",
+          "tier": "mesh",
+          "status": "not in view"
+        },
+        {
+          "item": "wall_art",
+          "name": "BILD Poster",
+          "listing": "ikea_10623357",
+          "tier": "art",
+          "silhouette": 1.0,
+          "status": "unverifiable"
+        }
+      ]
+    },
+    "wall_s": 4
+  }
+]

@@ -1,0 +1,677 @@
+{
+  "study": "s2",
+  "images": [
+    {
+      "id": "05d8a3231572",
+      "room": "arkit_living_47331265",
+      "design": "47331265_bold",
+      "slot": "bold",
+      "arm": "B_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "06b76f171c50",
+      "room": "arkit_living_41159566",
+      "design": "41159566_best_match",
+      "slot": "best_match",
+      "arm": "B_gemini",
+      "comparison_only": true
+    },
+    {
+      "id": "07e950453f72",
+      "room": "arkit_living_47331265",
+      "design": "47331265_best_value",
+      "slot": "best_value",
+      "arm": "B_gemini",
+      "comparison_only": true
+    },
+    {
+      "id": "090e078360f1",
+      "room": "frl_apartment_0",
+      "design": "0_bold",
+      "slot": "bold",
+      "arm": "C2_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "093392bb4821",
+      "room": "arkit_living_47331265",
+      "design": "47331265_best_match",
+      "slot": "best_match",
+      "arm": "C3_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "132e0fe431d2",
+      "room": "arkit_living_41159566",
+      "design": "41159566_best_match",
+      "slot": "best_match",
+      "arm": "C2_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "16184232399f",
+      "room": "arkit_living_47331265",
+      "design": "47331265_best_value",
+      "slot": "best_value",
+      "arm": "B_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "1ae8ff35e6b5",
+      "room": "arkit_living_41159541",
+      "design": "41159541_bold",
+      "slot": "bold",
+      "arm": "B_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "274db65c829f",
+      "room": "arkit_living_41159541",
+      "design": "41159541_best_value",
+      "slot": "best_value",
+      "arm": "B_gemini",
+      "comparison_only": true
+    },
+    {
+      "id": "2e9539b8eb90",
+      "room": "frl_apartment_0",
+      "design": "0_best_match",
+      "slot": "best_match",
+      "arm": "C3L_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "2ebdc32ecefa",
+      "room": "arkit_living_41159566",
+      "design": "41159566_best_value",
+      "slot": "best_value",
+      "arm": "A",
+      "comparison_only": false
+    },
+    {
+      "id": "2f92f9b24d3b",
+      "room": "arkit_living_41159541",
+      "design": "41159541_best_match",
+      "slot": "best_match",
+      "arm": "C2_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "2ff709785fbe",
+      "room": "frl_apartment_0",
+      "design": "0_best_value",
+      "slot": "best_value",
+      "arm": "B_gemini",
+      "comparison_only": true
+    },
+    {
+      "id": "304a79372a57",
+      "room": "arkit_living_41159541",
+      "design": "41159541_best_value",
+      "slot": "best_value",
+      "arm": "C3_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "33b6442d3db5",
+      "room": "arkit_living_41159566",
+      "design": "41159566_bold",
+      "slot": "bold",
+      "arm": "C1_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "33c0cf2bf9a7",
+      "room": "arkit_living_47331265",
+      "design": "47331265_best_match",
+      "slot": "best_match",
+      "arm": "C2_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "3da868690d8e",
+      "room": "arkit_living_41159541",
+      "design": "41159541_best_value",
+      "slot": "best_value",
+      "arm": "B_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "3e092c7ef102",
+      "room": "arkit_living_47331265",
+      "design": "47331265_bold",
+      "slot": "bold",
+      "arm": "C3_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "3eec81fd7f07",
+      "room": "arkit_living_41159566",
+      "design": "41159566_bold",
+      "slot": "bold",
+      "arm": "C2_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "3fac1840813e",
+      "room": "arkit_living_41159541",
+      "design": "41159541_best_match",
+      "slot": "best_match",
+      "arm": "A",
+      "comparison_only": false
+    },
+    {
+      "id": "413bc44e56ea",
+      "room": "frl_apartment_0",
+      "design": "0_best_value",
+      "slot": "best_value",
+      "arm": "C3_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "42a0d6bd68e7",
+      "room": "arkit_living_41159541",
+      "design": "41159541_best_match",
+      "slot": "best_match",
+      "arm": "C1_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "43baf2818515",
+      "room": "arkit_living_47331265",
+      "design": "47331265_best_value",
+      "slot": "best_value",
+      "arm": "C3L_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "4772b66253d7",
+      "room": "arkit_living_41159541",
+      "design": "41159541_best_match",
+      "slot": "best_match",
+      "arm": "B_gemini",
+      "comparison_only": true
+    },
+    {
+      "id": "480b3b3c4f05",
+      "room": "arkit_living_41159541",
+      "design": "41159541_best_match",
+      "slot": "best_match",
+      "arm": "C3_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "494f338e9d65",
+      "room": "arkit_living_47331265",
+      "design": "47331265_best_value",
+      "slot": "best_value",
+      "arm": "C3_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "49c5fe512df1",
+      "room": "frl_apartment_0",
+      "design": "0_bold",
+      "slot": "bold",
+      "arm": "C3_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "50c180f15238",
+      "room": "arkit_living_47331265",
+      "design": "47331265_best_match",
+      "slot": "best_match",
+      "arm": "A",
+      "comparison_only": false
+    },
+    {
+      "id": "50c2829c2027",
+      "room": "frl_apartment_0",
+      "design": "0_bold",
+      "slot": "bold",
+      "arm": "B_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "52bb5c9d8996",
+      "room": "arkit_living_41159566",
+      "design": "41159566_bold",
+      "slot": "bold",
+      "arm": "C3_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "533b03c5f085",
+      "room": "arkit_living_47331265",
+      "design": "47331265_best_match",
+      "slot": "best_match",
+      "arm": "B_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "53c8f1dad584",
+      "room": "frl_apartment_0",
+      "design": "0_bold",
+      "slot": "bold",
+      "arm": "C1_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "555a1c2b6f93",
+      "room": "frl_apartment_0",
+      "design": "0_bold",
+      "slot": "bold",
+      "arm": "A",
+      "comparison_only": false
+    },
+    {
+      "id": "5a6ad6de631f",
+      "room": "frl_apartment_0",
+      "design": "0_best_value",
+      "slot": "best_value",
+      "arm": "C3L_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "62667555f88e",
+      "room": "arkit_living_41159566",
+      "design": "41159566_best_match",
+      "slot": "best_match",
+      "arm": "B_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "635010c4aa80",
+      "room": "arkit_living_41159566",
+      "design": "41159566_best_match",
+      "slot": "best_match",
+      "arm": "C3_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "63f83110fe9c",
+      "room": "arkit_living_41159566",
+      "design": "41159566_bold",
+      "slot": "bold",
+      "arm": "B_gemini",
+      "comparison_only": true
+    },
+    {
+      "id": "6a8802465671",
+      "room": "frl_apartment_0",
+      "design": "0_best_match",
+      "slot": "best_match",
+      "arm": "B_gemini",
+      "comparison_only": true
+    },
+    {
+      "id": "6b06400ecd9d",
+      "room": "arkit_living_47331265",
+      "design": "47331265_bold",
+      "slot": "bold",
+      "arm": "A",
+      "comparison_only": false
+    },
+    {
+      "id": "6cecc3b3841f",
+      "room": "frl_apartment_0",
+      "design": "0_best_value",
+      "slot": "best_value",
+      "arm": "A",
+      "comparison_only": false
+    },
+    {
+      "id": "6d7b78d27028",
+      "room": "arkit_living_47331265",
+      "design": "47331265_best_match",
+      "slot": "best_match",
+      "arm": "C1_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "6d9f280805d3",
+      "room": "arkit_living_41159541",
+      "design": "41159541_bold",
+      "slot": "bold",
+      "arm": "C2_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "6f82f8e578c3",
+      "room": "arkit_living_47331265",
+      "design": "47331265_bold",
+      "slot": "bold",
+      "arm": "C3L_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "741cd3d8f518",
+      "room": "frl_apartment_0",
+      "design": "0_best_match",
+      "slot": "best_match",
+      "arm": "C2_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "769b635d9d27",
+      "room": "arkit_living_41159541",
+      "design": "41159541_bold",
+      "slot": "bold",
+      "arm": "C1_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "83bcca395413",
+      "room": "arkit_living_47331265",
+      "design": "47331265_best_match",
+      "slot": "best_match",
+      "arm": "B_gemini",
+      "comparison_only": true
+    },
+    {
+      "id": "88196248bc02",
+      "room": "frl_apartment_0",
+      "design": "0_bold",
+      "slot": "bold",
+      "arm": "C3L_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "896d5984410a",
+      "room": "arkit_living_41159566",
+      "design": "41159566_best_value",
+      "slot": "best_value",
+      "arm": "B_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "8a7b390ea66b",
+      "room": "frl_apartment_0",
+      "design": "0_best_match",
+      "slot": "best_match",
+      "arm": "C1_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "90d14773b3f1",
+      "room": "arkit_living_41159541",
+      "design": "41159541_best_value",
+      "slot": "best_value",
+      "arm": "A",
+      "comparison_only": false
+    },
+    {
+      "id": "90fdaa0642fc",
+      "room": "arkit_living_41159566",
+      "design": "41159566_bold",
+      "slot": "bold",
+      "arm": "A",
+      "comparison_only": false
+    },
+    {
+      "id": "94925d68d39d",
+      "room": "frl_apartment_0",
+      "design": "0_best_value",
+      "slot": "best_value",
+      "arm": "C1_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "958afd43b6d0",
+      "room": "arkit_living_41159566",
+      "design": "41159566_best_value",
+      "slot": "best_value",
+      "arm": "C3_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "966796d10216",
+      "room": "frl_apartment_0",
+      "design": "0_best_match",
+      "slot": "best_match",
+      "arm": "B_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "973ceaa02791",
+      "room": "arkit_living_47331265",
+      "design": "47331265_best_match",
+      "slot": "best_match",
+      "arm": "C3L_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "97462ee4980f",
+      "room": "arkit_living_47331265",
+      "design": "47331265_bold",
+      "slot": "bold",
+      "arm": "C2_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "9c4d8e52a84c",
+      "room": "arkit_living_41159566",
+      "design": "41159566_best_value",
+      "slot": "best_value",
+      "arm": "C2_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "9d68635c541a",
+      "room": "arkit_living_47331265",
+      "design": "47331265_best_value",
+      "slot": "best_value",
+      "arm": "C1_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "a84fa06ee106",
+      "room": "arkit_living_41159566",
+      "design": "41159566_best_value",
+      "slot": "best_value",
+      "arm": "B_gemini",
+      "comparison_only": true
+    },
+    {
+      "id": "a8cffd83da2b",
+      "room": "arkit_living_41159541",
+      "design": "41159541_best_match",
+      "slot": "best_match",
+      "arm": "B_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "acdd818fc447",
+      "room": "frl_apartment_0",
+      "design": "0_best_value",
+      "slot": "best_value",
+      "arm": "B_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "afd810cd0d6b",
+      "room": "arkit_living_41159566",
+      "design": "41159566_best_match",
+      "slot": "best_match",
+      "arm": "C1_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "b06f97e122c1",
+      "room": "arkit_living_47331265",
+      "design": "47331265_bold",
+      "slot": "bold",
+      "arm": "B_gemini",
+      "comparison_only": true
+    },
+    {
+      "id": "b11823534f49",
+      "room": "arkit_living_41159541",
+      "design": "41159541_bold",
+      "slot": "bold",
+      "arm": "C3L_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "b43aae41a324",
+      "room": "arkit_living_41159541",
+      "design": "41159541_bold",
+      "slot": "bold",
+      "arm": "B_gemini",
+      "comparison_only": true
+    },
+    {
+      "id": "b8c337d907a4",
+      "room": "arkit_living_41159566",
+      "design": "41159566_bold",
+      "slot": "bold",
+      "arm": "C3L_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "c2340c44798d",
+      "room": "arkit_living_41159566",
+      "design": "41159566_best_match",
+      "slot": "best_match",
+      "arm": "C3L_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "c40e59008e76",
+      "room": "arkit_living_41159566",
+      "design": "41159566_best_value",
+      "slot": "best_value",
+      "arm": "C3L_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "c52c08de8f60",
+      "room": "arkit_living_41159541",
+      "design": "41159541_best_value",
+      "slot": "best_value",
+      "arm": "C1_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "c544b76e568e",
+      "room": "arkit_living_47331265",
+      "design": "47331265_best_value",
+      "slot": "best_value",
+      "arm": "A",
+      "comparison_only": false
+    },
+    {
+      "id": "d041b74a9470",
+      "room": "arkit_living_41159541",
+      "design": "41159541_best_value",
+      "slot": "best_value",
+      "arm": "C2_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "d050df2024e2",
+      "room": "arkit_living_41159541",
+      "design": "41159541_bold",
+      "slot": "bold",
+      "arm": "C3_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "d0a24c053754",
+      "room": "arkit_living_41159541",
+      "design": "41159541_best_match",
+      "slot": "best_match",
+      "arm": "C3L_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "d463742c216e",
+      "room": "arkit_living_41159541",
+      "design": "41159541_best_value",
+      "slot": "best_value",
+      "arm": "C3L_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "d5eac13db655",
+      "room": "frl_apartment_0",
+      "design": "0_best_match",
+      "slot": "best_match",
+      "arm": "C3_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "e17aab6974a0",
+      "room": "arkit_living_41159566",
+      "design": "41159566_best_match",
+      "slot": "best_match",
+      "arm": "A",
+      "comparison_only": false
+    },
+    {
+      "id": "e19dcb06aae2",
+      "room": "arkit_living_41159566",
+      "design": "41159566_bold",
+      "slot": "bold",
+      "arm": "B_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "e4efa34d5536",
+      "room": "frl_apartment_0",
+      "design": "0_best_value",
+      "slot": "best_value",
+      "arm": "C2_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "ecd765084f5f",
+      "room": "frl_apartment_0",
+      "design": "0_best_match",
+      "slot": "best_match",
+      "arm": "A",
+      "comparison_only": false
+    },
+    {
+      "id": "ed74bd13325f",
+      "room": "arkit_living_41159541",
+      "design": "41159541_bold",
+      "slot": "bold",
+      "arm": "A",
+      "comparison_only": false
+    },
+    {
+      "id": "f7d6f2019735",
+      "room": "frl_apartment_0",
+      "design": "0_bold",
+      "slot": "bold",
+      "arm": "B_gemini",
+      "comparison_only": true
+    },
+    {
+      "id": "f92fddc3a88d",
+      "room": "arkit_living_41159566",
+      "design": "41159566_best_value",
+      "slot": "best_value",
+      "arm": "C1_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "fa3d137a45a2",
+      "room": "arkit_living_47331265",
+      "design": "47331265_bold",
+      "slot": "bold",
+      "arm": "C1_qwen",
+      "comparison_only": false
+    },
+    {
+      "id": "fe37aea1a129",
+      "room": "arkit_living_47331265",
+      "design": "47331265_best_value",
+      "slot": "best_value",
+      "arm": "C2_qwen",
+      "comparison_only": false
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+[
+  {
+    "room": "arkit_living_41159566",
+    "design": "41159566_best_value",
+    "model": "gemini",
+    "B_seconds": 109.6,
+    "wall_s": 115,
+    "api_inr": 77.99,
+    "api_calls": 6
+  },
+  {
+    "room": "arkit_living_41159566",
+    "design": "41159566_best_match",
+    "model": "gemini",
+    "B_seconds": 666.7,
+    "wall_s": 677,
+    "api_inr": 207.87,
+    "api_calls": 16
+  },
+  {
+    "room": "arkit_living_41159566",
+    "design": "41159566_bold",
+    "model": "gemini",
+    "B_seconds": 972.6,
+    "wall_s": 979,
+    "api_inr": 207.87,
+    "api_calls": 16
+  },
+  {
+    "room": "frl_apartment_0",
+    "design": "0_best_value",
+    "model": "gemini",
+    "B_seconds": 242.5,
+    "wall_s": 246,
+    "api_inr": 51.99,
+    "api_calls": 4
+  },
+  {
+    "room": "frl_apartment_0",
+    "design": "0_best_match",
+    "model": "gemini",
+    "B_seconds": 722.6,
+    "wall_s": 727,
+    "api_inr": 181.87,
+    "api_calls": 14
+  },
+  {
+    "room": "frl_apartment_0",
+    "design": "0_bold",
+    "model": "gemini",
+    "B_seconds": 833.5,
+    "wall_s": 837,
+    "api_inr": 181.87,
+    "api_calls": 14
+  },
+  {
+    "room": "arkit_living_41159541",
+    "design": "41159541_best_value",
+    "model": "gemini",
+    "B_seconds": 196.0,
+    "wall_s": 200,
+    "api_inr": 39.0,
+    "api_calls": 3
+  },
+  {
+    "room": "arkit_living_41159541",
+    "design": "41159541_best_match",
+    "model": "gemini",
+    "B_seconds": 781.2,
+    "wall_s": 786,
+    "api_inr": 168.87,
+    "api_calls": 13
+  },
+  {
+    "room": "arkit_living_41159541",
+    "design": "41159541_bold",
+    "model": "gemini",
+    "B_seconds": 808.2,
+    "wall_s": 813,
+    "api_inr": 181.88,
+    "api_calls": 14
+  },
+  {
+    "room": "arkit_living_47331265",
+    "design": "47331265_best_value",
+    "model": "gemini",
+    "B_seconds": 441.2,
+    "wall_s": 446,
+    "api_inr": 90.99,
+    "api_calls": 7
+  },
+  {
+    "room": "arkit_living_47331265",
+    "design": "47331265_best_match",
+    "model": "gemini",
+    "B_seconds": 989.5,
+    "wall_s": 994,
+    "api_inr": 220.86,
+    "api_calls": 17
+  },
+  {
+    "room": "arkit_living_47331265",
+    "design": "47331265_bold",
+    "model": "gemini",
+    "B_seconds": 1036.3,
+    "wall_s": 1042,
+    "api_inr": 220.87,
+    "api_calls": 17
+  }
+]
