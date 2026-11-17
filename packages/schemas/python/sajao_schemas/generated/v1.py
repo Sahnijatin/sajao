@@ -78,6 +78,14 @@ class Ar(BaseModel):
     depth: Annotated[bool, Field(description="Depth images are in the package.")]
 
 
+class ReviewWindow(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    start_ms: Annotated[int, Field(ge=0)]
+    end_ms: Annotated[int, Field(ge=0)]
+
+
 class CompassReading(BaseModel):
     """
     Compass headings averaged across the capture, used for Vastu direction.
@@ -1596,7 +1604,14 @@ class CapturePackage(BaseModel):
         str | None,
         Field(description="The scan video, when recorded.", max_length=512, min_length=1),
     ] = None
-    keyframes: Annotated[list[CaptureKeyframe], Field(max_length=120, min_length=1)]
+    video_start_ms: Annotated[
+        int | None,
+        Field(
+            description="When the scan video's first frame was taken, in milliseconds from the start of the capture, so the video can be lined up with the keyframes and the sensor log.",
+            ge=0,
+        ),
+    ] = None
+    keyframes: Annotated[list[CaptureKeyframe], Field(max_length=200, min_length=1)]
     planes: Annotated[
         str | None, Field(description="AR planes as JSON.", max_length=512, min_length=1)
     ] = None
@@ -1628,6 +1643,13 @@ class CapturePackage(BaseModel):
             min_length=1,
         ),
     ]
+    review_windows: Annotated[
+        list[ReviewWindow] | None,
+        Field(
+            description="Times when the review was open over the scan, in milliseconds from the start of the capture. The phone was lowered then: frames of the video inside a window are not part of the scan and are dropped on the server.",
+            max_length=50,
+        ),
+    ] = None
 
 
 class DesignMaterials(BaseModel):
