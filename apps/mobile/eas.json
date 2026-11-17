@@ -21,7 +21,9 @@
       "env": {
         "EAS_USE_CACHE": "1",
         "APP_VARIANT": "development",
-        "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-XX:MaxMetaspaceSize=1g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=2 -Dorg.gradle.daemon=false"
+        "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-XX:MaxMetaspaceSize=1g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=2 -Dorg.gradle.daemon=false",
+        "SAJAO_SHOW_FLAGGED_PRODUCTS": "1",
+        "EXPO_PUBLIC_SHOW_FLAGGED_PRODUCTS": "1"
       },
       "android": {
         "buildType": "apk"
@@ -36,12 +38,27 @@
       "env": {
         "EAS_USE_CACHE": "1",
         "APP_VARIANT": "preview",
-        "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-XX:MaxMetaspaceSize=1g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=2 -Dorg.gradle.daemon=false"
+        "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-XX:MaxMetaspaceSize=1g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=2 -Dorg.gradle.daemon=false",
+        "SAJAO_SHOW_FLAGGED_PRODUCTS": "1",
+        "EXPO_PUBLIC_SHOW_FLAGGED_PRODUCTS": "1"
       },
       "android": {
         "buildType": "apk"
       },
       "channel": "preview"
+    },
+    "closed-test": {
+      "extends": "base",
+      "environment": "production",
+      "autoIncrement": true,
+      "env": {
+        "EAS_USE_CACHE": "1",
+        "APP_VARIANT": "production",
+        "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-XX:MaxMetaspaceSize=1g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=2 -Dorg.gradle.daemon=false",
+        "EXPO_PUBLIC_SHOW_FLAGGED_PRODUCTS": "1",
+        "SAJAO_SHOW_FLAGGED_PRODUCTS": "1"
+      },
+      "channel": "production"
     },
     "production": {
       "extends": "base",
