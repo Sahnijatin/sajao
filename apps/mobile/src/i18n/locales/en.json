@@ -279,7 +279,10 @@
     "checking": "Prices are being checked",
     "fit": {
       "fits": "Fits your room",
-      "check": "Needs a fit check"
+      "check": "Needs a fit check",
+      "tight": "A tight fit",
+      "does_not_fit": "Does not fit here",
+      "fitsWith": "Fits with {{spare}} to spare"
     },
     "sample": "These are sample products. Links open when your own designs are ready."
   },

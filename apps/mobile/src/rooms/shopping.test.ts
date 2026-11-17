@@ -1,5 +1,5 @@
 import { SAMPLE_DESIGNS } from "./sample-designs";
-import { shoppingFor } from "./shopping";
+import { itemFit, shoppingFor } from "./shopping";
 
 const [, bestMatch] = SAMPLE_DESIGNS;
 
@@ -10,10 +10,12 @@ describe("shopping list for a look", () => {
     expect(shopping.lines[0]).toEqual({
       id: "sofa",
       title: "Oak frame three seater sofa",
+      photo: "https://cdn.example.com/products/sofa-oak-3s/front.jpg",
       priceMinor: 4299900,
       url: "https://www.example.com/p/sofa-oak-3s",
       inStock: true,
       fit: "fits",
+      spareM: null,
     });
   });
 
@@ -46,5 +48,46 @@ describe("shopping list for a look", () => {
     };
     const design = { ...bestMatch, items: [rentOnly, ...rest] } as typeof bestMatch;
     expect(shoppingFor(design).lines[0]?.url).toBeNull();
+  });
+
+  it("shows a product photo only when the catalog may show it", () => {
+    const [sofa, ...rest] = bestMatch.items;
+    const noRight = { ...sofa, product: { ...sofa.product, image_use_permitted: false } };
+    const noPhoto = { ...sofa, product: { ...sofa.product, images: [] } };
+    // The contract requires a permitted photo; data from outside may still lack one.
+    const lineOf = (item: unknown) =>
+      shoppingFor({ ...bestMatch, items: [item, ...rest] } as unknown as typeof bestMatch).lines[0];
+    expect(lineOf(noRight)?.photo).toBeNull();
+    expect(lineOf(noPhoto)?.photo).toBeNull();
+  });
+});
+
+describe("per-item fit", () => {
+  const [sofa, ...rest] = bestMatch.items;
+  const withFit = (fit: unknown) =>
+    ({ ...bestMatch, items: [{ ...sofa, fit }, ...rest] }) as unknown as typeof bestMatch;
+
+  it("uses the item's own verdict when the design carries one", () => {
+    const lines = shoppingFor(withFit({ status: "tight", clearance_m: 0.02 })).lines;
+    expect(lines[0]).toMatchObject({ fit: "tight", spareM: 0.02 });
+    // The other items carry none, so they keep the design's verdict.
+    expect(lines[1]).toMatchObject({ fit: "fits", spareM: null });
+  });
+
+  it("an item that does not fit says so even when the design as a whole passed", () => {
+    expect(shoppingFor(withFit({ status: "does_not_fit" })).lines[0]?.fit).toBe("does_not_fit");
+  });
+
+  it("ignores a verdict it cannot read, and falls back to the design's", () => {
+    for (const fit of [null, "fits", { status: "maybe" }, 3]) {
+      expect(itemFit({ ...sofa, fit } as unknown as typeof sofa)).toBeNull();
+      expect(shoppingFor(withFit(fit)).lines[0]?.fit).toBe("fits");
+    }
+    expect(
+      itemFit({ ...sofa, fit: { status: "fits", clearance_m: "wide" } } as unknown as typeof sofa),
+    ).toEqual({
+      status: "fits",
+      spareM: null,
+    });
   });
 });

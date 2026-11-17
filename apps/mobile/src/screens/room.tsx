@@ -7,7 +7,15 @@ import { Button, Card, Chip, Text, useTheme } from "@sajao/ui";
 import type { Dimension } from "@sajao/schemas";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Linking, Pressable, ScrollView, Switch, useWindowDimensions, View } from "react-native";
+import {
+  Image,
+  Linking,
+  Pressable,
+  ScrollView,
+  Switch,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { DesignPlanView } from "@/components/design-plan-view";
 import { Segmented } from "@/components/segmented";
 import { twinViewerEnabled } from "@/features";
@@ -27,6 +35,8 @@ import { formatArea, formatLength, type LengthUnits } from "@/utils/format-lengt
 export const ROOM_TABS = ["room", "designs", "shopping"] as const;
 export type RoomTab = (typeof ROOM_TABS)[number];
 
+/** The side of a product photo on the shopping list. */
+const PHOTO = 56;
 /** The plan's box: a little wider than tall, like most rooms. */
 const PLAN_ASPECT = 0.85;
 /** Stills are portrait: three wide by four tall. */
@@ -404,10 +414,12 @@ function ShoppingTabBody({
   content,
   look,
   picker,
+  units,
 }: {
   content: RoomContent;
   look: RoomLook;
   picker: React.ReactNode;
+  units: LengthUnits;
 }) {
   const { t } = useTranslation();
   const { tokens } = useTheme();
@@ -430,13 +442,38 @@ function ShoppingTabBody({
               borderTopColor: colors.hairline,
             }}
           >
+            {/* The product's own photo. Sample products have none to show. */}
+            <View
+              style={{
+                width: PHOTO,
+                height: PHOTO,
+                borderRadius: spacing.xl,
+                borderCurve: "continuous",
+                overflow: "hidden",
+                backgroundColor: colors.sand,
+              }}
+            >
+              {line.photo && !content.sample ? (
+                <Image
+                  testID={`shopping-photo-${line.id}`}
+                  source={{ uri: line.photo }}
+                  accessibilityIgnoresInvertColors
+                  resizeMode="cover"
+                  style={{ flex: 1 }}
+                />
+              ) : null}
+            </View>
             <View style={{ flex: 1, gap: spacing.xxs }}>
               <Text variant="bodyStrong">{line.title}</Text>
               <Text variant="meta" tone="secondary" selectable>
                 {formatInr(line.priceMinor)}
               </Text>
               <Text variant="caption" tone="tertiary">
-                {line.inStock ? t(`shopping.fit.${line.fit}`) : t("shopping.outOfStock")}
+                {!line.inStock
+                  ? t("shopping.outOfStock")
+                  : line.fit === "fits" && line.spareM !== null
+                    ? t("shopping.fit.fitsWith", { spare: formatLength(line.spareM, units, t) })
+                    : t(`shopping.fit.${line.fit}`)}
               </Text>
             </View>
             {line.url ? (
@@ -446,7 +483,7 @@ function ShoppingTabBody({
                 size="small"
                 accessibilityLabel={t("shopping.buyItem", { item: line.title })}
                 // Sample products have example links; real ones open at the retailer.
-                disabled={content.sample || !line.inStock}
+                disabled={content.sample || !line.inStock || line.fit === "does_not_fit"}
                 onPress={() => void Linking.openURL(line.url as string)}
               />
             ) : null}
@@ -544,7 +581,7 @@ export function RoomScreen({
         <DesignsTabBody content={content} look={look} picker={picker} />
       ) : null}
       {tab === "shopping" && look ? (
-        <ShoppingTabBody content={content} look={look} picker={picker} />
+        <ShoppingTabBody content={content} look={look} picker={picker} units={units} />
       ) : null}
       {tab !== "room" && offered && !look ? (
         <Text tone="secondary">{t("rooms.designs.none")}</Text>
