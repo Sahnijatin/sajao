@@ -32,6 +32,18 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
 
   var lite = false
   var reducedMotion = false
+  /// False draws the camera image only: no mesh, planes, points, glow or
+  /// labels. Capture, coverage and hit tests are unchanged, because the
+  /// nodes stay in the scene and are only left out of the camera's view.
+  var overlay = true {
+    didSet { labelLayer.isHidden = !overlay }
+  }
+  /// True while the app's review is open: no video frame and no keyframe is
+  /// recorded, the AR session keeps running, and recording carries on from
+  /// the next frame once it is false again.
+  var capturePaused = false
+  /// Scene nodes in this category are the overlay; the camera drops it to hide them.
+  private static let overlayCategory = 2
 
   private let sceneView = ARSCNView(frame: .zero)
   private let labelLayer = UIView()
@@ -93,6 +105,8 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
     sceneView.automaticallyUpdatesLighting = false
     sceneView.autoenablesDefaultLighting = false
     sceneView.antialiasingMode = .multisampling2X
+    pointNode.categoryBitMask = Self.overlayCategory
+    linkNode.categoryBitMask = Self.overlayCategory
     sceneView.scene.rootNode.addChildNode(pointNode)
     sceneView.scene.rootNode.addChildNode(linkNode)
     addSubview(sceneView)
@@ -258,8 +272,9 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
 
   func session(_ session: ARSession, didUpdate frame: ARFrame) {
     let now = frame.timestamp
-    // The scan video: every frame from the first to Done, whatever tracking says.
-    video?.append(frame)
+    // The scan video: every frame from the first to Done, whatever tracking
+    // says, except while the review is open.
+    if !capturePaused { video?.append(frame) }
     featureCount = frame.rawFeaturePoints?.points.count ?? 0
     if let estimate = frame.lightEstimate {
       ambientIntensity = Double(estimate.ambientIntensity)
@@ -283,7 +298,7 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
     }
     // Keyframes are offered whatever tracking says; without tracking they
     // are kept by time, without a pose.
-    if let recorder, now - lastKeyframeAt > 0.25 {
+    if let recorder, !capturePaused, now - lastKeyframeAt > 0.25 {
       lastKeyframeAt = now
       let sharpness = Self.sharpness(frame.capturedImage) ?? 0
       let (yaw, pitch) = Self.yawPitch(frame.camera.transform)
@@ -509,6 +524,8 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
         to: SCNVector3(end.x, end.y, end.z),
         options: [
           SCNHitTestOption.searchMode.rawValue: SCNHitTestSearchMode.all.rawValue,
+          // The mesh is in the overlay category, shown or not.
+          SCNHitTestOption.categoryBitMask.rawValue: Self.overlayCategory,
           SCNHitTestOption.backFaceCulling.rawValue: false,
         ])
       objectRange = hits
@@ -771,14 +788,21 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
     if let mesh = anchor as? ARMeshAnchor {
       let node = SCNNode()
       node.addChildNode(MeshStyle.meshNode(mesh.geometry, lite: lite))
+      markOverlay(node)
       return node
     }
     if !lidar, let plane = anchor as? ARPlaneAnchor, let device = sceneView.device {
       let node = SCNNode()
       MeshStyle.addPlaneNodes(to: node, plane: plane, device: device, lite: lite)
+      markOverlay(node)
       return node
     }
     return nil
+  }
+
+  /// Put a node and everything under it in the overlay category.
+  private func markOverlay(_ node: SCNNode) {
+    node.enumerateHierarchy { child, _ in child.categoryBitMask = Self.overlayCategory }
   }
 
   func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
@@ -786,18 +810,28 @@ final class SajaoArView: ExpoView, ARSCNViewDelegate, ARSessionDelegate {
       node.childNodes.forEach { $0.removeFromParentNode() }
       let child = MeshStyle.meshNode(mesh.geometry, lite: lite)
       node.addChildNode(child)
+      markOverlay(node)
       if !reducedMotion { MeshStyle.brighten(child) }
       return
     }
     if !lidar, let plane = anchor as? ARPlaneAnchor {
       MeshStyle.updatePlaneNodes(node, plane: plane)
+      markOverlay(node)
     }
   }
 
   func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-    guard !bloomConfigured, !lite, let camera = sceneView.pointOfView?.camera else { return }
-    bloomConfigured = true
-    camera.wantsHDR = true
+    guard let camera = sceneView.pointOfView?.camera else { return }
+    // With the overlay off the camera leaves the overlay's nodes out, so the
+    // picture is the plain camera image; the nodes still answer hit tests.
+    let visible = overlay ? -1 : ~Self.overlayCategory
+    if camera.categoryBitMask != visible { camera.categoryBitMask = visible }
+    // The glow is part of the overlay: without it the camera image stays as it is.
+    let wantsBloom = overlay && !lite
+    guard wantsBloom != bloomConfigured else { return }
+    bloomConfigured = wantsBloom
+    camera.wantsHDR = wantsBloom
+    guard wantsBloom else { return }
     camera.wantsExposureAdaptation = false
     camera.exposureOffset = 0
     camera.bloomIntensity = 0.9

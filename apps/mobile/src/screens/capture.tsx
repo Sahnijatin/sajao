@@ -237,6 +237,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
         <ArView
           ref={capture.viewRef}
           captureId={capture.captureId}
+          capturePaused={capture.capturePaused}
           onArKeyframe={({ nativeEvent }) => capture.onKeyframe(nativeEvent)}
           style={StyleSheet.absoluteFill}
           active
