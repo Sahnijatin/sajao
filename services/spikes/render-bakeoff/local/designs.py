@@ -40,6 +40,7 @@ ROOMS = {
         "side": -1,
         "max_len": 2.8,
         "zone": [-6.4, -2.6, -3.5, 0.4],
+        "hero": 74,  # pinned: the C3 removal was made for this keyframe
     },
     "arkit_living_47331265": {
         "kind": "living",
@@ -48,6 +49,7 @@ ROOMS = {
         "side": 1,
         "max_len": 2.3,
         "zone": [-1.4, 1.6, -3.1, -0.3],
+        "hero": 211,  # pinned: the C3 removal was made for this keyframe
     },
     "arkit_living_41159541": {
         "kind": "living",
@@ -56,6 +58,7 @@ ROOMS = {
         "side": -1,
         "max_len": 2.3,
         "zone": [-0.6, 2.1, -2.6, 0.3],
+        "hero": 208,  # pinned: the C3 removal was made for this keyframe
     },
     "arkit_living_41159566": {
         "kind": "living",

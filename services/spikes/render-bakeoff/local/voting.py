@@ -18,8 +18,9 @@ import tempfile
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[4]
+COMPARISON_ONLY = {"B_gemini"}
 ARMS = ["A", "C1_qwen", "C2_qwen", "C3_qwen", "C3L_qwen", "B_qwen", "B_gemini"]
-STUDY = "s1"
+STUDY = "s2"  # s1 used the earlier product set; its key is kept as key_s1.json
 # The ARKit bedroom is left out: its capture has no frame that shows the design zone
 # (close-ups only), so every arm would render it equally badly.
 VOTE_ROOMS = [
@@ -74,7 +75,16 @@ def main(out: Path, arms: list[str]) -> None:
                     )
                     images.append({"id": iid, "file": f"img/{iid}.jpg", "group": group})
                     key.append(
-                        {"id": iid, "room": room, "design": d["id"], "slot": d["slot"], "arm": arm}
+                        {
+                            "id": iid,
+                            "room": room,
+                            "design": d["id"],
+                            "slot": d["slot"],
+                            "arm": arm,
+                            # Gemini is ruled out for placing real products; its renders show
+                            # the earlier product set and are kept for comparison only.
+                            "comparison_only": arm in COMPARISON_ONLY,
+                        }
                     )
     # Shuffle so the manifest order says nothing about the arm.
     order = sorted(range(len(images)), key=lambda i: images[i]["id"])
@@ -84,6 +94,7 @@ def main(out: Path, arms: list[str]) -> None:
     manifest = {"study": STUDY, "groups_per_voter": min(groups, 6), "images": images}
     (out / "manifest.json").write_text(json.dumps(manifest))
     kdir = REPO / "eval" / "render-bakeoff" / "voting"
+    (kdir / f"key_{STUDY}.json").write_text(json.dumps({"study": STUDY, "images": key}, indent=1))
     (kdir / "key.json").write_text(json.dumps({"study": STUDY, "images": key}, indent=1))
     print(len(images), "images in", groups, "designs")
 

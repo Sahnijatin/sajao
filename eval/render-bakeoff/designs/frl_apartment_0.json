@@ -2,6 +2,8 @@
  "room": "frl_apartment_0",
  "hero_frame": 74,
  "hero_why": {
+  "chosen_by_hand": true,
+  "auto_choice": 74,
   "weighted_inside": 0.985,
   "behind": 0,
   "screen_area": 1.046
@@ -206,6 +208,7 @@
    -2.6,
    -3.5,
    0.4
-  ]
+  ],
+  "hero": 74
  }
 }

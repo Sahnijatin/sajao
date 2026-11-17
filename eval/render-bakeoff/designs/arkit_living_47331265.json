@@ -2,6 +2,8 @@
  "room": "arkit_living_47331265",
  "hero_frame": 211,
  "hero_why": {
+  "chosen_by_hand": true,
+  "auto_choice": 211,
   "weighted_inside": 0.85,
   "behind": 0,
   "screen_area": 1.299
@@ -216,6 +218,7 @@
    1.6,
    -3.1,
    -0.3
-  ]
+  ],
+  "hero": 211
  }
 }
