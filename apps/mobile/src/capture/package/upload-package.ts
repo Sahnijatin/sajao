@@ -26,6 +26,8 @@ export interface PackageUploadDeps {
   onProgress?: (finished: number, total: number) => void;
   /** The video was over the server's size limit and was left out; the rest of the package went up. */
   onVideoSkipped?: () => void;
+  /** Files sent at the same time. Default 6. */
+  concurrency?: number;
 }
 
 export async function uploadCapturePackage(
@@ -53,7 +55,7 @@ export async function uploadCapturePackage(
 
   const keys: Record<string, string> = {};
   let finished = 0;
-  for (const item of queue) {
+  const sendOne = async (item: (typeof queue)[number]) => {
     const localId = `${captureId}/${item.name}`;
     const known = await deps.done.get(localId);
     let key = known;
@@ -67,14 +69,34 @@ export async function uploadCapturePackage(
         deps.onVideoSkipped?.();
         finished += 1;
         deps.onProgress?.(finished, queue.length);
-        continue;
+        return;
       }
       await deps.done.set(localId, key);
     }
     keys[item.name] = key;
     finished += 1;
     deps.onProgress?.(finished, queue.length);
-  }
+  };
+  // Several files at once: the scan is up sooner, and when the app goes to
+  // the background the files already handed to the phone keep going.
+  let next = 0;
+  let failure: unknown;
+  const worker = async () => {
+    while (failure === undefined && next < queue.length) {
+      const item = queue[next];
+      next += 1;
+      if (!item) return;
+      try {
+        await sendOne(item);
+      } catch (error) {
+        failure ??= error;
+      }
+    }
+  };
+  const lanes = Math.max(1, Math.min(deps.concurrency ?? 6, queue.length));
+  await Promise.all(Array.from({ length: lanes }, worker));
+  // Files in flight were allowed to finish, so nothing sent is thrown away.
+  if (failure !== undefined) throw failure;
 
   const sensorLog = keys.sensor_log;
   if (!sensorLog) throw new Error("Sensor log was not uploaded");

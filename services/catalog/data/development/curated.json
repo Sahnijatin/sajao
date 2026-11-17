@@ -1,0 +1,2996 @@
+[
+ {
+  "source": "ikea_india",
+  "sku": "ikea_10615526",
+  "url": "https://www.ikea.com/in/en/p/gammalbyn-3-seat-sofa-kilanda-light-beige-10615526/",
+  "retailer": "IKEA India",
+  "title": "GAMMALBYN 3-seat sofa",
+  "category": "sofa",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 201.0,
+   "depth_cm": 91.0,
+   "height_cm": 82.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "warm_luxe",
+   "minimal_wabi_sabi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/gammalbyn-3-seat-sofa-kilanda-light-beige__1578411_pe1034064_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/gammalbyn-3-seat-sofa-kilanda-light-beige__1454911_pe991785_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_10615526/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_10615526/1.jpg"
+  ],
+  "clean_photos": 2,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 1,
+   "scores": [
+    {
+     "silhouette": 0.795,
+     "colour_de": 3.03,
+     "embedding": 0.88
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:07Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 29990.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_denzel-bedside-table-walnut-finish",
+  "url": "https://www.woodenstreet.com/product/denzel-bedside-table-walnut-finish",
+  "retailer": "Wooden Street",
+  "title": "Denzel Bedside Table (Walnut Finish)",
+  "category": "bedside_table",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 45.7,
+   "depth_cm": 40.6,
+   "height_cm": 45.7,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "modern_indian"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/denzel-bedside-revised/walnut/updated/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/denzel-bedside-revised/walnut/updated/WF-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/denzel-bedside-revised/walnut/updated/new-logo/2-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_denzel-bedside-table-walnut-finish/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_denzel-bedside-table-walnut-finish/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_denzel-bedside-table-walnut-finish/2.jpg"
+  ],
+  "clean_photos": 3,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 2,
+   "scores": [
+    {
+     "silhouette": 0.764,
+     "colour_de": 2.48,
+     "embedding": 0.763
+    },
+    {
+     "silhouette": 0.954,
+     "colour_de": 1.4,
+     "embedding": 0.881
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:09Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 7499.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_dome-round-end-table-honey-finish",
+  "url": "https://www.woodenstreet.com/product/dome-round-end-table-honey-finish",
+  "retailer": "Wooden Street",
+  "title": "Dome Sheesham Wood Round Side Table (Honey Finish)",
+  "category": "side_table",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 66.0,
+   "depth_cm": 66.0,
+   "height_cm": 63.5,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "modern_indian",
+   "warm_maximalist"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/side-end-table/dome-round-end-table-revised/sheesham/honey/updated/updated/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/side-end-table/dome-round-end-table-revised/sheesham/honey/updated/updated/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/side-end-table/dome-round-end-table-revised/sheesham/honey/updated/updated/new-logo/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/side-end-table/dome-round-end-table-revised/sheesham/honey/updated/updated/new-logo/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/side-end-table/dome-round-end-table-revised/sheesham/honey/updated/updated/new-logo/5-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/side-end-table/dome-round-end-table-revised/sheesham/honey/updated/updated/new-logo/6-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_dome-round-end-table-honey-finish/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_dome-round-end-table-honey-finish/2.jpg",
+   "modal-volume://sajao-catalog/photos/ws_dome-round-end-table-honey-finish/3.jpg",
+   "modal-volume://sajao-catalog/photos/ws_dome-round-end-table-honey-finish/4.jpg",
+   "modal-volume://sajao-catalog/photos/ws_dome-round-end-table-honey-finish/5.jpg",
+   "modal-volume://sajao-catalog/photos/ws_dome-round-end-table-honey-finish/6.jpg"
+  ],
+  "clean_photos": 6,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 5,
+   "scores": [
+    {
+     "silhouette": 0.843,
+     "colour_de": 6.06,
+     "embedding": 0.927
+    },
+    {
+     "silhouette": 0.93,
+     "colour_de": 4.29,
+     "embedding": 0.918
+    },
+    {
+     "silhouette": 0.719,
+     "colour_de": 5.47,
+     "embedding": 0.901
+    },
+    {
+     "silhouette": 0.734,
+     "colour_de": 2.82,
+     "embedding": 0.896
+    },
+    {
+     "silhouette": 0.721,
+     "colour_de": 2.78,
+     "embedding": 0.913
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:11Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 9999.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_s49482832",
+  "url": "https://www.ikea.com/in/en/p/kivik-3-seat-sofa-tresund-light-beige-s49482832/",
+  "retailer": "IKEA India",
+  "title": "KIVIK 3-seat sofa",
+  "category": "sofa",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 228.0,
+   "depth_cm": 95.0,
+   "height_cm": 83.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "minimal_wabi_sabi",
+   "japandi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/kivik-3-seat-sofa-tresund-light-beige__1577609_pe1033360_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/kivik-3-seat-sofa-tresund-light-beige__1124110_pe875021_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_s49482832/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_s49482832/1.jpg"
+  ],
+  "clean_photos": 2,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 1,
+   "scores": [
+    {
+     "silhouette": 0.814,
+     "colour_de": 2.65,
+     "embedding": 0.861
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:13Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 50990.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+  "url": "https://www.woodenstreet.com/product/kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-sage-green",
+  "retailer": "Wooden Street",
+  "title": "Kairav Modern 2 Seater Wooden Sofa with Premium Upholstery (Sage Green)",
+  "category": "sofa",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 152.4,
+   "depth_cm": 86.4,
+   "height_cm": 86.4,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "modern_indian",
+   "eclectic_retro"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/kairav+sofa/sage+green/54-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/kairav+sofa/sage+green/55-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/kairav+sofa/sage+green/53-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/kairav+sofa/sage+green/51-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s/2.jpg",
+   "modal-volume://sajao-catalog/photos/ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s/3.jpg"
+  ],
+  "clean_photos": 4,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 3,
+   "scores": [
+    {
+     "silhouette": 0.824,
+     "colour_de": 1.3,
+     "embedding": 0.835
+    },
+    {
+     "silhouette": 0.796,
+     "colour_de": 4.61,
+     "embedding": 0.777
+    },
+    {
+     "silhouette": 0.821,
+     "colour_de": 1.59,
+     "embedding": 0.791
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:14Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 45999.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_crisper-lounge-chair-cotton-grey-robins",
+  "url": "https://www.woodenstreet.com/product/crisper-lounge-chair-cotton-grey-robins",
+  "retailer": "Wooden Street",
+  "title": "Crisper Lounge Chair (Cotton, Grey Robins)",
+  "category": "accent_chair",
+  "room_types": [
+   "living_room",
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 61.0,
+   "depth_cm": 76.2,
+   "height_cm": 78.7,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "modern_indian",
+   "warm_maximalist"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/lounge-chairs/crisper-lounge-chair/updated/Grey+Robins/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/lounge-chairs/crisper-lounge-chair/updated/Grey+Robins/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/lounge-chairs/crisper-lounge-chair/updated/Grey+Robins/new-logo/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/lounge-chairs/crisper-lounge-chair/updated/Grey+Robins/new-logo/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/lounge-chairs/crisper-lounge-chair/updated/Grey+Robins/new-logo/5-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_crisper-lounge-chair-cotton-grey-robins/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_crisper-lounge-chair-cotton-grey-robins/2.jpg",
+   "modal-volume://sajao-catalog/photos/ws_crisper-lounge-chair-cotton-grey-robins/3.jpg",
+   "modal-volume://sajao-catalog/photos/ws_crisper-lounge-chair-cotton-grey-robins/4.jpg",
+   "modal-volume://sajao-catalog/photos/ws_crisper-lounge-chair-cotton-grey-robins/5.jpg"
+  ],
+  "clean_photos": 5,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 4,
+   "scores": [
+    {
+     "silhouette": 0.716,
+     "colour_de": 3.69,
+     "embedding": 0.903
+    },
+    {
+     "silhouette": 0.849,
+     "colour_de": 5.6,
+     "embedding": 0.909
+    },
+    {
+     "silhouette": 0.714,
+     "colour_de": 6.14,
+     "embedding": 0.885
+    },
+    {
+     "silhouette": 0.914,
+     "colour_de": 1.29,
+     "embedding": 0.721
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:16Z",
+   "link_ok": true,
+   "in_stock": false,
+   "price_inr": 11989.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_30575812",
+  "url": "https://www.ikea.com/in/en/p/skarpoe-armchair-outdoor-beige-30575812/",
+  "retailer": "IKEA India",
+  "title": "SKARPÖ Armchair, outdoor",
+  "category": "armchair",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 81.0,
+   "depth_cm": 79.0,
+   "height_cm": 71.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "eclectic_retro",
+   "minimal_wabi_sabi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/skarpoe-armchair-outdoor-beige__1455118_pe991851_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/skarpoe-armchair-outdoor-beige__1455117_pe991852_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/skarpoe-armchair-outdoor-beige__1597128_pe1041687_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_30575812/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_30575812/1.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_30575812/2.jpg"
+  ],
+  "clean_photos": 3,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 2,
+   "scores": [
+    {
+     "silhouette": 0.868,
+     "colour_de": 1.49,
+     "embedding": 0.792
+    },
+    {
+     "silhouette": 0.918,
+     "colour_de": 3.15,
+     "embedding": 0.735
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:18Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 5990.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_swirl-bedside-table",
+  "url": "https://www.woodenstreet.com/product/swirl-bedside-table",
+  "retailer": "Wooden Street",
+  "title": "Swirl Bedside Table (Walnut Finish)",
+  "category": "bedside_table",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 45.7,
+   "depth_cm": 40.6,
+   "height_cm": 45.7,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "modern_indian",
+   "warm_maximalist"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/swirl-bedside-table/updated/walnut/updated/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/swirl-bedside-table/updated/walnut/updated/WF-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/swirl-bedside-table/updated/walnut/updated/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/swirl-bedside-table/updated/walnut/updated/new-logo/3-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_swirl-bedside-table/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_swirl-bedside-table/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_swirl-bedside-table/2.jpg",
+   "modal-volume://sajao-catalog/photos/ws_swirl-bedside-table/3.jpg"
+  ],
+  "clean_photos": 4,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 3,
+   "scores": [
+    {
+     "silhouette": 0.937,
+     "colour_de": 3.84,
+     "embedding": 0.756
+    },
+    {
+     "silhouette": 0.93,
+     "colour_de": 1.62,
+     "embedding": 0.754
+    },
+    {
+     "silhouette": 0.88,
+     "colour_de": 1.23,
+     "embedding": 0.699
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:20Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 9999.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_90581914",
+  "url": "https://www.ikea.com/in/en/p/sotenaes-armchair-hakebo-red-90581914/",
+  "retailer": "IKEA India",
+  "title": "SOTENÄS Armchair",
+  "category": "armchair",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 86.0,
+   "depth_cm": 81.0,
+   "height_cm": 68.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "eclectic_retro",
+   "warm_maximalist"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/sotenaes-armchair-hakebo-red__1322509_pe942197_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/sotenaes-armchair-hakebo-red__1322508_pe942198_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/sotenaes-armchair-hakebo-red__1392514_ph201030_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/sotenaes-armchair-hakebo-red__1392513_ph201031_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_90581914/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_90581914/1.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_90581914/5.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_90581914/6.jpg"
+  ],
+  "clean_photos": 4,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 3,
+   "scores": [
+    {
+     "silhouette": 0.822,
+     "colour_de": 2.81,
+     "embedding": 0.903
+    },
+    {
+     "silhouette": 0.843,
+     "colour_de": 3.62,
+     "embedding": 0.906
+    },
+    {
+     "silhouette": 0.891,
+     "colour_de": 4.21,
+     "embedding": 0.889
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:22Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 21990.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_adire-lounge-chair-cream-robins",
+  "url": "https://www.woodenstreet.com/product/adire-lounge-chair-cream-robins",
+  "retailer": "Wooden Street",
+  "title": "Adire Lounge Chair (Cotton, Cream Robins)",
+  "category": "accent_chair",
+  "room_types": [
+   "living_room",
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 76.2,
+   "depth_cm": 73.7,
+   "height_cm": 106.7,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "warm_maximalist",
+   "warm_luxe"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/wing-chairs/adire-wingback-chair/updated/Cream+Robins/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/wing-chairs/adire-wingback-chair/updated/Cream+Robins/new-logo/187-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/wing-chairs/adire-wingback-chair/updated/Cream+Robins/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/wing-chairs/adire-wingback-chair/updated/Cream+Robins/new-logo/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/wing-chairs/adire-wingback-chair/updated/Cream+Robins/new-logo/Info-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_adire-lounge-chair-cream-robins/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_adire-lounge-chair-cream-robins/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_adire-lounge-chair-cream-robins/2.jpg",
+   "modal-volume://sajao-catalog/photos/ws_adire-lounge-chair-cream-robins/3.jpg",
+   "modal-volume://sajao-catalog/photos/ws_adire-lounge-chair-cream-robins/6.jpg"
+  ],
+  "clean_photos": 5,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 4,
+   "scores": [
+    {
+     "silhouette": 0.717,
+     "colour_de": 4.84,
+     "embedding": 0.734
+    },
+    {
+     "silhouette": 0.731,
+     "colour_de": 2.75,
+     "embedding": 0.762
+    },
+    {
+     "silhouette": 0.811,
+     "colour_de": 1.99,
+     "embedding": 0.727
+    },
+    {
+     "silhouette": 0.738,
+     "colour_de": 3.67,
+     "embedding": 0.803
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:24Z",
+   "link_ok": true,
+   "in_stock": false,
+   "price_inr": 23499.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_80363426",
+  "url": "https://www.ikea.com/in/en/p/stefan-chair-brown-black-80363426/",
+  "retailer": "IKEA India",
+  "title": "STEFAN Chair",
+  "category": "accent_chair",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 42.0,
+   "depth_cm": 49.0,
+   "height_cm": 90.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "japandi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/stefan-chair-brown-black__0727320_pe735593_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/stefan-chair-brown-black__1052538_pe846195_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/stefan-chair-brown-black__1052539_pe846166_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_80363426/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_80363426/1.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_80363426/2.jpg"
+  ],
+  "clean_photos": 3,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 2,
+   "scores": [
+    {
+     "silhouette": 0.852,
+     "colour_de": 2.35,
+     "embedding": 0.895
+    },
+    {
+     "silhouette": 0.821,
+     "colour_de": 0.96,
+     "embedding": 0.932
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:26Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 4950.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_20500407",
+  "url": "https://www.ikea.com/in/en/p/nodeland-coffee-table-medium-brown-20500407/",
+  "retailer": "IKEA India",
+  "title": "NODELAND Coffee table",
+  "category": "coffee_table",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 80.0,
+   "depth_cm": 50.0,
+   "height_cm": 45.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "japandi",
+   "modern_indian"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/nodeland-coffee-table-medium-brown__0974637_pe812499_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/nodeland-coffee-table-medium-brown__0974638_pe812501_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_20500407/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_20500407/1.jpg"
+  ],
+  "clean_photos": 2,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 1,
+   "scores": [
+    {
+     "silhouette": 0.816,
+     "colour_de": 4.67,
+     "embedding": 0.897
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:28Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 2990.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_adolph-bedside-table-honey-finish",
+  "url": "https://www.woodenstreet.com/product/adolph-bedside-table-honey-finish",
+  "retailer": "Wooden Street",
+  "title": "Adolph Bedside Table (Honey Finish)",
+  "category": "bedside_table",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 40.6,
+   "depth_cm": 40.6,
+   "height_cm": 43.2,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "modern_indian"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/adolph-bedside-table/revised/honey/updated/new-logo/new+-3D/6-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/adolph-bedside-table/revised/honey/updated/new-logo/new+-3D/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/adolph-bedside-table/revised/honey/updated/new-logo/new+-3D/7-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/adolph-bedside-table/revised/honey/updated/new-logo/new+-3D/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/adolph-bedside-table/revised/honey/updated/new-logo/new+-3D/5-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_adolph-bedside-table-honey-finish/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_adolph-bedside-table-honey-finish/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_adolph-bedside-table-honey-finish/2.jpg",
+   "modal-volume://sajao-catalog/photos/ws_adolph-bedside-table-honey-finish/3.jpg",
+   "modal-volume://sajao-catalog/photos/ws_adolph-bedside-table-honey-finish/4.jpg"
+  ],
+  "clean_photos": 5,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 4,
+   "scores": [
+    {
+     "silhouette": 0.946,
+     "colour_de": 6.08,
+     "embedding": 0.691
+    },
+    {
+     "silhouette": 0.97,
+     "colour_de": 2.55,
+     "embedding": 0.898
+    },
+    {
+     "silhouette": 0.967,
+     "colour_de": 0.69,
+     "embedding": 0.905
+    },
+    {
+     "silhouette": 0.79,
+     "colour_de": 2.14,
+     "embedding": 0.665
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:30Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 7999.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_orwell-round-coffee-table-honey-finish",
+  "url": "https://www.woodenstreet.com/product/orwell-round-coffee-table-honey-finish",
+  "retailer": "Wooden Street",
+  "title": "Orwell Round Coffee Table (Honey Finish)",
+  "category": "coffee_table",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 76.2,
+   "depth_cm": 76.2,
+   "height_cm": 43.2,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "modern_indian",
+   "warm_luxe"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/coffee-table/ian-round-coffee-table-honey-finish/honey-finish/updated/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/coffee-table/ian-round-coffee-table-honey-finish/honey-finish/updated/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/coffee-table/ian-round-coffee-table-honey-finish/honey-finish/updated/new-logo/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/coffee-table/ian-round-coffee-table-honey-finish/honey-finish/updated/new-logo/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/coffee-table/ian-round-coffee-table-honey-finish/honey-finish/updated/new-logo/5-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_orwell-round-coffee-table-honey-finish/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_orwell-round-coffee-table-honey-finish/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_orwell-round-coffee-table-honey-finish/2.jpg",
+   "modal-volume://sajao-catalog/photos/ws_orwell-round-coffee-table-honey-finish/3.jpg",
+   "modal-volume://sajao-catalog/photos/ws_orwell-round-coffee-table-honey-finish/4.jpg"
+  ],
+  "clean_photos": 5,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 4,
+   "scores": [
+    {
+     "silhouette": 0.921,
+     "colour_de": 1.76,
+     "embedding": 0.851
+    },
+    {
+     "silhouette": 0.892,
+     "colour_de": 7.13,
+     "embedding": 0.857
+    },
+    {
+     "silhouette": 0.938,
+     "colour_de": 1.83,
+     "embedding": 0.78
+    },
+    {
+     "silhouette": 0.951,
+     "colour_de": 2.51,
+     "embedding": 0.813
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:32Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 19999.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_70535895",
+  "url": "https://www.ikea.com/in/en/p/arsunda-armchair-knisa-light-grey-70535895/",
+  "retailer": "IKEA India",
+  "title": "ÅRSUNDA Armchair",
+  "category": "armchair",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 66.2,
+   "depth_cm": 72.3,
+   "height_cm": 99.6,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "japandi",
+   "minimal_wabi_sabi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/arsunda-armchair-knisa-light-grey__1276550_pe930953_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/arsunda-armchair-knisa-light-grey__1276551_pe930954_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/arsunda-armchair-knisa-light-grey__1276553_pe930955_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_70535895/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_70535895/1.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_70535895/2.jpg"
+  ],
+  "clean_photos": 3,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 2,
+   "scores": [
+    {
+     "silhouette": 0.87,
+     "colour_de": 2.2,
+     "embedding": 0.969
+    },
+    {
+     "silhouette": 0.77,
+     "colour_de": 8.27,
+     "embedding": 0.895
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:34Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 5990.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_crisper-lounge-chair-bubble-robins",
+  "url": "https://www.woodenstreet.com/product/crisper-lounge-chair-bubble-robins",
+  "retailer": "Wooden Street",
+  "title": "Crisper Lounge Chair (Cotton, Bubble Robins)",
+  "category": "accent_chair",
+  "room_types": [
+   "living_room",
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 61.0,
+   "depth_cm": 76.2,
+   "height_cm": 78.7,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "modern_indian",
+   "eclectic_retro"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/lounge-chairs/crisper-lounge-chair/updated/Bubble+Robins/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/lounge-chairs/crisper-lounge-chair/updated/Bubble+Robins/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/lounge-chairs/crisper-lounge-chair/updated/Bubble+Robins/new-logo/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/lounge-chairs/crisper-lounge-chair/updated/Bubble+Robins/new-logo/4-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_crisper-lounge-chair-bubble-robins/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_crisper-lounge-chair-bubble-robins/2.jpg",
+   "modal-volume://sajao-catalog/photos/ws_crisper-lounge-chair-bubble-robins/3.jpg",
+   "modal-volume://sajao-catalog/photos/ws_crisper-lounge-chair-bubble-robins/4.jpg"
+  ],
+  "clean_photos": 4,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 3,
+   "scores": [
+    {
+     "silhouette": 0.75,
+     "colour_de": 2.99,
+     "embedding": 0.825
+    },
+    {
+     "silhouette": 0.763,
+     "colour_de": 6.91,
+     "embedding": 0.843
+    },
+    {
+     "silhouette": 0.703,
+     "colour_de": 7.48,
+     "embedding": 0.834
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:36Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 13999.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_00598216",
+  "url": "https://www.ikea.com/in/en/p/ismantorp-armchair-metal-light-grey-beige-tibbleby-light-beige-00598216/",
+  "retailer": "IKEA India",
+  "title": "ISMANTORP Armchair",
+  "category": "armchair",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 72.0,
+   "depth_cm": 66.0,
+   "height_cm": 71.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "minimal_wabi_sabi",
+   "eclectic_retro"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/ismantorp-armchair-metal-light-grey-beige-tibbleby-light-beige__1447787_pe989258_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/ismantorp-armchair-metal-light-grey-beige-tibbleby-light-beige__1466963_pe995595_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_00598216/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_00598216/3.jpg"
+  ],
+  "clean_photos": 2,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 1,
+   "scores": [
+    {
+     "silhouette": 0.823,
+     "colour_de": 2.55,
+     "embedding": 0.859
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:38Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 7990.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_50541595",
+  "url": "https://www.ikea.com/in/en/p/barsloev-3-seat-sofa-bed-with-chaise-longue-tibbleby-beige-grey-50541595/",
+  "retailer": "IKEA India",
+  "title": "BÅRSLÖV 3-seat sofa-bed with chaise longue",
+  "category": "sofa",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 236.0,
+   "depth_cm": 153.0,
+   "height_cm": 90.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "japandi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/barsloev-3-seat-sofa-bed-with-chaise-longue-tibbleby-beige-grey__1213693_pe911220_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/barsloev-3-seat-sofa-bed-with-chaise-longue-tibbleby-beige-grey__1213694_pe911217_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_50541595/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_50541595/1.jpg"
+  ],
+  "clean_photos": 2,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 1,
+   "scores": [
+    {
+     "silhouette": 0.845,
+     "colour_de": 3.7,
+     "embedding": 0.586
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:40Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 64990.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_70533491",
+  "url": "https://www.ikea.com/in/en/p/ekenaeset-armchair-kilanda-light-beige-70533491/",
+  "retailer": "IKEA India",
+  "title": "EKENÄSET Armchair",
+  "category": "armchair",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 64.0,
+   "depth_cm": 78.0,
+   "height_cm": 76.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "japandi",
+   "eclectic_retro"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/ekenaeset-armchair-kilanda-light-beige__1109687_pe870153_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/ekenaeset-armchair-kilanda-light-beige__1179060_pe895831_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/ekenaeset-armchair-kilanda-light-beige__1110707_pe870568_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_70533491/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_70533491/1.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_70533491/2.jpg"
+  ],
+  "clean_photos": 3,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 2,
+   "scores": [
+    {
+     "silhouette": 0.853,
+     "colour_de": 2.36,
+     "embedding": 0.908
+    },
+    {
+     "silhouette": 0.825,
+     "colour_de": 2.24,
+     "embedding": 0.938
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:42Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 16990.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_s99628653",
+  "url": "https://www.ikea.com/in/en/p/ektorp-armchair-mangbyn-brown-multicolour-s99628653/",
+  "retailer": "IKEA India",
+  "title": "EKTORP Armchair",
+  "category": "armchair",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 104.0,
+   "depth_cm": 88.0,
+   "height_cm": 88.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "warm_maximalist"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/ektorp-armchair-mangbyn-brown-multicolour__1546317_pe1019909_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/ektorp-armchair-mangbyn-brown-multicolour__1546279_pe1019899_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_s99628653/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_s99628653/1.jpg"
+  ],
+  "clean_photos": 2,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 1,
+   "scores": [
+    {
+     "silhouette": 0.781,
+     "colour_de": 2.34,
+     "embedding": 0.807
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:45Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 22990.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_ferguson-bedside-table-walnut-finish",
+  "url": "https://www.woodenstreet.com/product/ferguson-bedside-table-walnut-finish",
+  "retailer": "Wooden Street",
+  "title": "Ferguson Bed Side Table (Walnut Finish)",
+  "category": "bedside_table",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 45.7,
+   "depth_cm": 35.6,
+   "height_cm": 40.6,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "modern_indian"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/ferguson-bedside-table/walnut/updated/new-logo/new+-3D/6-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/ferguson-bedside-table/walnut/updated/new-logo/new+-3D/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/ferguson-bedside-table/walnut/updated/new-logo/new+-3D/7-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/ferguson-bedside-table/walnut/updated/new-logo/new+-3D/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bedside-tables/ferguson-bedside-table/walnut/updated/new-logo/new+-3D/5-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_ferguson-bedside-table-walnut-finish/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_ferguson-bedside-table-walnut-finish/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_ferguson-bedside-table-walnut-finish/2.jpg",
+   "modal-volume://sajao-catalog/photos/ws_ferguson-bedside-table-walnut-finish/3.jpg",
+   "modal-volume://sajao-catalog/photos/ws_ferguson-bedside-table-walnut-finish/4.jpg"
+  ],
+  "clean_photos": 5,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 4,
+   "scores": [
+    {
+     "silhouette": 0.861,
+     "colour_de": 3.31,
+     "embedding": 0.825
+    },
+    {
+     "silhouette": 0.742,
+     "colour_de": 5.42,
+     "embedding": 0.81
+    },
+    {
+     "silhouette": 0.791,
+     "colour_de": 0.97,
+     "embedding": 0.77
+    },
+    {
+     "silhouette": 0.807,
+     "colour_de": 1.04,
+     "embedding": 0.58
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:47Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 8999.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_s19625328",
+  "url": "https://www.ikea.com/in/en/p/poaeng-armchair-birch-veneer-vissle-deep-green-s19625328/",
+  "retailer": "IKEA India",
+  "title": "POÄNG Armchair",
+  "category": "armchair",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 68.0,
+   "depth_cm": 82.0,
+   "height_cm": 100.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "eclectic_retro"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/poaeng-armchair-birch-veneer-vissle-deep-green__1507263_pe1009205_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/poaeng-armchair-birch-veneer-vissle-deep-green__1517468_pe1012344_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_s19625328/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_s19625328/3.jpg"
+  ],
+  "clean_photos": 2,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 1,
+   "scores": [
+    {
+     "silhouette": 0.882,
+     "colour_de": 6.65,
+     "embedding": 0.95
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:49Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 13990.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_s79443368",
+  "url": "https://www.ikea.com/in/en/p/viskafors-3-seat-sofa-lejde-grey-green-brown-s79443368/",
+  "retailer": "IKEA India",
+  "title": "VISKAFORS 3-seat sofa",
+  "category": "sofa",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 224.0,
+   "depth_cm": 90.0,
+   "height_cm": 74.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "warm_luxe",
+   "warm_maximalist"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/viskafors-3-seat-sofa-lejde-grey-green-brown__1096143_pe864207_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_s79443368/2.jpg"
+  ],
+  "clean_photos": 1,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 1,
+   "scores": [
+    {
+     "silhouette": 0.816,
+     "colour_de": 2.16,
+     "embedding": 0.84
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:51Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 99990.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_caramel-side-end-table-honey-finish",
+  "url": "https://www.woodenstreet.com/product/caramel-side-end-table-honey-finish",
+  "retailer": "Wooden Street",
+  "title": "Caramel Sheesham Wood Side Table With Drawer (Honey Finish)",
+  "category": "side_table",
+  "room_types": [
+   "living_room",
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 50.8,
+   "depth_cm": 50.8,
+   "height_cm": 61.0,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "modern_indian"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/side-end-table/caramel-side-end-table/revised/revised/honey/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/side-end-table/caramel-side-end-table/revised/revised/honey/new-logo/6-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/side-end-table/caramel-side-end-table/revised/revised/honey/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/side-end-table/caramel-side-end-table/revised/revised/honey/new-logo/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/side-end-table/caramel-side-end-table/revised/revised/honey/new-logo/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/side-end-table/caramel-side-end-table/revised/revised/honey/new-logo/5-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_caramel-side-end-table-honey-finish/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_caramel-side-end-table-honey-finish/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_caramel-side-end-table-honey-finish/2.jpg",
+   "modal-volume://sajao-catalog/photos/ws_caramel-side-end-table-honey-finish/3.jpg",
+   "modal-volume://sajao-catalog/photos/ws_caramel-side-end-table-honey-finish/4.jpg",
+   "modal-volume://sajao-catalog/photos/ws_caramel-side-end-table-honey-finish/5.jpg"
+  ],
+  "clean_photos": 6,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 5,
+   "scores": [
+    {
+     "silhouette": 0.876,
+     "colour_de": 1.72,
+     "embedding": 0.905
+    },
+    {
+     "silhouette": 0.962,
+     "colour_de": 2.72,
+     "embedding": 0.717
+    },
+    {
+     "silhouette": 0.953,
+     "colour_de": 3.01,
+     "embedding": 0.592
+    },
+    {
+     "silhouette": 0.908,
+     "colour_de": 3.14,
+     "embedding": 0.903
+    },
+    {
+     "silhouette": 0.746,
+     "colour_de": 5.3,
+     "embedding": 0.52
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:53Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 9999.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_30594033",
+  "url": "https://www.ikea.com/in/en/p/tonstad-chair-oak-effect-fridtuna-light-beige-30594033/",
+  "retailer": "IKEA India",
+  "title": "TONSTAD Chair",
+  "category": "accent_chair",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 42.0,
+   "depth_cm": 48.0,
+   "height_cm": 88.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "japandi",
+   "minimal_wabi_sabi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/tonstad-chair-oak-effect-fridtuna-light-beige__1393519_pe966275_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/tonstad-chair-oak-effect-fridtuna-light-beige__1480603_pe1000226_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_30594033/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_30594033/2.jpg"
+  ],
+  "clean_photos": 2,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 1,
+   "scores": [
+    {
+     "silhouette": 0.76,
+     "colour_de": 7.64,
+     "embedding": 0.952
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:55Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 8950.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_melvina-tv-unit-honey-finish",
+  "url": "https://www.woodenstreet.com/product/melvina-tv-unit-honey-finish",
+  "retailer": "Wooden Street",
+  "title": "Melvina Sheesham Wood Tv Unit with Cupboards Drawers and Shelve Storage (Honey Finish)",
+  "category": "tv_unit",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 170.2,
+   "depth_cm": 40.6,
+   "height_cm": 50.8,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "modern_indian",
+   "eclectic_retro"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/tv-units/melvina-tv-unit/revised/honey/updated/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/melvina-tv-unit/revised/honey/updated/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/melvina-tv-unit/revised/honey/updated/new-logo/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/melvina-tv-unit/revised/honey/updated/new-logo/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/melvina-tv-unit/revised/honey/updated/h-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/melvina-tv-unit/revised/honey/updated/look-2023/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/melvina-tv-unit/revised/honey/updated/look-2023/2-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_melvina-tv-unit-honey-finish/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_melvina-tv-unit-honey-finish/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_melvina-tv-unit-honey-finish/2.jpg",
+   "modal-volume://sajao-catalog/photos/ws_melvina-tv-unit-honey-finish/3.jpg",
+   "modal-volume://sajao-catalog/photos/ws_melvina-tv-unit-honey-finish/4.jpg",
+   "modal-volume://sajao-catalog/photos/ws_melvina-tv-unit-honey-finish/5.jpg",
+   "modal-volume://sajao-catalog/photos/ws_melvina-tv-unit-honey-finish/6.jpg"
+  ],
+  "clean_photos": 7,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 6,
+   "scores": [
+    {
+     "silhouette": 0.833,
+     "colour_de": 4.07,
+     "embedding": 0.859
+    },
+    {
+     "silhouette": 0.936,
+     "colour_de": 0.86,
+     "embedding": 0.899
+    },
+    {
+     "silhouette": 0.904,
+     "colour_de": 1.14,
+     "embedding": 0.86
+    },
+    {
+     "silhouette": 0.778,
+     "colour_de": 0.99,
+     "embedding": 0.898
+    },
+    {
+     "silhouette": 0.874,
+     "colour_de": 3.62,
+     "embedding": 0.91
+    },
+    {
+     "silhouette": 0.825,
+     "colour_de": 3.37,
+     "embedding": 0.932
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:57Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 24999.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_00352573",
+  "url": "https://www.ikea.com/in/en/p/byas-tv-bench-high-gloss-white-00352573/",
+  "retailer": "IKEA India",
+  "title": "BYÅS TV bench",
+  "category": "tv_unit",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 160.0,
+   "depth_cm": 42.0,
+   "height_cm": 45.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "japandi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/byas-tv-bench-high-gloss-white__0644411_pe702653_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/byas-tv-bench-high-gloss-white__1460895_pe994042_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_00352573/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_00352573/1.jpg"
+  ],
+  "clean_photos": 2,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 1,
+   "scores": [
+    {
+     "silhouette": 0.854,
+     "colour_de": 3.66,
+     "embedding": 0.734
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:53:59Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 10990.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_s69580997",
+  "url": "https://www.ikea.com/in/en/p/eket-media-storage-combination-white-with-doors-s69580997/",
+  "retailer": "IKEA India",
+  "title": "EKET Media storage combination",
+  "category": "tv_unit",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 280.0,
+   "depth_cm": 35.0,
+   "height_cm": 35.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "minimal_wabi_sabi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/eket-media-storage-combination-white-with-doors__1401011_pe968952_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_s69580997/1.jpg"
+  ],
+  "clean_photos": 1,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 1,
+   "scores": [
+    {
+     "silhouette": 0.875,
+     "colour_de": 2.91,
+     "embedding": 0.801
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:01Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 43000.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_citroen-1-door-multi-utility-wardrobe-walnut-finish",
+  "url": "https://www.woodenstreet.com/product/citroen-1-door-multi-utility-wardrobe-walnut-finish",
+  "retailer": "Wooden Street",
+  "title": "Citroen 1 Door Multi-Utility Wardrobe (Walnut Finish)",
+  "category": "wardrobe",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 55.9,
+   "depth_cm": 55.9,
+   "height_cm": 182.9,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "modern_indian"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/wardrobe/citroen-sinlge-door-wardrobe/walnut/updated/updated/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/wardrobe/citroen-sinlge-door-wardrobe/walnut/updated/updated/new-logo/5-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/wardrobe/citroen-sinlge-door-wardrobe/walnut/updated/updated/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/wardrobe/citroen-sinlge-door-wardrobe/walnut/updated/updated/new-logo/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/wardrobe/citroen-sinlge-door-wardrobe/walnut/updated/updated/new-logo/4-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_citroen-1-door-multi-utility-wardrobe-walnut-finish/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_citroen-1-door-multi-utility-wardrobe-walnut-finish/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_citroen-1-door-multi-utility-wardrobe-walnut-finish/2.jpg",
+   "modal-volume://sajao-catalog/photos/ws_citroen-1-door-multi-utility-wardrobe-walnut-finish/3.jpg",
+   "modal-volume://sajao-catalog/photos/ws_citroen-1-door-multi-utility-wardrobe-walnut-finish/4.jpg"
+  ],
+  "clean_photos": 5,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 4,
+   "scores": [
+    {
+     "silhouette": 0.813,
+     "colour_de": 4.13,
+     "embedding": 0.66
+    },
+    {
+     "silhouette": 0.804,
+     "colour_de": 1.86,
+     "embedding": 0.674
+    },
+    {
+     "silhouette": 0.886,
+     "colour_de": 1.81,
+     "embedding": 0.515
+    },
+    {
+     "silhouette": 0.797,
+     "colour_de": 4.58,
+     "embedding": 0.479
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:03Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 29999.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_s59569448",
+  "url": "https://www.ikea.com/in/en/p/kallax-tv-storage-combination-white-s59569448/",
+  "retailer": "IKEA India",
+  "title": "KALLAX TV storage combination",
+  "category": "tv_unit",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 146.6,
+   "depth_cm": 39.2,
+   "height_cm": 59.6,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "japandi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/kallax-tv-storage-combination-white__1277927_pe931113_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/kallax-tv-storage-combination-white__1277926_pe931112_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_s59569448/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_s59569448/1.jpg"
+  ],
+  "clean_photos": 2,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 1,
+   "scores": [
+    {
+     "silhouette": 0.821,
+     "colour_de": 1.38,
+     "embedding": 0.779
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:05Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 14990.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_40456917",
+  "url": "https://www.ikea.com/in/en/p/hauga-wardrobe-with-sliding-doors-white-40456917/",
+  "retailer": "IKEA India",
+  "title": "HAUGA Wardrobe with sliding doors",
+  "category": "wardrobe",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 118.0,
+   "depth_cm": 55.0,
+   "height_cm": 199.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "japandi",
+   "minimal_wabi_sabi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/hauga-wardrobe-with-sliding-doors-white__0898797_pe782657_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/hauga-wardrobe-with-sliding-doors-white__0931942_pe791324_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/hauga-wardrobe-with-sliding-doors-white__0931943_pe791283_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/hauga-wardrobe-with-sliding-doors-white__0939485_pe794580_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/hauga-wardrobe-with-sliding-doors-white__0950056_pe800134_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_40456917/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_40456917/1.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_40456917/2.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_40456917/3.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_40456917/4.jpg"
+  ],
+  "clean_photos": 5,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 4,
+   "scores": [
+    {
+     "silhouette": 0.857,
+     "colour_de": 2.15,
+     "embedding": 0.724
+    },
+    {
+     "silhouette": 0.846,
+     "colour_de": 1.64,
+     "embedding": 0.597
+    },
+    {
+     "silhouette": 0.787,
+     "colour_de": 3.53,
+     "embedding": 0.719
+    },
+    {
+     "silhouette": 0.757,
+     "colour_de": 3.47,
+     "embedding": 0.706
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:09Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 22990.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_10339331",
+  "url": "https://www.ikea.com/in/en/p/vuku-wardrobe-white-10339331/",
+  "retailer": "IKEA India",
+  "title": "VUKU Wardrobe",
+  "category": "wardrobe",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 74.0,
+   "depth_cm": 51.0,
+   "height_cm": 149.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "minimal_wabi_sabi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/vuku-wardrobe-white__0498088_pe629449_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/vuku-wardrobe-white__1289700_ph196296_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/vuku-wardrobe-white__0498108_pe629461_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_10339331/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_10339331/1.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_10339331/2.jpg"
+  ],
+  "clean_photos": 3,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 2,
+   "scores": [
+    {
+     "silhouette": 0.843,
+     "colour_de": 1.69,
+     "embedding": 0.683
+    },
+    {
+     "silhouette": 0.894,
+     "colour_de": 7.21,
+     "embedding": 0.597
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:11Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 1590.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_s89500966",
+  "url": "https://www.ikea.com/in/en/p/pax-hasvik-wardrobe-combination-white-white-s89500966/",
+  "retailer": "IKEA India",
+  "title": "PAX / HASVIK Wardrobe combination",
+  "category": "wardrobe",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 150.0,
+   "depth_cm": 66.0,
+   "height_cm": 201.2,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "japandi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/pax-hasvik-wardrobe-combination-white-white__1190120_pe900103_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/pax-hasvik-wardrobe-combination-white-white__1183940_pe897653_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/pax-hasvik-wardrobe-combination-white-white__1182062_pe896955_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_s89500966/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_s89500966/1.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_s89500966/2.jpg"
+  ],
+  "clean_photos": 3,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 2,
+   "scores": [
+    {
+     "silhouette": 0.856,
+     "colour_de": 6.98,
+     "embedding": 0.576
+    },
+    {
+     "silhouette": 0.922,
+     "colour_de": 0.71,
+     "embedding": 0.635
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:13Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 37100.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_s69528344",
+  "url": "https://www.ikea.com/in/en/p/billy-oxberg-bookcase-white-s69528344/",
+  "retailer": "IKEA India",
+  "title": "BILLY / OXBERG Bookcase",
+  "category": "shelf",
+  "room_types": [
+   "living_room",
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 80.0,
+   "depth_cm": 30.0,
+   "height_cm": 202.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "japandi",
+   "minimal_wabi_sabi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/billy-oxberg-bookcase-white__1602132_pe1043224_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/billy-oxberg-bookcase-white__1237474_pe917985_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/billy-oxberg-bookcase-white__1237438_pe917976_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_s69528344/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_s69528344/1.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_s69528344/2.jpg"
+  ],
+  "clean_photos": 3,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 2,
+   "scores": [
+    {
+     "silhouette": 0.983,
+     "colour_de": 9.66,
+     "embedding": 0.749
+    },
+    {
+     "silhouette": 0.949,
+     "colour_de": 6.0,
+     "embedding": 0.77
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:15Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 17990.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_20368832",
+  "url": "https://www.ikea.com/in/en/p/sundvik-wardrobe-white-20368832/",
+  "retailer": "IKEA India",
+  "title": "SUNDVIK Wardrobe",
+  "category": "wardrobe",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 80.0,
+   "depth_cm": 50.0,
+   "height_cm": 172.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "minimal_wabi_sabi",
+   "warm_luxe"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/sundvik-wardrobe-white__0626568_pe692872_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/sundvik-wardrobe-white__0334509_ph121595_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/sundvik-wardrobe-white__0570630_ph145465_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_20368832/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_20368832/2.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_20368832/3.jpg"
+  ],
+  "clean_photos": 3,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 2,
+   "scores": [
+    {
+     "silhouette": 0.732,
+     "colour_de": 2.56,
+     "embedding": 0.683
+    },
+    {
+     "silhouette": 0.908,
+     "colour_de": 2.0,
+     "embedding": 0.66
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:17Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 19990.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_80507057",
+  "url": "https://www.ikea.com/in/en/p/boastad-tv-bench-black-oak-veneer-80507057/",
+  "retailer": "IKEA India",
+  "title": "BOASTAD TV bench",
+  "category": "tv_unit",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 181.4,
+   "depth_cm": 42.1,
+   "height_cm": 45.1,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "japandi",
+   "eclectic_retro"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/boastad-tv-bench-black-oak-veneer__1241278_pe919734_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/boastad-tv-bench-black-oak-veneer__1275765_pe930651_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_80507057/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_80507057/1.jpg"
+  ],
+  "clean_photos": 2,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 1,
+   "scores": [
+    {
+     "silhouette": 0.927,
+     "colour_de": 2.91,
+     "embedding": 0.824
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:19Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 32990.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_00417579",
+  "url": "https://www.ikea.com/in/en/p/varby-corner-shelf-unit-medium-brown-00417579/",
+  "retailer": "IKEA India",
+  "title": "VARBY Corner shelf unit",
+  "category": "shelf",
+  "room_types": [
+   "living_room",
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 53.0,
+   "depth_cm": 53.0,
+   "height_cm": 155.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "modern_indian"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/varby-corner-shelf-unit-medium-brown__1602138_pe1043230_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/varby-corner-shelf-unit-medium-brown__0653926_pe708164_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/varby-corner-shelf-unit-medium-brown__0653927_pe708163_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_00417579/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_00417579/1.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_00417579/2.jpg"
+  ],
+  "clean_photos": 3,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 2,
+   "scores": [
+    {
+     "silhouette": 0.965,
+     "colour_de": 5.81,
+     "embedding": 0.513
+    },
+    {
+     "silhouette": 0.97,
+     "colour_de": 4.35,
+     "embedding": 0.541
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:21Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 4990.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_allan-tv-unit-walnut-finish",
+  "url": "https://www.woodenstreet.com/product/allan-tv-unit-walnut-finish",
+  "retailer": "Wooden Street",
+  "title": "Allan Sheesham Wood Tv Unit with Five Pull Out Drawers (Walnut Finish)",
+  "category": "tv_unit",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 162.6,
+   "depth_cm": 40.6,
+   "height_cm": 50.8,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "modern_indian",
+   "warm_maximalist"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/tv-units/allan-tv-unit-revised/walnut/updated/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/allan-tv-unit-revised/walnut/updated/new-logo/6-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/allan-tv-unit-revised/walnut/updated/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/allan-tv-unit-revised/walnut/updated/new-logo/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/allan-tv-unit-revised/walnut/updated/new-logo/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/allan-tv-unit-revised/walnut/updated/new-logo/5-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_allan-tv-unit-walnut-finish/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_allan-tv-unit-walnut-finish/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_allan-tv-unit-walnut-finish/2.jpg",
+   "modal-volume://sajao-catalog/photos/ws_allan-tv-unit-walnut-finish/3.jpg",
+   "modal-volume://sajao-catalog/photos/ws_allan-tv-unit-walnut-finish/4.jpg",
+   "modal-volume://sajao-catalog/photos/ws_allan-tv-unit-walnut-finish/5.jpg"
+  ],
+  "clean_photos": 6,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 5,
+   "scores": [
+    {
+     "silhouette": 0.869,
+     "colour_de": 2.28,
+     "embedding": 0.909
+    },
+    {
+     "silhouette": 0.929,
+     "colour_de": 1.57,
+     "embedding": 0.966
+    },
+    {
+     "silhouette": 0.925,
+     "colour_de": 3.3,
+     "embedding": 0.676
+    },
+    {
+     "silhouette": 0.844,
+     "colour_de": 0.75,
+     "embedding": 0.888
+    },
+    {
+     "silhouette": 0.799,
+     "colour_de": 0.93,
+     "embedding": 0.839
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:23Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 22999.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_10351686",
+  "url": "https://www.ikea.com/in/en/p/brimnes-bookcase-white-10351686/",
+  "retailer": "IKEA India",
+  "title": "BRIMNES Bookcase",
+  "category": "shelf",
+  "room_types": [
+   "living_room",
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 60.0,
+   "depth_cm": 35.0,
+   "height_cm": 190.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "japandi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/brimnes-bookcase-white__1590279_pe1038918_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/brimnes-bookcase-white__1452016_pe990842_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_10351686/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_10351686/1.jpg"
+  ],
+  "clean_photos": 2,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 1,
+   "scores": [
+    {
+     "silhouette": 0.876,
+     "colour_de": 3.56,
+     "embedding": 0.603
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:25Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 11990.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_jett-tv-unit-honey-finish",
+  "url": "https://www.woodenstreet.com/product/jett-tv-unit-honey-finish",
+  "retailer": "Wooden Street",
+  "title": "Jett Metal Base Sheesham Wood Tv Unit with Drawers and Cabinets (Honey Finish)",
+  "category": "tv_unit",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 170.2,
+   "depth_cm": 45.7,
+   "height_cm": 61.0,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "warm_luxe",
+   "modern_indian"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/tv-units/jett-tv-unit/updated/revised/honey/updated/new-logo/AI/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/jett-tv-unit/updated/revised/honey/updated/new-logo/AI/52-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/jett-tv-unit/updated/revised/honey/updated/new-logo/AI/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/jett-tv-unit/updated/revised/honey/updated/new-logo/AI/13-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/jett-tv-unit/updated/revised/honey/updated/new-logo/AI/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/jett-tv-unit/updated/revised/honey/updated/new-logo/AI/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/jett-tv-unit/updated/revised/honey/updated/new-logo/AI/14-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/tv-units/jett-tv-unit/updated/revised/honey/updated/new-logo/9-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_jett-tv-unit-honey-finish/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_jett-tv-unit-honey-finish/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_jett-tv-unit-honey-finish/4.jpg",
+   "modal-volume://sajao-catalog/photos/ws_jett-tv-unit-honey-finish/5.jpg",
+   "modal-volume://sajao-catalog/photos/ws_jett-tv-unit-honey-finish/6.jpg",
+   "modal-volume://sajao-catalog/photos/ws_jett-tv-unit-honey-finish/9.jpg",
+   "modal-volume://sajao-catalog/photos/ws_jett-tv-unit-honey-finish/10.jpg",
+   "modal-volume://sajao-catalog/photos/ws_jett-tv-unit-honey-finish/11.jpg"
+  ],
+  "clean_photos": 8,
+  "gate": {
+   "result": "pass",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 7,
+   "scores": [
+    {
+     "silhouette": 0.863,
+     "colour_de": 2.3,
+     "embedding": 0.929
+    },
+    {
+     "silhouette": 0.873,
+     "colour_de": 1.66,
+     "embedding": 0.929
+    },
+    {
+     "silhouette": 0.921,
+     "colour_de": 2.15,
+     "embedding": 0.932
+    },
+    {
+     "silhouette": 0.708,
+     "colour_de": 3.51,
+     "embedding": 0.654
+    },
+    {
+     "silhouette": 0.889,
+     "colour_de": 2.27,
+     "embedding": 0.926
+    },
+    {
+     "silhouette": 0.916,
+     "colour_de": 1.52,
+     "embedding": 0.924
+    },
+    {
+     "silhouette": 0.884,
+     "colour_de": 6.78,
+     "embedding": 0.828
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:27Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 39999.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish",
+  "url": "https://www.woodenstreet.com/product/evaline-bed-with-box-storage-queen-size-exotic-teak-finish",
+  "retailer": "Wooden Street",
+  "title": "Evaline Bed With Box Storage (Queen Size, Exotic Teak Finish)",
+  "category": "bed",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 215.9,
+   "depth_cm": 157.5,
+   "height_cm": 104.1,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "modern_indian",
+   "warm_luxe"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/bed-with-storage-mdf/evaline-bed-with-box-storage/revised/revised/updated/exotic-teak/new-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bed-with-storage-mdf/evaline-bed-with-box-storage/revised/revised/updated/exotic-teak/new-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bed-with-storage-mdf/evaline-bed-with-box-storage/revised/revised/updated/exotic-teak/new-logo/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bed-with-storage-mdf/evaline-bed-with-box-storage/revised/revised/updated/exotic-teak/new-logo/New-Images/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bed-with-storage-mdf/evaline-bed-with-box-storage/revised/revised/updated/exotic-teak/new-logo/6-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bed-with-storage-mdf/evaline-bed-with-box-storage/revised/revised/updated/exotic-teak/new-logo/New-Images/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/A-website-fabric-shoot/Exotic-Teak-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bed-with-storage-mdf/evaline-bed-with-box-storage/revised/revised/updated/exotic-teak/new-logo/New-Images/5-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bed-with-storage-mdf/evaline-bed-with-box-storage/revised/revised/updated/exotic-teak/new-logo/4-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish/2.jpg",
+   "modal-volume://sajao-catalog/photos/ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish/3.jpg",
+   "modal-volume://sajao-catalog/photos/ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish/5.jpg",
+   "modal-volume://sajao-catalog/photos/ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish/6.jpg",
+   "modal-volume://sajao-catalog/photos/ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish/7.jpg",
+   "modal-volume://sajao-catalog/photos/ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish/8.jpg",
+   "modal-volume://sajao-catalog/photos/ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish/9.jpg"
+  ],
+  "clean_photos": 9,
+  "gate": {
+   "result": "fail",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 8,
+   "scores": [
+    {
+     "silhouette": 0.567,
+     "colour_de": 14.32,
+     "embedding": 0.563
+    },
+    {
+     "silhouette": 0.458,
+     "colour_de": 16.12,
+     "embedding": 0.419
+    },
+    {
+     "silhouette": 0.601,
+     "colour_de": 12.69,
+     "embedding": 0.527
+    },
+    {
+     "silhouette": 0.795,
+     "colour_de": 11.69,
+     "embedding": 0.434
+    },
+    {
+     "silhouette": 0.908,
+     "colour_de": 7.91,
+     "embedding": 0.576
+    },
+    {
+     "silhouette": 0.639,
+     "colour_de": 13.92,
+     "embedding": 0.153
+    },
+    {
+     "silhouette": 0.858,
+     "colour_de": 4.98,
+     "embedding": 0.539
+    },
+    {
+     "silhouette": 0.77,
+     "colour_de": 5.57,
+     "embedding": 0.405
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:29Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 17999.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_adolph-queen-size-bed-walnut-finish",
+  "url": "https://www.woodenstreet.com/product/adolph-queen-size-bed-walnut-finish",
+  "retailer": "Wooden Street",
+  "title": "Adolph Sheesham Wood Bed Without Storage (Queen Size, Walnut Finish)",
+  "category": "bed",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 208.3,
+   "depth_cm": 160.0,
+   "height_cm": 106.7,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "modern_indian"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/bed-without-storage/adolph-bed-without-storage/updated/walnut/new-logo/new+-3D/8-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bed-without-storage/adolph-bed-without-storage/updated/walnut/new-logo/new+-3D/10-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bed-without-storage/adolph-bed-without-storage/updated/walnut/new-logo/new+-3D/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bed-without-storage/adolph-bed-without-storage/updated/walnut/new-logo/new+-3D/6-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_adolph-queen-size-bed-walnut-finish/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_adolph-queen-size-bed-walnut-finish/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_adolph-queen-size-bed-walnut-finish/3.jpg",
+   "modal-volume://sajao-catalog/photos/ws_adolph-queen-size-bed-walnut-finish/4.jpg"
+  ],
+  "clean_photos": 4,
+  "gate": {
+   "result": "fail",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 3,
+   "scores": [
+    {
+     "silhouette": 0.62,
+     "colour_de": 2.0,
+     "embedding": 0.675
+    },
+    {
+     "silhouette": 0.898,
+     "colour_de": 4.15,
+     "embedding": 0.588
+    },
+    {
+     "silhouette": 0.63,
+     "colour_de": 7.33,
+     "embedding": 0.648
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:33Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 31999.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_walken-queen-size-bed-honey-finish",
+  "url": "https://www.woodenstreet.com/product/walken-queen-size-bed-honey-finish",
+  "retailer": "Wooden Street",
+  "title": "Walken Sheesham Wood Bed with Full Drawer Storage (Queen Size, Honey Finish)",
+  "category": "bed",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 223.5,
+   "depth_cm": 160.0,
+   "height_cm": 83.8,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "modern_indian"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/bed-with-storage/walken-bed-with-storage/updated/NEW-+HONEY/14-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bed-with-storage/walken-bed-with-storage/updated/NEW-+HONEY/New+Looks/102-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bed-with-storage/walken-bed-with-storage/updated/NEW-+HONEY/8-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bed-with-storage/walken-bed-with-storage/updated/NEW-+HONEY/13-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_walken-queen-size-bed-honey-finish/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_walken-queen-size-bed-honey-finish/2.jpg",
+   "modal-volume://sajao-catalog/photos/ws_walken-queen-size-bed-honey-finish/5.jpg",
+   "modal-volume://sajao-catalog/photos/ws_walken-queen-size-bed-honey-finish/6.jpg"
+  ],
+  "clean_photos": 4,
+  "gate": {
+   "result": "fail",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 3,
+   "scores": [
+    {
+     "silhouette": 0.647,
+     "colour_de": 5.77,
+     "embedding": 0.444
+    },
+    {
+     "silhouette": 0.796,
+     "colour_de": 4.94,
+     "embedding": 0.612
+    },
+    {
+     "silhouette": 0.815,
+     "colour_de": 5.58,
+     "embedding": 0.643
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:35Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 56999.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_40573681",
+  "url": "https://www.ikea.com/in/en/p/vitarna-four-poster-bed-frame-white-40573681/",
+  "retailer": "IKEA India",
+  "title": "VITARNA Four-poster bed frame",
+  "category": "bed",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 146.0,
+   "depth_cm": 207.0,
+   "height_cm": 199.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "minimal_wabi_sabi",
+   "japandi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/vitarna-four-poster-bed-frame-white__1339949_pe948465_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/vitarna-four-poster-bed-frame-white__1339950_pe948464_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/vitarna-four-poster-bed-frame-white__1357592_pe953674_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/vitarna-four-poster-bed-frame-white__1328310_pe944773_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_40573681/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_40573681/1.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_40573681/5.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_40573681/11.jpg"
+  ],
+  "clean_photos": 4,
+  "gate": {
+   "result": "fail",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 3,
+   "scores": [
+    {
+     "silhouette": 0.61,
+     "colour_de": 5.58,
+     "embedding": 0.786
+    },
+    {
+     "silhouette": 0.341,
+     "colour_de": 5.8,
+     "embedding": 0.329
+    },
+    {
+     "silhouette": 0.127,
+     "colour_de": 3.83,
+     "embedding": 0.802
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:37Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 12990.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_50510400",
+  "url": "https://www.ikea.com/in/en/p/iskaerna-led-table-lamp-multicolour-50510400/",
+  "retailer": "IKEA India",
+  "title": "ISKÄRNA LED table lamp",
+  "category": "table_lamp",
+  "room_types": [
+   "living_room",
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 16.1,
+   "depth_cm": 20.8,
+   "height_cm": 22.8,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "eclectic_retro"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/iskaerna-led-table-lamp-multicolour__1010154_pe828872_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/iskaerna-led-table-lamp-multicolour__0987900_pe818180_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/iskaerna-led-table-lamp-multicolour__0987901_pe818181_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/iskaerna-led-table-lamp-multicolour__0987899_pe818179_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/iskaerna-led-table-lamp-multicolour__0987903_pe818183_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/iskaerna-led-table-lamp-multicolour__0987904_pe818184_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/iskaerna-led-table-lamp-multicolour__0987905_pe818185_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_50510400/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_50510400/2.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_50510400/3.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_50510400/5.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_50510400/6.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_50510400/7.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_50510400/8.jpg"
+  ],
+  "clean_photos": 7,
+  "gate": {
+   "result": "fail",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 6,
+   "scores": [
+    {
+     "silhouette": 0.925,
+     "colour_de": 32.75,
+     "embedding": 0.512
+    },
+    {
+     "silhouette": 0.814,
+     "colour_de": 25.73,
+     "embedding": 0.45
+    },
+    {
+     "silhouette": 0.918,
+     "colour_de": 13.27,
+     "embedding": 0.39
+    },
+    {
+     "silhouette": 0.848,
+     "colour_de": 25.16,
+     "embedding": 0.421
+    },
+    {
+     "silhouette": 0.862,
+     "colour_de": 24.22,
+     "embedding": 0.555
+    },
+    {
+     "silhouette": 0.864,
+     "colour_de": 22.03,
+     "embedding": 0.416
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:39Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 2490.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_20568223",
+  "url": "https://www.ikea.com/in/en/p/hoegvind-table-lamp-nickel-plated-grey-glass-20568223/",
+  "retailer": "IKEA India",
+  "title": "HÖGVIND Table lamp",
+  "category": "table_lamp",
+  "room_types": [
+   "living_room",
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 22.0,
+   "depth_cm": 22.0,
+   "height_cm": 25.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "warm_luxe",
+   "eclectic_retro"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/hoegvind-table-lamp-nickel-plated-grey-glass__1300598_pe937151_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/hoegvind-table-lamp-nickel-plated-grey-glass__1300604_pe937154_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/hoegvind-table-lamp-nickel-plated-grey-glass__1300603_pe937155_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/hoegvind-table-lamp-nickel-plated-grey-glass__1300600_pe937153_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/hoegvind-table-lamp-nickel-plated-grey-glass__0991198_pe225117_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_20568223/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_20568223/1.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_20568223/2.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_20568223/4.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_20568223/5.jpg"
+  ],
+  "clean_photos": 5,
+  "gate": {
+   "result": "fail",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 4,
+   "scores": [
+    {
+     "silhouette": 0.963,
+     "colour_de": 21.02,
+     "embedding": 0.466
+    },
+    {
+     "silhouette": 0.925,
+     "colour_de": 18.45,
+     "embedding": 0.441
+    },
+    {
+     "silhouette": 0.767,
+     "colour_de": 10.2,
+     "embedding": 0.356
+    },
+    {
+     "silhouette": 0.851,
+     "colour_de": 14.44,
+     "embedding": 0.267
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:41Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 4990.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_00594614",
+  "url": "https://www.ikea.com/in/en/p/lampan-led-portable-lamp-battery-operated-adjustable-colour-outdoor-white-00594614/",
+  "retailer": "IKEA India",
+  "title": "LAMPAN LED portable lamp",
+  "category": "table_lamp",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 15.0,
+   "depth_cm": 15.0,
+   "height_cm": 24.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "japandi",
+   "minimal_wabi_sabi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/lampan-led-portable-lamp-battery-operated-adjustable-colour-outdoor-white__1382314_pe962254_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/lampan-led-portable-lamp-battery-operated-adjustable-colour-outdoor-white__1383622_pe962628_s5.jpg?f=xxl",
+   "https://www.ikea.com/in/en/images/products/lampan-led-portable-lamp-battery-operated-adjustable-colour-outdoor-white__1449721_ph202141_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_00594614/0.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_00594614/3.jpg",
+   "modal-volume://sajao-catalog/photos/ikea_00594614/6.jpg"
+  ],
+  "clean_photos": 3,
+  "gate": {
+   "result": "fail",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 2,
+   "scores": [
+    {
+     "silhouette": 0.467,
+     "colour_de": 1.62,
+     "embedding": 0.171
+    },
+    {
+     "silhouette": 0.961,
+     "colour_de": 22.11,
+     "embedding": 0.871
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T14:54:46Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 1190.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_henry-l-shape-right-arm-corner-sofa-indigo-blue",
+  "url": "https://www.woodenstreet.com/product/henry-l-shape-right-arm-corner-sofa-indigo-blue",
+  "retailer": "Wooden Street",
+  "title": "Henry L - Shape Right Aligned Corner Sofa (Velvet, Indigo Blue)",
+  "category": "sofa",
+  "room_types": [
+   "living_room"
+  ],
+  "dimensions": {
+   "width_cm": 275.6,
+   "depth_cm": 82.5,
+   "height_cm": 78.7,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "warm_maximalist",
+   "warm_luxe"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/corner-sofa/henry-l-shape-revised/Updated-right-align/indigo-blue-logo/1-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/corner-sofa/henry-l-shape-revised/Updated-right-align/indigo-blue-logo/5-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/corner-sofa/henry-l-shape-revised/Updated-right-align/indigo-blue-logo/2-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/corner-sofa/henry-l-shape-revised/Updated-right-align/indigo-blue-logo/3-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/corner-sofa/henry-l-shape-revised/Updated-right-align/indigo-blue-logo/4-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/A-website-fabric-shoot/Indigo-blue/2366-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_henry-l-shape-right-arm-corner-sofa-indigo-blue/0.jpg",
+   "modal-volume://sajao-catalog/photos/ws_henry-l-shape-right-arm-corner-sofa-indigo-blue/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_henry-l-shape-right-arm-corner-sofa-indigo-blue/2.jpg",
+   "modal-volume://sajao-catalog/photos/ws_henry-l-shape-right-arm-corner-sofa-indigo-blue/3.jpg",
+   "modal-volume://sajao-catalog/photos/ws_henry-l-shape-right-arm-corner-sofa-indigo-blue/4.jpg",
+   "modal-volume://sajao-catalog/photos/ws_henry-l-shape-right-arm-corner-sofa-indigo-blue/6.jpg"
+  ],
+  "clean_photos": 6,
+  "gate": {
+   "result": "fail",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 5,
+   "scores": [
+    {
+     "silhouette": 0.72,
+     "colour_de": 1.08,
+     "embedding": 0.846
+    },
+    {
+     "silhouette": 0.72,
+     "colour_de": 1.09,
+     "embedding": 0.863
+    },
+    {
+     "silhouette": 0.804,
+     "colour_de": 1.39,
+     "embedding": 0.876
+    },
+    {
+     "silhouette": 0.765,
+     "colour_de": 1.69,
+     "embedding": 0.812
+    },
+    {
+     "silhouette": 0.746,
+     "colour_de": 37.04,
+     "embedding": 0.467
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T15:00:03Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 74999.0
+  }
+ },
+ {
+  "source": "wooden_street",
+  "sku": "ws_lotus-premium-ash-wood-bed-with-brass-inlay-queen-size-teak-",
+  "url": "https://www.woodenstreet.com/product/lotus-premium-ash-wood-bed-with-brass-inlay-queen-size-teak-finish",
+  "retailer": "Wooden Street",
+  "title": "Lotus Premium Ash Wood Bed with Brass Inlay (Queen Size, Teak Finish)",
+  "category": "bed",
+  "room_types": [
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 221.0,
+   "depth_cm": 182.9,
+   "height_cm": 101.6,
+   "where": "Wooden Street product dimensions"
+  },
+  "style_tags": [
+   "warm_luxe",
+   "modern_indian"
+  ],
+  "images": [
+   "https://images.woodenstreet.de/image/cache/data/bed-without-storage/lotus-teak-wood-low-floor-upholstered-bed-withut-storage-brass-inlay/new-logo/NEW-IMAGES/Queen-size/7-810x702.jpg",
+   "https://images.woodenstreet.de/image/cache/data/bed-without-storage/lotus-teak-wood-low-floor-upholstered-bed-withut-storage-brass-inlay/new-logo/NEW-IMAGES/King+-size/AI/5-810x702.jpg"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ws_lotus-premium-ash-wood-bed-with-brass-inlay-queen-size-teak-/1.jpg",
+   "modal-volume://sajao-catalog/photos/ws_lotus-premium-ash-wood-bed-with-brass-inlay-queen-size-teak-/7.jpg"
+  ],
+  "clean_photos": 2,
+  "gate": {
+   "result": "fail",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 1,
+   "scores": [
+    {
+     "silhouette": 0.67,
+     "colour_de": 7.99,
+     "embedding": 0.511
+    }
+   ]
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T15:00:05Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 73999.0
+  }
+ },
+ {
+  "source": "ikea_india",
+  "sku": "ikea_10478124",
+  "url": "https://www.ikea.com/in/en/p/pilskott-led-floor-lamp-smart-black-10478124/",
+  "retailer": "IKEA India",
+  "title": "PILSKOTT LED floor lamp",
+  "category": "floor_lamp",
+  "room_types": [
+   "living_room",
+   "bedroom"
+  ],
+  "dimensions": {
+   "width_cm": 12.0,
+   "depth_cm": 30.0,
+   "height_cm": 112.0,
+   "where": "IKEA product measurements"
+  },
+  "style_tags": [
+   "japandi"
+  ],
+  "images": [
+   "https://www.ikea.com/in/en/images/products/pilskott-led-floor-lamp-smart-black__1077629_pe856958_s5.jpg?f=xxl"
+  ],
+  "private_photos": [
+   "modal-volume://sajao-catalog/photos/ikea_10478124/0.jpg"
+  ],
+  "clean_photos": 1,
+  "gate": {
+   "result": "unverifiable",
+   "method": "TripoSG asset, DINOv3 held-out gate",
+   "held_out_photos": 0,
+   "scores": []
+  },
+  "freshness": {
+   "checked_at": "2026-11-17T15:00:07Z",
+   "link_ok": true,
+   "in_stock": true,
+   "price_inr": 10990.0
+  }
+ }
+]

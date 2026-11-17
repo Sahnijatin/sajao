@@ -947,6 +947,23 @@ intrinsics: CameraIntrinsics
 sharpness?: number
 }
 /**
+ * How a room's lengths were measured. taped: a tape value the person entered checked or set them. ar_measured: the phone's AR (planes or LiDAR) measured them. estimated: a depth model guessed them from pictures, as for imported photos and videos; the app shows sizes with measure to confirm and makes no fit claim.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "MeasurementConfidence".
+ */
+export interface MeasurementConfidence {
+level: ("taped" | "ar_measured" | "estimated")
+/**
+ * Where the room's lengths came from.
+ */
+basis: ("tape" | "ar_planes" | "lidar" | "depth_model")
+/**
+ * Tape values the person entered for this room.
+ */
+tape_values?: number
+}
+/**
  * A 3D model made from the object's own crops. Scaled to the measured box; the model never sets the size.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -1187,6 +1204,10 @@ id: LocalId
 start: Point2
 end: Point2
 length: Dimension
+/**
+ * What this edge of the floor polygon is. wall (the default when absent): a wall was seen here, from near the floor to near the ceiling. open: no wall was seen between the walls on either side: a doorway, the way into the next area, or a stretch that was not scanned. Open edges are passable, never a surface to place things against.
+ */
+kind?: ("wall" | "open")
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -1343,6 +1364,7 @@ phone_splats?: []|[PhoneSplat]|[PhoneSplat, PhoneSplat]|[PhoneSplat, PhoneSplat,
 viewing?: Viewing
 inventory?: Inventory
 free_floor?: FreeFloor
+confidence?: MeasurementConfidence
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
