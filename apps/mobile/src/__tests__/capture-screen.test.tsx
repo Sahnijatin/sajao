@@ -19,6 +19,10 @@ jest.mock("@sajao/ui/icons", () => ({ Icon: () => null }));
 jest.mock("@/capture/mini-map", () => ({ MiniMap: () => null }));
 jest.mock("@/capture/progress-ring", () => ({ ProgressRing: () => null }));
 jest.mock("@/components/scan-ring", () => ({ ScanRing: () => null }));
+jest.mock("@/capture/meter-map", () => {
+  const { View } = jest.requireActual("react-native");
+  return { MeterMap: () => <View testID="scan-meter-map" /> };
+});
 jest.mock(
   "react-native-safe-area-context",
   () => jest.requireActual("react-native-safe-area-context/jest/mock").default,
@@ -37,6 +41,8 @@ jest.mock("@/preview-screens", () => ({ previewScreensEnabled: () => mockPreview
 const mockScan = {
   share: 0,
   ready: false,
+  meter: false,
+  stuck: false,
   hint: null as Hint,
   state: INITIAL_SCAN as ScanState,
   scanAnyway: jest.fn(),
@@ -45,6 +51,8 @@ jest.mock("@/capture/scan-session", () => ({
   ...jest.requireActual("@/capture/scan-session"),
   mappedShare: () => mockScan.share,
   canFinish: () => mockScan.ready,
+  isMeter: () => mockScan.meter,
+  canFinishEarly: () => mockScan.stuck,
 }));
 jest.mock("@/capture/use-scan-session", () => ({
   useScanSession: () => ({
@@ -77,7 +85,7 @@ jest.mock("@/capture/ar/labels", () => ({
 
 // The AR view and the recorder are the capture module's too. `mockAr` turns
 // the AR scan on, so a finished scan produces a capture to hand on.
-let mockAr = false;
+let mockAr = true;
 // The props the screen gives the AR view, so a test can send its events.
 const mockArProps: { current: Record<string, unknown> } = { current: {} };
 const mockRecorder = {
@@ -134,8 +142,15 @@ const ui = () => (
 beforeEach(() => {
   jest.clearAllMocks();
   mockPreview = true;
-  mockAr = false;
-  Object.assign(mockScan, { share: 0, ready: false, hint: null, state: INITIAL_SCAN });
+  mockAr = true;
+  Object.assign(mockScan, {
+    share: 0,
+    ready: false,
+    meter: false,
+    stuck: false,
+    hint: null,
+    state: INITIAL_SCAN,
+  });
 });
 
 const tripleTap = async () => {
@@ -227,7 +242,7 @@ describe("the debug flag", () => {
     await render(ui());
     await act(tripleTap);
     expect(screen.getByTestId("scan-debug-layer")).toBeTruthy();
-    expect(screen.getByTestId("scan-mesh")).toBeTruthy();
+    expect(mockArProps.current.overlay).toBe(true);
     expect(screen.getByText("0% mapped")).toBeTruthy();
     expect(screen.getByText("Light good")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Torch" })).toBeTruthy();
@@ -254,7 +269,6 @@ describe("review before upload", () => {
   };
 
   it("Done opens the review; nothing is finished or handed on yet", async () => {
-    mockAr = true;
     await openReview();
     expect(screen.getByTestId("scan-review")).toBeTruthy();
     expect(screen.getByRole("header", { name: "We got your room" })).toBeTruthy();
@@ -271,7 +285,6 @@ describe("review before upload", () => {
   });
 
   it("Looks good finishes the scan and hands the capture on, once", async () => {
-    mockAr = true;
     await openReview();
     await fireEvent.press(screen.getByRole("button", { name: "Looks good" }));
     expect(mockHaptic).toHaveBeenCalledWith("roomVerified");
@@ -289,7 +302,6 @@ describe("review before upload", () => {
   });
 
   it("keeps what the camera sees during the review out of the package", async () => {
-    mockAr = true;
     const send = (event: string, nativeEvent: object) =>
       act(async () => {
         (mockArProps.current[event] as (e: { nativeEvent: object }) => void)({ nativeEvent });
@@ -386,9 +398,76 @@ describe("review before upload", () => {
   });
 
   it("shows the mesh for a moment on the review, and not during the scan", async () => {
-    await openReview();
-    expect(screen.getByTestId("scan-mesh")).toBeTruthy();
+    mockScan.share = 0.8;
+    mockScan.ready = true;
+    await render(ui());
+    expect(mockArProps.current.overlay).toBe(false);
+    await fireEvent.press(screen.getByRole("button", { name: "Done" }));
+    expect(mockArProps.current.overlay).toBe(true);
     await fireEvent.press(screen.getByRole("button", { name: "Scan a bit more" }));
-    expect(screen.queryByTestId("scan-mesh")).toBeNull();
+    expect(mockArProps.current.overlay).toBe(false);
+  });
+
+  it("Finish anyway opens the review, which names what the meter still wanted", async () => {
+    mockScan.meter = true;
+    mockScan.stuck = true;
+    mockScan.share = 0.5;
+    await render(ui());
+    await fireEvent.press(screen.getByRole("button", { name: "Finish anyway" }));
+    expect(screen.getByRole("header", { name: "Nearly there" })).toBeTruthy();
+    // A scan that has barely started is missing the walk and the turn in the middle.
+    expect(screen.getByText("The far side of the room")).toBeTruthy();
+    expect(screen.getByText("The middle of the room")).toBeTruthy();
+    expect(mockFinish).not.toHaveBeenCalled();
+    expect(handlers.onDone).not.toHaveBeenCalled();
+  });
+});
+describe("the coverage meter in the calm scan", () => {
+  it("says the meter's next step as the one instruction, with no map", async () => {
+    mockScan.meter = true;
+    mockScan.hint = { id: "standMiddle" };
+    await render(ui());
+    expect(screen.getByText("Now stand in the middle and turn slowly")).toBeTruthy();
+    expect(screen.getAllByTestId("scan-instruction")).toHaveLength(1);
+    expect(screen.queryByTestId("scan-meter-map")).toBeNull();
+  });
+
+  it("shows the map only for the step that needs a place to point at", async () => {
+    mockScan.meter = true;
+    mockScan.hint = { id: "oneMoreSpot" };
+    await render(ui());
+    expect(screen.getByText("One more spot, over there")).toBeTruthy();
+    expect(screen.getByTestId("scan-meter-map")).toBeTruthy();
+  });
+
+  it("leaves the ticks to the meter, which is felt sector by sector", async () => {
+    mockScan.meter = true;
+    const view = await render(ui());
+    for (const share of [0.12, 0.31, 0.55]) {
+      mockScan.share = share;
+      await view.rerender(ui());
+    }
+    expect(mockHaptic).not.toHaveBeenCalledWith("cornerCaptured");
+  });
+
+  it("offers Finish anyway only when coverage has stopped moving, and not once Done is ready", async () => {
+    const view = await render(ui());
+    expect(screen.queryByRole("button", { name: "Finish anyway" })).toBeNull();
+    mockScan.stuck = true;
+    await view.rerender(ui());
+    expect(screen.getByRole("button", { name: "Finish anyway" })).toBeTruthy();
+    mockScan.ready = true;
+    await view.rerender(ui());
+    expect(screen.queryByRole("button", { name: "Finish anyway" })).toBeNull();
+  });
+});
+
+describe("a phone that cannot run AR", () => {
+  it("gets the friendly note and photos, not a scan", async () => {
+    mockAr = false;
+    await render(ui());
+    expect(screen.getByText("This phone can't measure a room by scanning")).toBeTruthy();
+    expect(screen.queryByTestId("scan-instruction")).toBeNull();
+    expect(screen.queryByTestId("scan-done")).toBeNull();
   });
 });

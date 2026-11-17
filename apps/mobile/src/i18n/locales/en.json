@@ -19,7 +19,9 @@
       "done": "Scan uploaded",
       "doneNoVideo": "Scan uploaded without its video (the video was too large)",
       "failed": "Upload paused. Nothing is lost",
-      "retry": "Try again"
+      "retry": "Try again",
+      "doneSize": "Scan uploaded ({{megabytes}} MB)",
+      "doneNoVideoSize": "Scan uploaded without its video, which was too large ({{megabytes}} MB)"
     }
   },
   "capture": {
@@ -96,7 +98,8 @@
       "mode": "Scan mode",
       "heading": "Heading covered",
       "moved": "Walked",
-      "motionSamples": "Motion samples"
+      "motionSamples": "Motion samples",
+      "meter": "Coverage meter"
     },
     "labels": {
       "fridge": "Fridge",
@@ -119,7 +122,12 @@
       "complete": "That's everything. Tap Done",
       "dark": "It's a bit dark. Switch on a light",
       "fast": "Hold steady and go slower",
-      "glare": "Point away from the bright light"
+      "glare": "Point away from the bright light",
+      "walkWalls": "Walk along the walls",
+      "keepGoing": "Keep going round",
+      "standMiddle": "Now stand in the middle and turn slowly",
+      "tiltDown": "Tilt down a little",
+      "oneMoreSpot": "One more spot, over there"
     },
     "keepGoing": "Keep going",
     "torchOn": "Use the torch",
@@ -131,7 +139,13 @@
       "ahead": "Scan what's in front of you",
       "left": "Turn to your left",
       "behind": "Turn around",
-      "right": "Turn to your right"
+      "right": "Turn to your right",
+      "middle": "Stand in the middle and turn slowly"
+    },
+    "finishAnyway": "Finish anyway",
+    "noAr": {
+      "title": "This phone can't measure a room by scanning",
+      "body": "Scanning needs a phone that supports AR. Yours can still get a redesign and a shopping list: use photos of your space instead."
     }
   },
   "review": {
@@ -147,7 +161,8 @@
       "ahead": "The side in front of you",
       "left": "The side on your left",
       "behind": "The side behind you",
-      "right": "The side on your right"
+      "right": "The side on your right",
+      "middle": "The middle of the room"
     },
     "sizeTitle": "Rough size",
     "size": "About {{long}} by {{short}}",
