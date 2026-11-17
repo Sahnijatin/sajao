@@ -19,6 +19,8 @@ jest.mock("expo-router", () => {
     useFocusEffect: (effect: () => void) => useEffect(effect, [effect]),
   };
 });
+let mockPreview = true;
+jest.mock("@/preview-screens", () => ({ previewScreensEnabled: () => mockPreview }));
 const mockHaptic = jest.fn();
 jest.mock("@sajao/ui", () => ({
   ...jest.requireActual("@sajao/ui"),
@@ -39,6 +41,7 @@ const show = (ui: ReactElement) =>
 beforeEach(async () => {
   mockPush.mockClear();
   mockHaptic.mockClear();
+  mockPreview = true;
   await AsyncStorage.clear();
   await act(async () => {
     useRooms.setState({ rooms: [] });
@@ -58,6 +61,14 @@ describe("My home", () => {
     expect(screen.queryByText(/sign in/i)).toBeNull();
     expect(screen.queryByText(/living room|bedroom/i)).toBeNull();
     expect(screen.queryByText(/scan/i)).toBeNull();
+  });
+
+  it("a store build shows the line and the button without the drawn stand-in", async () => {
+    mockPreview = false;
+    await show(<HomeScreen />);
+    expect(screen.queryByLabelText("A room before and after a redesign")).toBeNull();
+    expect(screen.getByText("See your room redone with furniture you can buy.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Add a room" })).toBeTruthy();
   });
 
   it("Add a room is the only way to the scan", async () => {

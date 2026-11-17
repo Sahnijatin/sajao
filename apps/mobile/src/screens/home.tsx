@@ -12,6 +12,7 @@ import { BeforeAfter } from "@/components/before-after";
 import { UploadStatus } from "@/components/upload-status";
 import { RoomCard } from "@/rooms/room-card";
 import { sortRooms } from "@/rooms/rooms";
+import { samplesAllowed } from "@/rooms/samples";
 import { useRooms, useRoomsLoaded } from "@/state/rooms";
 
 /** Each card follows the one above by this much as the list appears. */
@@ -63,13 +64,18 @@ export function HomeScreen() {
             gap: spacing.sheetBottom,
           }}
         >
-          <Animated.View entering={entering(0)} style={{ flex: 1, minHeight: 320 }}>
-            <BeforeAfter
-              before={{ kind: "placeholder", look: "before" }}
-              after={{ kind: "placeholder", look: "after" }}
-              style={{ flex: 1 }}
-            />
-          </Animated.View>
+          {/* The drawn before and after is a stand-in. A store build waits for the real pair. */}
+          {samplesAllowed() ? (
+            <Animated.View entering={entering(0)} style={{ flex: 1, minHeight: 320 }}>
+              <BeforeAfter
+                before={{ kind: "placeholder", look: "before" }}
+                after={{ kind: "placeholder", look: "after" }}
+                style={{ flex: 1 }}
+              />
+            </Animated.View>
+          ) : (
+            <View style={{ flex: 1 }} />
+          )}
           <Animated.View entering={entering(1)} style={{ gap: spacing.sheetBottom }}>
             <Text variant="title" accessibilityRole="header">
               {t("home.empty.line")}

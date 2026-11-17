@@ -4,7 +4,7 @@ import { act, fireEvent, render, screen, within } from "@testing-library/react-n
 import { Linking } from "react-native";
 import "@/i18n";
 import { type RoomContent, roomContent } from "@/rooms/room-content";
-import { RoomScreen } from "@/screens/room";
+import { RoomScreen, RoomWaiting } from "@/screens/room";
 import { useSettings } from "@/state/settings";
 
 const mockHaptic = jest.fn();
@@ -13,7 +13,7 @@ jest.mock("@sajao/ui", () => ({
   playHaptic: (moment: string) => mockHaptic(moment),
 }));
 
-const sample = roomContent("r");
+const sample = roomContent("r") as RoomContent;
 /** The same content as it will arrive from the pipeline: not a sample. */
 const real: RoomContent = { ...sample, sample: false };
 
@@ -310,5 +310,55 @@ describe("Shopping list tab", () => {
     await openTab("Shopping list");
     expect(screen.queryByTestId("shopping-total")).toBeNull();
     expect(screen.getByText("Prices are being checked")).toBeTruthy();
+  });
+});
+
+describe("a space that is not a living room or bedroom", () => {
+  it.each(["balcony", "other"] as const)("%s: shows the Room tab as usual", async (spaceType) => {
+    await show({ ...real, spaceType });
+    expect(screen.getAllByRole("tab")).toHaveLength(3);
+    expect(screen.getByTestId("room-walls")).toBeTruthy();
+    expect(screen.queryByTestId("designs-coming")).toBeNull();
+  });
+
+  it("says plainly on Designs and Shopping list that designs are coming, and shows none", async () => {
+    await show({ ...real, spaceType: "balcony" });
+    for (const tab of ["Designs", "Shopping list"]) {
+      await openTab(tab);
+      expect(
+        screen.getByText(
+          "Designs for this kind of space are coming. Your photos and measurements are on the Room tab.",
+        ),
+      ).toBeTruthy();
+      expect(screen.queryByText("Best match")).toBeNull();
+      expect(screen.queryByText(/₹/)).toBeNull();
+      expect(screen.queryByTestId("vastu-toggle")).toBeNull();
+    }
+  });
+
+  it.each(["living_room", "bedroom", null] as const)(
+    "%s gets its designs (an unknown kind is not ruled out)",
+    async (spaceType) => {
+      await show({ ...real, spaceType });
+      await openTab("Designs");
+      expect(screen.queryByTestId("designs-coming")).toBeNull();
+      expect(screen.getByText("₹60,496 for everything")).toBeTruthy();
+    },
+  );
+});
+
+describe("a room with nothing ready yet", () => {
+  it("says it is being prepared, with no tabs and no stand-in", async () => {
+    await render(
+      <ThemeProvider tier="standard" reducedMotion>
+        <RoomWaiting />
+      </ThemeProvider>,
+    );
+    expect(screen.getByText("Getting your room ready")).toBeTruthy();
+    expect(
+      screen.getByText("Your photos, measurements and designs appear here when they are ready."),
+    ).toBeTruthy();
+    expect(screen.queryAllByRole("tab")).toHaveLength(0);
+    expect(screen.queryByText(/sample|₹/i)).toBeNull();
   });
 });

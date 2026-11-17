@@ -5,6 +5,7 @@
 import { useTheme } from "@sajao/ui";
 import { Image, type StyleProp, View, type ViewStyle } from "react-native";
 import type { RoomStill } from "./rooms";
+import { samplesAllowed } from "./samples";
 
 export interface RoomStillViewProps {
   still: RoomStill;
@@ -147,11 +148,13 @@ export function RoomStillView({ still, label, style, testID }: RoomStillViewProp
       accessibilityLabel={label}
       style={[{ overflow: "hidden", backgroundColor: tokens.colors.sand }, style]}
     >
-      {still.kind === "image" ? (
-        <Image source={{ uri: still.uri }} resizeMode="cover" style={{ flex: 1 }} />
-      ) : (
-        <DrawnRoom look={still.look} view={still.view} />
-      )}
+      {
+        still.kind === "image" ? (
+          <Image source={{ uri: still.uri }} resizeMode="cover" style={{ flex: 1 }} />
+        ) : samplesAllowed() ? (
+          <DrawnRoom look={still.look} view={still.view} />
+        ) : null /* A store build never shows a drawn room: the tile stays plain until the photo exists. */
+      }
     </View>
   );
 }

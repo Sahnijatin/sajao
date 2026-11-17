@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import "@/i18n";
 import type { GenerationSource } from "@/rooms/generation";
-import { roomContent } from "@/rooms/room-content";
+import { type RoomContent, roomContent } from "@/rooms/room-content";
 import { GeneratingScreen, HANDOVER_MS } from "@/screens/generating";
 import { RevealScreen } from "@/screens/reveal";
 
@@ -92,7 +92,7 @@ describe("generating", () => {
 });
 
 describe("reveal", () => {
-  const content = roomContent("r");
+  const content = roomContent("r") as RoomContent;
 
   it("shows the room's hero views first, and no designs yet", async () => {
     await show(<RevealScreen content={content} onOpenRoom={jest.fn()} />);
@@ -139,5 +139,44 @@ describe("reveal", () => {
     await show(<RevealScreen content={content} onOpenRoom={jest.fn()} />);
     await fireEvent.press(screen.getByRole("button", { name: "See my three looks" }));
     expect(screen.queryByText(/unlock|upgrade|premium|checkout|pay/i)).toBeNull();
+  });
+
+  it("a space that gets no designs yet reveals the room and goes straight to it", async () => {
+    const onOpenRoom = jest.fn();
+    await show(
+      <RevealScreen content={{ ...content, spaceType: "balcony" }} onOpenRoom={onOpenRoom} />,
+    );
+    expect(screen.getByLabelText("Your room, view 1 of 3")).toBeTruthy();
+    expect(screen.getByText(/^Designs for this kind of space are coming\./)).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "See my three looks" })).toBeNull();
+    await fireEvent.press(screen.getByRole("button", { name: "Open my room" }));
+    expect(onOpenRoom).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("generating for a space with no designs", () => {
+  it("leaves out the designing stage and still hands on", async () => {
+    jest.useFakeTimers();
+    try {
+      const onDone = jest.fn();
+      let report: (finished: number) => void = () => {};
+      const source: GenerationSource = {
+        watch(_roomId, onFinished) {
+          report = onFinished;
+          return () => {};
+        },
+      };
+      await show(<GeneratingScreen roomId="r" onDone={onDone} source={source} designs={false} />);
+      expect(screen.getByRole("header", { name: "Getting your room ready" })).toBeTruthy();
+      expect(screen.getByText("Finding your furniture")).toBeTruthy();
+      expect(screen.queryByText("Designing three looks")).toBeNull();
+      await act(async () => report(2));
+      await act(async () => {
+        jest.advanceTimersByTime(HANDOVER_MS);
+      });
+      expect(onDone).toHaveBeenCalledTimes(1);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });

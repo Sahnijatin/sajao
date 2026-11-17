@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { ScrollView, useWindowDimensions, View } from "react-native";
 import Animated, { Easing, FadeIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import type { RoomContent } from "@/rooms/room-content";
+import { designsOffered, type RoomContent } from "@/rooms/room-content";
 import type { RoomStill } from "@/rooms/rooms";
 import { RoomStillView } from "@/rooms/room-still";
 import { formatInr } from "@/utils/format-inr";
@@ -30,6 +30,7 @@ export function RevealScreen({ content, onOpenRoom }: RevealProps) {
   const { colors, spacing, radius } = tokens;
   const { width } = useWindowDimensions();
   const [phase, setPhase] = useState<"room" | "looks">("room");
+  const offered = designsOffered(content.spaceType);
   // The next card peeks in from the right, so it is clear there is more.
   const cardWidth = Math.round((width - spacing.gutter * 2) * 0.86);
 
@@ -149,7 +150,13 @@ export function RevealScreen({ content, onOpenRoom }: RevealProps) {
               {t("reveal.sample")}
             </Text>
           ) : null}
-          {phase === "room" ? (
+          {phase === "room" && !offered ? (
+            // This kind of space gets no designs yet: the reveal is the room itself.
+            <>
+              <Text tone="secondary">{t("designs.comingForSpace")}</Text>
+              <Button label={t("reveal.looksCta")} onPress={onOpenRoom} />
+            </>
+          ) : phase === "room" ? (
             <Button label={t("reveal.roomCta")} onPress={showLooks} />
           ) : (
             <Button label={t("reveal.looksCta")} onPress={onOpenRoom} />

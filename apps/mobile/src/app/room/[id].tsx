@@ -2,7 +2,7 @@ import { Redirect, Stack, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { roomName } from "@/rooms/room-card";
 import { roomContent } from "@/rooms/room-content";
-import { RoomScreen } from "@/screens/room";
+import { RoomScreen, RoomWaiting } from "@/screens/room";
 import { useRooms, useRoomsLoaded } from "@/state/rooms";
 
 export { RouteErrorBoundary as ErrorBoundary } from "@/components/route-error-boundary";
@@ -15,10 +15,11 @@ export default function RoomRoute() {
   if (!loaded) return null;
   // A link to a room that is not on this phone goes to My home.
   if (!room) return <Redirect href="/" />;
+  const content = roomContent(room.id);
   return (
     <>
       <Stack.Screen options={{ title: roomName(room, t) }} />
-      <RoomScreen content={roomContent(room.id)} />
+      {content ? <RoomScreen content={content} /> : <RoomWaiting />}
     </>
   );
 }

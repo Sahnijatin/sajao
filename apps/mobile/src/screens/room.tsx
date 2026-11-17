@@ -11,7 +11,12 @@ import { Linking, Pressable, ScrollView, Switch, useWindowDimensions, View } fro
 import { Segmented } from "@/components/segmented";
 import { twinViewerEnabled } from "@/features";
 import { isApprox, leastCertain, wallName } from "@/rooms/measures";
-import { compassCalibrated, type RoomContent, type RoomLook } from "@/rooms/room-content";
+import {
+  compassCalibrated,
+  designsOffered,
+  type RoomContent,
+  type RoomLook,
+} from "@/rooms/room-content";
 import { RoomStillView } from "@/rooms/room-still";
 import { shoppingFor } from "@/rooms/shopping";
 import { useSettings } from "@/state/settings";
@@ -448,6 +453,25 @@ function ShoppingTabBody({
   );
 }
 
+/** A room whose photos, measurements and designs are not ready yet. */
+export function RoomWaiting() {
+  const { t } = useTranslation();
+  const { tokens } = useTheme();
+  const { colors, spacing } = tokens;
+  return (
+    <ScrollView
+      style={{ flex: 1, backgroundColor: colors.canvas }}
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{ padding: spacing.gutter, gap: spacing.xl }}
+    >
+      <Text variant="title" accessibilityRole="header">
+        {t("room.waiting.title")}
+      </Text>
+      <Text tone="secondary">{t("room.waiting.body")}</Text>
+    </ScrollView>
+  );
+}
+
 export function RoomScreen({
   content,
   show3d = twinViewerEnabled(),
@@ -463,7 +487,8 @@ export function RoomScreen({
   const [tab, setTab] = useState<RoomTab>("room");
   // The chosen look is shared by Designs and Shopping list. Best match first.
   const [chosen, setChosen] = useState(Math.min(1, content.looks.length - 1));
-  const look = content.looks[chosen];
+  const offered = designsOffered(content.spaceType);
+  const look = offered ? content.looks[chosen] : undefined;
   const picker = <LookPicker looks={content.looks} selected={chosen} onSelect={setChosen} />;
 
   return (
@@ -482,13 +507,21 @@ export function RoomScreen({
         onSelect={setTab}
       />
       {tab === "room" ? <RoomTabBody content={content} units={units} show3d={show3d} /> : null}
+      {tab !== "room" && !offered ? (
+        // Any space can be scanned; designs are made for living rooms and bedrooms for now.
+        <Card testID="designs-coming">
+          <Text tone="secondary">{t("designs.comingForSpace")}</Text>
+        </Card>
+      ) : null}
       {tab === "designs" && look ? (
         <DesignsTabBody content={content} look={look} picker={picker} />
       ) : null}
       {tab === "shopping" && look ? (
         <ShoppingTabBody content={content} look={look} picker={picker} />
       ) : null}
-      {tab !== "room" && !look ? <Text tone="secondary">{t("rooms.designs.none")}</Text> : null}
+      {tab !== "room" && offered && !look ? (
+        <Text tone="secondary">{t("rooms.designs.none")}</Text>
+      ) : null}
     </ScrollView>
   );
 }
