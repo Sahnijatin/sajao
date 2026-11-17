@@ -68,6 +68,15 @@ The upload does not need the app to stay open. Several files go up at once. The 
 
 Force-closing the app stops the upload on both platforms; it resumes on the next open.
 
+## Import from the gallery
+
+Photos or one video the person already has go up through the same package and the same uploader, with no AR data (`ar.tracking` is `none`; no poses, planes or depth). "Use photos" on the note for phones without AR opens the phone's own picker, which hands the app only what was chosen, so no library permission is asked for.
+
+- Up to 20 photos, resized like any other photo, or one video of 5 seconds to 2 minutes.
+- A video is not uploaded. Up to 20 frames are taken from it on the phone, evenly through its length and never at its first or last moment, at most two a second; those are the keyframes.
+- The pictures are marked as from the gallery and their sharpness is left at 0 (not measured on the phone).
+- A room from imported pictures is at the estimated confidence level: nothing is claimed to fit until a measurement confirms it. Until the photos path is part of the pipeline, such a room's first stage ends with the reason `no_ar_data`, and the app says the pictures are uploaded and rooms from photos are not ready yet.
+
 ## Upload safety and privacy
 
 Non-room or explicit images are rejected by a classifier. Faces and personal photos are blurred before storage. Raw video is deleted after processing.
