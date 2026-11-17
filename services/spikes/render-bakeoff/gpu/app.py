@@ -607,9 +607,8 @@ def gemini_probe(models: list[str], location: str = "") -> list[str]:
     """One tiny edit per model through the provider, errors redacted (no keys, no ids)."""
     import asyncio
     import io
-    import re
-
     import os
+    import re
 
     if location:
         os.environ["GCP_LOCATION"] = location
