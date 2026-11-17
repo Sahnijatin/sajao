@@ -1402,7 +1402,9 @@ def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
 
     from sajao_gateway import ModelGateway
     from sajao_schemas.generated.v1 import Capture
+    from sajao_workers.ar_measurements import measure
     from sajao_workers.golden import accuracy_report, markdown, read_sheet
+    from sajao_workers.golden_ar import ar_markdown, ar_report
     from sajao_workers.models import depth_chain
     from sajao_workers.steps import LocalArtifactStore, StepRunner
     from sajao_workers.twin.capture_frames import frames_manifest
@@ -1421,6 +1423,10 @@ def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
     }
     depth = _capture_file(root, package["depth"]) if package.get("depth") else None
     manifest = frames_manifest(package, images, depth, store)
+    # The phone's own AR measurements against the same tape: no GPU, no twin.
+    planes = json.loads(_capture_file(root, package["planes"])) if package.get("planes") else {}
+    ar_measurements = measure(planes)
+    ar = ar_report(ar_measurements, read_sheet(sheet))
 
     async def run() -> dict[str, Any]:
         nonlocal manifest
@@ -1441,6 +1447,7 @@ def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
             "twin": twin,
             "report": report,
             "markdown": markdown(report),
+            "ar": {"measurements": ar_measurements, "report": ar, "markdown": ar_markdown(ar)},
             "run": {
                 "depth": depth_meta,
                 "objects": dict(built["objects"].meta),
@@ -1582,6 +1589,11 @@ def golden_room(capture: str, tape: str, out: str = "") -> None:
     (target / "report.json").write_text(json.dumps(result["report"], indent=1) + "\n")
     (target / "report.md").write_text(result["markdown"])
     (target / "run.json").write_text(json.dumps(result["run"], indent=1) + "\n")
+    ar = result["ar"]
+    (target / "ar-measurements.json").write_text(json.dumps(ar["measurements"], indent=1) + "\n")
+    (target / "ar-report.json").write_text(json.dumps(ar["report"], indent=1) + "\n")
+    (target / "ar-report.md").write_text(ar["markdown"])
+    print(ar["markdown"])
     print(result["markdown"])
     print(f"Written to {target}")
 
