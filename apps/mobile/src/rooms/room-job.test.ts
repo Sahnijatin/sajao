@@ -61,6 +61,7 @@ describe("room message", () => {
 
   it("uses the general text for a reason it has no words for", () => {
     expect(roomMessage(job("failed", "stage_failed"))).toBe("home.room.failed.other");
+    expect(roomMessage(job("failed", "no_ar_data"))).toBe("home.room.failed.no_ar_data");
     expect(roomMessage(job("failed"))).toBe("home.room.failed.other");
   });
 });
