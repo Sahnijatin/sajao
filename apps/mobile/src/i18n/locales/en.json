@@ -20,6 +20,14 @@
       "retry": "Try again",
       "doneSize": "Scan uploaded ({{megabytes}} MB)",
       "doneNoVideoSize": "Scan uploaded without its video, which was too large ({{megabytes}} MB)"
+    },
+    "room": {
+      "measuring": "Measuring your room",
+      "measured": "Room measured",
+      "failed": {
+        "no_walls": "We could not find the walls in this scan. Please scan again and walk around the room",
+        "other": "We could not measure this room. Please scan again"
+      }
     }
   },
   "capture": {

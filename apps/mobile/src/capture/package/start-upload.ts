@@ -3,6 +3,7 @@
 // on the phone and is marked as waiting; nothing is lost.
 import { createApiClient } from "@sajao/api-client";
 import { configResult } from "@/config";
+import { followRoom } from "@/rooms/room-job";
 import { type UploadStatus, useCaptureStore } from "@/state/capture";
 import { putPart, uploadsApi } from "@/uploads/api";
 import { uploadResumable } from "@/uploads/resumable-upload";
@@ -18,6 +19,7 @@ export async function startCaptureUpload(
   device: CaptureDeviceInfo,
 ): Promise<void> {
   useCaptureStore.getState().setDevice(device);
+  useCaptureStore.getState().setRoom(null);
   let videoSkipped = false;
   // What this scan really cost to upload, shown once it is up.
   let bytes = 0;
@@ -77,6 +79,37 @@ export async function startCaptureUpload(
       bytes,
       ...(videoSkipped ? { videoSkipped } : {}),
     });
+    try {
+      // The scan is up: make its room and follow the measuring. A failure
+      // here loses nothing; the next upload call makes the same room again.
+      await followRoom(
+        {
+          async create(captureId) {
+            const { data } = await client.POST("/v1/rooms", {
+              body: { capture_id: captureId },
+              headers: { "Idempotency-Key": `room-${captureId}` },
+            });
+            if (!data) throw new Error("Could not create the room");
+            return data;
+          },
+          async read(roomId) {
+            const { data } = await client.GET("/v1/rooms/{room_id}", {
+              params: { path: { room_id: roomId } },
+            });
+            if (!data) throw new Error("Could not read the room");
+            return data;
+          },
+        },
+        local.captureId,
+        {
+          onUpdate: (room) => useCaptureStore.getState().setRoom(room),
+          sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+          now: Date.now,
+        },
+      );
+    } catch {
+      // The room line stays as it was; the upload itself is done.
+    }
   } catch (error) {
     setStatus({
       state: "failed",
