@@ -1,0 +1,3118 @@
+{
+ "scene": "arkit_living_47331265",
+ "detectors": "grounding-dino",
+ "recall": {
+  "listed": {
+   "furniture": {
+    "items": "9 of 9",
+    "item_recall": 1.0,
+    "instance_recall": 1.0
+   },
+   "fixture": {
+    "items": "4 of 6",
+    "item_recall": 0.67,
+    "instance_recall": 0.67
+   },
+   "wall_item": {
+    "items": "2 of 2",
+    "item_recall": 1.0,
+    "instance_recall": 1.0
+   },
+   "textile": {
+    "items": "2 of 2",
+    "item_recall": 1.0,
+    "instance_recall": 1.0
+   },
+   "decor": {
+    "items": "7 of 8",
+    "item_recall": 0.88,
+    "instance_recall": 0.79
+   },
+   "built_in": {
+    "items": "1 of 1",
+    "item_recall": 1.0,
+    "instance_recall": 1.0
+   },
+   "all": {
+    "items": "25 of 28",
+    "item_recall": 0.89,
+    "instance_recall": 0.89
+   }
+  },
+  "placed": {
+   "furniture": {
+    "items": "7 of 9",
+    "item_recall": 0.78,
+    "instance_recall": 0.75
+   },
+   "fixture": {
+    "items": "3 of 6",
+    "item_recall": 0.5,
+    "instance_recall": 0.5
+   },
+   "wall_item": {
+    "items": "2 of 2",
+    "item_recall": 1.0,
+    "instance_recall": 0.4
+   },
+   "textile": {
+    "items": "2 of 2",
+    "item_recall": 1.0,
+    "instance_recall": 0.67
+   },
+   "decor": {
+    "items": "4 of 8",
+    "item_recall": 0.5,
+    "instance_recall": 0.29
+   },
+   "built_in": {
+    "items": "1 of 1",
+    "item_recall": 1.0,
+    "instance_recall": 1.0
+   },
+   "all": {
+    "items": "19 of 28",
+    "item_recall": 0.68,
+    "instance_recall": 0.53
+   }
+  },
+  "per_item": [
+   {
+    "name": "sofa",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 2
+   },
+   {
+    "name": "armchair",
+    "type": "furniture",
+    "hand": 3,
+    "listed": 3,
+    "placed": 1
+   },
+   {
+    "name": "coffee table",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 0
+   },
+   {
+    "name": "dining table",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 2
+   },
+   {
+    "name": "dining chair",
+    "type": "furniture",
+    "hand": 6,
+    "listed": 6,
+    "placed": 7
+   },
+   {
+    "name": "display cabinet",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 2
+   },
+   {
+    "name": "sideboard",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 0
+   },
+   {
+    "name": "tv stand",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 2
+   },
+   {
+    "name": "wall shelf",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 1
+   },
+   {
+    "name": "television",
+    "type": "fixture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 1
+   },
+   {
+    "name": "tower speaker",
+    "type": "fixture",
+    "hand": 1,
+    "listed": 2,
+    "placed": 1
+   },
+   {
+    "name": "subwoofer",
+    "type": "fixture",
+    "hand": 1,
+    "listed": 0,
+    "placed": 0
+   },
+   {
+    "name": "floor lamp",
+    "type": "fixture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 3
+   },
+   {
+    "name": "light switch",
+    "type": "fixture",
+    "hand": 1,
+    "listed": 3,
+    "placed": 0
+   },
+   {
+    "name": "socket",
+    "type": "fixture",
+    "hand": 1,
+    "listed": 0,
+    "placed": 0
+   },
+   {
+    "name": "framed picture",
+    "type": "wall_item",
+    "hand": 4,
+    "listed": 4,
+    "placed": 1
+   },
+   {
+    "name": "crucifix",
+    "type": "wall_item",
+    "hand": 1,
+    "listed": 1,
+    "placed": 1
+   },
+   {
+    "name": "painting",
+    "type": "decor",
+    "hand": 1,
+    "listed": 6,
+    "placed": 0
+   },
+   {
+    "name": "poster",
+    "type": "decor",
+    "hand": 2,
+    "listed": 0,
+    "placed": 0
+   },
+   {
+    "name": "framed picture",
+    "type": "decor",
+    "hand": 2,
+    "listed": 4,
+    "placed": 1
+   },
+   {
+    "name": "potted plant",
+    "type": "decor",
+    "hand": 3,
+    "listed": 2,
+    "placed": 0
+   },
+   {
+    "name": "vase",
+    "type": "decor",
+    "hand": 1,
+    "listed": 1,
+    "placed": 1
+   },
+   {
+    "name": "candle holder",
+    "type": "decor",
+    "hand": 2,
+    "listed": 5,
+    "placed": 1
+   },
+   {
+    "name": "decorative cone",
+    "type": "decor",
+    "hand": 2,
+    "listed": 2,
+    "placed": 0
+   },
+   {
+    "name": "tray",
+    "type": "decor",
+    "hand": 1,
+    "listed": 1,
+    "placed": 1
+   },
+   {
+    "name": "rug",
+    "type": "textile",
+    "hand": 1,
+    "listed": 1,
+    "placed": 3
+   },
+   {
+    "name": "placemat",
+    "type": "textile",
+    "hand": 2,
+    "listed": 2,
+    "placed": 1
+   },
+   {
+    "name": "radiator",
+    "type": "built_in",
+    "hand": 1,
+    "listed": 1,
+    "placed": 1
+   }
+  ],
+  "hand_total": 45,
+  "listed_total": 55,
+  "placed_total": 51,
+  "missed_by_listing": [
+   "subwoofer",
+   "socket",
+   "poster"
+  ],
+  "listed_not_placed": [
+   "coffee table",
+   "sideboard",
+   "light switch",
+   "painting",
+   "potted plant",
+   "decorative cone"
+  ],
+  "matches": {
+   "listed": {
+    "sofa": "leather sofa",
+    "armchair": "armchair",
+    "coffee table": "coffee table",
+    "dining table": "dining table",
+    "dining chair": "dining chair",
+    "display cabinet": "almirah",
+    "tv stand": "tv stand",
+    "wall shelf": "wall shelf",
+    "television": "tv",
+    "tower speaker": "speaker",
+    "floor lamp": "floor lamp",
+    "light switch": "switchboard",
+    "framed picture": "photo frame",
+    "crucifix": "cross",
+    "painting": "painting",
+    "potted plant": "potted plant",
+    "vase": "vase",
+    "candle holder": "candle holder",
+    "decorative cone": "decorative item",
+    "tray": "tray",
+    "rug": "rug",
+    "placemat": "table runner",
+    "radiator": "radiator",
+    "sideboard": "glass display cabinet"
+   },
+   "placed": {
+    "armchair": "armchair",
+    "dining table": "dining table",
+    "dining chair": "dining chair",
+    "tv stand": "tv stand",
+    "wall shelf": "wall shelf",
+    "television": "tv",
+    "tower speaker": "speaker",
+    "floor lamp": "floor lamp",
+    "framed picture": "painting",
+    "crucifix": "cross",
+    "vase": "vase",
+    "candle holder": "candle holder",
+    "tray": "tray",
+    "rug": "rug",
+    "placemat": "table runner",
+    "radiator": "radiator",
+    "sofa": "leather sofa",
+    "display cabinet": "glass display cabinet"
+   }
+  }
+ },
+ "inventory": {
+  "items": [
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "dining table",
+    "prompts": [
+     "table",
+     "wooden table"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 6,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "dining chair",
+    "prompts": [
+     "chair",
+     "upholstered chair",
+     "wooden chair"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "almirah",
+    "prompts": [
+     "cabinet",
+     "cupboard"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "tv stand",
+    "prompts": [
+     "media unit",
+     "entertainment center",
+     "tv unit"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 3,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "armchair",
+    "prompts": [
+     "sofa chair",
+     "single seater",
+     "leather armchair"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "coffee table",
+    "prompts": [
+     "center table",
+     "glass top table",
+     "centre table"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "tv",
+    "prompts": [
+     "television",
+     "flat screen"
+    ],
+    "type": "fixture"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "speaker",
+    "prompts": [
+     "tower speaker",
+     "floor speaker",
+     "loudspeaker"
+    ],
+    "type": "fixture"
+   },
+   {
+    "count": 3,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "switchboard",
+    "prompts": [
+     "switch panel",
+     "electrical socket",
+     "light switch"
+    ],
+    "type": "fixture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "wall shelf",
+    "prompts": [
+     "floating shelf"
+    ],
+    "type": "wall_item"
+   },
+   {
+    "count": 4,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "photo frame",
+    "prompts": [
+     "picture frame",
+     "framed photo"
+    ],
+    "type": "wall_item"
+   },
+   {
+    "count": 6,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "painting",
+    "prompts": [
+     "wall art",
+     "framed picture",
+     "framed painting"
+    ],
+    "type": "wall_item"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "cross",
+    "prompts": [
+     "crucifix"
+    ],
+    "type": "wall_item"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "table runner",
+    "prompts": [
+     "tablecloth",
+     "placemat",
+     "orange mat"
+    ],
+    "type": "textile"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "vase",
+    "prompts": [
+     "flower pot",
+     "glass vase",
+     "flower vase"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 5,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "candle holder",
+    "prompts": [
+     "candlestick",
+     "tealight holder",
+     "glass candlestick"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "floor lamp",
+    "prompts": [
+     "standing lamp"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "tray",
+    "prompts": [
+     "serving tray",
+     "candle tray"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "potted plant",
+    "prompts": [
+     "houseplant",
+     "plant"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "violin",
+    "prompts": [
+     "musical instrument"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "decorative item",
+    "prompts": [
+     "showpiece",
+     "decorative figurine",
+     "ornament"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "box",
+    "prompts": [],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "book",
+    "prompts": [
+     "book stack"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "tea set",
+    "prompts": [
+     "teapot",
+     "cup"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "glass display cabinet",
+    "prompts": [
+     "china cabinet",
+     "bookcase"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "leather sofa",
+    "prompts": [
+     "couch",
+     "settee"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "crown molding",
+    "prompts": [
+     "cornice",
+     "ceiling molding"
+    ],
+    "type": "built_in"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "radiator",
+    "prompts": [
+     "heater"
+    ],
+    "type": "fixture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "window sill",
+    "prompts": [
+     "windowsill",
+     "ledge"
+    ],
+    "type": "built_in"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "rug",
+    "prompts": [
+     "carpet"
+    ],
+    "type": "textile"
+   }
+  ],
+  "keyframes": [
+   "kf0000",
+   "kf0036",
+   "kf0047",
+   "kf0077",
+   "kf0097",
+   "kf0136",
+   "kf0174",
+   "kf0192"
+  ],
+  "listed_by": [
+   "gemini-3-flash-preview",
+   "claude-opus-5-5"
+  ]
+ },
+ "placement": {
+  "items_listed": 30,
+  "listed_by": [
+   "gemini-3-flash-preview",
+   "claude-opus-5-5"
+  ],
+  "unplaced": [
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "coffee table",
+    "reason": "not_seen_in_enough_frames",
+    "tried": [
+     "grounding-dino: coffee table"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 3,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "switchboard",
+    "reason": "not_seen_in_enough_frames",
+    "tried": [
+     "grounding-dino: switchboard",
+     "grounding-dino: switch panel (min score 0.1)"
+    ],
+    "type": "fixture"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "potted plant",
+    "reason": "not_detected",
+    "tried": [
+     "grounding-dino: potted plant",
+     "grounding-dino: houseplant (min score 0.1)"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "decorative item",
+    "reason": "not_seen_in_enough_frames",
+    "tried": [
+     "grounding-dino: decorative item",
+     "grounding-dino: showpiece (min score 0.1)"
+    ],
+    "type": "decor"
+   }
+  ]
+ },
+ "objects": [
+  {
+   "category": "dining chair",
+   "type": "furniture",
+   "frames": 14,
+   "size_m": [
+    0.838,
+    0.76,
+    0.786
+   ]
+  },
+  {
+   "category": "leather sofa",
+   "type": "furniture",
+   "frames": 13,
+   "size_m": [
+    1.411,
+    0.847,
+    0.581
+   ]
+  },
+  {
+   "category": "dining chair",
+   "type": "furniture",
+   "frames": 14,
+   "size_m": [
+    0.897,
+    0.697,
+    0.641
+   ]
+  },
+  {
+   "category": "dining chair",
+   "type": "furniture",
+   "frames": 19,
+   "size_m": [
+    0.54,
+    0.3,
+    0.923
+   ]
+  },
+  {
+   "category": "dining table",
+   "type": "furniture",
+   "frames": 22,
+   "size_m": [
+    1.152,
+    0.93,
+    0.686
+   ]
+  },
+  {
+   "category": "painting",
+   "type": "wall_item",
+   "frames": 18,
+   "size_m": [
+    0.863,
+    0.247,
+    0.985
+   ]
+  },
+  {
+   "category": "dining chair",
+   "type": "furniture",
+   "frames": 17,
+   "size_m": [
+    0.33,
+    0.254,
+    0.881
+   ]
+  },
+  {
+   "category": "dining chair",
+   "type": "furniture",
+   "frames": 19,
+   "size_m": [
+    0.278,
+    0.206,
+    0.501
+   ]
+  },
+  {
+   "category": "glass display cabinet",
+   "type": "furniture",
+   "frames": 16,
+   "size_m": [
+    1.351,
+    0.474,
+    1.304
+   ]
+  },
+  {
+   "category": "photo frame",
+   "type": "wall_item",
+   "frames": 10,
+   "size_m": [
+    0.587,
+    0.307,
+    0.688
+   ]
+  },
+  {
+   "category": "photo frame",
+   "type": "wall_item",
+   "frames": 15,
+   "size_m": [
+    0.434,
+    0.182,
+    0.437
+   ]
+  },
+  {
+   "category": "dining table",
+   "type": "furniture",
+   "frames": 7,
+   "size_m": [
+    0.622,
+    0.614,
+    0.43
+   ]
+  },
+  {
+   "category": "box",
+   "type": "decor",
+   "frames": 13,
+   "size_m": [
+    0.336,
+    0.248,
+    0.062
+   ]
+  },
+  {
+   "category": "armchair",
+   "type": "furniture",
+   "frames": 13,
+   "size_m": [
+    1.425,
+    0.851,
+    0.584
+   ]
+  },
+  {
+   "category": "tv stand",
+   "type": "furniture",
+   "frames": 8,
+   "size_m": [
+    1.26,
+    0.318,
+    0.391
+   ]
+  },
+  {
+   "category": "dining chair",
+   "type": "furniture",
+   "frames": 10,
+   "size_m": [
+    0.299,
+    0.248,
+    0.29
+   ]
+  },
+  {
+   "category": "leather sofa",
+   "type": "furniture",
+   "frames": 8,
+   "size_m": [
+    1.084,
+    0.932,
+    0.616
+   ]
+  },
+  {
+   "category": "floor lamp",
+   "type": "decor",
+   "frames": 7,
+   "size_m": [
+    0.135,
+    0.123,
+    1.045
+   ]
+  },
+  {
+   "category": "photo frame",
+   "type": "wall_item",
+   "frames": 10,
+   "size_m": [
+    0.708,
+    0.12,
+    0.833
+   ]
+  },
+  {
+   "category": "tv stand",
+   "type": "furniture",
+   "frames": 7,
+   "size_m": [
+    1.269,
+    0.404,
+    1.128
+   ]
+  },
+  {
+   "category": "photo frame",
+   "type": "wall_item",
+   "frames": 6,
+   "size_m": [
+    0.568,
+    0.183,
+    0.428
+   ]
+  },
+  {
+   "category": "dining chair",
+   "type": "furniture",
+   "frames": 7,
+   "size_m": [
+    0.517,
+    0.381,
+    0.784
+   ]
+  },
+  {
+   "category": "photo frame",
+   "type": "wall_item",
+   "frames": 10,
+   "size_m": [
+    0.399,
+    0.146,
+    0.389
+   ]
+  },
+  {
+   "category": "radiator",
+   "type": "fixture",
+   "frames": 6,
+   "size_m": [
+    0.992,
+    0.193,
+    0.696
+   ]
+  },
+  {
+   "category": "table runner",
+   "type": "textile",
+   "frames": 9,
+   "size_m": [
+    1.372,
+    0.963,
+    0.182
+   ]
+  },
+  {
+   "category": "photo frame",
+   "type": "wall_item",
+   "frames": 7,
+   "size_m": [
+    0.56,
+    0.246,
+    0.624
+   ]
+  },
+  {
+   "category": "wall shelf",
+   "type": "wall_item",
+   "frames": 8,
+   "size_m": [
+    1.14,
+    0.133,
+    0.38
+   ]
+  },
+  {
+   "category": "vase",
+   "type": "decor",
+   "frames": 8,
+   "size_m": [
+    0.185,
+    0.138,
+    0.202
+   ]
+  },
+  {
+   "category": "rug",
+   "type": "textile",
+   "frames": 6,
+   "size_m": [
+    0.878,
+    0.526,
+    0.098
+   ]
+  },
+  {
+   "category": "tv",
+   "type": "fixture",
+   "frames": 7,
+   "size_m": [
+    0.96,
+    0.359,
+    0.603
+   ]
+  },
+  {
+   "category": "floor lamp",
+   "type": "decor",
+   "frames": 7,
+   "size_m": [
+    0.319,
+    0.296,
+    0.446
+   ]
+  },
+  {
+   "category": "floor lamp",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.272,
+    0.248,
+    0.493
+   ]
+  },
+  {
+   "category": "violin",
+   "type": "decor",
+   "frames": 6,
+   "size_m": [
+    0.515,
+    0.27,
+    0.893
+   ]
+  },
+  {
+   "category": "rug",
+   "type": "textile",
+   "frames": 4,
+   "size_m": [
+    0.33,
+    0.29,
+    0.078
+   ]
+  },
+  {
+   "category": "rug",
+   "type": "textile",
+   "frames": 4,
+   "size_m": [
+    1.183,
+    0.241,
+    0.09
+   ]
+  },
+  {
+   "category": "tray",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.239,
+    0.191,
+    0.084
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.381,
+    0.181,
+    0.891
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.422,
+    0.226,
+    0.235
+   ]
+  },
+  {
+   "category": "photo frame",
+   "type": "wall_item",
+   "frames": 4,
+   "size_m": [
+    0.409,
+    0.114,
+    0.35
+   ]
+  },
+  {
+   "category": "glass display cabinet",
+   "type": "furniture",
+   "frames": 4,
+   "size_m": [
+    0.703,
+    0.123,
+    0.687
+   ]
+  },
+  {
+   "category": "box",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.4,
+    0.238,
+    0.438
+   ]
+  },
+  {
+   "category": "speaker",
+   "type": "fixture",
+   "frames": 4,
+   "size_m": [
+    0.401,
+    0.257,
+    0.428
+   ]
+  },
+  {
+   "category": "cross",
+   "type": "wall_item",
+   "frames": 4,
+   "size_m": [
+    0.099,
+    0.064,
+    0.133
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.361,
+    0.271,
+    0.681
+   ]
+  },
+  {
+   "category": "candle holder",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.291,
+    0.276,
+    0.407
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.234,
+    0.106,
+    0.13
+   ]
+  },
+  {
+   "category": "tea set",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.227,
+    0.156,
+    0.083
+   ]
+  },
+  {
+   "category": "almirah",
+   "type": "furniture",
+   "frames": 3,
+   "size_m": [
+    1.247,
+    0.346,
+    0.683
+   ]
+  },
+  {
+   "category": "window sill",
+   "type": "built_in"
+  },
+  {
+   "category": "window sill",
+   "type": "built_in"
+  },
+  {
+   "category": "crown molding",
+   "type": "built_in"
+  }
+ ],
+ "boxes": [
+  {
+   "category": "dining chair",
+   "confidence": 0.453,
+   "frames": 14,
+   "box": {
+    "center": [
+     0.962,
+     4.114,
+     -0.984
+    ],
+    "height": {
+     "error_band_m": 0.196,
+     "source": "estimated",
+     "value_m": 0.786
+    },
+    "length": {
+     "error_band_m": 0.21,
+     "source": "estimated",
+     "value_m": 0.838
+    },
+    "width": {
+     "error_band_m": 0.19,
+     "source": "estimated",
+     "value_m": 0.76
+    },
+    "yaw_deg": 174.94
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "leather sofa",
+   "confidence": 0.679,
+   "frames": 13,
+   "box": {
+    "center": [
+     -0.402,
+     2.852,
+     -0.83
+    ],
+    "height": {
+     "error_band_m": 0.145,
+     "source": "estimated",
+     "value_m": 0.581
+    },
+    "length": {
+     "error_band_m": 0.353,
+     "source": "estimated",
+     "value_m": 1.411
+    },
+    "width": {
+     "error_band_m": 0.212,
+     "source": "estimated",
+     "value_m": 0.847
+    },
+    "yaw_deg": 80.27
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "dining chair",
+   "confidence": 0.456,
+   "frames": 14,
+   "box": {
+    "center": [
+     1.839,
+     3.908,
+     -1.055
+    ],
+    "height": {
+     "error_band_m": 0.16,
+     "source": "estimated",
+     "value_m": 0.641
+    },
+    "length": {
+     "error_band_m": 0.224,
+     "source": "estimated",
+     "value_m": 0.897
+    },
+    "width": {
+     "error_band_m": 0.174,
+     "source": "estimated",
+     "value_m": 0.697
+    },
+    "yaw_deg": 167.07
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "dining chair",
+   "confidence": 0.654,
+   "frames": 19,
+   "box": {
+    "center": [
+     1.159,
+     0.154,
+     -1.002
+    ],
+    "height": {
+     "error_band_m": 0.231,
+     "source": "estimated",
+     "value_m": 0.923
+    },
+    "length": {
+     "error_band_m": 0.135,
+     "source": "estimated",
+     "value_m": 0.54
+    },
+    "width": {
+     "error_band_m": 0.075,
+     "source": "estimated",
+     "value_m": 0.3
+    },
+    "yaw_deg": 123.6
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "dining table",
+   "confidence": 0.558,
+   "frames": 22,
+   "box": {
+    "center": [
+     1.664,
+     0.355,
+     -1.076
+    ],
+    "height": {
+     "error_band_m": 0.172,
+     "source": "estimated",
+     "value_m": 0.686
+    },
+    "length": {
+     "error_band_m": 0.288,
+     "source": "estimated",
+     "value_m": 1.152
+    },
+    "width": {
+     "error_band_m": 0.233,
+     "source": "estimated",
+     "value_m": 0.93
+    },
+    "yaw_deg": 89.31
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "painting",
+   "confidence": 0.41,
+   "frames": 18,
+   "box": {
+    "center": [
+     -1.324,
+     0.776,
+     -0.996
+    ],
+    "height": {
+     "error_band_m": 0.246,
+     "source": "estimated",
+     "value_m": 0.985
+    },
+    "length": {
+     "error_band_m": 0.216,
+     "source": "estimated",
+     "value_m": 0.863
+    },
+    "width": {
+     "error_band_m": 0.062,
+     "source": "estimated",
+     "value_m": 0.247
+    },
+    "yaw_deg": 79.67
+   },
+   "object_type": "wall_item",
+   "up_axis": 2
+  },
+  {
+   "category": "dining chair",
+   "confidence": 0.581,
+   "frames": 17,
+   "box": {
+    "center": [
+     1.259,
+     0.646,
+     -1.021
+    ],
+    "height": {
+     "error_band_m": 0.22,
+     "source": "estimated",
+     "value_m": 0.881
+    },
+    "length": {
+     "error_band_m": 0.083,
+     "source": "estimated",
+     "value_m": 0.33
+    },
+    "width": {
+     "error_band_m": 0.063,
+     "source": "estimated",
+     "value_m": 0.254
+    },
+    "yaw_deg": 111.39
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "dining chair",
+   "confidence": 0.55,
+   "frames": 19,
+   "box": {
+    "center": [
+     1.626,
+     -0.33,
+     -1.226
+    ],
+    "height": {
+     "error_band_m": 0.125,
+     "source": "estimated",
+     "value_m": 0.501
+    },
+    "length": {
+     "error_band_m": 0.07,
+     "source": "estimated",
+     "value_m": 0.278
+    },
+    "width": {
+     "error_band_m": 0.051,
+     "source": "estimated",
+     "value_m": 0.206
+    },
+    "yaw_deg": 1.37
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "glass display cabinet",
+   "confidence": 0.508,
+   "frames": 16,
+   "box": {
+    "center": [
+     3.458,
+     0.599,
+     -0.225
+    ],
+    "height": {
+     "error_band_m": 0.326,
+     "source": "estimated",
+     "value_m": 1.304
+    },
+    "length": {
+     "error_band_m": 0.338,
+     "source": "estimated",
+     "value_m": 1.351
+    },
+    "width": {
+     "error_band_m": 0.119,
+     "source": "estimated",
+     "value_m": 0.474
+    },
+    "yaw_deg": 79.59
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "photo frame",
+   "confidence": 0.536,
+   "frames": 10,
+   "box": {
+    "center": [
+     -0.477,
+     4.542,
+     -1.15
+    ],
+    "height": {
+     "error_band_m": 0.172,
+     "source": "estimated",
+     "value_m": 0.688
+    },
+    "length": {
+     "error_band_m": 0.147,
+     "source": "estimated",
+     "value_m": 0.587
+    },
+    "width": {
+     "error_band_m": 0.077,
+     "source": "estimated",
+     "value_m": 0.307
+    },
+    "yaw_deg": 83.0
+   },
+   "object_type": "wall_item",
+   "up_axis": 2
+  },
+  {
+   "category": "photo frame",
+   "confidence": 0.466,
+   "frames": 15,
+   "box": {
+    "center": [
+     -1.168,
+     1.698,
+     -1.267
+    ],
+    "height": {
+     "error_band_m": 0.109,
+     "source": "estimated",
+     "value_m": 0.437
+    },
+    "length": {
+     "error_band_m": 0.108,
+     "source": "estimated",
+     "value_m": 0.434
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.182
+    },
+    "yaw_deg": 80.05
+   },
+   "object_type": "wall_item",
+   "up_axis": 2
+  },
+  {
+   "category": "dining table",
+   "confidence": 0.607,
+   "frames": 7,
+   "box": {
+    "center": [
+     1.234,
+     3.059,
+     -1.245
+    ],
+    "height": {
+     "error_band_m": 0.107,
+     "source": "estimated",
+     "value_m": 0.43
+    },
+    "length": {
+     "error_band_m": 0.156,
+     "source": "estimated",
+     "value_m": 0.622
+    },
+    "width": {
+     "error_band_m": 0.153,
+     "source": "estimated",
+     "value_m": 0.614
+    },
+    "yaw_deg": 80.11
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "box",
+   "confidence": 0.489,
+   "frames": 13,
+   "box": {
+    "center": [
+     0.537,
+     0.267,
+     -1.484
+    ],
+    "height": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.062
+    },
+    "length": {
+     "error_band_m": 0.084,
+     "source": "estimated",
+     "value_m": 0.336
+    },
+    "width": {
+     "error_band_m": 0.062,
+     "source": "estimated",
+     "value_m": 0.248
+    },
+    "yaw_deg": 27.16
+   },
+   "object_type": "decor",
+   "up_axis": 2
+  },
+  {
+   "category": "armchair",
+   "confidence": 0.48,
+   "frames": 13,
+   "box": {
+    "center": [
+     -0.389,
+     2.851,
+     -0.829
+    ],
+    "height": {
+     "error_band_m": 0.146,
+     "source": "estimated",
+     "value_m": 0.584
+    },
+    "length": {
+     "error_band_m": 0.356,
+     "source": "estimated",
+     "value_m": 1.425
+    },
+    "width": {
+     "error_band_m": 0.213,
+     "source": "estimated",
+     "value_m": 0.851
+    },
+    "yaw_deg": 77.82
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "tv stand",
+   "confidence": 0.483,
+   "frames": 8,
+   "box": {
+    "center": [
+     3.455,
+     1.928,
+     -1.271
+    ],
+    "height": {
+     "error_band_m": 0.098,
+     "source": "estimated",
+     "value_m": 0.391
+    },
+    "length": {
+     "error_band_m": 0.315,
+     "source": "estimated",
+     "value_m": 1.26
+    },
+    "width": {
+     "error_band_m": 0.08,
+     "source": "estimated",
+     "value_m": 0.318
+    },
+    "yaw_deg": 72.44
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "dining chair",
+   "confidence": 0.584,
+   "frames": 10,
+   "box": {
+    "center": [
+     2.472,
+     -0.055,
+     -0.681
+    ],
+    "height": {
+     "error_band_m": 0.073,
+     "source": "estimated",
+     "value_m": 0.29
+    },
+    "length": {
+     "error_band_m": 0.075,
+     "source": "estimated",
+     "value_m": 0.299
+    },
+    "width": {
+     "error_band_m": 0.062,
+     "source": "estimated",
+     "value_m": 0.248
+    },
+    "yaw_deg": 4.68
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "leather sofa",
+   "confidence": 0.423,
+   "frames": 8,
+   "box": {
+    "center": [
+     -0.254,
+     3.47,
+     -0.871
+    ],
+    "height": {
+     "error_band_m": 0.154,
+     "source": "estimated",
+     "value_m": 0.616
+    },
+    "length": {
+     "error_band_m": 0.271,
+     "source": "estimated",
+     "value_m": 1.084
+    },
+    "width": {
+     "error_band_m": 0.233,
+     "source": "estimated",
+     "value_m": 0.932
+    },
+    "yaw_deg": 90.15
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "floor lamp",
+   "confidence": 0.56,
+   "frames": 7,
+   "box": {
+    "center": [
+     3.417,
+     -0.676,
+     -0.945
+    ],
+    "height": {
+     "error_band_m": 0.261,
+     "source": "estimated",
+     "value_m": 1.045
+    },
+    "length": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.135
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.123
+    },
+    "yaw_deg": 3.48
+   },
+   "object_type": "decor",
+   "up_axis": 2
+  },
+  {
+   "category": "photo frame",
+   "confidence": 0.519,
+   "frames": 10,
+   "box": {
+    "center": [
+     1.155,
+     -0.617,
+     0.017
+    ],
+    "height": {
+     "error_band_m": 0.208,
+     "source": "estimated",
+     "value_m": 0.833
+    },
+    "length": {
+     "error_band_m": 0.177,
+     "source": "estimated",
+     "value_m": 0.708
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.12
+    },
+    "yaw_deg": 166.93
+   },
+   "object_type": "wall_item",
+   "up_axis": 2
+  },
+  {
+   "category": "tv stand",
+   "confidence": 0.481,
+   "frames": 7,
+   "box": {
+    "center": [
+     3.727,
+     3.135,
+     -0.86
+    ],
+    "height": {
+     "error_band_m": 0.282,
+     "source": "estimated",
+     "value_m": 1.128
+    },
+    "length": {
+     "error_band_m": 0.317,
+     "source": "estimated",
+     "value_m": 1.269
+    },
+    "width": {
+     "error_band_m": 0.101,
+     "source": "estimated",
+     "value_m": 0.404
+    },
+    "yaw_deg": 94.32
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "photo frame",
+   "confidence": 0.47,
+   "frames": 6,
+   "box": {
+    "center": [
+     0.09,
+     5.053,
+     -1.275
+    ],
+    "height": {
+     "error_band_m": 0.107,
+     "source": "estimated",
+     "value_m": 0.428
+    },
+    "length": {
+     "error_band_m": 0.142,
+     "source": "estimated",
+     "value_m": 0.568
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.183
+    },
+    "yaw_deg": 165.89
+   },
+   "object_type": "wall_item",
+   "up_axis": 2
+  },
+  {
+   "category": "dining chair",
+   "confidence": 0.6,
+   "frames": 7,
+   "box": {
+    "center": [
+     2.173,
+     1.378,
+     -0.968
+    ],
+    "height": {
+     "error_band_m": 0.196,
+     "source": "estimated",
+     "value_m": 0.784
+    },
+    "length": {
+     "error_band_m": 0.129,
+     "source": "estimated",
+     "value_m": 0.517
+    },
+    "width": {
+     "error_band_m": 0.095,
+     "source": "estimated",
+     "value_m": 0.381
+    },
+    "yaw_deg": 53.88
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "photo frame",
+   "confidence": 0.391,
+   "frames": 10,
+   "box": {
+    "center": [
+     3.842,
+     1.522,
+     0.347
+    ],
+    "height": {
+     "error_band_m": 0.097,
+     "source": "estimated",
+     "value_m": 0.389
+    },
+    "length": {
+     "error_band_m": 0.1,
+     "source": "estimated",
+     "value_m": 0.399
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.146
+    },
+    "yaw_deg": 63.1
+   },
+   "object_type": "wall_item",
+   "up_axis": 2
+  },
+  {
+   "category": "radiator",
+   "confidence": 0.645,
+   "frames": 6,
+   "box": {
+    "center": [
+     3.051,
+     4.416,
+     -1.096
+    ],
+    "height": {
+     "error_band_m": 0.174,
+     "source": "estimated",
+     "value_m": 0.696
+    },
+    "length": {
+     "error_band_m": 0.248,
+     "source": "estimated",
+     "value_m": 0.992
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.193
+    },
+    "yaw_deg": 171.79
+   },
+   "object_type": "fixture",
+   "up_axis": 2
+  },
+  {
+   "category": "table runner",
+   "confidence": 0.414,
+   "frames": 9,
+   "box": {
+    "center": [
+     1.742,
+     0.419,
+     -0.793
+    ],
+    "height": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.182
+    },
+    "length": {
+     "error_band_m": 0.343,
+     "source": "estimated",
+     "value_m": 1.372
+    },
+    "width": {
+     "error_band_m": 0.241,
+     "source": "estimated",
+     "value_m": 0.963
+    },
+    "yaw_deg": 82.17
+   },
+   "object_type": "textile",
+   "up_axis": 2
+  },
+  {
+   "category": "photo frame",
+   "confidence": 0.492,
+   "frames": 7,
+   "box": {
+    "center": [
+     4.166,
+     3.089,
+     0.015
+    ],
+    "height": {
+     "error_band_m": 0.156,
+     "source": "estimated",
+     "value_m": 0.624
+    },
+    "length": {
+     "error_band_m": 0.14,
+     "source": "estimated",
+     "value_m": 0.56
+    },
+    "width": {
+     "error_band_m": 0.061,
+     "source": "estimated",
+     "value_m": 0.246
+    },
+    "yaw_deg": 86.95
+   },
+   "object_type": "wall_item",
+   "up_axis": 2
+  },
+  {
+   "category": "wall shelf",
+   "confidence": 0.417,
+   "frames": 8,
+   "box": {
+    "center": [
+     3.937,
+     1.85,
+     0.234
+    ],
+    "height": {
+     "error_band_m": 0.095,
+     "source": "estimated",
+     "value_m": 0.38
+    },
+    "length": {
+     "error_band_m": 0.285,
+     "source": "estimated",
+     "value_m": 1.14
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.133
+    },
+    "yaw_deg": 75.72
+   },
+   "object_type": "wall_item",
+   "up_axis": 2
+  },
+  {
+   "category": "vase",
+   "confidence": 0.395,
+   "frames": 8,
+   "box": {
+    "center": [
+     1.8,
+     0.431,
+     -0.663
+    ],
+    "height": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.202
+    },
+    "length": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.185
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.138
+    },
+    "yaw_deg": 1.84
+   },
+   "object_type": "decor",
+   "up_axis": 2
+  },
+  {
+   "category": "rug",
+   "confidence": 0.513,
+   "frames": 6,
+   "box": {
+    "center": [
+     1.561,
+     2.996,
+     -1.496
+    ],
+    "height": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.098
+    },
+    "length": {
+     "error_band_m": 0.22,
+     "source": "estimated",
+     "value_m": 0.878
+    },
+    "width": {
+     "error_band_m": 0.132,
+     "source": "estimated",
+     "value_m": 0.526
+    },
+    "yaw_deg": 89.21
+   },
+   "object_type": "textile",
+   "up_axis": 2
+  },
+  {
+   "category": "tv",
+   "confidence": 0.427,
+   "frames": 7,
+   "box": {
+    "center": [
+     3.693,
+     1.857,
+     -0.744
+    ],
+    "height": {
+     "error_band_m": 0.151,
+     "source": "estimated",
+     "value_m": 0.603
+    },
+    "length": {
+     "error_band_m": 0.24,
+     "source": "estimated",
+     "value_m": 0.96
+    },
+    "width": {
+     "error_band_m": 0.09,
+     "source": "estimated",
+     "value_m": 0.359
+    },
+    "yaw_deg": 80.53
+   },
+   "object_type": "fixture",
+   "up_axis": 2
+  },
+  {
+   "category": "floor lamp",
+   "confidence": 0.417,
+   "frames": 7,
+   "box": {
+    "center": [
+     0.033,
+     4.654,
+     -1.166
+    ],
+    "height": {
+     "error_band_m": 0.111,
+     "source": "estimated",
+     "value_m": 0.446
+    },
+    "length": {
+     "error_band_m": 0.08,
+     "source": "estimated",
+     "value_m": 0.319
+    },
+    "width": {
+     "error_band_m": 0.074,
+     "source": "estimated",
+     "value_m": 0.296
+    },
+    "yaw_deg": 177.7
+   },
+   "object_type": "decor",
+   "up_axis": 2
+  },
+  {
+   "category": "floor lamp",
+   "confidence": 0.438,
+   "frames": 5,
+   "box": {
+    "center": [
+     3.255,
+     3.882,
+     -1.201
+    ],
+    "height": {
+     "error_band_m": 0.123,
+     "source": "estimated",
+     "value_m": 0.493
+    },
+    "length": {
+     "error_band_m": 0.068,
+     "source": "estimated",
+     "value_m": 0.272
+    },
+    "width": {
+     "error_band_m": 0.062,
+     "source": "estimated",
+     "value_m": 0.248
+    },
+    "yaw_deg": 2.4
+   },
+   "object_type": "decor",
+   "up_axis": 2
+  },
+  {
+   "category": "violin",
+   "confidence": 0.342,
+   "frames": 6,
+   "box": {
+    "center": [
+     3.972,
+     4.162,
+     -1.051
+    ],
+    "height": {
+     "error_band_m": 0.223,
+     "source": "estimated",
+     "value_m": 0.893
+    },
+    "length": {
+     "error_band_m": 0.129,
+     "source": "estimated",
+     "value_m": 0.515
+    },
+    "width": {
+     "error_band_m": 0.068,
+     "source": "estimated",
+     "value_m": 0.27
+    },
+    "yaw_deg": 50.23
+   },
+   "object_type": "decor",
+   "up_axis": 2
+  },
+  {
+   "category": "rug",
+   "confidence": 0.484,
+   "frames": 4,
+   "box": {
+    "center": [
+     0.301,
+     3.029,
+     -1.487
+    ],
+    "height": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.078
+    },
+    "length": {
+     "error_band_m": 0.083,
+     "source": "estimated",
+     "value_m": 0.33
+    },
+    "width": {
+     "error_band_m": 0.072,
+     "source": "estimated",
+     "value_m": 0.29
+    },
+    "yaw_deg": 84.05
+   },
+   "object_type": "textile",
+   "up_axis": 2
+  },
+  {
+   "category": "rug",
+   "confidence": 0.466,
+   "frames": 4,
+   "box": {
+    "center": [
+     0.917,
+     3.479,
+     -1.489
+    ],
+    "height": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.09
+    },
+    "length": {
+     "error_band_m": 0.296,
+     "source": "estimated",
+     "value_m": 1.183
+    },
+    "width": {
+     "error_band_m": 0.06,
+     "source": "estimated",
+     "value_m": 0.241
+    },
+    "yaw_deg": 165.43
+   },
+   "object_type": "textile",
+   "up_axis": 2
+  },
+  {
+   "category": "tray",
+   "confidence": 0.457,
+   "frames": 4,
+   "box": {
+    "center": [
+     1.004,
+     3.167,
+     -1.047
+    ],
+    "height": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.084
+    },
+    "length": {
+     "error_band_m": 0.06,
+     "source": "estimated",
+     "value_m": 0.239
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.191
+    },
+    "yaw_deg": 161.23
+   },
+   "object_type": "decor",
+   "up_axis": 2
+  },
+  {
+   "category": "book",
+   "confidence": 0.426,
+   "frames": 4,
+   "box": {
+    "center": [
+     -1.393,
+     0.551,
+     -0.954
+    ],
+    "height": {
+     "error_band_m": 0.223,
+     "source": "estimated",
+     "value_m": 0.891
+    },
+    "length": {
+     "error_band_m": 0.095,
+     "source": "estimated",
+     "value_m": 0.381
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.181
+    },
+    "yaw_deg": 89.9
+   },
+   "object_type": "decor",
+   "up_axis": 2
+  },
+  {
+   "category": "book",
+   "confidence": 0.329,
+   "frames": 5,
+   "box": {
+    "center": [
+     3.37,
+     0.639,
+     -0.418
+    ],
+    "height": {
+     "error_band_m": 0.059,
+     "source": "estimated",
+     "value_m": 0.235
+    },
+    "length": {
+     "error_band_m": 0.106,
+     "source": "estimated",
+     "value_m": 0.422
+    },
+    "width": {
+     "error_band_m": 0.057,
+     "source": "estimated",
+     "value_m": 0.226
+    },
+    "yaw_deg": 51.53
+   },
+   "object_type": "decor",
+   "up_axis": 2
+  },
+  {
+   "category": "photo frame",
+   "confidence": 0.406,
+   "frames": 4,
+   "box": {
+    "center": [
+     3.941,
+     1.844,
+     0.328
+    ],
+    "height": {
+     "error_band_m": 0.088,
+     "source": "estimated",
+     "value_m": 0.35
+    },
+    "length": {
+     "error_band_m": 0.102,
+     "source": "estimated",
+     "value_m": 0.409
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.114
+    },
+    "yaw_deg": 76.66
+   },
+   "object_type": "wall_item",
+   "up_axis": 2
+  },
+  {
+   "category": "glass display cabinet",
+   "confidence": 0.401,
+   "frames": 4,
+   "box": {
+    "center": [
+     -1.304,
+     0.77,
+     -1.122
+    ],
+    "height": {
+     "error_band_m": 0.172,
+     "source": "estimated",
+     "value_m": 0.687
+    },
+    "length": {
+     "error_band_m": 0.176,
+     "source": "estimated",
+     "value_m": 0.703
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.123
+    },
+    "yaw_deg": 81.76
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "box",
+   "confidence": 0.379,
+   "frames": 4,
+   "box": {
+    "center": [
+     3.761,
+     2.437,
+     -0.872
+    ],
+    "height": {
+     "error_band_m": 0.11,
+     "source": "estimated",
+     "value_m": 0.438
+    },
+    "length": {
+     "error_band_m": 0.1,
+     "source": "estimated",
+     "value_m": 0.4
+    },
+    "width": {
+     "error_band_m": 0.06,
+     "source": "estimated",
+     "value_m": 0.238
+    },
+    "yaw_deg": 167.82
+   },
+   "object_type": "decor",
+   "up_axis": 2
+  },
+  {
+   "category": "speaker",
+   "confidence": 0.37,
+   "frames": 4,
+   "box": {
+    "center": [
+     3.757,
+     2.433,
+     -0.877
+    ],
+    "height": {
+     "error_band_m": 0.107,
+     "source": "estimated",
+     "value_m": 0.428
+    },
+    "length": {
+     "error_band_m": 0.1,
+     "source": "estimated",
+     "value_m": 0.401
+    },
+    "width": {
+     "error_band_m": 0.064,
+     "source": "estimated",
+     "value_m": 0.257
+    },
+    "yaw_deg": 160.98
+   },
+   "object_type": "fixture",
+   "up_axis": 2
+  },
+  {
+   "category": "cross",
+   "confidence": 0.361,
+   "frames": 4,
+   "box": {
+    "center": [
+     -0.485,
+     -0.34,
+     0.72
+    ],
+    "height": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.133
+    },
+    "length": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.099
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.064
+    },
+    "yaw_deg": 46.26
+   },
+   "object_type": "wall_item",
+   "up_axis": 2
+  },
+  {
+   "category": "book",
+   "confidence": 0.345,
+   "frames": 4,
+   "box": {
+    "center": [
+     3.4,
+     0.627,
+     0.058
+    ],
+    "height": {
+     "error_band_m": 0.17,
+     "source": "estimated",
+     "value_m": 0.681
+    },
+    "length": {
+     "error_band_m": 0.09,
+     "source": "estimated",
+     "value_m": 0.361
+    },
+    "width": {
+     "error_band_m": 0.068,
+     "source": "estimated",
+     "value_m": 0.271
+    },
+    "yaw_deg": 8.56
+   },
+   "object_type": "decor",
+   "up_axis": 2
+  },
+  {
+   "category": "candle holder",
+   "confidence": 0.339,
+   "frames": 4,
+   "box": {
+    "center": [
+     0.05,
+     4.645,
+     -1.145
+    ],
+    "height": {
+     "error_band_m": 0.102,
+     "source": "estimated",
+     "value_m": 0.407
+    },
+    "length": {
+     "error_band_m": 0.073,
+     "source": "estimated",
+     "value_m": 0.291
+    },
+    "width": {
+     "error_band_m": 0.069,
+     "source": "estimated",
+     "value_m": 0.276
+    },
+    "yaw_deg": 179.29
+   },
+   "object_type": "decor",
+   "up_axis": 2
+  },
+  {
+   "category": "book",
+   "confidence": 0.426,
+   "frames": 3,
+   "box": {
+    "center": [
+     1.46,
+     2.882,
+     -1.325
+    ],
+    "height": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.13
+    },
+    "length": {
+     "error_band_m": 0.059,
+     "source": "estimated",
+     "value_m": 0.234
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.106
+    },
+    "yaw_deg": 75.37
+   },
+   "object_type": "decor",
+   "up_axis": 2
+  },
+  {
+   "category": "tea set",
+   "confidence": 0.362,
+   "frames": 3,
+   "box": {
+    "center": [
+     0.973,
+     3.169,
+     -1.048
+    ],
+    "height": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.083
+    },
+    "length": {
+     "error_band_m": 0.057,
+     "source": "estimated",
+     "value_m": 0.227
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.156
+    },
+    "yaw_deg": 126.86
+   },
+   "object_type": "decor",
+   "up_axis": 2
+  },
+  {
+   "category": "almirah",
+   "confidence": 0.273,
+   "frames": 3,
+   "box": {
+    "center": [
+     3.741,
+     3.142,
+     -0.628
+    ],
+    "height": {
+     "error_band_m": 0.171,
+     "source": "estimated",
+     "value_m": 0.683
+    },
+    "length": {
+     "error_band_m": 0.312,
+     "source": "estimated",
+     "value_m": 1.247
+    },
+    "width": {
+     "error_band_m": 0.087,
+     "source": "estimated",
+     "value_m": 0.346
+    },
+    "yaw_deg": 90.0
+   },
+   "object_type": "furniture",
+   "up_axis": 2
+  },
+  {
+   "category": "window sill",
+   "confidence": 0.363,
+   "frames": 5,
+   "box": {
+    "center": [
+     3.96,
+     1.899,
+     0.099
+    ],
+    "height": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.068
+    },
+    "length": {
+     "error_band_m": 0.221,
+     "source": "estimated",
+     "value_m": 0.885
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.057
+    },
+    "yaw_deg": 77.15
+   }
+  },
+  {
+   "category": "window sill",
+   "confidence": 0.395,
+   "frames": 4,
+   "box": {
+    "center": [
+     1.034,
+     5.039,
+     -0.612
+    ],
+    "height": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.051
+    },
+    "length": {
+     "error_band_m": 0.252,
+     "source": "estimated",
+     "value_m": 1.009
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.161
+    },
+    "yaw_deg": 162.77
+   }
+  },
+  {
+   "category": "crown molding",
+   "confidence": 0.362,
+   "frames": 3,
+   "box": {
+    "center": [
+     3.93,
+     1.754,
+     0.924
+    ],
+    "height": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.102
+    },
+    "length": {
+     "error_band_m": 0.574,
+     "source": "estimated",
+     "value_m": 2.296
+    },
+    "width": {
+     "error_band_m": 0.05,
+     "source": "estimated",
+     "value_m": 0.121
+    },
+    "yaw_deg": 77.27
+   }
+  }
+ ],
+ "ground_truth": [
+  {
+   "label": "sofa",
+   "center": [
+    -0.4250945553878014,
+    3.0415811153627224,
+    -0.9841983173547629
+   ],
+   "yaw": 1.3422753755692651,
+   "size_m": [
+    1.9877861748713008,
+    0.9716191990888042,
+    1.0199947587745135
+   ]
+  },
+  {
+   "label": "sofa",
+   "center": [
+    0.9339811291162957,
+    4.216548068666067,
+    -1.0090177931723192
+   ],
+   "yaw": 2.9551211094811167,
+   "size_m": [
+    0.9623349773417504,
+    0.9283699770014953,
+    0.9650633804406783
+   ]
+  },
+  {
+   "label": "table",
+   "center": [
+    1.850672885040592,
+    0.3981469951730561,
+    -1.101206456241918
+   ],
+   "yaw": 1.3322005738046607,
+   "size_m": [
+    1.3685611088021492,
+    1.0568836913177966,
+    0.774641693284815
+   ]
+  },
+  {
+   "label": "chair",
+   "center": [
+    1.299097181711198,
+    0.19758596714196108,
+    -1.0169122891815165
+   ],
+   "yaw": 2.9130717023641615,
+   "size_m": [
+    0.5688079573104385,
+    0.3659280885416645,
+    0.9568333769450996
+   ]
+  },
+  {
+   "label": "chair",
+   "center": [
+    1.4396495819964246,
+    0.6525253049989826,
+    -1.0248951126737476
+   ],
+   "yaw": 2.914600405282319,
+   "size_m": [
+    0.5358591837813141,
+    0.39754880995236946,
+    0.9398615465471182
+   ]
+  },
+  {
+   "label": "chair",
+   "center": [
+    1.7812681972458213,
+    -0.21689404194065132,
+    -1.013257728395516
+   ],
+   "yaw": 1.3769624272898136,
+   "size_m": [
+    0.574743578953936,
+    0.3659280885416645,
+    0.9495242553730984
+   ]
+  },
+  {
+   "label": "cabinet",
+   "center": [
+    3.9282076316155616,
+    3.1504576674819464,
+    -0.8897891803307848
+   ],
+   "yaw": 1.371447481120306,
+   "size_m": [
+    1.3071886219441782,
+    0.5604317524814695,
+    1.2185404291691893
+   ]
+  },
+  {
+   "label": "tv_monitor",
+   "center": [
+    3.643464326641407,
+    1.883702025293607,
+    -0.7612471919880133
+   ],
+   "yaw": 1.1933727164676637,
+   "size_m": [
+    0.8553315576071212,
+    0.05716594787664268,
+    0.615231457434512
+   ]
+  },
+  {
+   "label": "cabinet",
+   "center": [
+    3.5334096013072,
+    1.033227058615209,
+    -0.4973298120135883
+   ],
+   "yaw": 2.9422438079152022,
+   "size_m": [
+    0.4958353703463038,
+    0.4565472209973125,
+    2.0034591658035823
+   ]
+  },
+  {
+   "label": "shelf",
+   "center": [
+    3.446913757260984,
+    0.576075921234191,
+    -0.02145379859026253
+   ],
+   "yaw": 2.9422438079152022,
+   "size_m": [
+    0.4843407869866259,
+    0.47409037367882945,
+    1.0517071389569315
+   ]
+  }
+ ],
+ "listing_by_geometry": {
+  "annotated": 10,
+  "covered": 9,
+  "by_class": {
+   "cabinet": {
+    "annotated": 2,
+    "listed": 3,
+    "covered": 2
+   },
+   "chair": {
+    "annotated": 3,
+    "listed": 9,
+    "covered": 3
+   },
+   "shelf": {
+    "annotated": 1,
+    "listed": 1,
+    "covered": 1
+   },
+   "sofa": {
+    "annotated": 2,
+    "listed": 1,
+    "covered": 1
+   },
+   "table": {
+    "annotated": 1,
+    "listed": 2,
+    "covered": 1
+   },
+   "tv_monitor": {
+    "annotated": 1,
+    "listed": 1,
+    "covered": 1
+   }
+  }
+ },
+ "big_item_placement": {
+  "placed": "9 of 10",
+  "by_class": {
+   "cabinet": "1 of 2",
+   "chair": "3 of 3",
+   "shelf": "1 of 1",
+   "sofa": "2 of 2",
+   "table": "1 of 1",
+   "tv_monitor": "1 of 1"
+  },
+  "median_centre_error_m": 0.181,
+  "median_length_error_pct": -12.9,
+  "median_width_error_pct": -18.0,
+  "big_objects": 19,
+  "rows": [
+   {
+    "label": "sofa",
+    "found": true,
+    "centre_error_m": 0.191,
+    "length_error_pct": -29.0,
+    "width_error_pct": -12.8
+   },
+   {
+    "label": "sofa",
+    "found": true,
+    "centre_error_m": 0.106,
+    "length_error_pct": -12.9,
+    "width_error_pct": -18.1
+   },
+   {
+    "label": "table",
+    "found": true,
+    "centre_error_m": 0.192,
+    "length_error_pct": -15.8,
+    "width_error_pct": -12.0
+   },
+   {
+    "label": "chair",
+    "found": true,
+    "centre_error_m": 0.147,
+    "length_error_pct": -5.1,
+    "width_error_pct": -18.0
+   },
+   {
+    "label": "chair",
+    "found": true,
+    "centre_error_m": 0.181,
+    "length_error_pct": -38.4,
+    "width_error_pct": -36.1
+   },
+   {
+    "label": "chair",
+    "found": true,
+    "centre_error_m": 0.192,
+    "length_error_pct": -51.6,
+    "width_error_pct": -43.7
+   },
+   {
+    "label": "cabinet",
+    "found": true,
+    "centre_error_m": 0.187,
+    "length_error_pct": -4.6,
+    "width_error_pct": -38.3
+   },
+   {
+    "label": "tv_monitor",
+    "found": true,
+    "centre_error_m": 0.056,
+    "length_error_pct": 12.2,
+    "width_error_pct": 528.0
+   },
+   {
+    "label": "cabinet",
+    "found": false
+   },
+   {
+    "label": "shelf",
+    "found": true,
+    "centre_error_m": 0.025,
+    "length_error_pct": 178.9,
+    "width_error_pct": -0.0
+   }
+  ]
+ },
+ "inventory_meta": {
+  "items": 30,
+  "keyframes": 8,
+  "listed_by": {
+   "list": "gemini-3-flash-preview",
+   "cross_check": "claude-opus-5-5"
+  },
+  "per_model": {
+   "gemini-3-flash-preview": 24,
+   "claude-opus-5-5": 28
+  },
+  "failed": []
+ },
+ "objects_meta": {
+  "detector": "grounding-dino",
+  "segmenter": "sam2.1-large",
+  "fusion": {
+   "ambiguous_views_dropped": 20,
+   "merges_blocked": 158
+  },
+  "dedupe": {
+   "merged": 17,
+   "capped": 9
+  },
+  "built_ins": 3,
+  "unplaced": 4,
+  "retried": 10,
+  "objects": 48,
+  "opening_masks": 58
+ },
+ "charged_micro_inr": 5085731
+}
