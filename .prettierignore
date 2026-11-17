@@ -12,3 +12,6 @@ docs
 services/api/openapi.json
 supabase/types
 eval/*/results
+# Machine-written evaluation results, stored compact
+eval/render-bakeoff/results/*.json
+eval/render-bakeoff/voting/key_*.json
