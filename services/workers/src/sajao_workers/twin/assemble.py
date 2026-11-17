@@ -18,6 +18,7 @@ import numpy as np
 
 from sajao_schemas import to_json_dict
 from sajao_schemas.generated.v1 import SpaceTwin
+from sajao_workers.twin.confidence import confidence_level
 from sajao_workers.twin.hero import ORBIT_YAW_DEG, SAFE_RADIUS_M
 from sajao_workers.twin.space import Space
 
@@ -236,6 +237,10 @@ def assemble_twin(
             "confidence": "approximate",
             "sources": ["compass"],
         },
+        # The shell comes from depth: LiDAR measures it, a depth model only estimates it.
+        "confidence": dict(
+            confidence_level("lidar" if manifest.get("depth_source") == "lidar" else "depth_model")
+        ),
     }
     if hero_views:
         twin["viewing"] = _viewing(twin["keyframes"], hero_views, anchor_ids)

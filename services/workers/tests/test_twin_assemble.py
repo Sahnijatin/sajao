@@ -108,6 +108,13 @@ def test_the_assembled_twin_validates_against_the_schema(room: Room) -> None:
     assert json.loads(json.dumps(twin)) == twin  # plain JSON
 
 
+def test_the_twin_says_how_far_its_measurements_can_be_trusted(room: Room) -> None:
+    assert build(room)["confidence"] == {"level": "ar_measured", "basis": "lidar", "tape_values": 0}
+    estimated = build(room, manifest={**manifest(), "depth_source": "image"})
+    assert estimated["confidence"]["level"] == "estimated"
+    assert estimated["confidence"]["basis"] == "depth_model"
+
+
 def test_scale_never_asks_for_tape_up_front(room: Room) -> None:
     scale = build(room)["scale"]
     assert scale["needs_tape_value"] is False
