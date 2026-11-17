@@ -156,7 +156,7 @@ class VertexGeminiVision:
             for b in request.blobs
         ]
         parts.append({"text": p["prompt"]})
-        body = {
+        body: dict[str, Any] = {
             "contents": [{"role": "user", "parts": parts}],
             "generationConfig": {
                 "mediaResolution": "MEDIA_RESOLUTION_HIGH",
@@ -166,6 +166,8 @@ class VertexGeminiVision:
                 "maxOutputTokens": int(p["max_output_tokens"]),
             },
         }
+        if "thinking_level" in p:  # optional: "low" keeps simple tasks from over-thinking
+            body["generationConfig"]["thinkingConfig"] = {"thinkingLevel": p["thinking_level"]}
         try:
             token = self._tokens.token()
         except Exception as error:

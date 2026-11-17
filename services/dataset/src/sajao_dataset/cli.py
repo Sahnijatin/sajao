@@ -97,7 +97,21 @@ def main(argv: list[str] | None = None) -> int:
     fr_cmd.add_argument("--models", type=Path, default=Path("data/models"))
     fr_cmd.add_argument("--ffmpeg", default="ffmpeg", help="ffmpeg executable")
 
+    ev_cmd = commands.add_parser("evalset", help="Build and score the Indian-home eval set")
+    ev_cmd.add_argument(
+        "stage", choices=["tag", "select", "label", "check", "export", "listing", "score"]
+    )
+    ev_cmd.add_argument("--frames-manifest", type=Path, default=Path("data/frames.jsonl"))
+    ev_cmd.add_argument("--frames-dir", type=Path, default=Path("data/frames"))
+    ev_cmd.add_argument("--folder", type=Path, default=Path("data/evalset"))
+    ev_cmd.add_argument("--limit", type=int, default=None, help="At most this many frames")
+    ev_cmd.add_argument("--total", type=int, default=200)
+    ev_cmd.add_argument("--quota", type=int, default=20, help="Frames per target class")
+    ev_cmd.add_argument("--concurrency", type=int, default=4)
+
     args = parser.parse_args(argv)
+    if args.command == "evalset":
+        return _evalset(args)
     if args.command == "frames":
         return _frames(args)
     if args.command == "download":
@@ -111,6 +125,108 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "screen":
         return _screen(args)
     return 2
+
+
+def _evalset(args: argparse.Namespace) -> int:
+    import json
+
+    from sajao_dataset import evalset as ev
+    from sajao_dataset import evalset_run as run
+
+    folder: Path = args.folder
+    selection_path = folder / "selection.json"
+
+    def selected() -> list[dict[str, object]]:
+        if not selection_path.exists():
+            sys.exit("Run `evalset select` first.")
+        frames: list[dict[str, object]] = json.loads(selection_path.read_text())["frames"]
+        return frames[: args.limit] if args.limit else frames
+
+    if args.stage == "select":
+        tagged = ev.read_jsonl(folder / "tags.jsonl")
+        pick = ev.select_stratified(tagged, total=args.total, quota=args.quota)
+        selection_path.write_text(
+            json.dumps(
+                {
+                    "version": ev.EVALSET_VERSION,
+                    "frames": pick.frames,
+                    "per_class": pick.per_class,
+                    "short": pick.short,
+                },
+                indent=1,
+                sort_keys=True,
+            )
+        )
+        print(f"{len(pick.frames)} frames from {len(tagged)} tagged; per class {pick.per_class}")
+        if pick.short:
+            print(f"Target classes below the quota of {args.quota}: {pick.short}")
+        return 0
+    if args.stage == "export":
+        frames, rows = run.export_handcheck(folder, args.frames_dir, selected())
+        print(f"{rows} disagreements on {frames} frames: {folder / 'handcheck.jsonl'}")
+        return 0
+    if args.stage == "score":
+        report = run.score(folder, selected())
+        (folder / "report.json").write_text(json.dumps(report, indent=1, sort_keys=True))
+        print(json.dumps({k: v for k, v in report.items() if k != "per_class"}, indent=1))
+        print(f"Report: {folder / 'report.json'}")
+        return 0
+
+    if not os.environ.get("GCP_PROJECT_ID"):
+        sys.exit("Set GCP_PROJECT_ID and GCP_SA_KEY (and SAJAO_ANTHROPIC_API_KEY for Claude).")
+    models = run.build_models(folder)
+    if args.stage == "tag":
+        pool = ev.pool_frames(ev.read_jsonl(args.frames_manifest))
+        todo = pool[: args.limit] if args.limit else pool
+        result = asyncio.run(
+            run.run_stage(
+                todo,
+                folder / "tags.jsonl",
+                run.tag_work(models, args.frames_dir),
+                concurrency=args.concurrency,
+            )
+        )
+    elif args.stage == "label":
+        result = asyncio.run(
+            run.run_stage(
+                selected(),
+                folder / "labels.jsonl",
+                run.label_work(models, args.frames_dir),
+                concurrency=args.concurrency,
+            )
+        )
+    elif args.stage == "check":
+        labels = {r["path"]: r["objects"] for r in ev.read_jsonl(folder / "labels.jsonl")}
+        todo = [f for f in selected() if f["path"] in labels]
+        result = asyncio.run(
+            run.run_stage(
+                todo,
+                folder / "reviews.jsonl",
+                run.check_work(models, args.frames_dir, labels),
+                concurrency=args.concurrency,
+            )
+        )
+    else:
+        results = []
+        for role in ("list", "cross_check"):
+            results.append(
+                asyncio.run(
+                    run.run_stage(
+                        selected(),
+                        folder / f"listing_{role}.jsonl",
+                        run.listing_work(models, args.frames_dir, role),
+                        concurrency=args.concurrency,
+                    )
+                )
+            )
+        result = results[-1]
+        print(f"lister: {results[0]}")
+    print(
+        f"{args.stage}: {result.done} done, {result.skipped} already done, {result.failed} failed;"
+        f" answered by {result.by_model}" + (" (stopped at the spend cap)" if result.capped else "")
+    )
+    print(run.spend_line(models))
+    return 0
 
 
 def _find(args: argparse.Namespace) -> int:

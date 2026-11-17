@@ -1953,6 +1953,7 @@ dependencies = [
     { name = "opencv-python-headless" },
     { name = "pydantic" },
     { name = "sajao-gateway" },
+    { name = "sajao-workers" },
     { name = "yt-dlp", extra = ["default", "deno"] },
 ]
 
@@ -1964,6 +1965,7 @@ requires-dist = [
     { name = "opencv-python-headless", specifier = ">=4.10" },
     { name = "pydantic", specifier = ">=2.12" },
     { name = "sajao-gateway", editable = "services/gateway" },
+    { name = "sajao-workers", editable = "services/workers" },
     { name = "yt-dlp", extras = ["default", "deno"], specifier = "==2026.10.26" },
 ]
 

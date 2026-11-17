@@ -27,7 +27,13 @@ RULES: list[tuple[str, re.Pattern[str]]] = [
 
 # Repository paths that hold agent configuration are allowed as references, and so are
 # third-party projects whose name contains a flagged word and must be credited by name.
-PATHS = re.compile(r"\.claude/[\w./-]*|\bCLAUDE\.md\b|\bbradautomates/claude-video\b")
+PATHS = re.compile(
+    r"\.claude/[\w./-]*|\bCLAUDE\.md\b|\bbradautomates/claude-video\b"
+    # Hosted models and their SDK are credited by name in the third-party register.
+    r"|Claude Opus 5\.5 \(claude-opus-5-5\) on the Claude API"
+    r"|anthropic 2\.8\.0|anthropics/anthropic-sdk-python|anthropic\.com/legal/commercial-terms"
+    r"|Anthropic Commercial Terms of Service|sent to Anthropic"
+)
 
 
 def main() -> int:

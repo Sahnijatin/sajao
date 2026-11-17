@@ -138,3 +138,25 @@ Reads every finished clip in `data\downloads.jsonl` and writes JPEG frames to `d
 3. Faces are found with YuNet (downloaded once to `data\models`, checksum pinned) and blurred before the frame is written. Unblurred candidates exist only in a temporary folder that is always deleted.
 
 Each finished clip is logged in `data\frames_done.jsonl`, so reruns skip it. Thresholds are pinned in `src/sajao_dataset/frames.py` under `SAMPLER_VERSION`. The selection pass and thumbnail dedup reuse ideas from bradautomates/claude-video (MIT).
+
+## 5. Indian-home eval set
+
+A 200-frame set of hand-checked labels, used first to score the listing step per class. Detector training is on hold. Run each stage from this folder with `GCP_PROJECT_ID`, `GCP_SA_KEY` and `SAJAO_ANTHROPIC_API_KEY` set; every stage resumes and writes to `data/evalset/`.
+
+```bash
+uv run sajao-dataset evalset tag      # Gemini Flash-Lite: which classes each pool frame shows
+uv run sajao-dataset evalset select   # stratified pick of 200 frames
+uv run sajao-dataset evalset label    # Gemini Flash: class and 2D box per object
+uv run sajao-dataset evalset check    # Claude Opus: second opinion, missed objects
+uv run sajao-dataset evalset export   # disagreements to handcheck.jsonl with overlays
+uv run sajao-dataset evalset listing  # the listing step's prompt and models on each frame
+uv run sajao-dataset evalset score    # per-class recall and precision to report.json
+```
+
+- **Taxonomy** (`src/sajao_dataset/evalset.py`): 8 target classes (gas stove, water purifier, geyser, pooja unit, diwan, modular kitchen, ceiling fan, AC unit) and 16 common ones. Each class lists the names that count as it when the listing step names it.
+- **Pool:** the two sharpest frames of each clip, at least 3 s apart, from rooms where a target is likely, landscape only.
+- **Selection:** target classes are filled rarest first (20 frames each by default), then the rest round-robin over room types; at most one frame per clip and eight per video. Deterministic.
+- **Labels** are classes and 2D boxes (`box_2d`, ymin, xmin, ymax, xmax from 0 to 1000). Every model answer is validated (class in the taxonomy, box inside the frame, one verdict per label).
+- **Hand-check:** `handcheck.jsonl` has one row per disagreement; overlays in `data/evalset/handcheck/` show disputed boxes in red, numbered as in the sheet, and agreed labels in green. Decisions go in `decisions.jsonl`, one line each: `{"path", "item", "decision": "keep" | "drop" | "relabel", "class"}`. Labels both models agree on are kept without a hand-check.
+- **Score:** the listing step's own prompt, schema and image size, with Gemini as lister and Claude as cross-check, on each frame singly. A listed name counts for a class when it or one of its other names is in the class's list. Recall and precision are per frame and class, for each model and for the merged list. Unresolved disagreements are left out of the truth.
+- **Spend:** Claude and Gemini each charge a monthly ledger in `data/evalset/`. Claude stops at 20 USD a month, counting rejected answers too.

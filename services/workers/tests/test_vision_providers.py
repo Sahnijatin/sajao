@@ -64,6 +64,28 @@ async def test_gemini_sends_the_images_and_the_schema_and_is_charged_for_its_tok
     # 2000 x 0.50 + 500 x 3.00 USD per million tokens, at 95 rupees per USD.
     assert result.cost_micro_inr == pytest.approx(0.0025 * 95 * 1e6, rel=0.01)
     assert provider.estimate_cost_micro_inr(request()) >= result.cost_micro_inr
+    assert "thinkingConfig" not in sent["generationConfig"]
+
+
+async def test_gemini_thinking_level_is_optional() -> None:
+    sent: dict[str, Any] = {}
+
+    def handler(r: httpx.Request) -> httpx.Response:
+        sent.update(json.loads(r.content))
+        return httpx.Response(
+            200, json={"candidates": [{"content": {"parts": [{"text": json.dumps(LISTED)}]}}]}
+        )
+
+    base = request()
+    low = ModelRequest(
+        base.task,
+        base.modality,
+        base.prompt_id,
+        {**base.payload, "thinking_level": "low"},
+        base.blobs,
+    )
+    await gemini(handler).call(low)
+    assert sent["generationConfig"]["thinkingConfig"] == {"thinkingLevel": "low"}
 
 
 @pytest.mark.parametrize(("status", "retryable"), [(429, True), (503, True), (400, False)])

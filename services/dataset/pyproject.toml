@@ -10,11 +10,13 @@ dependencies = [
     "opencv-python-headless>=4.10",
     "pydantic>=2.12",
     "sajao-gateway",
+    "sajao-workers",
     "yt-dlp[default,deno]==2026.10.26",
 ]
 
 [tool.uv.sources]
 sajao-gateway = { workspace = true }
+sajao-workers = { workspace = true }
 
 [project.scripts]
 sajao-dataset = "sajao_dataset.cli:main"
