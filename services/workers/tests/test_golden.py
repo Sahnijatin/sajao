@@ -4,9 +4,17 @@ import json
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pytest
 
-from sajao_workers.golden import SheetError, accuracy_report, markdown, read_sheet
+from sajao_workers.golden import (
+    SheetError,
+    accuracy_report,
+    ground_truth_sizes,
+    inventory_recall,
+    markdown,
+    read_sheet,
+)
 
 FIXTURE = Path(__file__).parents[3] / "packages/schemas/fixtures/v1/valid/space-twin.json"
 
@@ -98,3 +106,75 @@ def test_the_summary_gives_the_golden_set_dimension_error() -> None:
     assert summary["walls_within_band"] == "3 of 4"
     text = markdown(report)
     assert "Test bedroom 1" in text and "| W2 | w1 |" in text
+
+
+def test_recall_against_the_listed_inventory_is_per_type() -> None:
+    doc = twin()
+    doc["objects"][0]["object_type"] = "furniture"  # sofa-1
+    doc["objects"][1]["object_type"] = "furniture"
+    doc["inventory"] = {
+        "listed_by": ["gemini-3-flash-preview"],
+        "items_listed": 5,
+        "unplaced": [
+            {"name": "wall clock", "type": "wall_item", "count": 1, "listed_by": ["m"],
+             "tried": ["owlv2: wall clock"], "reason": "not_seen_in_enough_frames"},
+            {"name": "geyser", "type": "fixture", "count": 1, "listed_by": ["m"],
+             "tried": ["owlv2: geyser"], "reason": "not_detected"},
+        ],
+    }  # fmt: skip
+
+    section = inventory_recall(doc)
+
+    assert section is not None
+    assert section["listed"] == 5 and section["placed"] == 3  # the radiator is a built-in
+    assert section["by_type"]["furniture"] == {"listed": 2, "placed": 2, "recall": 1.0}
+    assert section["by_type"]["built_in"] == {"listed": 1, "placed": 1, "recall": 1.0}
+    assert section["by_type"]["fixture"] == {"listed": 1, "placed": 0, "recall": 0.0}
+    assert [u["name"] for u in section["unplaced"]] == ["wall clock", "geyser"]
+
+
+def test_a_twin_without_an_inventory_has_no_recall_section() -> None:
+    doc = twin()
+    del doc["inventory"]
+    assert inventory_recall(doc) is None
+
+
+def test_box_sizes_are_scored_against_ground_truth_boxes() -> None:
+    doc = twin()
+    sofa = doc["objects"][0]
+    centre = [sofa["box"]["center"][a] for a in ("x_m", "y_m", "z_m")]
+    w, d = sofa["box"]["width"]["value_m"], sofa["box"]["depth"]["value_m"]
+    truth = [
+        # The sofa, 10 cm off and 10% longer than the twin says; the same object seen in AR world
+        # coordinates that the identity transform maps onto the twin's space.
+        {"label": "sofa", "center": [centre[0] + 0.1, centre[1], centre[2]],
+         "size_m": [w * 1.1, d, sofa["box"]["height"]["value_m"]]},
+        {"label": "bathtub", "center": [0.5, 0.5, 0.3], "size_m": [1.6, 0.7, 0.5]},
+    ]  # fmt: skip
+
+    report = ground_truth_sizes(doc, truth, np.eye(4))
+
+    (matched, missed) = report["boxes"]
+    assert matched["twin"] == "sofa-1" and missed["twin"] is None
+    assert matched["error_pct"]["width"] == pytest.approx(-9.1, abs=0.2)
+    assert report["summary"]["matched"] == "1 of 2"
+
+
+def test_the_report_carries_both_sections_when_there_is_ground_truth() -> None:
+    truth = [{"label": "sofa", "center": [2.1, 0.6, 0.42], "size_m": [2.0, 0.9, 0.85]}]
+
+    report = accuracy_report(twin(), read_sheet(sheet()), truth=truth, to_space=np.eye(4))
+
+    assert report["inventory"]["listed"] == 14
+    assert report["ground_truth"]["summary"]["matched"] == "1 of 1"
+    text = markdown(report)
+    assert "## Objects against the listed inventory" in text
+    assert "## Box sizes against ground truth" in text
+    assert "| sofa | sofa-1 |" in text
+
+
+def test_without_ground_truth_the_report_says_so() -> None:
+    report = accuracy_report(twin(), read_sheet(sheet()))
+
+    assert report["ground_truth"] is None
+    assert "## Box sizes against ground truth" not in markdown(report)

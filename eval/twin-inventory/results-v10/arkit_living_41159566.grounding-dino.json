@@ -1,0 +1,3994 @@
+{
+  "scene": "arkit_living_41159566",
+  "detectors": "grounding-dino",
+  "recall": {
+    "listed": {
+      "furniture": {
+        "items": "5 of 6",
+        "item_recall": 0.83,
+        "instance_recall": 0.62
+      },
+      "fixture": {
+        "items": "3 of 3",
+        "item_recall": 1.0,
+        "instance_recall": 0.75
+      },
+      "wall_item": {
+        "items": "1 of 1",
+        "item_recall": 1.0,
+        "instance_recall": 0.6
+      },
+      "textile": {
+        "items": "5 of 5",
+        "item_recall": 1.0,
+        "instance_recall": 0.67
+      },
+      "decor": {
+        "items": "8 of 13",
+        "item_recall": 0.62,
+        "instance_recall": 0.56
+      },
+      "built_in": {
+        "items": "2 of 3",
+        "item_recall": 0.67,
+        "instance_recall": 0.5
+      },
+      "all": {
+        "items": "24 of 31",
+        "item_recall": 0.77,
+        "instance_recall": 0.61
+      }
+    },
+    "placed": {
+      "furniture": {
+        "items": "3 of 6",
+        "item_recall": 0.5,
+        "instance_recall": 0.62
+      },
+      "fixture": {
+        "items": "1 of 3",
+        "item_recall": 0.33,
+        "instance_recall": 0.25
+      },
+      "wall_item": {
+        "items": "1 of 1",
+        "item_recall": 1.0,
+        "instance_recall": 0.1
+      },
+      "textile": {
+        "items": "5 of 5",
+        "item_recall": 1.0,
+        "instance_recall": 0.87
+      },
+      "decor": {
+        "items": "6 of 13",
+        "item_recall": 0.46,
+        "instance_recall": 0.39
+      },
+      "built_in": {
+        "items": "2 of 3",
+        "item_recall": 0.67,
+        "instance_recall": 0.5
+      },
+      "all": {
+        "items": "18 of 31",
+        "item_recall": 0.58,
+        "instance_recall": 0.49
+      }
+    },
+    "per_item": [
+      {
+        "name": "sofa",
+        "type": "furniture",
+        "hand": 2,
+        "listed": 1,
+        "placed": 3
+      },
+      {
+        "name": "armchair",
+        "type": "furniture",
+        "hand": 2,
+        "listed": 1,
+        "placed": 3
+      },
+      {
+        "name": "ottoman",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "carved chair",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "wall cabinet",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "side table",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 1
+      },
+      {
+        "name": "table lamp",
+        "type": "fixture",
+        "hand": 2,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "wall light",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 2,
+        "placed": 2
+      },
+      {
+        "name": "telescope",
+        "type": "decor",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "light switch",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "framed picture",
+        "type": "wall_item",
+        "hand": 10,
+        "listed": 6,
+        "placed": 1
+      },
+      {
+        "name": "rug",
+        "type": "textile",
+        "hand": 4,
+        "listed": 2,
+        "placed": 3
+      },
+      {
+        "name": "sheepskin rug",
+        "type": "textile",
+        "hand": 1,
+        "listed": 3,
+        "placed": 2
+      },
+      {
+        "name": "curtain",
+        "type": "textile",
+        "hand": 3,
+        "listed": 2,
+        "placed": 4
+      },
+      {
+        "name": "throw blanket",
+        "type": "textile",
+        "hand": 3,
+        "listed": 2,
+        "placed": 2
+      },
+      {
+        "name": "cushion",
+        "type": "textile",
+        "hand": 4,
+        "listed": 3,
+        "placed": 5
+      },
+      {
+        "name": "vase",
+        "type": "decor",
+        "hand": 1,
+        "listed": 1,
+        "placed": 2
+      },
+      {
+        "name": "bowl",
+        "type": "decor",
+        "hand": 2,
+        "listed": 1,
+        "placed": 3
+      },
+      {
+        "name": "potted plant",
+        "type": "decor",
+        "hand": 2,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "candle",
+        "type": "decor",
+        "hand": 2,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "bottle",
+        "type": "decor",
+        "hand": 1,
+        "listed": 3,
+        "placed": 1
+      },
+      {
+        "name": "firewood",
+        "type": "decor",
+        "hand": 1,
+        "listed": 1,
+        "placed": 1
+      },
+      {
+        "name": "board games",
+        "type": "decor",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "cds",
+        "type": "decor",
+        "hand": 1,
+        "listed": 1,
+        "placed": 25
+      },
+      {
+        "name": "picture frame",
+        "type": "decor",
+        "hand": 3,
+        "listed": 7,
+        "placed": 0
+      },
+      {
+        "name": "fireplace tools",
+        "type": "decor",
+        "hand": 1,
+        "listed": 1,
+        "placed": 1
+      },
+      {
+        "name": "basket",
+        "type": "decor",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "candle stand",
+        "type": "decor",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "bookshelves",
+        "type": "built_in",
+        "hand": 1,
+        "listed": 1,
+        "placed": 3
+      },
+      {
+        "name": "fireplace",
+        "type": "built_in",
+        "hand": 1,
+        "listed": 1,
+        "placed": 1
+      },
+      {
+        "name": "radiator",
+        "type": "built_in",
+        "hand": 2,
+        "listed": 0,
+        "placed": 0
+      }
+    ],
+    "hand_total": 59,
+    "listed_total": 65,
+    "placed_total": 96,
+    "missed_by_listing": [
+      "carved chair",
+      "telescope",
+      "candle",
+      "board games",
+      "basket",
+      "candle stand",
+      "radiator"
+    ],
+    "listed_not_placed": [
+      "ottoman",
+      "wall cabinet",
+      "table lamp",
+      "light switch",
+      "potted plant",
+      "picture frame"
+    ],
+    "matches": {
+      "listed": {
+        "sofa": "sofa",
+        "armchair": "armchair",
+        "ottoman": "ottoman",
+        "wall cabinet": "cabinet",
+        "wall light": "wall light",
+        "light switch": "switchboard",
+        "framed picture": "framed painting",
+        "rug": "patterned rug",
+        "sheepskin rug": "shaggy rug",
+        "curtain": "curtain",
+        "throw blanket": "blanket",
+        "cushion": "cushion",
+        "vase": "glass vase",
+        "bowl": "bowl of pine cones",
+        "potted plant": "potted plant",
+        "bottle": "bottle",
+        "firewood": "firewood",
+        "cds": "book",
+        "picture frame": "framed picture",
+        "fireplace tools": "fireplace tool",
+        "bookshelves": "bookshelf",
+        "fireplace": "fireplace",
+        "side table": "coffee table",
+        "table lamp": "pendant light"
+      },
+      "placed": {
+        "sofa": "sofa",
+        "armchair": "armchair",
+        "wall light": "wall light",
+        "framed picture": "framed picture",
+        "curtain": "curtain",
+        "throw blanket": "blanket",
+        "cushion": "cushion",
+        "bottle": "bottle",
+        "firewood": "firewood",
+        "cds": "book",
+        "fireplace tools": "fireplace tool",
+        "bookshelves": "bookshelf",
+        "fireplace": "fireplace",
+        "side table": "coffee table",
+        "rug": "shaggy rug",
+        "sheepskin rug": "small rug",
+        "vase": "glass vase",
+        "bowl": "small bowl"
+      }
+    }
+  },
+  "inventory": {
+    "items": [
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "sofa",
+        "prompts": ["couch", "leather sofa"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "coffee table",
+        "prompts": ["center table", "wooden table", "centre table"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "ladder",
+        "prompts": ["wooden ladder", "step ladder", "library ladder"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "cabinet",
+        "prompts": ["sideboard", "small cupboard"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "ottoman",
+        "prompts": ["footstool", "pouf", "floor cushion"],
+        "type": "furniture"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "wall light",
+        "prompts": ["spotlight", "sconce", "wall spotlight"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "pendant light",
+        "prompts": ["hanging lamp", "ceiling light", "pendant lamp"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "switchboard",
+        "prompts": ["electric socket", "power outlet"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "bannister",
+        "prompts": ["handrail", "stair railing", "banister"],
+        "type": "fixture"
+      },
+      {
+        "count": 6,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "framed painting",
+        "prompts": ["wall art", "picture frame"],
+        "type": "wall_item"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "curtain rod",
+        "prompts": ["curtain pole"],
+        "type": "wall_item"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "patterned rug",
+        "prompts": ["kilim", "carpet", "kilim rug"],
+        "type": "textile"
+      },
+      {
+        "count": 3,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "shaggy rug",
+        "prompts": ["sheepskin rug", "faux fur rug", "fur rug"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "small rug",
+        "prompts": ["floor mat"],
+        "type": "textile"
+      },
+      {
+        "count": 3,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "cushion",
+        "prompts": ["pillow", "throw pillow"],
+        "type": "textile"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "blanket",
+        "prompts": ["throw", "quilt", "throw blanket"],
+        "type": "textile"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "curtain",
+        "prompts": ["drape"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "potted plant",
+        "prompts": ["houseplant", "plant"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "book",
+        "prompts": ["book collection", "book stack", "magazine"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "magazine",
+        "prompts": [],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "decorative bowl",
+        "prompts": ["pinecone bowl"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "decorative tray",
+        "prompts": ["plate", "dish"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "figurine",
+        "prompts": ["showpiece", "statue", "ceramic figurine"],
+        "type": "decor"
+      },
+      {
+        "count": 3,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "bottle",
+        "prompts": ["glass bottle"],
+        "type": "decor"
+      },
+      {
+        "count": 2,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "small bowl",
+        "prompts": [],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "fireplace tool set",
+        "prompts": [],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "firewood",
+        "prompts": ["log"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "waveboard",
+        "prompts": ["skateboard"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "bookshelf",
+        "prompts": ["built-in shelf"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "fireplace",
+        "prompts": ["brick chimney", "brick chimney breast"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "log niche",
+        "prompts": ["wood storage"],
+        "type": "built_in"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "wooden beam",
+        "prompts": ["exposed beam", "roof truss", "ceiling beam"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "armchair",
+        "prompts": ["blue chair", "upholstered chair"],
+        "type": "furniture"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "built-in bookshelf",
+        "prompts": ["bookcase", "wall shelf"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "log storage shelf",
+        "prompts": ["firewood shelf", "wood store"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "skylight",
+        "prompts": ["roof window"],
+        "type": "fixture"
+      },
+      {
+        "count": 7,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "framed picture",
+        "prompts": ["painting", "photo frame", "artwork"],
+        "type": "wall_item"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "bowl of pine cones",
+        "prompts": ["bowl", "pine cone"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "glass vase",
+        "prompts": ["vase", "glass jar"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "fireplace tool",
+        "prompts": ["fire iron"],
+        "type": "decor"
+      }
+    ],
+    "keyframes": ["kf0000", "kf0018", "kf0158", "kf0167", "kf0176", "kf0215", "kf0231", "kf0264"],
+    "listed_by": ["gemini-3-flash-preview", "claude-opus-5-5"]
+  },
+  "placement": {
+    "items_listed": 40,
+    "listed_by": ["gemini-3-flash-preview", "claude-opus-5-5"],
+    "unplaced": [
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "ladder",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["grounding-dino: ladder", "grounding-dino: wooden ladder (min score 0.1)"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "cabinet",
+        "reason": "not_detected",
+        "tried": ["grounding-dino: cabinet", "grounding-dino: sideboard (min score 0.1)"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "ottoman",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["grounding-dino: ottoman", "grounding-dino: footstool (min score 0.1)"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "pendant light",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["grounding-dino: pendant light", "grounding-dino: hanging lamp (min score 0.1)"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "switchboard",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["grounding-dino: switchboard", "grounding-dino: electric socket (min score 0.1)"],
+        "type": "fixture"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "patterned rug",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["grounding-dino: patterned rug", "grounding-dino: kilim (min score 0.1)"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "potted plant",
+        "reason": "not_detected",
+        "tried": ["grounding-dino: potted plant", "grounding-dino: houseplant (min score 0.1)"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "decorative tray",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["grounding-dino: decorative tray", "grounding-dino: plate (min score 0.1)"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "figurine",
+        "reason": "not_detected",
+        "tried": ["grounding-dino: figurine", "grounding-dino: showpiece (min score 0.1)"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "fireplace tool set",
+        "reason": "not_detected",
+        "tried": [
+          "grounding-dino: fireplace tool set",
+          "grounding-dino: a fireplace tool set (min score 0.1)"
+        ],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "waveboard",
+        "reason": "not_detected",
+        "tried": ["grounding-dino: waveboard", "grounding-dino: skateboard (min score 0.1)"],
+        "type": "decor"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "built-in bookshelf",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["grounding-dino: built-in bookshelf", "grounding-dino: bookcase (min score 0.1)"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "bowl of pine cones",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["grounding-dino: bowl of pine cones", "grounding-dino: bowl (min score 0.1)"],
+        "type": "decor"
+      }
+    ]
+  },
+  "objects": [
+    {
+      "category": "sofa",
+      "type": "furniture",
+      "frames": 13,
+      "size_m": [0.996, 0.949, 0.653]
+    },
+    {
+      "category": "sofa",
+      "type": "furniture",
+      "frames": 13,
+      "size_m": [1.517, 0.951, 0.714]
+    },
+    {
+      "category": "sofa",
+      "type": "furniture",
+      "frames": 14,
+      "size_m": [2.056, 1.039, 0.638]
+    },
+    {
+      "category": "curtain",
+      "type": "textile",
+      "frames": 11,
+      "size_m": [0.489, 0.196, 1.488]
+    },
+    {
+      "category": "curtain",
+      "type": "textile",
+      "frames": 14,
+      "size_m": [0.359, 0.201, 1.508]
+    },
+    {
+      "category": "coffee table",
+      "type": "furniture",
+      "frames": 13,
+      "size_m": [1.047, 0.579, 0.352]
+    },
+    {
+      "category": "curtain",
+      "type": "textile",
+      "frames": 8,
+      "size_m": [0.33, 0.145, 1.326]
+    },
+    {
+      "category": "glass vase",
+      "type": "decor",
+      "frames": 10,
+      "size_m": [0.33, 0.295, 0.418]
+    },
+    {
+      "category": "framed painting",
+      "type": "wall_item",
+      "frames": 14,
+      "size_m": [0.642, 0.14, 0.79]
+    },
+    {
+      "category": "framed painting",
+      "type": "wall_item",
+      "frames": 15,
+      "size_m": [0.495, 0.111, 0.424]
+    },
+    {
+      "category": "curtain",
+      "type": "textile",
+      "frames": 9,
+      "size_m": [0.324, 0.219, 1.899]
+    },
+    {
+      "category": "glass vase",
+      "type": "decor",
+      "frames": 7,
+      "size_m": [0.242, 0.177, 0.343]
+    },
+    {
+      "category": "armchair",
+      "type": "furniture",
+      "frames": 9,
+      "size_m": [0.604, 0.388, 0.778]
+    },
+    {
+      "category": "framed painting",
+      "type": "wall_item",
+      "frames": 12,
+      "size_m": [0.576, 0.137, 0.543]
+    },
+    {
+      "category": "armchair",
+      "type": "furniture",
+      "frames": 7,
+      "size_m": [0.65, 0.622, 0.631]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 7,
+      "size_m": [0.45, 0.092, 0.192]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 7,
+      "size_m": [0.457, 0.099, 0.296]
+    },
+    {
+      "category": "cushion",
+      "type": "textile",
+      "frames": 11,
+      "size_m": [0.511, 0.39, 0.322]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 10,
+      "size_m": [0.417, 0.191, 0.3]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 7,
+      "size_m": [0.417, 0.096, 0.221]
+    },
+    {
+      "category": "small bowl",
+      "type": "decor",
+      "frames": 4,
+      "size_m": [0.128, 0.101, 0.108]
+    },
+    {
+      "category": "framed painting",
+      "type": "wall_item",
+      "frames": 9,
+      "size_m": [0.496, 0.097, 0.473]
+    },
+    {
+      "category": "framed painting",
+      "type": "wall_item",
+      "frames": 9,
+      "size_m": [0.72, 0.117, 0.524]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 6,
+      "size_m": [0.393, 0.13, 0.183]
+    },
+    {
+      "category": "decorative bowl",
+      "type": "decor",
+      "frames": 5,
+      "size_m": [0.396, 0.329, 0.149]
+    },
+    {
+      "category": "fireplace tool",
+      "type": "decor",
+      "frames": 6,
+      "size_m": [0.393, 0.211, 0.467]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 6,
+      "size_m": [0.323, 0.1, 0.22]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 6,
+      "size_m": [0.417, 0.106, 0.149]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 6,
+      "size_m": [0.69, 0.128, 0.223]
+    },
+    {
+      "category": "bottle",
+      "type": "decor",
+      "frames": 4,
+      "size_m": [0.152, 0.076, 0.256]
+    },
+    {
+      "category": "cushion",
+      "type": "textile",
+      "frames": 5,
+      "size_m": [0.402, 0.34, 0.247]
+    },
+    {
+      "category": "framed painting",
+      "type": "wall_item",
+      "frames": 9,
+      "size_m": [0.376, 0.216, 0.314]
+    },
+    {
+      "category": "blanket",
+      "type": "textile",
+      "frames": 6,
+      "size_m": [0.779, 0.456, 0.454]
+    },
+    {
+      "category": "small bowl",
+      "type": "decor",
+      "frames": 5,
+      "size_m": [0.18, 0.174, 0.123]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 5,
+      "size_m": [0.458, 0.096, 0.174]
+    },
+    {
+      "category": "framed painting",
+      "type": "wall_item",
+      "frames": 8,
+      "size_m": [0.939, 0.099, 0.627]
+    },
+    {
+      "category": "magazine",
+      "type": "decor",
+      "frames": 3,
+      "size_m": [0.326, 0.295, 0.122]
+    },
+    {
+      "category": "framed painting",
+      "type": "wall_item",
+      "frames": 7,
+      "size_m": [0.318, 0.098, 0.309]
+    },
+    {
+      "category": "shaggy rug",
+      "type": "textile",
+      "frames": 5,
+      "size_m": [1.256, 0.996, 0.083]
+    },
+    {
+      "category": "framed painting",
+      "type": "wall_item",
+      "frames": 6,
+      "size_m": [0.612, 0.082, 0.397]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 4,
+      "size_m": [0.58, 0.153, 0.228]
+    },
+    {
+      "category": "curtain rod",
+      "type": "wall_item",
+      "frames": 9,
+      "size_m": [0.398, 0.187, 1.509]
+    },
+    {
+      "category": "small bowl",
+      "type": "decor",
+      "frames": 8,
+      "size_m": [0.325, 0.286, 0.236]
+    },
+    {
+      "category": "framed painting",
+      "type": "wall_item",
+      "frames": 7,
+      "size_m": [0.897, 0.109, 0.532]
+    },
+    {
+      "category": "cushion",
+      "type": "textile",
+      "frames": 7,
+      "size_m": [0.552, 0.335, 0.455]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 3,
+      "size_m": [0.205, 0.081, 0.246]
+    },
+    {
+      "category": "shaggy rug",
+      "type": "textile",
+      "frames": 6,
+      "size_m": [1.538, 1.09, 0.114]
+    },
+    {
+      "category": "shaggy rug",
+      "type": "textile",
+      "frames": 3,
+      "size_m": [0.894, 0.507, 0.082]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 7,
+      "size_m": [0.214, 0.178, 0.124]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 6,
+      "size_m": [0.583, 0.114, 0.281]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 3,
+      "size_m": [0.277, 0.101, 0.221]
+    },
+    {
+      "category": "framed painting",
+      "type": "wall_item",
+      "frames": 6,
+      "size_m": [0.363, 0.159, 0.278]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 6,
+      "size_m": [0.365, 0.121, 0.324]
+    },
+    {
+      "category": "framed painting",
+      "type": "wall_item",
+      "frames": 5,
+      "size_m": [0.254, 0.084, 0.223]
+    },
+    {
+      "category": "bannister",
+      "type": "fixture",
+      "frames": 5,
+      "size_m": [0.896, 0.131, 0.942]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 3,
+      "size_m": [0.307, 0.104, 0.169]
+    },
+    {
+      "category": "cushion",
+      "type": "textile",
+      "frames": 5,
+      "size_m": [0.438, 0.323, 0.32]
+    },
+    {
+      "category": "small rug",
+      "type": "textile",
+      "frames": 5,
+      "size_m": [0.649, 0.51, 0.154]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 5,
+      "size_m": [1.241, 0.153, 0.328]
+    },
+    {
+      "category": "framed picture",
+      "type": "wall_item",
+      "frames": 3,
+      "size_m": [0.532, 0.072, 0.791]
+    },
+    {
+      "category": "blanket",
+      "type": "textile",
+      "frames": 5,
+      "size_m": [0.507, 0.446, 0.36]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 5,
+      "size_m": [0.212, 0.14, 0.195]
+    },
+    {
+      "category": "wall light",
+      "type": "fixture",
+      "frames": 5,
+      "size_m": [0.136, 0.066, 0.167]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 5,
+      "size_m": [0.248, 0.085, 0.186]
+    },
+    {
+      "category": "skylight",
+      "type": "fixture",
+      "frames": 5,
+      "size_m": [0.538, 0.083, 0.301]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 4,
+      "size_m": [0.664, 0.112, 0.212]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 4,
+      "size_m": [0.788, 0.09, 0.234]
+    },
+    {
+      "category": "framed painting",
+      "type": "wall_item",
+      "frames": 5,
+      "size_m": [0.214, 0.082, 0.433]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 5,
+      "size_m": [0.251, 0.248, 0.209]
+    },
+    {
+      "category": "framed painting",
+      "type": "wall_item",
+      "frames": 4,
+      "size_m": [0.206, 0.072, 0.192]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 4,
+      "size_m": [0.323, 0.262, 0.099]
+    },
+    {
+      "category": "magazine",
+      "type": "decor",
+      "frames": 4,
+      "size_m": [0.314, 0.26, 0.097]
+    },
+    {
+      "category": "cushion",
+      "type": "textile",
+      "frames": 4,
+      "size_m": [0.612, 0.316, 0.646]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 4,
+      "size_m": [0.425, 0.149, 0.241]
+    },
+    {
+      "category": "armchair",
+      "type": "furniture",
+      "frames": 4,
+      "size_m": [0.26, 0.239, 0.245]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 4,
+      "size_m": [0.611, 0.177, 0.327]
+    },
+    {
+      "category": "magazine",
+      "type": "decor",
+      "frames": 4,
+      "size_m": [0.295, 0.282, 0.067]
+    },
+    {
+      "category": "framed painting",
+      "type": "wall_item",
+      "frames": 4,
+      "size_m": [0.309, 0.165, 0.228]
+    },
+    {
+      "category": "magazine",
+      "type": "decor",
+      "frames": 3,
+      "size_m": [0.409, 0.289, 0.149]
+    },
+    {
+      "category": "firewood",
+      "type": "decor",
+      "frames": 4,
+      "size_m": [0.375, 0.129, 1.246]
+    },
+    {
+      "category": "wall light",
+      "type": "fixture",
+      "frames": 3,
+      "size_m": [0.41, 0.274, 0.454]
+    },
+    {
+      "category": "skylight",
+      "type": "fixture",
+      "frames": 3,
+      "size_m": [0.582, 0.225, 0.927]
+    },
+    {
+      "category": "bannister",
+      "type": "fixture",
+      "frames": 3,
+      "size_m": [0.804, 0.118, 0.245]
+    },
+    {
+      "category": "small rug",
+      "type": "textile",
+      "frames": 3,
+      "size_m": [0.506, 0.215, 0.074]
+    },
+    {
+      "category": "fireplace",
+      "type": "built_in"
+    },
+    {
+      "category": "bookshelf",
+      "type": "built_in"
+    },
+    {
+      "category": "bookshelf",
+      "type": "built_in"
+    },
+    {
+      "category": "wooden beam",
+      "type": "built_in"
+    },
+    {
+      "category": "log storage shelf",
+      "type": "built_in"
+    },
+    {
+      "category": "log storage shelf",
+      "type": "built_in"
+    },
+    {
+      "category": "bookshelf",
+      "type": "built_in"
+    },
+    {
+      "category": "wooden beam",
+      "type": "built_in"
+    },
+    {
+      "category": "wooden beam",
+      "type": "built_in"
+    },
+    {
+      "category": "log storage shelf",
+      "type": "built_in"
+    },
+    {
+      "category": "wooden beam",
+      "type": "built_in"
+    },
+    {
+      "category": "log niche",
+      "type": "built_in"
+    }
+  ],
+  "boxes": [
+    {
+      "category": "sofa",
+      "confidence": 0.583,
+      "frames": 13,
+      "box": {
+        "center": [-0.968, -1.471, -0.932],
+        "height": {
+          "error_band_m": 0.163,
+          "source": "estimated",
+          "value_m": 0.653
+        },
+        "length": {
+          "error_band_m": 0.249,
+          "source": "estimated",
+          "value_m": 0.996
+        },
+        "width": {
+          "error_band_m": 0.237,
+          "source": "estimated",
+          "value_m": 0.949
+        },
+        "yaw_deg": 112.75
+      },
+      "object_type": "furniture",
+      "up_axis": 2
+    },
+    {
+      "category": "sofa",
+      "confidence": 0.522,
+      "frames": 13,
+      "box": {
+        "center": [-5.325, -1.95, -0.847],
+        "height": {
+          "error_band_m": 0.178,
+          "source": "estimated",
+          "value_m": 0.714
+        },
+        "length": {
+          "error_band_m": 0.379,
+          "source": "estimated",
+          "value_m": 1.517
+        },
+        "width": {
+          "error_band_m": 0.238,
+          "source": "estimated",
+          "value_m": 0.951
+        },
+        "yaw_deg": 107.29
+      },
+      "object_type": "furniture",
+      "up_axis": 2
+    },
+    {
+      "category": "sofa",
+      "confidence": 0.543,
+      "frames": 14,
+      "box": {
+        "center": [-3.392, -2.367, -0.851],
+        "height": {
+          "error_band_m": 0.16,
+          "source": "estimated",
+          "value_m": 0.638
+        },
+        "length": {
+          "error_band_m": 0.514,
+          "source": "estimated",
+          "value_m": 2.056
+        },
+        "width": {
+          "error_band_m": 0.26,
+          "source": "estimated",
+          "value_m": 1.039
+        },
+        "yaw_deg": 17.16
+      },
+      "object_type": "furniture",
+      "up_axis": 2
+    },
+    {
+      "category": "curtain",
+      "confidence": 0.552,
+      "frames": 11,
+      "box": {
+        "center": [-3.953, -3.203, 0.043],
+        "height": {
+          "error_band_m": 0.372,
+          "source": "estimated",
+          "value_m": 1.488
+        },
+        "length": {
+          "error_band_m": 0.122,
+          "source": "estimated",
+          "value_m": 0.489
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.196
+        },
+        "yaw_deg": 2.59
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "curtain",
+      "confidence": 0.584,
+      "frames": 14,
+      "box": {
+        "center": [-2.189, -2.447, 0.053],
+        "height": {
+          "error_band_m": 0.377,
+          "source": "estimated",
+          "value_m": 1.508
+        },
+        "length": {
+          "error_band_m": 0.09,
+          "source": "estimated",
+          "value_m": 0.359
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.201
+        },
+        "yaw_deg": 2.39
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "coffee table",
+      "confidence": 0.617,
+      "frames": 13,
+      "box": {
+        "center": [-3.858, -1.461, -1.068],
+        "height": {
+          "error_band_m": 0.088,
+          "source": "estimated",
+          "value_m": 0.352
+        },
+        "length": {
+          "error_band_m": 0.262,
+          "source": "estimated",
+          "value_m": 1.047
+        },
+        "width": {
+          "error_band_m": 0.145,
+          "source": "estimated",
+          "value_m": 0.579
+        },
+        "yaw_deg": 24.67
+      },
+      "object_type": "furniture",
+      "up_axis": 2
+    },
+    {
+      "category": "curtain",
+      "confidence": 0.603,
+      "frames": 8,
+      "box": {
+        "center": [-3.027, -2.816, 0.124],
+        "height": {
+          "error_band_m": 0.331,
+          "source": "estimated",
+          "value_m": 1.326
+        },
+        "length": {
+          "error_band_m": 0.082,
+          "source": "estimated",
+          "value_m": 0.33
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.145
+        },
+        "yaw_deg": 0.72
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "glass vase",
+      "confidence": 0.696,
+      "frames": 10,
+      "box": {
+        "center": [-2.534, 1.454, 0.226],
+        "height": {
+          "error_band_m": 0.105,
+          "source": "estimated",
+          "value_m": 0.418
+        },
+        "length": {
+          "error_band_m": 0.082,
+          "source": "estimated",
+          "value_m": 0.33
+        },
+        "width": {
+          "error_band_m": 0.074,
+          "source": "estimated",
+          "value_m": 0.295
+        },
+        "yaw_deg": 0.33
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "framed painting",
+      "confidence": 0.481,
+      "frames": 14,
+      "box": {
+        "center": [-3.001, 1.2, 1.248],
+        "height": {
+          "error_band_m": 0.198,
+          "source": "estimated",
+          "value_m": 0.79
+        },
+        "length": {
+          "error_band_m": 0.161,
+          "source": "estimated",
+          "value_m": 0.642
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.14
+        },
+        "yaw_deg": 21.29
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "framed painting",
+      "confidence": 0.435,
+      "frames": 15,
+      "box": {
+        "center": [-3.009, 1.203, 0.525],
+        "height": {
+          "error_band_m": 0.106,
+          "source": "estimated",
+          "value_m": 0.424
+        },
+        "length": {
+          "error_band_m": 0.124,
+          "source": "estimated",
+          "value_m": 0.495
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.111
+        },
+        "yaw_deg": 22.28
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "curtain",
+      "confidence": 0.446,
+      "frames": 9,
+      "box": {
+        "center": [-0.461, -1.675, -0.249],
+        "height": {
+          "error_band_m": 0.475,
+          "source": "estimated",
+          "value_m": 1.899
+        },
+        "length": {
+          "error_band_m": 0.081,
+          "source": "estimated",
+          "value_m": 0.324
+        },
+        "width": {
+          "error_band_m": 0.055,
+          "source": "estimated",
+          "value_m": 0.219
+        },
+        "yaw_deg": 10.85
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "glass vase",
+      "confidence": 0.449,
+      "frames": 7,
+      "box": {
+        "center": [-3.721, 0.304, -1.125],
+        "height": {
+          "error_band_m": 0.086,
+          "source": "estimated",
+          "value_m": 0.343
+        },
+        "length": {
+          "error_band_m": 0.06,
+          "source": "estimated",
+          "value_m": 0.242
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.177
+        },
+        "yaw_deg": 7.42
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "armchair",
+      "confidence": 0.551,
+      "frames": 9,
+      "box": {
+        "center": [-0.792, 1.155, -0.854],
+        "height": {
+          "error_band_m": 0.194,
+          "source": "estimated",
+          "value_m": 0.778
+        },
+        "length": {
+          "error_band_m": 0.151,
+          "source": "estimated",
+          "value_m": 0.604
+        },
+        "width": {
+          "error_band_m": 0.097,
+          "source": "estimated",
+          "value_m": 0.388
+        },
+        "yaw_deg": 74.25
+      },
+      "object_type": "furniture",
+      "up_axis": 2
+    },
+    {
+      "category": "framed painting",
+      "confidence": 0.391,
+      "frames": 12,
+      "box": {
+        "center": [-1.883, 2.025, 0.321],
+        "height": {
+          "error_band_m": 0.136,
+          "source": "estimated",
+          "value_m": 0.543
+        },
+        "length": {
+          "error_band_m": 0.144,
+          "source": "estimated",
+          "value_m": 0.576
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.137
+        },
+        "yaw_deg": 22.03
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "armchair",
+      "confidence": 0.51,
+      "frames": 7,
+      "box": {
+        "center": [-2.225, 0.284, -0.897],
+        "height": {
+          "error_band_m": 0.158,
+          "source": "estimated",
+          "value_m": 0.631
+        },
+        "length": {
+          "error_band_m": 0.163,
+          "source": "estimated",
+          "value_m": 0.65
+        },
+        "width": {
+          "error_band_m": 0.156,
+          "source": "estimated",
+          "value_m": 0.622
+        },
+        "yaw_deg": 69.22
+      },
+      "object_type": "furniture",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.433,
+      "frames": 7,
+      "box": {
+        "center": [-4.189, 0.712, 2.05],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.192
+        },
+        "length": {
+          "error_band_m": 0.113,
+          "source": "estimated",
+          "value_m": 0.45
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.092
+        },
+        "yaw_deg": 21.2
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.48,
+      "frames": 7,
+      "box": {
+        "center": [-4.185, 0.719, 0.55],
+        "height": {
+          "error_band_m": 0.074,
+          "source": "estimated",
+          "value_m": 0.296
+        },
+        "length": {
+          "error_band_m": 0.114,
+          "source": "estimated",
+          "value_m": 0.457
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.099
+        },
+        "yaw_deg": 20.86
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "cushion",
+      "confidence": 0.396,
+      "frames": 11,
+      "box": {
+        "center": [-0.957, -1.482, -0.771],
+        "height": {
+          "error_band_m": 0.081,
+          "source": "estimated",
+          "value_m": 0.322
+        },
+        "length": {
+          "error_band_m": 0.128,
+          "source": "estimated",
+          "value_m": 0.511
+        },
+        "width": {
+          "error_band_m": 0.098,
+          "source": "estimated",
+          "value_m": 0.39
+        },
+        "yaw_deg": 12.25
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.42,
+      "frames": 10,
+      "box": {
+        "center": [-4.207, 0.737, -0.604],
+        "height": {
+          "error_band_m": 0.075,
+          "source": "estimated",
+          "value_m": 0.3
+        },
+        "length": {
+          "error_band_m": 0.104,
+          "source": "estimated",
+          "value_m": 0.417
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.191
+        },
+        "yaw_deg": 19.65
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.445,
+      "frames": 7,
+      "box": {
+        "center": [-4.2, 0.717, 1.772],
+        "height": {
+          "error_band_m": 0.055,
+          "source": "estimated",
+          "value_m": 0.221
+        },
+        "length": {
+          "error_band_m": 0.104,
+          "source": "estimated",
+          "value_m": 0.417
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.096
+        },
+        "yaw_deg": 23.95
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "small bowl",
+      "confidence": 0.455,
+      "frames": 4,
+      "box": {
+        "center": [-3.3, 0.468, -1.188],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.108
+        },
+        "length": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.128
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.101
+        },
+        "yaw_deg": 81.48
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "framed painting",
+      "confidence": 0.448,
+      "frames": 9,
+      "box": {
+        "center": [-2.591, -2.69, -0.091],
+        "height": {
+          "error_band_m": 0.118,
+          "source": "estimated",
+          "value_m": 0.473
+        },
+        "length": {
+          "error_band_m": 0.124,
+          "source": "estimated",
+          "value_m": 0.496
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.097
+        },
+        "yaw_deg": 25.69
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "framed painting",
+      "confidence": 0.447,
+      "frames": 9,
+      "box": {
+        "center": [-4.387, -3.463, 0.223],
+        "height": {
+          "error_band_m": 0.131,
+          "source": "estimated",
+          "value_m": 0.524
+        },
+        "length": {
+          "error_band_m": 0.18,
+          "source": "estimated",
+          "value_m": 0.72
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.117
+        },
+        "yaw_deg": 25.0
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.436,
+      "frames": 6,
+      "box": {
+        "center": [-4.201, 0.708, 2.301],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.183
+        },
+        "length": {
+          "error_band_m": 0.098,
+          "source": "estimated",
+          "value_m": 0.393
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.13
+        },
+        "yaw_deg": 25.59
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "decorative bowl",
+      "confidence": 0.525,
+      "frames": 5,
+      "box": {
+        "center": [-3.047, 1.019, -0.22],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.149
+        },
+        "length": {
+          "error_band_m": 0.099,
+          "source": "estimated",
+          "value_m": 0.396
+        },
+        "width": {
+          "error_band_m": 0.082,
+          "source": "estimated",
+          "value_m": 0.329
+        },
+        "yaw_deg": 178.0
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "fireplace tool",
+      "confidence": 0.404,
+      "frames": 6,
+      "box": {
+        "center": [-3.504, 0.68, -1.053],
+        "height": {
+          "error_band_m": 0.117,
+          "source": "estimated",
+          "value_m": 0.467
+        },
+        "length": {
+          "error_band_m": 0.098,
+          "source": "estimated",
+          "value_m": 0.393
+        },
+        "width": {
+          "error_band_m": 0.053,
+          "source": "estimated",
+          "value_m": 0.211
+        },
+        "yaw_deg": 7.69
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.414,
+      "frames": 6,
+      "box": {
+        "center": [-4.149, 0.713, -0.881],
+        "height": {
+          "error_band_m": 0.055,
+          "source": "estimated",
+          "value_m": 0.22
+        },
+        "length": {
+          "error_band_m": 0.081,
+          "source": "estimated",
+          "value_m": 0.323
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.1
+        },
+        "yaw_deg": 25.44
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.421,
+      "frames": 6,
+      "box": {
+        "center": [-4.195, 0.711, 2.586],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.149
+        },
+        "length": {
+          "error_band_m": 0.104,
+          "source": "estimated",
+          "value_m": 0.417
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.106
+        },
+        "yaw_deg": 16.35
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.424,
+      "frames": 6,
+      "box": {
+        "center": [-4.678, 0.52, 2.874],
+        "height": {
+          "error_band_m": 0.056,
+          "source": "estimated",
+          "value_m": 0.223
+        },
+        "length": {
+          "error_band_m": 0.173,
+          "source": "estimated",
+          "value_m": 0.69
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.128
+        },
+        "yaw_deg": 19.13
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "bottle",
+      "confidence": 0.515,
+      "frames": 4,
+      "box": {
+        "center": [-2.221, 1.308, -0.139],
+        "height": {
+          "error_band_m": 0.064,
+          "source": "estimated",
+          "value_m": 0.256
+        },
+        "length": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.152
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.076
+        },
+        "yaw_deg": 111.44
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "cushion",
+      "confidence": 0.396,
+      "frames": 5,
+      "box": {
+        "center": [-5.417, -2.091, -0.765],
+        "height": {
+          "error_band_m": 0.062,
+          "source": "estimated",
+          "value_m": 0.247
+        },
+        "length": {
+          "error_band_m": 0.1,
+          "source": "estimated",
+          "value_m": 0.402
+        },
+        "width": {
+          "error_band_m": 0.085,
+          "source": "estimated",
+          "value_m": 0.34
+        },
+        "yaw_deg": 112.61
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "framed painting",
+      "confidence": 0.381,
+      "frames": 9,
+      "box": {
+        "center": [-2.653, 1.237, -0.128],
+        "height": {
+          "error_band_m": 0.078,
+          "source": "estimated",
+          "value_m": 0.314
+        },
+        "length": {
+          "error_band_m": 0.094,
+          "source": "estimated",
+          "value_m": 0.376
+        },
+        "width": {
+          "error_band_m": 0.054,
+          "source": "estimated",
+          "value_m": 0.216
+        },
+        "yaw_deg": 31.52
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "blanket",
+      "confidence": 0.563,
+      "frames": 6,
+      "box": {
+        "center": [-5.487, -1.279, -0.869],
+        "height": {
+          "error_band_m": 0.113,
+          "source": "estimated",
+          "value_m": 0.454
+        },
+        "length": {
+          "error_band_m": 0.195,
+          "source": "estimated",
+          "value_m": 0.779
+        },
+        "width": {
+          "error_band_m": 0.114,
+          "source": "estimated",
+          "value_m": 0.456
+        },
+        "yaw_deg": 14.74
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "small bowl",
+      "confidence": 0.447,
+      "frames": 5,
+      "box": {
+        "center": [-3.773, -1.396, -0.867],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.123
+        },
+        "length": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.18
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.174
+        },
+        "yaw_deg": 86.64
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.448,
+      "frames": 5,
+      "box": {
+        "center": [-4.221, 0.703, 2.852],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.174
+        },
+        "length": {
+          "error_band_m": 0.114,
+          "source": "estimated",
+          "value_m": 0.458
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.096
+        },
+        "yaw_deg": 16.48
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "framed painting",
+      "confidence": 0.403,
+      "frames": 8,
+      "box": {
+        "center": [-1.204, 2.32, 0.271],
+        "height": {
+          "error_band_m": 0.157,
+          "source": "estimated",
+          "value_m": 0.627
+        },
+        "length": {
+          "error_band_m": 0.235,
+          "source": "estimated",
+          "value_m": 0.939
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.099
+        },
+        "yaw_deg": 23.5
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "magazine",
+      "confidence": 0.37,
+      "frames": 3,
+      "box": {
+        "center": [-4.516, -3.046, -0.729],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.122
+        },
+        "length": {
+          "error_band_m": 0.081,
+          "source": "estimated",
+          "value_m": 0.326
+        },
+        "width": {
+          "error_band_m": 0.074,
+          "source": "estimated",
+          "value_m": 0.295
+        },
+        "yaw_deg": 111.2
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "framed painting",
+      "confidence": 0.458,
+      "frames": 7,
+      "box": {
+        "center": [-2.586, -2.705, 0.426],
+        "height": {
+          "error_band_m": 0.077,
+          "source": "estimated",
+          "value_m": 0.309
+        },
+        "length": {
+          "error_band_m": 0.079,
+          "source": "estimated",
+          "value_m": 0.318
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.098
+        },
+        "yaw_deg": 24.93
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "shaggy rug",
+      "confidence": 0.314,
+      "frames": 5,
+      "box": {
+        "center": [-1.933, -0.779, -1.287],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.083
+        },
+        "length": {
+          "error_band_m": 0.314,
+          "source": "estimated",
+          "value_m": 1.256
+        },
+        "width": {
+          "error_band_m": 0.249,
+          "source": "estimated",
+          "value_m": 0.996
+        },
+        "yaw_deg": 23.9
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "framed painting",
+      "confidence": 0.507,
+      "frames": 6,
+      "box": {
+        "center": [-0.86, -1.973, -0.001],
+        "height": {
+          "error_band_m": 0.099,
+          "source": "estimated",
+          "value_m": 0.397
+        },
+        "length": {
+          "error_band_m": 0.153,
+          "source": "estimated",
+          "value_m": 0.612
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.082
+        },
+        "yaw_deg": 22.05
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.404,
+      "frames": 4,
+      "box": {
+        "center": [-5.333, 0.202, -1.124],
+        "height": {
+          "error_band_m": 0.057,
+          "source": "estimated",
+          "value_m": 0.228
+        },
+        "length": {
+          "error_band_m": 0.145,
+          "source": "estimated",
+          "value_m": 0.58
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.153
+        },
+        "yaw_deg": 19.32
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "curtain rod",
+      "confidence": 0.324,
+      "frames": 9,
+      "box": {
+        "center": [-2.202, -2.436, 0.06],
+        "height": {
+          "error_band_m": 0.377,
+          "source": "estimated",
+          "value_m": 1.509
+        },
+        "length": {
+          "error_band_m": 0.099,
+          "source": "estimated",
+          "value_m": 0.398
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.187
+        },
+        "yaw_deg": 10.03
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "small bowl",
+      "confidence": 0.354,
+      "frames": 8,
+      "box": {
+        "center": [-1.378, 1.195, -1.168],
+        "height": {
+          "error_band_m": 0.059,
+          "source": "estimated",
+          "value_m": 0.236
+        },
+        "length": {
+          "error_band_m": 0.081,
+          "source": "estimated",
+          "value_m": 0.325
+        },
+        "width": {
+          "error_band_m": 0.072,
+          "source": "estimated",
+          "value_m": 0.286
+        },
+        "yaw_deg": 4.32
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "framed painting",
+      "confidence": 0.404,
+      "frames": 7,
+      "box": {
+        "center": [-1.225, 2.303, 1.029],
+        "height": {
+          "error_band_m": 0.133,
+          "source": "estimated",
+          "value_m": 0.532
+        },
+        "length": {
+          "error_band_m": 0.224,
+          "source": "estimated",
+          "value_m": 0.897
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.109
+        },
+        "yaw_deg": 22.63
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "cushion",
+      "confidence": 0.358,
+      "frames": 7,
+      "box": {
+        "center": [-3.883, -2.674, -0.751],
+        "height": {
+          "error_band_m": 0.114,
+          "source": "estimated",
+          "value_m": 0.455
+        },
+        "length": {
+          "error_band_m": 0.138,
+          "source": "estimated",
+          "value_m": 0.552
+        },
+        "width": {
+          "error_band_m": 0.084,
+          "source": "estimated",
+          "value_m": 0.335
+        },
+        "yaw_deg": 1.01
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.483,
+      "frames": 3,
+      "box": {
+        "center": [-4.311, 0.737, 0.127],
+        "height": {
+          "error_band_m": 0.062,
+          "source": "estimated",
+          "value_m": 0.246
+        },
+        "length": {
+          "error_band_m": 0.051,
+          "source": "estimated",
+          "value_m": 0.205
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.081
+        },
+        "yaw_deg": 27.24
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "shaggy rug",
+      "confidence": 0.413,
+      "frames": 6,
+      "box": {
+        "center": [-4.122, -0.447, -1.296],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.114
+        },
+        "length": {
+          "error_band_m": 0.384,
+          "source": "estimated",
+          "value_m": 1.538
+        },
+        "width": {
+          "error_band_m": 0.273,
+          "source": "estimated",
+          "value_m": 1.09
+        },
+        "yaw_deg": 179.99
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "shaggy rug",
+      "confidence": 0.461,
+      "frames": 3,
+      "box": {
+        "center": [-2.926, -1.023, -1.291],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.082
+        },
+        "length": {
+          "error_band_m": 0.223,
+          "source": "estimated",
+          "value_m": 0.894
+        },
+        "width": {
+          "error_band_m": 0.127,
+          "source": "estimated",
+          "value_m": 0.507
+        },
+        "yaw_deg": 123.79
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.349,
+      "frames": 7,
+      "box": {
+        "center": [-1.057, 1.515, -0.82],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.124
+        },
+        "length": {
+          "error_band_m": 0.054,
+          "source": "estimated",
+          "value_m": 0.214
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.178
+        },
+        "yaw_deg": 114.76
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.406,
+      "frames": 6,
+      "box": {
+        "center": [-5.374, 0.225, -0.605],
+        "height": {
+          "error_band_m": 0.07,
+          "source": "estimated",
+          "value_m": 0.281
+        },
+        "length": {
+          "error_band_m": 0.146,
+          "source": "estimated",
+          "value_m": 0.583
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.114
+        },
+        "yaw_deg": 19.74
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.409,
+      "frames": 3,
+      "box": {
+        "center": [-4.136, 0.748, 0.982],
+        "height": {
+          "error_band_m": 0.055,
+          "source": "estimated",
+          "value_m": 0.221
+        },
+        "length": {
+          "error_band_m": 0.069,
+          "source": "estimated",
+          "value_m": 0.277
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.101
+        },
+        "yaw_deg": 27.25
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "framed painting",
+      "confidence": 0.365,
+      "frames": 6,
+      "box": {
+        "center": [-2.367, 1.377, -0.111],
+        "height": {
+          "error_band_m": 0.07,
+          "source": "estimated",
+          "value_m": 0.278
+        },
+        "length": {
+          "error_band_m": 0.091,
+          "source": "estimated",
+          "value_m": 0.363
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.159
+        },
+        "yaw_deg": 20.62
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.361,
+      "frames": 6,
+      "box": {
+        "center": [-4.581, 0.546, -0.618],
+        "height": {
+          "error_band_m": 0.081,
+          "source": "estimated",
+          "value_m": 0.324
+        },
+        "length": {
+          "error_band_m": 0.091,
+          "source": "estimated",
+          "value_m": 0.365
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.121
+        },
+        "yaw_deg": 22.51
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "framed painting",
+      "confidence": 0.43,
+      "frames": 5,
+      "box": {
+        "center": [-1.015, -2.035, 0.379],
+        "height": {
+          "error_band_m": 0.056,
+          "source": "estimated",
+          "value_m": 0.223
+        },
+        "length": {
+          "error_band_m": 0.063,
+          "source": "estimated",
+          "value_m": 0.254
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.084
+        },
+        "yaw_deg": 25.08
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "bannister",
+      "confidence": 0.421,
+      "frames": 5,
+      "box": {
+        "center": [1.505, -0.106, -0.778],
+        "height": {
+          "error_band_m": 0.235,
+          "source": "estimated",
+          "value_m": 0.942
+        },
+        "length": {
+          "error_band_m": 0.224,
+          "source": "estimated",
+          "value_m": 0.896
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.131
+        },
+        "yaw_deg": 108.01
+      },
+      "object_type": "fixture",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.364,
+      "frames": 3,
+      "box": {
+        "center": [-4.664, 0.547, 2.601],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.169
+        },
+        "length": {
+          "error_band_m": 0.077,
+          "source": "estimated",
+          "value_m": 0.307
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.104
+        },
+        "yaw_deg": 16.11
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "cushion",
+      "confidence": 0.401,
+      "frames": 5,
+      "box": {
+        "center": [-5.482, -1.704, -0.773],
+        "height": {
+          "error_band_m": 0.08,
+          "source": "estimated",
+          "value_m": 0.32
+        },
+        "length": {
+          "error_band_m": 0.109,
+          "source": "estimated",
+          "value_m": 0.438
+        },
+        "width": {
+          "error_band_m": 0.081,
+          "source": "estimated",
+          "value_m": 0.323
+        },
+        "yaw_deg": 107.72
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "small rug",
+      "confidence": 0.396,
+      "frames": 5,
+      "box": {
+        "center": [-5.122, -0.226, -1.269],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.154
+        },
+        "length": {
+          "error_band_m": 0.162,
+          "source": "estimated",
+          "value_m": 0.649
+        },
+        "width": {
+          "error_band_m": 0.128,
+          "source": "estimated",
+          "value_m": 0.51
+        },
+        "yaw_deg": 4.68
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.395,
+      "frames": 5,
+      "box": {
+        "center": [-5.094, 0.396, -0.227],
+        "height": {
+          "error_band_m": 0.082,
+          "source": "estimated",
+          "value_m": 0.328
+        },
+        "length": {
+          "error_band_m": 0.31,
+          "source": "estimated",
+          "value_m": 1.241
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.153
+        },
+        "yaw_deg": 23.15
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "framed picture",
+      "confidence": 0.651,
+      "frames": 3,
+      "box": {
+        "center": [-3.051, 1.182, 1.246],
+        "height": {
+          "error_band_m": 0.198,
+          "source": "estimated",
+          "value_m": 0.791
+        },
+        "length": {
+          "error_band_m": 0.133,
+          "source": "estimated",
+          "value_m": 0.532
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.072
+        },
+        "yaw_deg": 22.57
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "blanket",
+      "confidence": 0.389,
+      "frames": 5,
+      "box": {
+        "center": [-2.606, -1.809, -0.801],
+        "height": {
+          "error_band_m": 0.09,
+          "source": "estimated",
+          "value_m": 0.36
+        },
+        "length": {
+          "error_band_m": 0.127,
+          "source": "estimated",
+          "value_m": 0.507
+        },
+        "width": {
+          "error_band_m": 0.111,
+          "source": "estimated",
+          "value_m": 0.446
+        },
+        "yaw_deg": 99.71
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.385,
+      "frames": 5,
+      "box": {
+        "center": [-4.548, 0.565, 0.558],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.195
+        },
+        "length": {
+          "error_band_m": 0.053,
+          "source": "estimated",
+          "value_m": 0.212
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.14
+        },
+        "yaw_deg": 9.18
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "wall light",
+      "confidence": 0.37,
+      "frames": 5,
+      "box": {
+        "center": [-5.837, -2.226, 1.555],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.167
+        },
+        "length": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.136
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.066
+        },
+        "yaw_deg": 112.83
+      },
+      "object_type": "fixture",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.369,
+      "frames": 5,
+      "box": {
+        "center": [-4.27, 0.688, 1.4],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.186
+        },
+        "length": {
+          "error_band_m": 0.062,
+          "source": "estimated",
+          "value_m": 0.248
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.085
+        },
+        "yaw_deg": 20.43
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "skylight",
+      "confidence": 0.367,
+      "frames": 5,
+      "box": {
+        "center": [-1.64, -2.484, 0.479],
+        "height": {
+          "error_band_m": 0.075,
+          "source": "estimated",
+          "value_m": 0.301
+        },
+        "length": {
+          "error_band_m": 0.135,
+          "source": "estimated",
+          "value_m": 0.538
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.083
+        },
+        "yaw_deg": 21.52
+      },
+      "object_type": "fixture",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.452,
+      "frames": 4,
+      "box": {
+        "center": [-5.33, 0.251, -0.885],
+        "height": {
+          "error_band_m": 0.053,
+          "source": "estimated",
+          "value_m": 0.212
+        },
+        "length": {
+          "error_band_m": 0.166,
+          "source": "estimated",
+          "value_m": 0.664
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.112
+        },
+        "yaw_deg": 19.38
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.435,
+      "frames": 4,
+      "box": {
+        "center": [-5.338, 0.286, 1.423],
+        "height": {
+          "error_band_m": 0.058,
+          "source": "estimated",
+          "value_m": 0.234
+        },
+        "length": {
+          "error_band_m": 0.197,
+          "source": "estimated",
+          "value_m": 0.788
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.09
+        },
+        "yaw_deg": 21.95
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "framed painting",
+      "confidence": 0.342,
+      "frames": 5,
+      "box": {
+        "center": [-3.708, 1.141, 0.582],
+        "height": {
+          "error_band_m": 0.108,
+          "source": "estimated",
+          "value_m": 0.433
+        },
+        "length": {
+          "error_band_m": 0.054,
+          "source": "estimated",
+          "value_m": 0.214
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.082
+        },
+        "yaw_deg": 28.79
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.341,
+      "frames": 5,
+      "box": {
+        "center": [-1.144, 1.486, -1.192],
+        "height": {
+          "error_band_m": 0.052,
+          "source": "estimated",
+          "value_m": 0.209
+        },
+        "length": {
+          "error_band_m": 0.063,
+          "source": "estimated",
+          "value_m": 0.251
+        },
+        "width": {
+          "error_band_m": 0.062,
+          "source": "estimated",
+          "value_m": 0.248
+        },
+        "yaw_deg": 161.05
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "framed painting",
+      "confidence": 0.425,
+      "frames": 4,
+      "box": {
+        "center": [-0.698, -1.911, 0.558],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.192
+        },
+        "length": {
+          "error_band_m": 0.052,
+          "source": "estimated",
+          "value_m": 0.206
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.072
+        },
+        "yaw_deg": 19.76
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.402,
+      "frames": 4,
+      "box": {
+        "center": [-2.404, -1.722, -1.249],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.099
+        },
+        "length": {
+          "error_band_m": 0.081,
+          "source": "estimated",
+          "value_m": 0.323
+        },
+        "width": {
+          "error_band_m": 0.066,
+          "source": "estimated",
+          "value_m": 0.262
+        },
+        "yaw_deg": 115.1
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "magazine",
+      "confidence": 0.4,
+      "frames": 4,
+      "box": {
+        "center": [-2.406, -1.719, -1.25],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.097
+        },
+        "length": {
+          "error_band_m": 0.079,
+          "source": "estimated",
+          "value_m": 0.314
+        },
+        "width": {
+          "error_band_m": 0.065,
+          "source": "estimated",
+          "value_m": 0.26
+        },
+        "yaw_deg": 107.76
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "cushion",
+      "confidence": 0.399,
+      "frames": 4,
+      "box": {
+        "center": [-2.244, -2.018, -0.928],
+        "height": {
+          "error_band_m": 0.161,
+          "source": "estimated",
+          "value_m": 0.646
+        },
+        "length": {
+          "error_band_m": 0.153,
+          "source": "estimated",
+          "value_m": 0.612
+        },
+        "width": {
+          "error_band_m": 0.079,
+          "source": "estimated",
+          "value_m": 0.316
+        },
+        "yaw_deg": 102.99
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.393,
+      "frames": 4,
+      "box": {
+        "center": [-5.553, 0.195, 0.981],
+        "height": {
+          "error_band_m": 0.06,
+          "source": "estimated",
+          "value_m": 0.241
+        },
+        "length": {
+          "error_band_m": 0.106,
+          "source": "estimated",
+          "value_m": 0.425
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.149
+        },
+        "yaw_deg": 8.64
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "armchair",
+      "confidence": 0.387,
+      "frames": 4,
+      "box": {
+        "center": [-4.703, -1.209, -0.996],
+        "height": {
+          "error_band_m": 0.061,
+          "source": "estimated",
+          "value_m": 0.245
+        },
+        "length": {
+          "error_band_m": 0.065,
+          "source": "estimated",
+          "value_m": 0.26
+        },
+        "width": {
+          "error_band_m": 0.06,
+          "source": "estimated",
+          "value_m": 0.239
+        },
+        "yaw_deg": 144.42
+      },
+      "object_type": "furniture",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.356,
+      "frames": 4,
+      "box": {
+        "center": [-4.617, 0.528, 1.027],
+        "height": {
+          "error_band_m": 0.082,
+          "source": "estimated",
+          "value_m": 0.327
+        },
+        "length": {
+          "error_band_m": 0.153,
+          "source": "estimated",
+          "value_m": 0.611
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.177
+        },
+        "yaw_deg": 24.09
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "magazine",
+      "confidence": 0.355,
+      "frames": 4,
+      "box": {
+        "center": [-3.544, -1.447, -0.903],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.067
+        },
+        "length": {
+          "error_band_m": 0.074,
+          "source": "estimated",
+          "value_m": 0.295
+        },
+        "width": {
+          "error_band_m": 0.07,
+          "source": "estimated",
+          "value_m": 0.282
+        },
+        "yaw_deg": 95.72
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "framed painting",
+      "confidence": 0.329,
+      "frames": 4,
+      "box": {
+        "center": [-3.336, 0.941, -0.166],
+        "height": {
+          "error_band_m": 0.057,
+          "source": "estimated",
+          "value_m": 0.228
+        },
+        "length": {
+          "error_band_m": 0.077,
+          "source": "estimated",
+          "value_m": 0.309
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.165
+        },
+        "yaw_deg": 26.54
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "magazine",
+      "confidence": 0.438,
+      "frames": 3,
+      "box": {
+        "center": [-5.188, 0.007, -1.161],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.149
+        },
+        "length": {
+          "error_band_m": 0.102,
+          "source": "estimated",
+          "value_m": 0.409
+        },
+        "width": {
+          "error_band_m": 0.072,
+          "source": "estimated",
+          "value_m": 0.289
+        },
+        "yaw_deg": 103.45
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "firewood",
+      "confidence": 0.326,
+      "frames": 4,
+      "box": {
+        "center": [-3.845, 0.871, 0.632],
+        "height": {
+          "error_band_m": 0.312,
+          "source": "estimated",
+          "value_m": 1.246
+        },
+        "length": {
+          "error_band_m": 0.094,
+          "source": "estimated",
+          "value_m": 0.375
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.129
+        },
+        "yaw_deg": 14.72
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "wall light",
+      "confidence": 0.339,
+      "frames": 3,
+      "box": {
+        "center": [-5.046, -3.373, -0.422],
+        "height": {
+          "error_band_m": 0.114,
+          "source": "estimated",
+          "value_m": 0.454
+        },
+        "length": {
+          "error_band_m": 0.103,
+          "source": "estimated",
+          "value_m": 0.41
+        },
+        "width": {
+          "error_band_m": 0.068,
+          "source": "estimated",
+          "value_m": 0.274
+        },
+        "yaw_deg": 116.77
+      },
+      "object_type": "fixture",
+      "up_axis": 2
+    },
+    {
+      "category": "skylight",
+      "confidence": 0.335,
+      "frames": 3,
+      "box": {
+        "center": [-3.584, -3.25, 0.279],
+        "height": {
+          "error_band_m": 0.232,
+          "source": "estimated",
+          "value_m": 0.927
+        },
+        "length": {
+          "error_band_m": 0.146,
+          "source": "estimated",
+          "value_m": 0.582
+        },
+        "width": {
+          "error_band_m": 0.056,
+          "source": "estimated",
+          "value_m": 0.225
+        },
+        "yaw_deg": 21.17
+      },
+      "object_type": "fixture",
+      "up_axis": 2
+    },
+    {
+      "category": "bannister",
+      "confidence": 0.323,
+      "frames": 3,
+      "box": {
+        "center": [-0.341, 1.431, -0.622],
+        "height": {
+          "error_band_m": 0.061,
+          "source": "estimated",
+          "value_m": 0.245
+        },
+        "length": {
+          "error_band_m": 0.201,
+          "source": "estimated",
+          "value_m": 0.804
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.118
+        },
+        "yaw_deg": 114.79
+      },
+      "object_type": "fixture",
+      "up_axis": 2
+    },
+    {
+      "category": "small rug",
+      "confidence": 0.292,
+      "frames": 3,
+      "box": {
+        "center": [-3.942, 0.046, -1.276],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.074
+        },
+        "length": {
+          "error_band_m": 0.127,
+          "source": "estimated",
+          "value_m": 0.506
+        },
+        "width": {
+          "error_band_m": 0.054,
+          "source": "estimated",
+          "value_m": 0.215
+        },
+        "yaw_deg": 21.84
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "fireplace",
+      "confidence": 0.477,
+      "frames": 11,
+      "box": {
+        "center": [-2.976, 1.055, -0.92],
+        "height": {
+          "error_band_m": 0.148,
+          "source": "estimated",
+          "value_m": 0.59
+        },
+        "length": {
+          "error_band_m": 0.173,
+          "source": "estimated",
+          "value_m": 0.69
+        },
+        "width": {
+          "error_band_m": 0.16,
+          "source": "estimated",
+          "value_m": 0.641
+        },
+        "yaw_deg": 1.32
+      }
+    },
+    {
+      "category": "bookshelf",
+      "confidence": 0.417,
+      "frames": 8,
+      "box": {
+        "center": [-4.448, 0.718, 1.847],
+        "height": {
+          "error_band_m": 0.585,
+          "source": "estimated",
+          "value_m": 2.339
+        },
+        "length": {
+          "error_band_m": 0.377,
+          "source": "estimated",
+          "value_m": 1.507
+        },
+        "width": {
+          "error_band_m": 0.114,
+          "source": "estimated",
+          "value_m": 0.455
+        },
+        "yaw_deg": 19.57
+      }
+    },
+    {
+      "category": "bookshelf",
+      "confidence": 0.432,
+      "frames": 6,
+      "box": {
+        "center": [-4.167, 0.688, -0.701],
+        "height": {
+          "error_band_m": 0.106,
+          "source": "estimated",
+          "value_m": 0.424
+        },
+        "length": {
+          "error_band_m": 0.118,
+          "source": "estimated",
+          "value_m": 0.471
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.097
+        },
+        "yaw_deg": 24.55
+      }
+    },
+    {
+      "category": "wooden beam",
+      "confidence": 0.511,
+      "frames": 8,
+      "box": {
+        "center": [-3.938, -0.121, 1.174],
+        "height": {
+          "error_band_m": 0.073,
+          "source": "estimated",
+          "value_m": 0.291
+        },
+        "length": {
+          "error_band_m": 0.418,
+          "source": "estimated",
+          "value_m": 1.672
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.117
+        },
+        "yaw_deg": 113.73
+      }
+    },
+    {
+      "category": "log storage shelf",
+      "confidence": 0.363,
+      "frames": 9,
+      "box": {
+        "center": [-3.863, 0.862, 1.377],
+        "height": {
+          "error_band_m": 0.651,
+          "source": "estimated",
+          "value_m": 2.604
+        },
+        "length": {
+          "error_band_m": 0.09,
+          "source": "estimated",
+          "value_m": 0.361
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.098
+        },
+        "yaw_deg": 24.3
+      }
+    },
+    {
+      "category": "log storage shelf",
+      "confidence": 0.364,
+      "frames": 5,
+      "box": {
+        "center": [-5.046, -3.492, 0.344],
+        "height": {
+          "error_band_m": 0.155,
+          "source": "estimated",
+          "value_m": 0.62
+        },
+        "length": {
+          "error_band_m": 0.14,
+          "source": "estimated",
+          "value_m": 0.559
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.118
+        },
+        "yaw_deg": 156.31
+      }
+    },
+    {
+      "category": "bookshelf",
+      "confidence": 0.43,
+      "frames": 4,
+      "box": {
+        "center": [-5.106, 0.225, -0.842],
+        "height": {
+          "error_band_m": 0.214,
+          "source": "estimated",
+          "value_m": 0.857
+        },
+        "length": {
+          "error_band_m": 0.42,
+          "source": "estimated",
+          "value_m": 1.682
+        },
+        "width": {
+          "error_band_m": 0.113,
+          "source": "estimated",
+          "value_m": 0.45
+        },
+        "yaw_deg": 8.83
+      }
+    },
+    {
+      "category": "wooden beam",
+      "confidence": 0.431,
+      "frames": 5,
+      "box": {
+        "center": [-1.665, 1.087, 1.154],
+        "height": {
+          "error_band_m": 0.066,
+          "source": "estimated",
+          "value_m": 0.265
+        },
+        "length": {
+          "error_band_m": 0.442,
+          "source": "estimated",
+          "value_m": 1.768
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.192
+        },
+        "yaw_deg": 110.47
+      }
+    },
+    {
+      "category": "wooden beam",
+      "confidence": 0.534,
+      "frames": 4,
+      "box": {
+        "center": [-5.495, -1.733, 2.17],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.186
+        },
+        "length": {
+          "error_band_m": 0.232,
+          "source": "estimated",
+          "value_m": 0.93
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.106
+        },
+        "yaw_deg": 20.94
+      }
+    },
+    {
+      "category": "log storage shelf",
+      "confidence": 0.344,
+      "frames": 5,
+      "box": {
+        "center": [-2.877, 0.974, -0.328],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.162
+        },
+        "length": {
+          "error_band_m": 0.355,
+          "source": "estimated",
+          "value_m": 1.422
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.122
+        },
+        "yaw_deg": 26.95
+      }
+    },
+    {
+      "category": "wooden beam",
+      "confidence": 0.376,
+      "frames": 4,
+      "box": {
+        "center": [-6.319, -0.214, -1.302],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.044
+        },
+        "length": {
+          "error_band_m": 0.192,
+          "source": "estimated",
+          "value_m": 0.769
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.168
+        },
+        "yaw_deg": 68.44
+      }
+    },
+    {
+      "category": "log niche",
+      "confidence": 0.346,
+      "frames": 3,
+      "box": {
+        "center": [-0.836, 1.103, -0.938],
+        "height": {
+          "error_band_m": 0.107,
+          "source": "estimated",
+          "value_m": 0.428
+        },
+        "length": {
+          "error_band_m": 0.125,
+          "source": "estimated",
+          "value_m": 0.502
+        },
+        "width": {
+          "error_band_m": 0.079,
+          "source": "estimated",
+          "value_m": 0.315
+        },
+        "yaw_deg": 54.33
+      }
+    }
+  ],
+  "ground_truth": [
+    {
+      "label": "sofa",
+      "center": [-0.9422026825850451, -1.3968974993024517, -0.9484259054551867],
+      "yaw": 2.006638897014945,
+      "size_m": [0.9042601423261039, 0.8375339665024241, 0.6951271234739913]
+    },
+    {
+      "label": "sofa",
+      "center": [-3.314550529293683, -2.4077008557660786, -0.8948338730019723],
+      "yaw": 0.4296283037942463,
+      "size_m": [2.2161490935508734, 1.021337700514904, 0.7915351999114476]
+    },
+    {
+      "label": "sofa",
+      "center": [-5.370432922219446, -1.9800222116361446, -0.8620568486387452],
+      "yaw": 1.9540776974892573,
+      "size_m": [1.6516863604722154, 1.0173424718065132, 0.8307386795304917]
+    },
+    {
+      "label": "table",
+      "center": [-3.8200933501316827, -1.4691766045805728, -1.0816357411626534],
+      "yaw": 0.42696541121085074,
+      "size_m": [1.0917702242395309, 0.6028423490752595, 0.3962273760134795]
+    },
+    {
+      "label": "stool",
+      "center": [-4.775214021015415, -1.2466830751615974, -1.0712049869223066],
+      "yaw": 2.1193202464110072,
+      "size_m": [0.43588897894115947, 0.4188520503642716, 0.4154155600313092]
+    },
+    {
+      "label": "chair",
+      "center": [-0.6419338304142228, 1.2520978299417658, -0.8401971840787166],
+      "yaw": 0.8964026774087586,
+      "size_m": [0.5861754275625696, 0.29417907526323034, 0.8717519502329708]
+    },
+    {
+      "label": "fireplace",
+      "center": [-2.921406488314614, 1.0362527850825254, -0.7557579378584198],
+      "yaw": 0.4039352706842254,
+      "size_m": [2.268474724640314, 0.9957113525665355, 1.0219311230101809]
+    },
+    {
+      "label": "stool",
+      "center": [-0.8279536029006705, 1.6381067285583724, -1.0720959916796744],
+      "yaw": 0.3776481396979463,
+      "size_m": [0.35533238036825454, 0.27496798002832484, 0.40795433503105527]
+    },
+    {
+      "label": "cabinet",
+      "center": [-5.072929233663777, -3.510832449369658, 0.36560033167374995],
+      "yaw": 1.9634142496566827,
+      "size_m": [0.4273819386492167, 0.4151285849755827, 0.6230915355432762]
+    }
+  ],
+  "listing_by_geometry": {
+    "annotated": 9,
+    "covered": 6,
+    "by_class": {
+      "cabinet": {
+        "annotated": 1,
+        "listed": 1,
+        "covered": 1
+      },
+      "chair": {
+        "annotated": 1,
+        "listed": 1,
+        "covered": 1
+      },
+      "fireplace": {
+        "annotated": 1,
+        "listed": 1,
+        "covered": 1
+      },
+      "sofa": {
+        "annotated": 3,
+        "listed": 1,
+        "covered": 1
+      },
+      "stool": {
+        "annotated": 2,
+        "listed": 1,
+        "covered": 1
+      },
+      "table": {
+        "annotated": 1,
+        "listed": 1,
+        "covered": 1
+      }
+    }
+  },
+  "big_item_placement": {
+    "placed": "8 of 9",
+    "by_class": {
+      "cabinet": "1 of 1",
+      "chair": "1 of 1",
+      "fireplace": "1 of 1",
+      "sofa": "3 of 3",
+      "stool": "1 of 2",
+      "table": "1 of 1"
+    },
+    "median_centre_error_m": 0.068,
+    "median_length_error_pct": -5.65,
+    "median_width_error_pct": -5.25,
+    "big_objects": 14,
+    "rows": [
+      {
+        "label": "sofa",
+        "found": true,
+        "centre_error_m": 0.078,
+        "length_error_pct": 10.1,
+        "width_error_pct": 13.3
+      },
+      {
+        "label": "sofa",
+        "found": true,
+        "centre_error_m": 0.087,
+        "length_error_pct": -7.2,
+        "width_error_pct": 1.7
+      },
+      {
+        "label": "sofa",
+        "found": true,
+        "centre_error_m": 0.054,
+        "length_error_pct": -8.2,
+        "width_error_pct": -6.5
+      },
+      {
+        "label": "table",
+        "found": true,
+        "centre_error_m": 0.039,
+        "length_error_pct": -4.1,
+        "width_error_pct": -4.0
+      },
+      {
+        "label": "stool",
+        "found": true,
+        "centre_error_m": 0.081,
+        "length_error_pct": -40.4,
+        "width_error_pct": -42.9
+      },
+      {
+        "label": "chair",
+        "found": true,
+        "centre_error_m": 0.179,
+        "length_error_pct": 3.0,
+        "width_error_pct": 31.9
+      },
+      {
+        "label": "fireplace",
+        "found": true,
+        "centre_error_m": 0.058,
+        "length_error_pct": -69.6,
+        "width_error_pct": -35.6
+      },
+      {
+        "label": "stool",
+        "found": false
+      },
+      {
+        "label": "cabinet",
+        "found": true,
+        "centre_error_m": 0.033,
+        "length_error_pct": 30.8,
+        "width_error_pct": -71.6
+      }
+    ]
+  },
+  "inventory_meta": {
+    "items": 40,
+    "keyframes": 8,
+    "listed_by": {
+      "list": "gemini-3-flash-preview",
+      "cross_check": "claude-opus-5-5"
+    },
+    "per_model": {
+      "gemini-3-flash-preview": 32,
+      "claude-opus-5-5": 29
+    },
+    "failed": []
+  },
+  "objects_meta": {
+    "detector": "grounding-dino",
+    "segmenter": "sam2.1-large",
+    "fusion": {
+      "ambiguous_views_dropped": 21,
+      "merges_blocked": 299
+    },
+    "dedupe": {
+      "merged": 37,
+      "capped": 10
+    },
+    "built_ins": 12,
+    "unplaced": 13,
+    "retried": 16,
+    "objects": 84,
+    "opening_masks": 73
+  },
+  "charged_micro_inr": 6138478
+}

@@ -138,6 +138,29 @@ async def test_the_step_stores_a_valid_twin_with_crops(
     crop = store.read_blob(view["crop"].rsplit("/", 1)[-1])
     assert Image.open(io.BytesIO(crop)).size == (77, 55)  # mask box plus a 10% margin
     assert result.meta["objects"] == 1 and result.meta["extent"] in {"whole_room", "part"}
+
+
+async def test_the_twin_names_its_hero_views_and_safe_region(
+    tmp_path: Path, room: Callable[..., np.ndarray]
+) -> None:
+    store, inputs, room = setup(tmp_path, room)
+    step = assemble_step(points_for_shell=lambda _store, _manifest: room())
+
+    result = await StepRunner(store, max_attempts=1).run(step, inputs, PARAMS)
+
+    twin = json.loads(store.read_blob(result.outputs["twin"]))
+    viewing = twin["viewing"]
+    keyframes = {k["id"]: k for k in twin["keyframes"]}
+    heroes = [v["keyframe_id"] for v in viewing["hero_views"]]
+    assert 6 <= len(heroes) <= 10 and set(heroes) <= set(keyframes)
+    assert result.meta["hero_views"] == heroes
+    assert all(
+        v["orbit"] == {"max_offset_m": 0.3, "max_yaw_deg": 15.0} for v in viewing["hero_views"]
+    )
+    region = viewing["safe_region"]
+    assert region["radius_m"] == 0.3
+    assert len(region["anchors"]) == 12  # every keyframe
+    assert keyframes[heroes[0]]["pose"]["position"] in region["anchors"]
     assert all("texture" not in surface for surface in twin["shell"]["surfaces"])  # off for now
 
 

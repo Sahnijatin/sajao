@@ -28,6 +28,10 @@ Scale is cross-checked from independent anchors (geometry model, door height, sw
 | Commercial utility | Shown total within 5% of the sum of retailer prices at check time |
 | App | Crash-free sessions at least 99%; every screen usable on the budget Android |
 
+### Product likeness is a hard gate
+
+Likeness is not traded against excitement. A render approach is eligible only if it keeps products recognisable: shape against the planned layout, colour and look against held-out listing photos. Blind votes rank the eligible approaches. A product enters the launch catalog only if it passes the gate in the launch approach; a product that cannot be checked, for example with too few clean photos, is unverifiable and stays out. Flat items such as rugs and wall art need their own check (a rectified top or front view against the listing photo) before they enter.
+
 ## Assumptions to prove early
 
 | Assumption | How we test it |

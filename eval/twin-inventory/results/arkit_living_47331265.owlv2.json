@@ -1,0 +1,1741 @@
+{
+ "scene": "arkit_living_47331265",
+ "detectors": "owlv2",
+ "recall": {
+  "listed": {
+   "furniture": {
+    "items": "9 of 9",
+    "item_recall": 1.0,
+    "instance_recall": 1.0
+   },
+   "fixture": {
+    "items": "4 of 6",
+    "item_recall": 0.67,
+    "instance_recall": 0.67
+   },
+   "wall_item": {
+    "items": "2 of 2",
+    "item_recall": 1.0,
+    "instance_recall": 1.0
+   },
+   "textile": {
+    "items": "2 of 2",
+    "item_recall": 1.0,
+    "instance_recall": 1.0
+   },
+   "decor": {
+    "items": "7 of 8",
+    "item_recall": 0.88,
+    "instance_recall": 0.79
+   },
+   "built_in": {
+    "items": "1 of 1",
+    "item_recall": 1.0,
+    "instance_recall": 1.0
+   },
+   "all": {
+    "items": "25 of 28",
+    "item_recall": 0.89,
+    "instance_recall": 0.89
+   }
+  },
+  "placed": {
+   "furniture": {
+    "items": "8 of 9",
+    "item_recall": 0.89,
+    "instance_recall": 0.94
+   },
+   "fixture": {
+    "items": "4 of 6",
+    "item_recall": 0.67,
+    "instance_recall": 0.67
+   },
+   "wall_item": {
+    "items": "2 of 2",
+    "item_recall": 1.0,
+    "instance_recall": 0.4
+   },
+   "textile": {
+    "items": "2 of 2",
+    "item_recall": 1.0,
+    "instance_recall": 1.0
+   },
+   "decor": {
+    "items": "5 of 8",
+    "item_recall": 0.62,
+    "instance_recall": 0.57
+   },
+   "built_in": {
+    "items": "1 of 1",
+    "item_recall": 1.0,
+    "instance_recall": 1.0
+   },
+   "all": {
+    "items": "22 of 28",
+    "item_recall": 0.79,
+    "instance_recall": 0.73
+   }
+  },
+  "per_item": [
+   {
+    "name": "sofa",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 3
+   },
+   {
+    "name": "armchair",
+    "type": "furniture",
+    "hand": 3,
+    "listed": 3,
+    "placed": 6
+   },
+   {
+    "name": "coffee table",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 1
+   },
+   {
+    "name": "dining table",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 1
+   },
+   {
+    "name": "dining chair",
+    "type": "furniture",
+    "hand": 6,
+    "listed": 6,
+    "placed": 8
+   },
+   {
+    "name": "display cabinet",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 2
+   },
+   {
+    "name": "sideboard",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 0
+   },
+   {
+    "name": "tv stand",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 2
+   },
+   {
+    "name": "wall shelf",
+    "type": "furniture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 4
+   },
+   {
+    "name": "television",
+    "type": "fixture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 1
+   },
+   {
+    "name": "tower speaker",
+    "type": "fixture",
+    "hand": 1,
+    "listed": 2,
+    "placed": 3
+   },
+   {
+    "name": "subwoofer",
+    "type": "fixture",
+    "hand": 1,
+    "listed": 0,
+    "placed": 0
+   },
+   {
+    "name": "floor lamp",
+    "type": "fixture",
+    "hand": 1,
+    "listed": 1,
+    "placed": 1
+   },
+   {
+    "name": "light switch",
+    "type": "fixture",
+    "hand": 1,
+    "listed": 3,
+    "placed": 3
+   },
+   {
+    "name": "socket",
+    "type": "fixture",
+    "hand": 1,
+    "listed": 0,
+    "placed": 0
+   },
+   {
+    "name": "framed picture",
+    "type": "wall_item",
+    "hand": 4,
+    "listed": 4,
+    "placed": 1
+   },
+   {
+    "name": "crucifix",
+    "type": "wall_item",
+    "hand": 1,
+    "listed": 1,
+    "placed": 1
+   },
+   {
+    "name": "painting",
+    "type": "decor",
+    "hand": 1,
+    "listed": 6,
+    "placed": 0
+   },
+   {
+    "name": "poster",
+    "type": "decor",
+    "hand": 2,
+    "listed": 0,
+    "placed": 0
+   },
+   {
+    "name": "framed picture",
+    "type": "decor",
+    "hand": 2,
+    "listed": 4,
+    "placed": 1
+   },
+   {
+    "name": "potted plant",
+    "type": "decor",
+    "hand": 3,
+    "listed": 2,
+    "placed": 4
+   },
+   {
+    "name": "vase",
+    "type": "decor",
+    "hand": 1,
+    "listed": 1,
+    "placed": 5
+   },
+   {
+    "name": "candle holder",
+    "type": "decor",
+    "hand": 2,
+    "listed": 5,
+    "placed": 2
+   },
+   {
+    "name": "decorative cone",
+    "type": "decor",
+    "hand": 2,
+    "listed": 2,
+    "placed": 0
+   },
+   {
+    "name": "tray",
+    "type": "decor",
+    "hand": 1,
+    "listed": 1,
+    "placed": 1
+   },
+   {
+    "name": "rug",
+    "type": "textile",
+    "hand": 1,
+    "listed": 1,
+    "placed": 4
+   },
+   {
+    "name": "placemat",
+    "type": "textile",
+    "hand": 2,
+    "listed": 2,
+    "placed": 2
+   },
+   {
+    "name": "radiator",
+    "type": "built_in",
+    "hand": 1,
+    "listed": 1,
+    "placed": 1
+   }
+  ],
+  "hand_total": 45,
+  "listed_total": 55,
+  "placed_total": 97,
+  "missed_by_listing": [
+   "subwoofer",
+   "socket",
+   "poster"
+  ],
+  "listed_not_placed": [
+   "sideboard",
+   "painting",
+   "decorative cone"
+  ],
+  "matches": {
+   "listed": {
+    "sofa": "leather sofa",
+    "armchair": "armchair",
+    "coffee table": "coffee table",
+    "dining table": "dining table",
+    "dining chair": "dining chair",
+    "display cabinet": "almirah",
+    "tv stand": "tv stand",
+    "wall shelf": "wall shelf",
+    "television": "tv",
+    "tower speaker": "speaker",
+    "floor lamp": "floor lamp",
+    "light switch": "switchboard",
+    "framed picture": "photo frame",
+    "crucifix": "cross",
+    "painting": "painting",
+    "potted plant": "potted plant",
+    "vase": "vase",
+    "candle holder": "candle holder",
+    "decorative cone": "decorative item",
+    "tray": "tray",
+    "rug": "rug",
+    "placemat": "table runner",
+    "radiator": "radiator",
+    "sideboard": "glass display cabinet"
+   },
+   "placed": {
+    "armchair": "armchair",
+    "coffee table": "coffee table",
+    "dining table": "dining table",
+    "dining chair": "dining chair",
+    "tv stand": "tv stand",
+    "wall shelf": "wall shelf",
+    "television": "tv",
+    "tower speaker": "speaker",
+    "floor lamp": "floor lamp",
+    "light switch": "switchboard",
+    "framed picture": "painting",
+    "crucifix": "cross",
+    "potted plant": "potted plant",
+    "vase": "vase",
+    "candle holder": "candle holder",
+    "tray": "tea set",
+    "rug": "rug",
+    "placemat": "table runner",
+    "radiator": "radiator",
+    "sofa": "leather sofa",
+    "display cabinet": "glass display cabinet"
+   }
+  }
+ },
+ "inventory": {
+  "items": [
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "dining table",
+    "prompts": [
+     "table",
+     "wooden table"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 6,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "dining chair",
+    "prompts": [
+     "chair",
+     "upholstered chair",
+     "wooden chair"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "almirah",
+    "prompts": [
+     "cabinet",
+     "cupboard"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "tv stand",
+    "prompts": [
+     "media unit",
+     "entertainment center",
+     "tv unit"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 3,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "armchair",
+    "prompts": [
+     "sofa chair",
+     "single seater",
+     "leather armchair"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "coffee table",
+    "prompts": [
+     "center table",
+     "glass top table",
+     "centre table"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "tv",
+    "prompts": [
+     "television",
+     "flat screen"
+    ],
+    "type": "fixture"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "speaker",
+    "prompts": [
+     "tower speaker",
+     "floor speaker",
+     "loudspeaker"
+    ],
+    "type": "fixture"
+   },
+   {
+    "count": 3,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "switchboard",
+    "prompts": [
+     "switch panel",
+     "electrical socket",
+     "light switch"
+    ],
+    "type": "fixture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "wall shelf",
+    "prompts": [
+     "floating shelf"
+    ],
+    "type": "wall_item"
+   },
+   {
+    "count": 4,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "photo frame",
+    "prompts": [
+     "picture frame",
+     "framed photo"
+    ],
+    "type": "wall_item"
+   },
+   {
+    "count": 6,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "painting",
+    "prompts": [
+     "wall art",
+     "framed picture",
+     "framed painting"
+    ],
+    "type": "wall_item"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "cross",
+    "prompts": [
+     "crucifix"
+    ],
+    "type": "wall_item"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "table runner",
+    "prompts": [
+     "tablecloth",
+     "placemat",
+     "orange mat"
+    ],
+    "type": "textile"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "vase",
+    "prompts": [
+     "flower pot",
+     "glass vase",
+     "flower vase"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 5,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "candle holder",
+    "prompts": [
+     "candlestick",
+     "tealight holder",
+     "glass candlestick"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "floor lamp",
+    "prompts": [
+     "standing lamp"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "tray",
+    "prompts": [
+     "serving tray",
+     "candle tray"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "potted plant",
+    "prompts": [
+     "houseplant",
+     "plant"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "violin",
+    "prompts": [
+     "musical instrument"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 2,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "decorative item",
+    "prompts": [
+     "showpiece",
+     "decorative figurine",
+     "ornament"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "box",
+    "prompts": [],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "book",
+    "prompts": [
+     "book stack"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "gemini-3-flash-preview"
+    ],
+    "name": "tea set",
+    "prompts": [
+     "teapot",
+     "cup"
+    ],
+    "type": "decor"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "glass display cabinet",
+    "prompts": [
+     "china cabinet",
+     "bookcase"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "leather sofa",
+    "prompts": [
+     "couch",
+     "settee"
+    ],
+    "type": "furniture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "crown molding",
+    "prompts": [
+     "cornice",
+     "ceiling molding"
+    ],
+    "type": "built_in"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "radiator",
+    "prompts": [
+     "heater"
+    ],
+    "type": "fixture"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "window sill",
+    "prompts": [
+     "windowsill",
+     "ledge"
+    ],
+    "type": "built_in"
+   },
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5"
+    ],
+    "name": "rug",
+    "prompts": [
+     "carpet"
+    ],
+    "type": "textile"
+   }
+  ],
+  "keyframes": [
+   "kf0000",
+   "kf0036",
+   "kf0047",
+   "kf0077",
+   "kf0097",
+   "kf0136",
+   "kf0174",
+   "kf0192"
+  ],
+  "listed_by": [
+   "gemini-3-flash-preview",
+   "claude-opus-5-5"
+  ]
+ },
+ "placement": {
+  "items_listed": 30,
+  "listed_by": [
+   "gemini-3-flash-preview",
+   "claude-opus-5-5"
+  ],
+  "unplaced": [
+   {
+    "count": 1,
+    "listed_by": [
+     "claude-opus-5-5",
+     "gemini-3-flash-preview"
+    ],
+    "name": "violin",
+    "reason": "implausible_size",
+    "tried": [
+     "owlv2: violin",
+     "owlv2: musical instrument (min score 0.1)"
+    ],
+    "type": "decor"
+   }
+  ]
+ },
+ "objects": [
+  {
+   "category": "painting",
+   "type": "wall_item",
+   "frames": 26,
+   "size_m": [
+    0.852,
+    0.23,
+    0.983
+   ]
+  },
+  {
+   "category": "dining chair",
+   "type": "furniture",
+   "frames": 19,
+   "size_m": [
+    0.327,
+    0.262,
+    0.889
+   ]
+  },
+  {
+   "category": "potted plant",
+   "type": "decor",
+   "frames": 18,
+   "size_m": [
+    0.676,
+    0.428,
+    0.602
+   ]
+  },
+  {
+   "category": "photo frame",
+   "type": "wall_item",
+   "frames": 14,
+   "size_m": [
+    0.428,
+    0.183,
+    0.436
+   ]
+  },
+  {
+   "category": "dining table",
+   "type": "furniture",
+   "frames": 14,
+   "size_m": [
+    1.155,
+    0.973,
+    0.442
+   ]
+  },
+  {
+   "category": "leather sofa",
+   "type": "furniture",
+   "frames": 13,
+   "size_m": [
+    1.405,
+    0.859,
+    0.576
+   ]
+  },
+  {
+   "category": "tv",
+   "type": "fixture",
+   "frames": 12,
+   "size_m": [
+    0.965,
+    0.432,
+    0.604
+   ]
+  },
+  {
+   "category": "dining chair",
+   "type": "furniture",
+   "frames": 12,
+   "size_m": [
+    1.339,
+    0.904,
+    0.695
+   ]
+  },
+  {
+   "category": "almirah",
+   "type": "furniture",
+   "frames": 11,
+   "size_m": [
+    1.333,
+    0.497,
+    1.695
+   ]
+  },
+  {
+   "category": "almirah",
+   "type": "furniture",
+   "frames": 11,
+   "size_m": [
+    1.365,
+    0.269,
+    1.283
+   ]
+  },
+  {
+   "category": "armchair",
+   "type": "furniture",
+   "frames": 11,
+   "size_m": [
+    0.94,
+    0.767,
+    0.787
+   ]
+  },
+  {
+   "category": "armchair",
+   "type": "furniture",
+   "frames": 11,
+   "size_m": [
+    0.866,
+    0.809,
+    0.825
+   ]
+  },
+  {
+   "category": "dining chair",
+   "type": "furniture",
+   "frames": 10,
+   "size_m": [
+    0.282,
+    0.204,
+    0.503
+   ]
+  },
+  {
+   "category": "almirah",
+   "type": "furniture",
+   "frames": 10,
+   "size_m": [
+    0.542,
+    0.528,
+    1.05
+   ]
+  },
+  {
+   "category": "coffee table",
+   "type": "furniture",
+   "frames": 10,
+   "size_m": [
+    0.871,
+    0.621,
+    0.429
+   ]
+  },
+  {
+   "category": "photo frame",
+   "type": "wall_item",
+   "frames": 10,
+   "size_m": [
+    0.584,
+    0.309,
+    0.69
+   ]
+  },
+  {
+   "category": "leather sofa",
+   "type": "furniture",
+   "frames": 10,
+   "size_m": [
+    1.512,
+    0.708,
+    0.629
+   ]
+  },
+  {
+   "category": "dining chair",
+   "type": "furniture",
+   "frames": 9,
+   "size_m": [
+    0.537,
+    0.286,
+    0.896
+   ]
+  },
+  {
+   "category": "almirah",
+   "type": "furniture",
+   "frames": 9,
+   "size_m": [
+    2.761,
+    0.621,
+    0.558
+   ]
+  },
+  {
+   "category": "wall shelf",
+   "type": "wall_item",
+   "frames": 8,
+   "size_m": [
+    1.123,
+    0.169,
+    0.446
+   ]
+  },
+  {
+   "category": "glass display cabinet",
+   "type": "furniture",
+   "frames": 8,
+   "size_m": [
+    1.556,
+    0.477,
+    1.144
+   ]
+  },
+  {
+   "category": "almirah",
+   "type": "furniture",
+   "frames": 8,
+   "size_m": [
+    1.407,
+    0.455,
+    1.301
+   ]
+  },
+  {
+   "category": "rug",
+   "type": "textile",
+   "frames": 8,
+   "size_m": [
+    0.88,
+    0.576,
+    0.146
+   ]
+  },
+  {
+   "category": "switchboard",
+   "type": "fixture",
+   "frames": 8,
+   "size_m": [
+    0.191,
+    0.109,
+    0.191
+   ]
+  },
+  {
+   "category": "vase",
+   "type": "decor",
+   "frames": 8,
+   "size_m": [
+    0.19,
+    0.139,
+    0.192
+   ]
+  },
+  {
+   "category": "wall shelf",
+   "type": "wall_item",
+   "frames": 7,
+   "size_m": [
+    1.3,
+    0.394,
+    1.147
+   ]
+  },
+  {
+   "category": "speaker",
+   "type": "fixture",
+   "frames": 7,
+   "size_m": [
+    0.4,
+    0.263,
+    0.437
+   ]
+  },
+  {
+   "category": "photo frame",
+   "type": "wall_item",
+   "frames": 7,
+   "size_m": [
+    0.56,
+    0.247,
+    0.622
+   ]
+  },
+  {
+   "category": "almirah",
+   "type": "furniture",
+   "frames": 7,
+   "size_m": [
+    0.66,
+    0.237,
+    0.35
+   ]
+  },
+  {
+   "category": "potted plant",
+   "type": "decor",
+   "frames": 7,
+   "size_m": [
+    0.476,
+    0.394,
+    0.639
+   ]
+  },
+  {
+   "category": "photo frame",
+   "type": "wall_item",
+   "frames": 7,
+   "size_m": [
+    0.57,
+    0.181,
+    0.428
+   ]
+  },
+  {
+   "category": "candle holder",
+   "type": "decor",
+   "frames": 7,
+   "size_m": [
+    0.343,
+    0.127,
+    0.077
+   ]
+  },
+  {
+   "category": "dining chair",
+   "type": "furniture",
+   "frames": 6,
+   "size_m": [
+    1.259,
+    0.882,
+    0.559
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 6,
+   "size_m": [
+    0.253,
+    0.165,
+    0.861
+   ]
+  },
+  {
+   "category": "glass display cabinet",
+   "type": "furniture",
+   "frames": 6,
+   "size_m": [
+    0.411,
+    0.328,
+    1.35
+   ]
+  },
+  {
+   "category": "decorative item",
+   "type": "decor",
+   "frames": 6,
+   "size_m": [
+    0.307,
+    0.279,
+    0.435
+   ]
+  },
+  {
+   "category": "wall shelf",
+   "type": "wall_item",
+   "frames": 6,
+   "size_m": [
+    1.403,
+    0.481,
+    1.358
+   ]
+  },
+  {
+   "category": "box",
+   "type": "decor",
+   "frames": 6,
+   "size_m": [
+    0.332,
+    0.246,
+    0.06
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.276,
+    0.146,
+    0.31
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.401,
+    0.21,
+    0.665
+   ]
+  },
+  {
+   "category": "box",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.4,
+    0.131,
+    0.246
+   ]
+  },
+  {
+   "category": "box",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.392,
+    0.164,
+    0.253
+   ]
+  },
+  {
+   "category": "leather sofa",
+   "type": "furniture",
+   "frames": 5,
+   "size_m": [
+    1.104,
+    0.832,
+    0.598
+   ]
+  },
+  {
+   "category": "photo frame",
+   "type": "wall_item",
+   "frames": 5,
+   "size_m": [
+    0.701,
+    0.078,
+    0.74
+   ]
+  },
+  {
+   "category": "dining chair",
+   "type": "furniture",
+   "frames": 5,
+   "size_m": [
+    0.217,
+    0.161,
+    0.289
+   ]
+  },
+  {
+   "category": "armchair",
+   "type": "furniture",
+   "frames": 5,
+   "size_m": [
+    0.259,
+    0.086,
+    0.24
+   ]
+  },
+  {
+   "category": "decorative item",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.115,
+    0.073,
+    0.256
+   ]
+  },
+  {
+   "category": "radiator",
+   "type": "fixture",
+   "frames": 5,
+   "size_m": [
+    0.756,
+    0.148,
+    0.687
+   ]
+  },
+  {
+   "category": "potted plant",
+   "type": "decor",
+   "frames": 5,
+   "size_m": [
+    0.213,
+    0.121,
+    0.301
+   ]
+  },
+  {
+   "category": "photo frame",
+   "type": "wall_item",
+   "frames": 4,
+   "size_m": [
+    0.438,
+    0.149,
+    0.387
+   ]
+  },
+  {
+   "category": "speaker",
+   "type": "fixture",
+   "frames": 4,
+   "size_m": [
+    0.132,
+    0.088,
+    1.09
+   ]
+  },
+  {
+   "category": "armchair",
+   "type": "furniture",
+   "frames": 4,
+   "size_m": [
+    0.267,
+    0.053,
+    0.412
+   ]
+  },
+  {
+   "category": "wall shelf",
+   "type": "wall_item",
+   "frames": 4,
+   "size_m": [
+    0.645,
+    0.491,
+    1.609
+   ]
+  },
+  {
+   "category": "decorative item",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.319,
+    0.198,
+    0.458
+   ]
+  },
+  {
+   "category": "dining chair",
+   "type": "furniture",
+   "frames": 4,
+   "size_m": [
+    0.5,
+    0.376,
+    0.765
+   ]
+  },
+  {
+   "category": "rug",
+   "type": "textile",
+   "frames": 4,
+   "size_m": [
+    0.433,
+    0.33,
+    0.104
+   ]
+  },
+  {
+   "category": "table runner",
+   "type": "textile",
+   "frames": 4,
+   "size_m": [
+    0.492,
+    0.227,
+    0.108
+   ]
+  },
+  {
+   "category": "table runner",
+   "type": "textile",
+   "frames": 4,
+   "size_m": [
+    0.503,
+    0.375,
+    0.076
+   ]
+  },
+  {
+   "category": "rug",
+   "type": "textile",
+   "frames": 4,
+   "size_m": [
+    0.9,
+    0.275,
+    0.085
+   ]
+  },
+  {
+   "category": "switchboard",
+   "type": "fixture",
+   "frames": 4,
+   "size_m": [
+    0.08,
+    0.055,
+    0.146
+   ]
+  },
+  {
+   "category": "candle holder",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.24,
+    0.095,
+    0.086
+   ]
+  },
+  {
+   "category": "decorative item",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.153,
+    0.097,
+    0.143
+   ]
+  },
+  {
+   "category": "rug",
+   "type": "textile",
+   "frames": 4,
+   "size_m": [
+    0.338,
+    0.284,
+    0.078
+   ]
+  },
+  {
+   "category": "cross",
+   "type": "wall_item",
+   "frames": 4,
+   "size_m": [
+    0.094,
+    0.061,
+    0.134
+   ]
+  },
+  {
+   "category": "vase",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.136,
+    0.074,
+    0.138
+   ]
+  },
+  {
+   "category": "floor lamp",
+   "type": "decor",
+   "frames": 4,
+   "size_m": [
+    0.118,
+    0.088,
+    0.927
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.338,
+    0.082,
+    0.231
+   ]
+  },
+  {
+   "category": "dining chair",
+   "type": "furniture",
+   "frames": 3,
+   "size_m": [
+    0.263,
+    0.133,
+    0.226
+   ]
+  },
+  {
+   "category": "photo frame",
+   "type": "wall_item",
+   "frames": 3,
+   "size_m": [
+    0.518,
+    0.077,
+    0.29
+   ]
+  },
+  {
+   "category": "almirah",
+   "type": "furniture",
+   "frames": 3,
+   "size_m": [
+    1.017,
+    0.068,
+    0.994
+   ]
+  },
+  {
+   "category": "photo frame",
+   "type": "wall_item",
+   "frames": 3,
+   "size_m": [
+    0.182,
+    0.081,
+    0.323
+   ]
+  },
+  {
+   "category": "speaker",
+   "type": "fixture",
+   "frames": 3,
+   "size_m": [
+    0.223,
+    0.125,
+    0.145
+   ]
+  },
+  {
+   "category": "almirah",
+   "type": "furniture",
+   "frames": 3,
+   "size_m": [
+    0.47,
+    0.169,
+    0.366
+   ]
+  },
+  {
+   "category": "box",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.182,
+    0.058,
+    0.084
+   ]
+  },
+  {
+   "category": "box",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.185,
+    0.073,
+    0.203
+   ]
+  },
+  {
+   "category": "decorative item",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.24,
+    0.127,
+    0.15
+   ]
+  },
+  {
+   "category": "vase",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.206,
+    0.168,
+    0.192
+   ]
+  },
+  {
+   "category": "potted plant",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.191,
+    0.185,
+    0.197
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.224,
+    0.065,
+    0.138
+   ]
+  },
+  {
+   "category": "vase",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.134,
+    0.085,
+    0.213
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.386,
+    0.088,
+    0.176
+   ]
+  },
+  {
+   "category": "armchair",
+   "type": "furniture",
+   "frames": 3,
+   "size_m": [
+    0.686,
+    0.277,
+    0.53
+   ]
+  },
+  {
+   "category": "photo frame",
+   "type": "wall_item",
+   "frames": 3,
+   "size_m": [
+    0.376,
+    0.113,
+    0.431
+   ]
+  },
+  {
+   "category": "decorative item",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.195,
+    0.135,
+    0.191
+   ]
+  },
+  {
+   "category": "vase",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.097,
+    0.07,
+    0.091
+   ]
+  },
+  {
+   "category": "tea set",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.216,
+    0.093,
+    0.072
+   ]
+  },
+  {
+   "category": "switchboard",
+   "type": "fixture",
+   "frames": 3,
+   "size_m": [
+    0.092,
+    0.071,
+    0.138
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.349,
+    0.088,
+    0.479
+   ]
+  },
+  {
+   "category": "book",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.085,
+    0.056,
+    0.226
+   ]
+  },
+  {
+   "category": "armchair",
+   "type": "furniture",
+   "frames": 3,
+   "size_m": [
+    0.273,
+    0.124,
+    0.196
+   ]
+  },
+  {
+   "category": "tv stand",
+   "type": "furniture",
+   "frames": 3,
+   "size_m": [
+    0.699,
+    0.137,
+    0.375
+   ]
+  },
+  {
+   "category": "tray",
+   "type": "decor",
+   "frames": 3,
+   "size_m": [
+    0.276,
+    0.156,
+    0.078
+   ]
+  },
+  {
+   "category": "tv stand",
+   "type": "furniture",
+   "frames": 3,
+   "size_m": [
+    0.205,
+    0.049,
+    0.207
+   ]
+  },
+  {
+   "category": "crown molding",
+   "type": "built_in"
+  },
+  {
+   "category": "window sill",
+   "type": "built_in"
+  },
+  {
+   "category": "crown molding",
+   "type": "built_in"
+  },
+  {
+   "category": "crown molding",
+   "type": "built_in"
+  }
+ ],
+ "inventory_meta": {
+  "items": 30,
+  "keyframes": 8,
+  "listed_by": {
+   "list": "gemini-3-flash-preview",
+   "cross_check": "claude-opus-5-5"
+  },
+  "per_model": {
+   "gemini-3-flash-preview": 24,
+   "claude-opus-5-5": 28
+  },
+  "failed": []
+ },
+ "objects_meta": {
+  "detector": "owlv2",
+  "segmenter": "sam2.1-large",
+  "fusion": {
+   "ambiguous_views_dropped": 230,
+   "merges_blocked": 2703,
+   "joins_blocked": 38,
+   "pieces_joined": 4
+  },
+  "built_ins": 4,
+  "unplaced": 1,
+  "retried": 3,
+  "objects": 93,
+  "opening_masks": 49
+ },
+ "charged_micro_inr": 0
+}

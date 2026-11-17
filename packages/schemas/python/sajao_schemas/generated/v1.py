@@ -78,6 +78,14 @@ class Ar(BaseModel):
     depth: Annotated[bool, Field(description="Depth images are in the package.")]
 
 
+class ReviewWindow(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    start_ms: Annotated[int, Field(ge=0)]
+    end_ms: Annotated[int, Field(ge=0)]
+
+
 class CompassReading(BaseModel):
     """
     Compass headings averaged across the capture, used for Vastu direction.
@@ -308,6 +316,18 @@ class RotateEdit(BaseModel):
     ]
 
 
+class SafeRegion(BaseModel):
+    """
+    Where the camera may stand: within radius_m of any anchor. Anchors are the keyframe camera positions along the capture path, in the space frame. A viewing limit, not a room measurement.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    anchors: Annotated[list[Point3], Field(min_length=1)]
+    radius_m: Annotated[float, Field(gt=0.0, le=1.0)]
+
+
 class ScaleAnchor(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -441,6 +461,28 @@ class TasteEmbedding(BaseModel):
 
 class UnitScore(RootModel[float]):
     root: Annotated[float, Field(description="A score from 0 to 1.", ge=0.0, le=1.0)]
+
+
+class ViewOrbit(BaseModel):
+    """
+    How far the camera may move and turn around a hero view. Viewing limits, not room measurements.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    max_offset_m: Annotated[
+        float,
+        Field(
+            description="Largest distance of the camera from the hero pose, in metres.",
+            ge=0.0,
+            le=1.0,
+        ),
+    ]
+    max_yaw_deg: Annotated[
+        float,
+        Field(description="Largest turn about the vertical axis, either way.", ge=0.0, le=90.0),
+    ]
 
 
 class Budget(BaseModel):
@@ -729,6 +771,38 @@ class Fixture(BaseModel):
     offset: Dimension
     mount_height: Dimension
     width: Dimension | None = None
+
+
+class HeroView(BaseModel):
+    """
+    A view the twin is shown from: the pose of a real keyframe, chosen by code for how much of the room it shows, its sharpness and its framing. Never a pose a model made up.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    keyframe_id: Annotated[
+        str,
+        Field(
+            description="The keyframe whose pose, intrinsics and photo this view uses.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    coverage: Annotated[
+        float, Field(description="Share of the scanned room this view shows.", ge=0.0, le=1.0)
+    ]
+    sharpness: Annotated[
+        float,
+        Field(description="Variance of the Laplacian of the keyframe; higher is sharper.", ge=0.0),
+    ]
+    orbit: ViewOrbit
 
 
 class Inventory(BaseModel):
@@ -1435,6 +1509,25 @@ class TwinObject(BaseModel):
     ] = None
 
 
+class Viewing(BaseModel):
+    """
+    Where the twin may be shown from. The room splat only holds up near where the phone stood, so the viewer and the reveal use only the hero views, their orbits, and camera positions inside the safe region.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    hero_views: Annotated[
+        list[HeroView],
+        Field(
+            description="Six to ten views when the capture allows, best first.",
+            max_length=10,
+            min_length=1,
+        ),
+    ]
+    safe_region: SafeRegion
+
+
 class Wall(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -1511,7 +1604,14 @@ class CapturePackage(BaseModel):
         str | None,
         Field(description="The scan video, when recorded.", max_length=512, min_length=1),
     ] = None
-    keyframes: Annotated[list[CaptureKeyframe], Field(max_length=120, min_length=1)]
+    video_start_ms: Annotated[
+        int | None,
+        Field(
+            description="When the scan video's first frame was taken, in milliseconds from the start of the capture, so the video can be lined up with the keyframes and the sensor log.",
+            ge=0,
+        ),
+    ] = None
+    keyframes: Annotated[list[CaptureKeyframe], Field(max_length=200, min_length=1)]
     planes: Annotated[
         str | None, Field(description="AR planes as JSON.", max_length=512, min_length=1)
     ] = None
@@ -1543,6 +1643,13 @@ class CapturePackage(BaseModel):
             min_length=1,
         ),
     ]
+    review_windows: Annotated[
+        list[ReviewWindow] | None,
+        Field(
+            description="Times when the review was open over the scan, in milliseconds from the start of the capture. The phone was lowered then: frames of the video inside a window are not part of the scan and are dropped on the server.",
+            max_length=50,
+        ),
+    ] = None
 
 
 class DesignMaterials(BaseModel):
@@ -1881,4 +1988,5 @@ class SpaceTwin(BaseModel):
             max_length=4,
         ),
     ] = None
+    viewing: Viewing | None = None
     inventory: Inventory | None = None

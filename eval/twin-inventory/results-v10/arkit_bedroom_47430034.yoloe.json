@@ -1,0 +1,1564 @@
+{
+  "scene": "arkit_bedroom_47430034",
+  "detectors": "yoloe",
+  "recall": {
+    "listed": {
+      "furniture": {
+        "items": "7 of 9",
+        "item_recall": 0.78,
+        "instance_recall": 0.67
+      },
+      "fixture": {
+        "items": "1 of 2",
+        "item_recall": 0.5,
+        "instance_recall": 0.5
+      },
+      "wall_item": {
+        "items": "2 of 2",
+        "item_recall": 1.0,
+        "instance_recall": 0.8
+      },
+      "textile": {
+        "items": "3 of 3",
+        "item_recall": 1.0,
+        "instance_recall": 0.75
+      },
+      "decor": {
+        "items": "2 of 3",
+        "item_recall": 0.67,
+        "instance_recall": 0.5
+      },
+      "built_in": {
+        "items": "1 of 1",
+        "item_recall": 1.0,
+        "instance_recall": 0.5
+      },
+      "all": {
+        "items": "16 of 20",
+        "item_recall": 0.8,
+        "instance_recall": 0.65
+      }
+    },
+    "placed": {
+      "furniture": {
+        "items": "3 of 9",
+        "item_recall": 0.33,
+        "instance_recall": 0.25
+      },
+      "fixture": {
+        "items": "1 of 2",
+        "item_recall": 0.5,
+        "instance_recall": 0.5
+      },
+      "wall_item": {
+        "items": "2 of 2",
+        "item_recall": 1.0,
+        "instance_recall": 0.6
+      },
+      "textile": {
+        "items": "3 of 3",
+        "item_recall": 1.0,
+        "instance_recall": 1.0
+      },
+      "decor": {
+        "items": "1 of 3",
+        "item_recall": 0.33,
+        "instance_recall": 0.33
+      },
+      "built_in": {
+        "items": "1 of 1",
+        "item_recall": 1.0,
+        "instance_recall": 1.0
+      },
+      "all": {
+        "items": "11 of 20",
+        "item_recall": 0.55,
+        "instance_recall": 0.48
+      }
+    },
+    "per_item": [
+      {
+        "name": "bookshelf",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 2,
+        "placed": 0
+      },
+      {
+        "name": "desk",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 2
+      },
+      {
+        "name": "chair",
+        "type": "furniture",
+        "hand": 2,
+        "listed": 2,
+        "placed": 1
+      },
+      {
+        "name": "chest of drawers",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 4
+      },
+      {
+        "name": "cube shelf",
+        "type": "furniture",
+        "hand": 3,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "loft bed",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "vanity",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "wardrobe",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "television",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 1
+      },
+      {
+        "name": "light switch",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "hanging swing",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "pet cage",
+        "type": "decor",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "framed picture",
+        "type": "wall_item",
+        "hand": 3,
+        "listed": 4,
+        "placed": 2
+      },
+      {
+        "name": "poster",
+        "type": "wall_item",
+        "hand": 2,
+        "listed": 1,
+        "placed": 1
+      },
+      {
+        "name": "rug",
+        "type": "textile",
+        "hand": 1,
+        "listed": 2,
+        "placed": 3
+      },
+      {
+        "name": "curtain",
+        "type": "textile",
+        "hand": 2,
+        "listed": 1,
+        "placed": 2
+      },
+      {
+        "name": "bean bag",
+        "type": "textile",
+        "hand": 1,
+        "listed": 3,
+        "placed": 2
+      },
+      {
+        "name": "stuffed toy",
+        "type": "decor",
+        "hand": 2,
+        "listed": 3,
+        "placed": 0
+      },
+      {
+        "name": "potted plant",
+        "type": "decor",
+        "hand": 3,
+        "listed": 1,
+        "placed": 2
+      },
+      {
+        "name": "radiator",
+        "type": "built_in",
+        "hand": 2,
+        "listed": 1,
+        "placed": 2
+      }
+    ],
+    "hand_total": 31,
+    "listed_total": 45,
+    "placed_total": 29,
+    "missed_by_listing": ["cube shelf", "vanity", "light switch", "pet cage"],
+    "listed_not_placed": ["bookshelf", "loft bed", "wardrobe", "hanging swing", "stuffed toy"],
+    "matches": {
+      "listed": {
+        "bookshelf": "wall shelf",
+        "desk": "study table",
+        "chair": "chair",
+        "chest of drawers": "chest of drawers",
+        "loft bed": "bunk bed",
+        "wardrobe": "almirah",
+        "television": "television",
+        "hanging swing": "hammock chair",
+        "framed picture": "framed picture",
+        "poster": "calendar",
+        "rug": "rug",
+        "curtain": "curtain",
+        "stuffed toy": "plush toy",
+        "potted plant": "plant",
+        "radiator": "radiator",
+        "bean bag": "bag"
+      },
+      "placed": {
+        "chair": "chair",
+        "chest of drawers": "chest of drawers",
+        "television": "television",
+        "framed picture": "framed picture",
+        "poster": "calendar",
+        "rug": "rug",
+        "curtain": "curtain",
+        "potted plant": "plant",
+        "radiator": "radiator",
+        "desk": "study table",
+        "bean bag": "bag"
+      }
+    }
+  },
+  "inventory": {
+    "items": [
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "study table",
+        "prompts": ["desk", "work table", "study desk"],
+        "type": "furniture"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "chair",
+        "prompts": ["desk chair", "office chair", "dining chair"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "bunk bed",
+        "prompts": ["double decker bed", "wooden bed", "bed"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "chest of drawers",
+        "prompts": ["cabinet", "storage unit"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "hammock chair",
+        "prompts": ["hanging chair", "swing chair"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "television",
+        "prompts": ["tv", "monitor"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "radiator",
+        "prompts": ["heater"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "curtain rod",
+        "prompts": ["curtain rail"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "speaker",
+        "prompts": ["audio speaker"],
+        "type": "fixture"
+      },
+      {
+        "count": 4,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "framed picture",
+        "prompts": ["photo frame", "wall art", "picture frame"],
+        "type": "wall_item"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "mirror",
+        "prompts": ["looking glass", "wall mirror"],
+        "type": "wall_item"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "wall shelf",
+        "prompts": ["floating shelf", "display shelf", "shelf"],
+        "type": "wall_item"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "corkboard",
+        "prompts": ["notice board", "bulletin board", "cork board"],
+        "type": "wall_item"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "curtain",
+        "prompts": ["drape", "window covering"],
+        "type": "textile"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "rug",
+        "prompts": ["carpet", "floor mat", "area rug"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "desk lamp",
+        "prompts": ["table lamp", "reading light", "reading lamp"],
+        "type": "decor"
+      },
+      {
+        "count": 3,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "plush toy",
+        "prompts": ["stuffed animal", "soft toy", "teddy bear"],
+        "type": "decor"
+      },
+      {
+        "count": 3,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "pen holder",
+        "prompts": ["pencil cup", "desk organizer", "stationery holder"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "calendar",
+        "prompts": ["desk calendar", "table calendar"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "tablet",
+        "prompts": ["ipad", "electronic device"],
+        "type": "decor"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "poster",
+        "prompts": ["print", "wall poster", "poster print"],
+        "type": "decor"
+      },
+      {
+        "count": 3,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "bag",
+        "prompts": ["backpack", "handbag", "hanging bag"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "figurine",
+        "prompts": ["statue", "showpiece"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "almirah",
+        "prompts": ["fitted wardrobe", "closet"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "wooden almirah",
+        "prompts": ["wardrobe", "cupboard"],
+        "type": "furniture"
+      },
+      {
+        "count": 3,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "board game",
+        "prompts": ["game box", "toy box"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "bedsheet",
+        "prompts": ["bed cover", "blanket"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "wooden ceiling panel",
+        "prompts": ["wood ceiling", "ceiling cladding"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "book",
+        "prompts": ["magazine"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "plant",
+        "prompts": ["potted plant"],
+        "type": "decor"
+      }
+    ],
+    "keyframes": ["kf0000", "kf0023", "kf0047", "kf0081", "kf0124", "kf0142", "kf0190", "kf0212"],
+    "listed_by": ["gemini-3-flash-preview", "claude-opus-5-5"]
+  },
+  "placement": {
+    "items_listed": 30,
+    "listed_by": ["gemini-3-flash-preview", "claude-opus-5-5"],
+    "unplaced": [
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "bunk bed",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["yoloe: bunk bed", "yoloe: double decker bed (min score 0.1)"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "hammock chair",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["yoloe: hammock chair", "yoloe: hanging chair (min score 0.1)"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "curtain rod",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["yoloe: curtain rod", "yoloe: curtain rail (min score 0.1)"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "speaker",
+        "reason": "no_depth",
+        "tried": ["yoloe: speaker", "yoloe: audio speaker (min score 0.1)"],
+        "type": "fixture"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "wall shelf",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["yoloe: wall shelf", "yoloe: floating shelf (min score 0.1)"],
+        "type": "wall_item"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "desk lamp",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["yoloe: desk lamp", "yoloe: table lamp (min score 0.1)"],
+        "type": "decor"
+      },
+      {
+        "count": 3,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "plush toy",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["yoloe: plush toy", "yoloe: stuffed animal (min score 0.1)"],
+        "type": "decor"
+      },
+      {
+        "count": 3,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "pen holder",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["yoloe: pen holder", "yoloe: pencil cup (min score 0.1)"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "tablet",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["yoloe: tablet", "yoloe: ipad (min score 0.1)"],
+        "type": "decor"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "poster",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["yoloe: poster", "yoloe: print (min score 0.1)"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "figurine",
+        "reason": "not_detected",
+        "tried": ["yoloe: figurine", "yoloe: statue (min score 0.1)"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "almirah",
+        "reason": "not_detected",
+        "tried": ["yoloe: almirah", "yoloe: fitted wardrobe (min score 0.1)"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "wooden almirah",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["yoloe: wooden almirah", "yoloe: wardrobe (min score 0.1)"],
+        "type": "furniture"
+      },
+      {
+        "count": 3,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "board game",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["yoloe: board game", "yoloe: game box (min score 0.1)"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "bedsheet",
+        "reason": "not_seen_in_enough_frames",
+        "tried": ["yoloe: bedsheet", "yoloe: bed cover (min score 0.1)"],
+        "type": "textile"
+      }
+    ]
+  },
+  "objects": [
+    {
+      "category": "rug",
+      "type": "textile",
+      "frames": 14,
+      "size_m": [1.825, 1.045, 0.086]
+    },
+    {
+      "category": "book",
+      "type": "decor",
+      "frames": 5,
+      "size_m": [0.365, 0.327, 0.076]
+    },
+    {
+      "category": "rug",
+      "type": "textile",
+      "frames": 10,
+      "size_m": [0.933, 0.298, 0.121]
+    },
+    {
+      "category": "radiator",
+      "type": "fixture",
+      "frames": 5,
+      "size_m": [0.905, 0.168, 0.55]
+    },
+    {
+      "category": "plant",
+      "type": "decor",
+      "frames": 5,
+      "size_m": [0.301, 0.248, 0.327]
+    },
+    {
+      "category": "curtain",
+      "type": "textile",
+      "frames": 4,
+      "size_m": [0.234, 0.213, 0.59]
+    },
+    {
+      "category": "rug",
+      "type": "textile",
+      "frames": 4,
+      "size_m": [0.751, 0.455, 0.102]
+    },
+    {
+      "category": "corkboard",
+      "type": "wall_item",
+      "frames": 6,
+      "size_m": [0.991, 0.09, 0.704]
+    },
+    {
+      "category": "chair",
+      "type": "furniture",
+      "frames": 4,
+      "size_m": [0.41, 0.215, 0.732]
+    },
+    {
+      "category": "mirror",
+      "type": "wall_item",
+      "frames": 4,
+      "size_m": [0.39, 0.17, 0.302]
+    },
+    {
+      "category": "radiator",
+      "type": "fixture",
+      "frames": 3,
+      "size_m": [0.696, 0.116, 0.544]
+    },
+    {
+      "category": "plant",
+      "type": "decor",
+      "frames": 4,
+      "size_m": [0.218, 0.18, 0.328]
+    },
+    {
+      "category": "chest of drawers",
+      "type": "furniture",
+      "frames": 4,
+      "size_m": [0.299, 0.092, 0.305]
+    },
+    {
+      "category": "framed picture",
+      "type": "wall_item",
+      "frames": 4,
+      "size_m": [0.54, 0.093, 0.394]
+    },
+    {
+      "category": "chest of drawers",
+      "type": "furniture",
+      "frames": 4,
+      "size_m": [0.362, 0.1, 0.292]
+    },
+    {
+      "category": "curtain",
+      "type": "textile",
+      "frames": 4,
+      "size_m": [0.343, 0.208, 1.45]
+    },
+    {
+      "category": "study table",
+      "type": "furniture",
+      "frames": 6,
+      "size_m": [1.512, 0.184, 0.436]
+    },
+    {
+      "category": "study table",
+      "type": "furniture",
+      "frames": 3,
+      "size_m": [0.669, 0.237, 0.272]
+    },
+    {
+      "category": "chest of drawers",
+      "type": "furniture",
+      "frames": 6,
+      "size_m": [0.426, 0.082, 0.339]
+    },
+    {
+      "category": "framed picture",
+      "type": "wall_item",
+      "frames": 3,
+      "size_m": [0.553, 0.088, 0.437]
+    },
+    {
+      "category": "bag",
+      "type": "decor",
+      "frames": 3,
+      "size_m": [0.484, 0.157, 0.484]
+    },
+    {
+      "category": "television",
+      "type": "fixture",
+      "frames": 3,
+      "size_m": [0.784, 0.093, 0.516]
+    },
+    {
+      "category": "calendar",
+      "type": "decor",
+      "frames": 4,
+      "size_m": [0.323, 0.227, 0.091]
+    },
+    {
+      "category": "bag",
+      "type": "decor",
+      "frames": 3,
+      "size_m": [0.182, 0.113, 0.192]
+    },
+    {
+      "category": "chest of drawers",
+      "type": "furniture",
+      "frames": 4,
+      "size_m": [0.579, 0.038, 0.475]
+    },
+    {
+      "category": "wooden ceiling panel",
+      "type": "built_in"
+    },
+    {
+      "category": "wooden ceiling panel",
+      "type": "built_in"
+    },
+    {
+      "category": "wooden ceiling panel",
+      "type": "built_in"
+    },
+    {
+      "category": "wooden ceiling panel",
+      "type": "built_in"
+    }
+  ],
+  "boxes": [
+    {
+      "category": "rug",
+      "confidence": 0.648,
+      "frames": 14,
+      "box": {
+        "center": [2.868, 0.607, -0.456],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.086
+        },
+        "length": {
+          "error_band_m": 0.456,
+          "source": "estimated",
+          "value_m": 1.825
+        },
+        "width": {
+          "error_band_m": 0.261,
+          "source": "estimated",
+          "value_m": 1.045
+        },
+        "yaw_deg": 6.18
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "book",
+      "confidence": 0.735,
+      "frames": 5,
+      "box": {
+        "center": [0.025, 0.109, -0.478],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.076
+        },
+        "length": {
+          "error_band_m": 0.091,
+          "source": "estimated",
+          "value_m": 0.365
+        },
+        "width": {
+          "error_band_m": 0.082,
+          "source": "estimated",
+          "value_m": 0.327
+        },
+        "yaw_deg": 93.04
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "rug",
+      "confidence": 0.528,
+      "frames": 10,
+      "box": {
+        "center": [-0.303, 0.41, -0.482],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.121
+        },
+        "length": {
+          "error_band_m": 0.233,
+          "source": "estimated",
+          "value_m": 0.933
+        },
+        "width": {
+          "error_band_m": 0.075,
+          "source": "estimated",
+          "value_m": 0.298
+        },
+        "yaw_deg": 96.9
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "radiator",
+      "confidence": 0.865,
+      "frames": 5,
+      "box": {
+        "center": [4.414, 0.595, -0.024],
+        "height": {
+          "error_band_m": 0.137,
+          "source": "estimated",
+          "value_m": 0.55
+        },
+        "length": {
+          "error_band_m": 0.226,
+          "source": "estimated",
+          "value_m": 0.905
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.168
+        },
+        "yaw_deg": 94.33
+      },
+      "object_type": "fixture",
+      "up_axis": 2
+    },
+    {
+      "category": "plant",
+      "confidence": 0.669,
+      "frames": 5,
+      "box": {
+        "center": [4.524, 0.079, 0.557],
+        "height": {
+          "error_band_m": 0.082,
+          "source": "estimated",
+          "value_m": 0.327
+        },
+        "length": {
+          "error_band_m": 0.075,
+          "source": "estimated",
+          "value_m": 0.301
+        },
+        "width": {
+          "error_band_m": 0.062,
+          "source": "estimated",
+          "value_m": 0.248
+        },
+        "yaw_deg": 50.17
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "curtain",
+      "confidence": 0.68,
+      "frames": 4,
+      "box": {
+        "center": [4.136, 1.492, 1.704],
+        "height": {
+          "error_band_m": 0.147,
+          "source": "estimated",
+          "value_m": 0.59
+        },
+        "length": {
+          "error_band_m": 0.059,
+          "source": "estimated",
+          "value_m": 0.234
+        },
+        "width": {
+          "error_band_m": 0.053,
+          "source": "estimated",
+          "value_m": 0.213
+        },
+        "yaw_deg": 179.47
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "rug",
+      "confidence": 0.657,
+      "frames": 4,
+      "box": {
+        "center": [3.416, 0.177, -0.462],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.102
+        },
+        "length": {
+          "error_band_m": 0.188,
+          "source": "estimated",
+          "value_m": 0.751
+        },
+        "width": {
+          "error_band_m": 0.114,
+          "source": "estimated",
+          "value_m": 0.455
+        },
+        "yaw_deg": 2.24
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "corkboard",
+      "confidence": 0.429,
+      "frames": 6,
+      "box": {
+        "center": [1.349, -1.522, 1.499],
+        "height": {
+          "error_band_m": 0.176,
+          "source": "estimated",
+          "value_m": 0.704
+        },
+        "length": {
+          "error_band_m": 0.248,
+          "source": "estimated",
+          "value_m": 0.991
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.09
+        },
+        "yaw_deg": 2.04
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "chair",
+      "confidence": 0.626,
+      "frames": 4,
+      "box": {
+        "center": [0.86, 0.02, -0.097],
+        "height": {
+          "error_band_m": 0.183,
+          "source": "estimated",
+          "value_m": 0.732
+        },
+        "length": {
+          "error_band_m": 0.102,
+          "source": "estimated",
+          "value_m": 0.41
+        },
+        "width": {
+          "error_band_m": 0.054,
+          "source": "estimated",
+          "value_m": 0.215
+        },
+        "yaw_deg": 7.14
+      },
+      "object_type": "furniture",
+      "up_axis": 2
+    },
+    {
+      "category": "mirror",
+      "confidence": 0.576,
+      "frames": 4,
+      "box": {
+        "center": [3.291, 1.899, 1.65],
+        "height": {
+          "error_band_m": 0.075,
+          "source": "estimated",
+          "value_m": 0.302
+        },
+        "length": {
+          "error_band_m": 0.098,
+          "source": "estimated",
+          "value_m": 0.39
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.17
+        },
+        "yaw_deg": 177.66
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "radiator",
+      "confidence": 0.765,
+      "frames": 3,
+      "box": {
+        "center": [4.556, -1.95, -0.122],
+        "height": {
+          "error_band_m": 0.136,
+          "source": "estimated",
+          "value_m": 0.544
+        },
+        "length": {
+          "error_band_m": 0.174,
+          "source": "estimated",
+          "value_m": 0.696
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.116
+        },
+        "yaw_deg": 90.03
+      },
+      "object_type": "fixture",
+      "up_axis": 2
+    },
+    {
+      "category": "plant",
+      "confidence": 0.571,
+      "frames": 4,
+      "box": {
+        "center": [4.457, 0.7, 0.533],
+        "height": {
+          "error_band_m": 0.082,
+          "source": "estimated",
+          "value_m": 0.328
+        },
+        "length": {
+          "error_band_m": 0.054,
+          "source": "estimated",
+          "value_m": 0.218
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.18
+        },
+        "yaw_deg": 82.0
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "chest of drawers",
+      "confidence": 0.511,
+      "frames": 4,
+      "box": {
+        "center": [0.709, -0.261, 1.482],
+        "height": {
+          "error_band_m": 0.076,
+          "source": "estimated",
+          "value_m": 0.305
+        },
+        "length": {
+          "error_band_m": 0.075,
+          "source": "estimated",
+          "value_m": 0.299
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.092
+        },
+        "yaw_deg": 101.67
+      },
+      "object_type": "furniture",
+      "up_axis": 2
+    },
+    {
+      "category": "framed picture",
+      "confidence": 0.454,
+      "frames": 4,
+      "box": {
+        "center": [2.519, 1.901, 1.296],
+        "height": {
+          "error_band_m": 0.098,
+          "source": "estimated",
+          "value_m": 0.394
+        },
+        "length": {
+          "error_band_m": 0.135,
+          "source": "estimated",
+          "value_m": 0.54
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.093
+        },
+        "yaw_deg": 1.23
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "chest of drawers",
+      "confidence": 0.44,
+      "frames": 4,
+      "box": {
+        "center": [0.683, -0.808, 1.666],
+        "height": {
+          "error_band_m": 0.073,
+          "source": "estimated",
+          "value_m": 0.292
+        },
+        "length": {
+          "error_band_m": 0.09,
+          "source": "estimated",
+          "value_m": 0.362
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.1
+        },
+        "yaw_deg": 85.64
+      },
+      "object_type": "furniture",
+      "up_axis": 2
+    },
+    {
+      "category": "curtain",
+      "confidence": 0.411,
+      "frames": 4,
+      "box": {
+        "center": [4.25, -0.532, 0.325],
+        "height": {
+          "error_band_m": 0.362,
+          "source": "estimated",
+          "value_m": 1.45
+        },
+        "length": {
+          "error_band_m": 0.086,
+          "source": "estimated",
+          "value_m": 0.343
+        },
+        "width": {
+          "error_band_m": 0.052,
+          "source": "estimated",
+          "value_m": 0.208
+        },
+        "yaw_deg": 90.11
+      },
+      "object_type": "textile",
+      "up_axis": 2
+    },
+    {
+      "category": "study table",
+      "confidence": 0.266,
+      "frames": 6,
+      "box": {
+        "center": [4.442, 0.325, 0.195],
+        "height": {
+          "error_band_m": 0.109,
+          "source": "estimated",
+          "value_m": 0.436
+        },
+        "length": {
+          "error_band_m": 0.378,
+          "source": "estimated",
+          "value_m": 1.512
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.184
+        },
+        "yaw_deg": 95.35
+      },
+      "object_type": "furniture",
+      "up_axis": 2
+    },
+    {
+      "category": "study table",
+      "confidence": 0.527,
+      "frames": 3,
+      "box": {
+        "center": [0.944, -0.228, 0.141],
+        "height": {
+          "error_band_m": 0.068,
+          "source": "estimated",
+          "value_m": 0.272
+        },
+        "length": {
+          "error_band_m": 0.167,
+          "source": "estimated",
+          "value_m": 0.669
+        },
+        "width": {
+          "error_band_m": 0.059,
+          "source": "estimated",
+          "value_m": 0.237
+        },
+        "yaw_deg": 90.54
+      },
+      "object_type": "furniture",
+      "up_axis": 2
+    },
+    {
+      "category": "chest of drawers",
+      "confidence": 0.263,
+      "frames": 6,
+      "box": {
+        "center": [0.716, -1.261, 1.806],
+        "height": {
+          "error_band_m": 0.085,
+          "source": "estimated",
+          "value_m": 0.339
+        },
+        "length": {
+          "error_band_m": 0.106,
+          "source": "estimated",
+          "value_m": 0.426
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.082
+        },
+        "yaw_deg": 98.07
+      },
+      "object_type": "furniture",
+      "up_axis": 2
+    },
+    {
+      "category": "framed picture",
+      "confidence": 0.384,
+      "frames": 3,
+      "box": {
+        "center": [1.625, 1.849, 0.885],
+        "height": {
+          "error_band_m": 0.109,
+          "source": "estimated",
+          "value_m": 0.437
+        },
+        "length": {
+          "error_band_m": 0.138,
+          "source": "estimated",
+          "value_m": 0.553
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.088
+        },
+        "yaw_deg": 0.32
+      },
+      "object_type": "wall_item",
+      "up_axis": 2
+    },
+    {
+      "category": "bag",
+      "confidence": 0.361,
+      "frames": 3,
+      "box": {
+        "center": [3.369, 0.084, 0.15],
+        "height": {
+          "error_band_m": 0.121,
+          "source": "estimated",
+          "value_m": 0.484
+        },
+        "length": {
+          "error_band_m": 0.121,
+          "source": "estimated",
+          "value_m": 0.484
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.157
+        },
+        "yaw_deg": 128.8
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "television",
+      "confidence": 0.334,
+      "frames": 3,
+      "box": {
+        "center": [3.729, 1.778, 0.926],
+        "height": {
+          "error_band_m": 0.129,
+          "source": "estimated",
+          "value_m": 0.516
+        },
+        "length": {
+          "error_band_m": 0.196,
+          "source": "estimated",
+          "value_m": 0.784
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.093
+        },
+        "yaw_deg": 162.39
+      },
+      "object_type": "fixture",
+      "up_axis": 2
+    },
+    {
+      "category": "calendar",
+      "confidence": 0.237,
+      "frames": 4,
+      "box": {
+        "center": [0.025, 0.177, -0.509],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.091
+        },
+        "length": {
+          "error_band_m": 0.081,
+          "source": "estimated",
+          "value_m": 0.323
+        },
+        "width": {
+          "error_band_m": 0.057,
+          "source": "estimated",
+          "value_m": 0.227
+        },
+        "yaw_deg": 3.03
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "bag",
+      "confidence": 0.255,
+      "frames": 3,
+      "box": {
+        "center": [0.292, 0.287, -0.35],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.192
+        },
+        "length": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.182
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.113
+        },
+        "yaw_deg": 154.01
+      },
+      "object_type": "decor",
+      "up_axis": 2
+    },
+    {
+      "category": "chest of drawers",
+      "confidence": 0.188,
+      "frames": 4,
+      "box": {
+        "center": [3.318, 1.545, -0.118],
+        "height": {
+          "error_band_m": 0.119,
+          "source": "estimated",
+          "value_m": 0.475
+        },
+        "length": {
+          "error_band_m": 0.145,
+          "source": "estimated",
+          "value_m": 0.579
+        },
+        "width": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.038
+        },
+        "yaw_deg": 1.45
+      },
+      "object_type": "furniture",
+      "up_axis": 2
+    },
+    {
+      "category": "wooden ceiling panel",
+      "confidence": 0.525,
+      "frames": 11,
+      "box": {
+        "center": [2.468, 1.299, 2.17],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.082
+        },
+        "length": {
+          "error_band_m": 0.874,
+          "source": "estimated",
+          "value_m": 3.494
+        },
+        "width": {
+          "error_band_m": 0.287,
+          "source": "estimated",
+          "value_m": 1.148
+        },
+        "yaw_deg": 0.03
+      }
+    },
+    {
+      "category": "wooden ceiling panel",
+      "confidence": 0.729,
+      "frames": 7,
+      "box": {
+        "center": [1.204, 0.224, 2.159],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.054
+        },
+        "length": {
+          "error_band_m": 0.476,
+          "source": "estimated",
+          "value_m": 1.905
+        },
+        "width": {
+          "error_band_m": 0.284,
+          "source": "estimated",
+          "value_m": 1.135
+        },
+        "yaw_deg": 90.83
+      }
+    },
+    {
+      "category": "wooden ceiling panel",
+      "confidence": 0.663,
+      "frames": 5,
+      "box": {
+        "center": [3.395, -0.629, 2.189],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.041
+        },
+        "length": {
+          "error_band_m": 0.487,
+          "source": "estimated",
+          "value_m": 1.948
+        },
+        "width": {
+          "error_band_m": 0.35,
+          "source": "estimated",
+          "value_m": 1.4
+        },
+        "yaw_deg": 179.97
+      }
+    },
+    {
+      "category": "wooden ceiling panel",
+      "confidence": 0.606,
+      "frames": 4,
+      "box": {
+        "center": [0.142, 0.416, 2.181],
+        "height": {
+          "error_band_m": 0.05,
+          "source": "estimated",
+          "value_m": 0.043
+        },
+        "length": {
+          "error_band_m": 0.301,
+          "source": "estimated",
+          "value_m": 1.203
+        },
+        "width": {
+          "error_band_m": 0.151,
+          "source": "estimated",
+          "value_m": 0.605
+        },
+        "yaw_deg": 97.17
+      }
+    }
+  ],
+  "ground_truth": [],
+  "listing_by_geometry": {
+    "annotated": 0,
+    "covered": 0,
+    "by_class": {}
+  },
+  "big_item_placement": {
+    "placed": "0 of 0",
+    "by_class": {},
+    "median_centre_error_m": null,
+    "median_length_error_pct": null,
+    "median_width_error_pct": null,
+    "big_objects": 8,
+    "rows": []
+  },
+  "inventory_meta": {
+    "items": 30,
+    "keyframes": 8,
+    "listed_by": {
+      "list": "gemini-3-flash-preview",
+      "cross_check": "claude-opus-5-5"
+    },
+    "per_model": {
+      "gemini-3-flash-preview": 24,
+      "claude-opus-5-5": 26
+    },
+    "failed": []
+  },
+  "objects_meta": {
+    "detector": "yoloe",
+    "segmenter": "sam2.1-large",
+    "fusion": {
+      "ambiguous_views_dropped": 3,
+      "merges_blocked": 102
+    },
+    "dedupe": {
+      "merged": 3,
+      "capped": 0
+    },
+    "built_ins": 4,
+    "unplaced": 15,
+    "retried": 21,
+    "objects": 25,
+    "opening_masks": 2
+  },
+  "charged_micro_inr": 2503994
+}

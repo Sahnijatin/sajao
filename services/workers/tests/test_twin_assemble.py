@@ -174,3 +174,31 @@ def test_keyframe_poses_are_unit_quaternions_in_the_space_frame(
 )
 def test_space_type_comes_from_what_was_found(categories: list[str], expected: str) -> None:
     assert space_type_from(categories) == expected
+
+
+def test_types_built_ins_and_the_inventory_reach_the_twin(room: Room) -> None:
+    sofa = {**objects()[0], "object_type": "furniture"}
+    chimney = {**objects()[0], "category": "chimney", "label": "Chimney"}
+    inventory = {
+        "listed_by": ["gemini-3-flash-preview", "claude-opus-5-5"],
+        "items_listed": 3,
+        "unplaced": [
+            {
+                "name": "wall clock",
+                "type": "wall_item",
+                "count": 1,
+                "listed_by": ["claude-opus-5-5"],
+                "tried": ["owlv2: wall clock", "owlv2: clock (min score 0.1)"],
+                "reason": "not_seen_in_enough_frames",
+            }
+        ],
+    }
+
+    twin = build(room, objects=[sofa], built_ins=[chimney], inventory=inventory)
+
+    SpaceTwin.model_validate(twin)
+    assert twin["objects"][0]["object_type"] == "furniture"
+    (built_in,) = twin["shell"]["built_ins"]
+    assert built_in["id"] == "b1" and built_in["category"] == "chimney"
+    assert built_in["box"]["width"]["value_m"] == 1.9
+    assert twin["inventory"] == inventory
