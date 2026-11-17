@@ -147,7 +147,14 @@ def main(stage: str, model: str = "triposg", only: str = "") -> None:
             elif stage == "c3":
                 # One removal per room: every design in a room shares the cleared keyframes.
                 rs = [r for r in rooms if not sel or r in sel]
-                prep = stream(A.c3_prep, rs, [rooms[r]["designs"][0]["id"] for r in rs])
+                prep = stream(
+                    A.c3_prep,
+                    rs,
+                    [
+                        next(d["id"] for d in rooms[r]["designs"] if d["variant"] != "original")
+                        for r in rs
+                    ],
+                )
                 ok = [p for p in prep if "variant" in p]
                 res = prep + stream(
                     A.c3_inpaint, [p["room"] for p in ok], [p["variant"] for p in ok]

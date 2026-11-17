@@ -532,12 +532,12 @@ def c3_prep(room: str, design_id: str, n: int = 4) -> dict:
         hf_secret,
     ],
 )
-def c3_inpaint(room: str, variant: str, model: str = "qwen") -> dict:
+def c3_inpaint(room: str, variant: str, model: str = "qwen", baseline: bool = False) -> dict:
     """Arm C3 removal, diffusion side: inpaint the hero, propagate, measure consistency."""
     from bk.removal2d import c3_inpaint as inpaint
 
     _reload()
-    r = inpaint(room, variant, model)
+    r = inpaint(room, variant, model, baseline)
     bk_vol.commit()
     return r
 

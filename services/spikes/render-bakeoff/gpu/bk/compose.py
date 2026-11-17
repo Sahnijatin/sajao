@@ -745,7 +745,8 @@ def keyframe_background(room, scene, fi, cleared_params, variant, k, c2w, w, h, 
     if inp.exists() and npz.exists():
         filled = cv2.cvtColor(cv2.imread(str(inp)), cv2.COLOR_BGR2RGB).astype(np.float64) / 255
         if filled.shape[:2] == (h, w):
-            return filled, np.load(npz)["mask"], photo
+            fm = room_dir(room) / "c3" / variant / f"{fi}_mask.npy"
+            return filled, (np.load(fm) if fm.exists() else np.load(npz)["mask"]), photo
     original = load_params(out_dir(room) / "splat.pt")
     removed = np.load(room_dir(room) / f"removed_{variant}.npy")
     _, _, ra = render_splat(original, k, c2w, w, h, mask=torch.from_numpy(removed).cuda())

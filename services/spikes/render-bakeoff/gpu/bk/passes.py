@@ -145,15 +145,23 @@ def crop_box(mask: np.ndarray, ctx: float = 1.6, min_side: int = 384) -> tuple[i
 
 
 def region_edit(
-    model: str, img: np.ndarray, region: np.ndarray, prompt: str, refs: list[np.ndarray], seed: int
+    model: str,
+    img: np.ndarray,
+    region: np.ndarray,
+    prompt: str,
+    refs: list[np.ndarray],
+    seed: int,
+    grey: bool = True,
 ) -> tuple[np.ndarray, float]:
-    """Grey out `region`, edit a crop around it, paste the result back inside the region only."""
+    """Grey out `region` (unless grey=False), edit a crop around it, paste the result back
+    inside the region only."""
     import cv2
 
     x0, y0, x1, y1 = crop_box(region)
     crop = img[y0:y1, x0:x1].copy()
     rc = region[y0:y1, x0:x1]
-    crop[rc] = GREY
+    if grey:
+        crop[rc] = GREY
     out, dt = edit(model, [crop, *refs], prompt, seed)
     soft = cv2.GaussianBlur(rc.astype(np.float32), (0, 0), 2.0)
     soft = np.maximum(
