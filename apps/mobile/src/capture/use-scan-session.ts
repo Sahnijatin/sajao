@@ -28,9 +28,11 @@ import type { SurfaceHit } from "./ar/surface-coverage";
 import { motionSample, type RawMotion } from "./pose";
 import type { AnalysedFrame, CameraDiagnostics } from "./scan-camera";
 import { shouldWalk } from "./motion-coverage";
+import { meterHint } from "./coverage-meter";
 import {
   canFinish,
   initialScan,
+  isMeter,
   isSimple,
   mappedShare,
   scanReducer,
@@ -279,21 +281,28 @@ export function useScanSession(active: boolean, onImu?: (reading: RawMotion) => 
   const share = mappedShare(state);
   const cutOff = Date.now() < stepBackUntil;
   const walkAround = walkAroundTarget(trackedObjects(labels), views.current, share);
-  const hint: Hint = isSimple(state)
-    ? simpleHint({
-        slowDown: shouldShowSlowDown(state),
-        stepBack: cutOff || shouldStepBack(state),
-        walkAround,
-        walk: shouldWalk(state.motionCoverage),
-        doneReady: canFinish(state),
-        complete: canFinish(state) && share >= 1,
-      })
-    : currentHint({
-        outside: state.doorway.outside,
-        stepBack: cutOff,
-        walkAround,
-        coverMore: state.surfacesSeen && canFinish(state) && share < 1,
-      });
+  // The guardrail hints come first; then the meter says what to do next.
+  const hint: Hint = isMeter(state)
+    ? shouldShowSlowDown(state)
+      ? { id: "slowDown" }
+      : cutOff || shouldStepBack(state)
+        ? { id: "stepBack" }
+        : { id: meterHint(state.meter) }
+    : isSimple(state)
+      ? simpleHint({
+          slowDown: shouldShowSlowDown(state),
+          stepBack: cutOff || shouldStepBack(state),
+          walkAround,
+          walk: shouldWalk(state.motionCoverage),
+          doneReady: canFinish(state),
+          complete: canFinish(state) && share >= 1,
+        })
+      : currentHint({
+          outside: state.doorway.outside,
+          stepBack: cutOff,
+          walkAround,
+          coverMore: state.surfacesSeen && canFinish(state) && share < 1,
+        });
   useEffect(() => {
     counters.current.labelsRejected = labels.rejected;
   }, [labels.rejected]);
