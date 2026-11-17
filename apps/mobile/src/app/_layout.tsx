@@ -84,6 +84,25 @@ export default function RootLayout() {
           name="capture"
           options={{ title: t("nav.capture"), presentation: "fullScreenModal" }}
         />
+        {/* After a scan: the stages, then the reveal. Neither can be swiped away half way. */}
+        <Stack.Screen
+          name="generating"
+          options={{
+            title: t("nav.generating"),
+            presentation: "fullScreenModal",
+            animation: "fade",
+            gestureEnabled: false,
+          }}
+        />
+        <Stack.Screen
+          name="reveal"
+          options={{
+            title: t("nav.reveal"),
+            presentation: "fullScreenModal",
+            animation: "fade",
+            gestureEnabled: false,
+          }}
+        />
         <Stack.Protected guard={previewScreensEnabled()}>
           <Stack.Screen name="gallery" options={{ headerShown: true, title: t("nav.gallery") }} />
           <Stack.Screen name="space-preview" options={{ title: t("nav.spacePreview") }} />

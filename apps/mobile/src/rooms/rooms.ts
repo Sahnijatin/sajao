@@ -7,7 +7,13 @@
  * or a render). `placeholder` is a drawn stand-in used until one exists.
  */
 export type RoomStill =
-  { kind: "image"; uri: string } | { kind: "placeholder"; look: "before" | "after" };
+  | { kind: "image"; uri: string }
+  | {
+      kind: "placeholder";
+      look: "before" | "after";
+      /** Which of three views of the drawn room; 0 when left out. */
+      view?: 0 | 1 | 2;
+    };
 
 export interface Room {
   id: string;

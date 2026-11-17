@@ -21,8 +21,8 @@ Every stage of the journey is one schema object, so the stages cannot drift apar
 4. **Space Profile.** "We found a living room": the detected space type and size, with a Change action, drawn over your photo with the error band. "What should we redo?" offers "All of it" or "Just a part" (draw around a corner or wall). Drag a door, mark each existing item keep, replace or remove, optionally add tape values (each snaps in with a haptic tick and re-fits the space).
 5. **Taste.** Age band and household (two taps), 8 to 12 adaptive swipes, optional references, budget slider with "strict" or "can stretch 10%", must-haves and banned colours, "consider Vastu" toggle. Ends with your Taste Profile in plain words, editable.
 6. **Sign in.** Asked only at "Design my room": Truecaller, Google, Apple, WhatsApp OTP fallback.
-7. **Generating.** Meaningful progress (plan drawing itself, palette forming), push when ready.
-8. **Reveal.** Your photo dissolves into the redesigned room, lamps on; then three swipeable designs (Best value, Best match, Bold), each with total cost.
+7. **Generating.** Three stages in plain words, each ticking off as it finishes: "Measuring your walls", "Finding your furniture", "Designing three looks". No bar that just ends: the last tick hands straight on to the reveal. Push when ready.
+8. **Reveal.** First your room itself, in its hero views; then three swipeable designs (Best value, Best match, Bold), each with the total cost read from its `Design`. Until the twin exports hero views and the design engine sends designs, the app shows sample content through the same interface, labelled as a sample.
 9. **Design detail.** Render, "why this works", plan tab, shopping list tab, Vastu points, swap per item.
 10. **Plan.** Dimensioned 2D plan; drag and rotate re-run the verifier live with haptic snaps.
 11. **Shopping list.** Total, breakdown by category, cheaper alternative and rent option per item, grouped by retailer, buy links through our redirect.

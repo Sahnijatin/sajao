@@ -186,6 +186,30 @@
     "scanMore": "Scan a bit more",
     "confirm": "Looks good"
   },
+  "generating": {
+    "title": "Designing your room",
+    "stages": {
+      "walls": "Measuring your walls",
+      "furniture": "Finding your furniture",
+      "looks": "Designing three looks"
+    }
+  },
+  "reveal": {
+    "roomTitle": "Here's your room",
+    "roomCta": "See my three looks",
+    "looksTitle": "Three looks for your room",
+    "looksCta": "Open my room",
+    "view": "Your room, view {{number}} of {{total}}",
+    "sample": "These are sample looks. Yours appear here when they are ready."
+  },
+  "design": {
+    "slot": {
+      "best_value": "Best value",
+      "best_match": "Best match",
+      "bold": "Bold"
+    },
+    "total": "{{amount}} for everything"
+  },
   "space": {
     "found": "We found",
     "change": "Change",
@@ -364,7 +388,9 @@
     "gallery": "Gallery",
     "spacePreview": "Space Profile",
     "tastePreview": "Taste",
-    "capture": "Scan"
+    "capture": "Scan",
+    "generating": "Designing",
+    "reveal": "Your room"
   },
   "import": {
     "problemTitle": "We could not use that",
