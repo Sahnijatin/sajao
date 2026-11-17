@@ -1,6 +1,19 @@
 {
   "components": {
     "schemas": {
+      "AccountDeletion": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "AccountDeletion",
+        "type": "object"
+      },
       "Ar": {
         "additionalProperties": false,
         "properties": {
@@ -1306,6 +1319,26 @@
       }
     },
     "/v1/me": {
+      "delete": {
+        "description": "Erase the caller's account and everything stored for it. There is no undo.\n\nThe request is recorded and the erasure starts at once; it finishes within\nminutes. Safe to repeat: a repeat starts the erasure again where it stopped.",
+        "operationId": "deleteMe",
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDeletion"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Delete Me",
+        "tags": [
+          "account"
+        ]
+      },
       "get": {
         "description": "The caller's own identity. Guests have one too.",
         "operationId": "getMe",
