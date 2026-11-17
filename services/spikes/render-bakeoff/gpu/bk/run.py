@@ -104,6 +104,9 @@ def generate_arms(room: str, design_id: str, model: str, arms: list[str]) -> dic
             return r["passed"], r["iou"] + r["emb"], r
 
         t0 = time.time()
+        from bk import gemini as _g
+
+        spend0 = dict(_g.SPEND)
         prep = Path("/bk/rooms") / room / "c3" / d["variant"] / "prep.json"
         types = json.loads(prep.read_text()).get("types") if prep.exists() else None
         res = passes.arm_b(
@@ -125,6 +128,8 @@ def generate_arms(room: str, design_id: str, model: str, arms: list[str]) -> dic
                 "log": res["log"],
                 "model_seconds": res["model_seconds"],
                 "total_seconds": round(time.time() - t0, 1),
+                "api_calls": _g.SPEND["calls"] - spend0["calls"],
+                "api_inr": round((_g.SPEND["micro_inr"] - spend0["micro_inr"]) / 1e6, 2),
             },
         )
         out["B_seconds"] = round(time.time() - t0, 1)

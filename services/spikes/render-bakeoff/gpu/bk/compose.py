@@ -671,7 +671,13 @@ def composite(
     pdepth = np.where(a > 0.01, br["depth"], np.inf)
     # Products are hidden only by furniture the design keeps, never by the room shell or
     # by floaters left where furniture was removed.
-    occl = kept_object_depth(room, original, labels, variant, k, c2w, w, h, br["footprints"])
+    # Only standing products displace kept furniture; a rug goes under it, art on a wall.
+    standing = [
+        f
+        for f, it in zip(br["footprints"], design["render_items"], strict=True)
+        if it["tier"] not in ("rug", "art") and it.get("category") != "rug"
+    ]
+    occl = kept_object_depth(room, original, labels, variant, k, c2w, w, h, standing)
     if region is not None and region.any():
         occl = np.where(region, np.inf, occl)  # C3: nothing stands where the photo was emptied
     visible_px = (a > 0.01) & ~(np.isfinite(occl) & (occl < pdepth - 0.03))

@@ -88,6 +88,9 @@ class GeminiImageProvider:
         )
 
 
+SPEND = {"calls": 0, "micro_inr": 0}  # per container, read by run.py for per-design cost
+
+
 def gateway():
     global _gw
     if _gw is None:
@@ -135,4 +138,6 @@ def gemini_edit(pils, prompt: str, seed: int):
         blobs=tuple(blobs),
     )
     resp = asyncio.run(gateway().call(req, validate=_validate))
+    SPEND["calls"] += 1
+    SPEND["micro_inr"] += int(resp.cost_micro_inr)
     return Image.open(io.BytesIO(resp.blobs[0])).convert("RGB")
