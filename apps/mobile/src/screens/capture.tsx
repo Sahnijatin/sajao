@@ -13,17 +13,28 @@ import { mappedSectors } from "@/capture/coverage";
 import { DebugOverlay } from "@/capture/debug-overlay";
 import type { GuardrailId, GuardrailStatus } from "@/capture/guardrails";
 import { toScreen } from "@/capture/mesh-tracker";
+import { meterMissing, meterParts } from "@/capture/coverage-meter";
+import { MeterMap } from "@/capture/meter-map";
 import { MiniMap } from "@/capture/mini-map";
 import { imuReading } from "@/capture/package/imu";
 import type { LocalCapture } from "@/capture/package/native-capture";
 import type { CaptureDeviceInfo } from "@/capture/package/upload-capture";
 import { useCaptureRecorder } from "@/capture/package/use-capture-recorder";
 import type { RawMotion } from "@/capture/pose";
+import { NoArNotice } from "@/capture/no-ar-notice";
 import { ProgressRing } from "@/capture/progress-ring";
 import { ScanHint } from "@/capture/scan-hint";
 import { ScanCamera } from "@/capture/scan-camera";
-import { canFinish, isSimple, mappedShare, shouldShowSlowDown } from "@/capture/scan-session";
+import {
+  canFinish,
+  canFinishEarly,
+  isMeter,
+  isSimple,
+  mappedShare,
+  shouldShowSlowDown,
+} from "@/capture/scan-session";
 import { useScanSession } from "@/capture/use-scan-session";
+import { useCaptureStore } from "@/state/capture";
 
 export interface CaptureScreenProps {
   onClose: () => void;
@@ -156,9 +167,12 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
   const [arStartError, setArStartError] = useState<string | null>(null);
   const arMode = capabilities.arSupported && ArView !== null && arStartError === null;
   const [finishing, setFinishing] = useState(false);
+  const setMissing = useCaptureStore((store) => store.setMissing);
   const finishScan = useCallback(async () => {
     setFinishing(true);
     if (arMode) {
+      // What the meter still wanted, for the review to name after "Finish anyway".
+      setMissing(isMeter(state) ? meterMissing(state.meter) : null);
       const local = await capture.finish();
       onCaptured?.(local, {
         platform: capabilities.platform === "ios" ? "ios" : "android",
@@ -167,7 +181,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
       });
     }
     onDone();
-  }, [arMode, capabilities.platform, capture, onCaptured, onDone, tier]);
+  }, [arMode, capabilities.platform, capture, onCaptured, onDone, setMissing, state, tier]);
   const labelProps = useMemo(
     () =>
       shownLabels(labels).map((label) => ({
@@ -186,6 +200,8 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
   const percent = Math.round(share * 100);
   // The simple scan shows one progress ring instead of the map of directions.
   const simple = arMode && isSimple(state);
+  // Where AR gives positions the coverage meter decides Done, in both scan modes.
+  const meter = arMode && isMeter(state);
   const [showDebug, setShowDebug] = useState(false);
   const taps = useRef<number[]>([]);
   // Hidden debug overlay: three taps on the camera within a second.
@@ -204,6 +220,10 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
   const slowDown = shouldShowSlowDown(state);
   const chipStatus = (id: GuardrailId): GuardrailStatus =>
     id === "motion" && slowDown ? "warn" : state.guardrails[id];
+
+  // A phone that cannot run AR cannot measure the room: it goes to photos
+  // with a friendly note, before any camera permission is asked for.
+  if (!arMode) return <NoArNotice onUsePhotos={onUsePhotos} onClose={onClose} />;
 
   if (!permission.hasPermission) {
     return (
@@ -379,7 +399,16 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
               <DebugOverlay debug={debug} state={state} arStartError={arStartError} />
             ) : null}
           </View>
-          {simple ? (
+          {meter ? (
+            <View style={{ alignItems: "center", gap: spacing.sm }}>
+              <ProgressRing
+                progress={share}
+                ready={canFinish(state)}
+                parts={meterParts(state.meter)}
+              />
+              <MeterMap meter={state.meter} position={state.position} yaw={state.pose.yaw} />
+            </View>
+          ) : simple ? (
             <ProgressRing progress={share} ready={canFinish(state)} />
           ) : (
             <MiniMap mapped={mapped} yaw={state.pose.yaw} />
@@ -449,6 +478,15 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
                 onPress={() => void finishScan()}
               />
             </View>
+            {canFinishEarly(state) && !finishing ? (
+              // Coverage has not moved for a minute: never trap the person in the scan.
+              <Button
+                label={t("capture.finishAnyway")}
+                variant="ghost"
+                size="small"
+                onPress={() => void finishScan()}
+              />
+            ) : null}
           </>
         )}
       </GlassSurface>
