@@ -515,6 +515,48 @@ class ViewOrbit(BaseModel):
     ]
 
 
+class Area(BaseModel):
+    """
+    One space of a capture: its floor, what is in it and a photo that shows it.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    space_type: Annotated[
+        Literal["living_room", "bedroom", "balcony", "other"] | None,
+        Field(
+            description="What the scanned space is. Detected from the scan, never picked up front; the user can change it."
+        ),
+    ] = None
+    floor_polygon: Annotated[
+        list[Point2], Field(description="In the space frame, seen from above.", min_length=3)
+    ]
+    floor_area_m2: Annotated[float, Field(ge=0.0)]
+    object_ids: Annotated[
+        list[LocalId],
+        Field(description="Objects and built-ins whose footprint centre is in this area."),
+    ]
+    keyframe_ids: Annotated[
+        list[LocalId], Field(description="Keyframes taken standing in this area.")
+    ]
+    photo_keyframe_id: Annotated[
+        str | None,
+        Field(
+            description="The keyframe that shows the most of this area's floor, for the app to show when asking which area to redesign.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ] = None
+    confidence: MeasurementConfidence | None = None
+
+
 class Budget(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -2118,5 +2160,12 @@ class SpaceTwin(BaseModel):
         MeasurementConfidence | None,
         Field(
             description="How far the room's measurements can be trusted. Fit claims only at taped or ar_measured."
+        ),
+    ] = None
+    areas: Annotated[
+        list[Area] | None,
+        Field(
+            description="The spaces the capture passed through, split where the floor narrows to a doorway. One area when the capture is one space (an open-plan L included). The app shows each area's photo and asks which to redesign.",
+            min_length=1,
         ),
     ] = None

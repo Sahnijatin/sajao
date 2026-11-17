@@ -22,8 +22,11 @@ export interface SpaceProfileScreenProps {
   profile: SpaceProfile;
   onChange: (profile: SpaceProfile) => void;
   onShowIdeas: () => void;
-  /** "Just a part": the screen where the user draws around a corner or wall. */
-  onChoosePart: () => void;
+  /**
+   * "Just a part": the screen where the user draws around a corner or wall.
+   * Left out while that screen is not built: the choice is then not offered.
+   */
+  onChoosePart?: () => void;
 }
 
 const PLAN_HEIGHT = 300;
@@ -194,12 +197,14 @@ export function SpaceProfileScreen({
                 selected={profile.redo.scope === "all"}
                 onPress={() => onChange(setRedo(profile, { scope: "all" }))}
               />
-              <Choice
-                title={t("space.redoPart")}
-                body={t("space.redoPartBody")}
-                selected={profile.redo.scope === "part"}
-                onPress={onChoosePart}
-              />
+              {onChoosePart ? (
+                <Choice
+                  title={t("space.redoPart")}
+                  body={t("space.redoPartBody")}
+                  selected={profile.redo.scope === "part"}
+                  onPress={onChoosePart}
+                />
+              ) : null}
             </View>
           </View>
 

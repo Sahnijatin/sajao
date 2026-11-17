@@ -99,4 +99,14 @@ describe("Space Profile card", () => {
     expect(screen.getByText("एक लिविंग रूम")).toBeTruthy();
     expect(screen.getByText("हम क्या नया करें?")).toBeTruthy();
   });
+
+  it("does not offer Just a part while there is no screen to draw it on", async () => {
+    await render(
+      <ThemeProvider tier="standard" reducedMotion>
+        <SpaceProfileScreen profile={profile} onChange={jest.fn()} onShowIdeas={jest.fn()} />
+      </ThemeProvider>,
+    );
+    expect(screen.getByText("All of it")).toBeTruthy();
+    expect(screen.queryByText("Just a part")).toBeNull();
+  });
 });

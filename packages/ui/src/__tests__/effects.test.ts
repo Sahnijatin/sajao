@@ -66,11 +66,11 @@ describe("scan mesh preset", () => {
 describe("canvas colour blobs", () => {
   const size = { width: 390, height: 844 };
 
-  it("are blue, amber and pink, as on the home mockup", () => {
+  it("are terracotta, amber and wood: warm light on an ivory wall", () => {
     expect(canvasBlobs.map((blob) => blob.color)).toEqual([
-      "rgba(10, 124, 255, 0.20)",
-      "rgba(255, 138, 0, 0.18)",
-      "rgba(255, 105, 180, 0.12)",
+      "rgba(173, 79, 39, 0.12)",
+      "rgba(232, 178, 96, 0.20)",
+      "rgba(176, 137, 104, 0.14)",
     ]);
   });
 

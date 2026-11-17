@@ -22,6 +22,22 @@ export type DimensionSource = ("measured" | "estimated" | "user_confirmed")
  */
 export type AngleDeg = number
 /**
+ * What the scanned space is. Detected from the scan, never picked up front; the user can change it.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "SpaceType".
+ */
+export type SpaceType = ("living_room" | "bedroom" | "balcony" | "other")
+/**
+ * Closed floor polygon; the last point joins the first.
+ * 
+ * @minItems 3
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "Polygon".
+ */
+export type Polygon = [Point2, Point2, Point2, ...(Point2)[]]
+/**
  * Contract version of the object. Minor versions only add optional fields.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -47,15 +63,6 @@ export type Timestamp = string
  * via the `definition` "UnitScore".
  */
 export type UnitScore = number
-/**
- * Closed floor polygon; the last point joins the first.
- * 
- * @minItems 3
- * 
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "Polygon".
- */
-export type Polygon = [Point2, Point2, Point2, ...(Point2)[]]
 /**
  * Object key in the media store. Never a public URL; clients receive signed URLs.
  * 
@@ -108,13 +115,6 @@ export type DetectionSource = ("detected" | "user")
  * via the `definition` "ObjectType".
  */
 export type ObjectType = ("furniture" | "fixture" | "wall_item" | "textile" | "decor")
-/**
- * What the scanned space is. Detected from the scan, never picked up front; the user can change it.
- * 
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "SpaceType".
- */
-export type SpaceType = ("living_room" | "bedroom" | "balcony" | "other")
 
 /**
  * Generated from schemas/v1. Do not edit.
@@ -179,6 +179,55 @@ export interface Point3 {
 x_m: number
 y_m: number
 z_m: number
+}
+/**
+ * One space of a capture: its floor, what is in it and a photo that shows it.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "Area".
+ */
+export interface Area {
+id: LocalId
+space_type?: SpaceType
+floor_polygon: Polygon
+floor_area_m2: number
+/**
+ * Objects and built-ins whose footprint centre is in this area.
+ */
+object_ids: LocalId[]
+/**
+ * Keyframes taken standing in this area.
+ */
+keyframe_ids: LocalId[]
+photo_keyframe_id?: LocalId
+confidence?: MeasurementConfidence
+}
+/**
+ * A point on the floor in the space frame, in metres.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "Point2".
+ */
+export interface Point2 {
+x_m: number
+y_m: number
+}
+/**
+ * How a room's lengths were measured. taped: a tape value the person entered checked or set them. ar_measured: the phone's AR (planes or LiDAR) measured them. estimated: a depth model guessed them from pictures, as for imported photos and videos; the app shows sizes with measure to confirm and makes no fit claim.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "MeasurementConfidence".
+ */
+export interface MeasurementConfidence {
+level: ("taped" | "ar_measured" | "estimated")
+/**
+ * Where the room's lengths came from.
+ */
+basis: ("tape" | "ar_planes" | "lidar" | "depth_model")
+/**
+ * Tape values the person entered for this room.
+ */
+tape_values?: number
 }
 /**
  * A point in the AR session's world frame, in metres, y up.
@@ -293,16 +342,6 @@ depth: Dimension
  * Whether it takes up floor: false for things on a wall or hanging from the ceiling, whose box does not reach down to the floor.
  */
 on_floor: boolean
-}
-/**
- * A point on the floor in the space frame, in metres.
- * 
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "Point2".
- */
-export interface Point2 {
-x_m: number
-y_m: number
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -947,23 +986,6 @@ intrinsics: CameraIntrinsics
 sharpness?: number
 }
 /**
- * How a room's lengths were measured. taped: a tape value the person entered checked or set them. ar_measured: the phone's AR (planes or LiDAR) measured them. estimated: a depth model guessed them from pictures, as for imported photos and videos; the app shows sizes with measure to confirm and makes no fit claim.
- * 
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "MeasurementConfidence".
- */
-export interface MeasurementConfidence {
-level: ("taped" | "ar_measured" | "estimated")
-/**
- * Where the room's lengths came from.
- */
-basis: ("tape" | "ar_planes" | "lidar" | "depth_model")
-/**
- * Tape values the person entered for this room.
- */
-tape_values?: number
-}
-/**
  * A 3D model made from the object's own crops. Scaled to the measured box; the model never sets the size.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -1365,6 +1387,12 @@ viewing?: Viewing
 inventory?: Inventory
 free_floor?: FreeFloor
 confidence?: MeasurementConfidence
+/**
+ * The spaces the capture passed through, split where the floor narrows to a doorway. One area when the capture is one space (an open-plan L included). The app shows each area's photo and asks which to redesign.
+ * 
+ * @minItems 1
+ */
+areas?: [Area, ...(Area)[]]
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
