@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Any
 
 from sajao_workers.ar_measurements import measure
+from sajao_workers.ar_openings import cross_check
 from sajao_workers.golden import Sheet, _check, read_sheet
 
 # Pairing more walls than this by trying every order would take too long.
@@ -66,6 +67,42 @@ def _pair(
                 if best is None or cost < best[0] - 1e-9:
                     best = (cost, pairs)
     return best[1] if best else None
+
+
+def _score_openings(
+    openings: Sequence[Mapping[str, Any]], sheet: Sheet, wall_of: Mapping[str, str]
+) -> list[dict[str, Any]]:
+    """Each door and window on the tape, with the measured one that matches it."""
+    opening_rows = []
+    used: set[str] = set()
+    for kind, items in (("door", sheet.doors), ("window", sheet.windows)):
+        for item in items:
+            candidates = [
+                o
+                for o in openings
+                if o["kind"] == kind
+                and o["id"] not in used
+                and (
+                    o.get("wall_id") is None
+                    or item["wall"] not in wall_of
+                    or o["wall_id"] == wall_of[item["wall"]]
+                )
+            ]
+            match = min(
+                candidates,
+                key=lambda o, item=item: abs(o["width"]["value_m"] - item.get("width", 0)),  # type: ignore[misc]
+                default=None,
+            )
+            found: dict[str, Any] = {"kind": kind, "tape_wall": item["wall"], "found": bool(match)}
+            if match:
+                used.add(match["id"])
+                found["ar"] = match["id"]
+                for key, ar_key in (("width", "width"), ("height", "height"),
+                                    ("offset", "offset"), ("sill", "sill_height")):  # fmt: skip
+                    if key in item and ar_key in match:
+                        found[f"{key}_error_m"] = round(match[ar_key]["value_m"] - item[key], 3)
+            opening_rows.append(found)
+    return opening_rows
 
 
 def ar_report(measurements: Mapping[str, Any], sheet: Sheet) -> dict[str, Any]:
@@ -128,35 +165,15 @@ def ar_report(measurements: Mapping[str, Any], sheet: Sheet) -> dict[str, Any]:
                 "that is not a floor size."
             )
 
-    opening_rows = []
-    used: set[str] = set()
-    for kind, items in (("door", sheet.doors), ("window", sheet.windows)):
-        for item in items:
-            candidates = [
-                o
-                for o in openings
-                if o["kind"] == kind
-                and o["id"] not in used
-                and (
-                    o.get("wall_id") is None
-                    or item["wall"] not in wall_of
-                    or o["wall_id"] == wall_of[item["wall"]]
-                )
-            ]
-            match = min(
-                candidates,
-                key=lambda o, item=item: abs(o["width"]["value_m"] - item.get("width", 0)),  # type: ignore[misc]
-                default=None,
-            )
-            found: dict[str, Any] = {"kind": kind, "tape_wall": item["wall"], "found": bool(match)}
-            if match:
-                used.add(match["id"])
-                found["ar"] = match["id"]
-                for key, ar_key in (("width", "width"), ("height", "height"),
-                                    ("offset", "offset"), ("sill", "sill_height")):  # fmt: skip
-                    if key in item and ar_key in match:
-                        found[f"{key}_error_m"] = round(match[ar_key]["value_m"] - item[key], 3)
-            opening_rows.append(found)
+    classed_rows = _score_openings(openings, sheet, wall_of)
+    from_keyframes = measurements.get("keyframe_openings")
+    if from_keyframes is None:
+        # No keyframe pass ran (this command alone has no vision model): the
+        # phone's own door and window planes are all there is.
+        opening_rows, source = classed_rows, "planes"
+    else:
+        opening_rows, source = _score_openings(from_keyframes, sheet, wall_of), "keyframes"
+    checks = cross_check(openings, from_keyframes) if from_keyframes is not None else []
 
     measured_rows = [r for r in wall_rows if r["basis"] == "corner_to_corner"]
     errors = [abs(r["error_pct"]) for r in measured_rows]
@@ -184,12 +201,37 @@ def ar_report(measurements: Mapping[str, Any], sheet: Sheet) -> dict[str, Any]:
         "ceiling": ceiling_row,
         "floor": floor_row,
         "openings": opening_rows,
+        # Where the doors and windows above come from: "keyframes" or "planes".
+        "openings_source": source,
+        # iPhone: the phone's own door and window planes against the tape, and
+        # against the keyframe reading of the same opening.
+        "classed_openings": classed_rows if source == "keyframes" and openings else [],
+        "cross_check": checks,
         "notes": notes,
     }
 
 
 def _cm(metres: float | None) -> str:
     return "" if metres is None else f"{metres * 100:+.0f}"
+
+
+def _opening_table(title: str, rows: Sequence[Mapping[str, Any]]) -> list[str]:
+    lines = [
+        "",
+        f"## {title} (error = AR minus tape, cm)",
+        "",
+        "| Kind | Tape wall | Found | Width | Height | Sill | From corner |",
+        "| --- | --- | --- | --- | --- | --- | --- |",
+    ]
+    for o in rows:
+        lines.append(
+            f"| {o['kind']} | {o['tape_wall']} | {'yes' if o['found'] else 'no'} "
+            + " ".join(
+                f"| {_cm(o.get(f'{key}_error_m'))}" for key in ("width", "height", "sill", "offset")
+            )
+            + " |"
+        )
+    return lines
 
 
 def ar_markdown(report: Mapping[str, Any]) -> str:
@@ -246,21 +288,35 @@ def ar_markdown(report: Mapping[str, Any]) -> str:
             f"\nArea: tape {floor['tape_area_m2']} m2, AR {floor['ar_area_m2']} m2 "
             f"({floor['area_error_pct']:+.1f}%). The tape's floor is the mean of opposite walls."
         )
-    lines += [
-        "",
-        "## Doors and windows (error = AR minus tape, cm)",
-        "",
-        "| Kind | Tape wall | Found | Width | Height | Sill | From corner |",
-        "| --- | --- | --- | --- | --- | --- | --- |",
-    ]
-    for o in report["openings"]:
-        lines.append(
-            f"| {o['kind']} | {o['tape_wall']} | {'yes' if o['found'] else 'no'} "
-            + " ".join(
-                f"| {_cm(o.get(f'{key}_error_m'))}" for key in ("width", "height", "sill", "offset")
-            )
-            + " |"
+    how = (
+        "found in the keyframes and measured on the wall planes"
+        if report["openings_source"] == "keyframes"
+        else "from the planes the phone classed itself; no keyframe pass ran"
+    )
+    lines += _opening_table(f"Doors and windows, {how}", report["openings"])
+    if report["classed_openings"]:
+        lines += _opening_table(
+            "Doors and windows from the planes the phone classed itself",
+            report["classed_openings"],
         )
+    if report["cross_check"]:
+        lines += [
+            "",
+            "## Cross-check: keyframes minus the phone's own planes, cm",
+            "",
+            "| Kind | Wall | Phone's plane | Keyframes | Width | Height | Sill | From corner |",
+            "| --- | --- | --- | --- | --- | --- | --- | --- |",
+        ]
+        for c in report["cross_check"]:
+            lines.append(
+                f"| {c['kind']} | {c.get('wall_id') or ''} | {c.get('classed', 'not found')} "
+                f"| {c.get('keyframes', 'not found')} "
+                + " ".join(
+                    f"| {_cm(c.get(f'{key}_difference_m'))}"
+                    for key in ("width", "height", "sill_height", "offset")
+                )
+                + " |"
+            )
     if report["notes"]:
         lines += ["", "## Notes", "", *[f"- {n}" for n in report["notes"]]]
     return "\n".join(lines) + "\n"

@@ -247,6 +247,8 @@ def measure(doc: Mapping[str, Any]) -> dict[str, Any]:
     result: dict[str, Any] = {
         "format": FORMAT,
         "planes": len(planes),
+        # Height of the floor in the AR world, for placing things above it.
+        "floor_y_m": None,
         "walls": [],
         "floor": None,
         "ceiling_height": None,
@@ -259,6 +261,7 @@ def measure(doc: Mapping[str, Any]) -> dict[str, Any]:
 
     floor_y, floor_planes = _floor(planes)
     ceiling_y = _ceiling(planes, floor_y)
+    result["floor_y_m"] = None if floor_y is None else round(floor_y, 3)
     if floor_y is None:
         notes.append("No floor plane was found: heights above the floor are not known.")
     if floor_y is not None and ceiling_y is not None:

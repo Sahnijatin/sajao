@@ -20,7 +20,8 @@ It reads the capture's planes file, turns the planes into measurements (`sajao_w
 - A wall with both neighbours found is measured **corner to corner**. A wall with a neighbour missing is only **seen in part**: a lower bound, listed with how much is short and kept out of the error figures.
 - The floor size is the room between the corners, compared with the mean of the tape's opposite walls (four-wall rooms). If the walls do not close into a room there is no floor size, only the floor the phone saw.
 - Ceiling height is from the floor plane to the ceiling plane, when the phone found one.
-- Doors and windows come from planes the phone itself classed as a door or a window, each with width, height, sill and distance from the nearest corner. ARKit classes planes; ARCore does not, so an Android capture reports none.
+- Doors and windows are found in the keyframes by the vision model (a mask in each picture, nothing more), and the rays through each mask are cast from that keyframe's AR pose onto the walls the phone measured; code then works out width, height, sill and distance from the nearest corner (`sajao_workers.ar_openings`). An opening must be seen in at least two keyframes. This needs the model, so it runs in `golden_room`, on every phone. The command above has no model and reports only the planes the phone classed itself.
+- ARKit classes door and window planes; ARCore does not. On an iPhone the report scores both readings against the tape and lists the difference between them as a cross-check.
 - A scan in which the phone found no planes reports nothing measured, and says so.
 
 Files: `ar-measurements.json` (every value an estimated dimension with an error band), `ar-report.json` and `ar-report.md`.
