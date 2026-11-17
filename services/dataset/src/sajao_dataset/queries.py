@@ -2,22 +2,22 @@
 
 from sajao_dataset.manifest import Category
 
-QUERY_SET = "youtube-v3"
+QUERY_SET = "youtube-v4"
 
 # Priority category: empty or newly handed-over homes. They show bare walls, floors,
 # windows and doors, which is what the twin's room shell and the new-home buyer need.
 PRIORITY_QUERIES: tuple[str, ...] = (
     "empty flat tour india",
-    "empty 2bhk flat tour",
-    "empty 3bhk flat tour",
+    "empty 2bhk flat tour india",
+    "empty 3bhk flat tour india",
     "unfurnished flat tour india",
-    "new flat tour before interior",
+    "new flat tour before interior india",
     "bare flat tour india",
-    "possession day flat tour",
+    "possession day flat tour india",
     "flat handover tour india",
     "new home tour empty india",
     "empty house tour india",
-    "khali flat tour",
+    "khali flat tour india",
     "खाली फ्लैट टूर",
     "नया फ्लैट टूर",
 )

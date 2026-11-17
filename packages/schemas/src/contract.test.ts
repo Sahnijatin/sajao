@@ -72,7 +72,7 @@ describe("dimension honesty", () => {
 
   it("uses the Dimension type for every length that is not a plain coordinate", () => {
     // Bare numbers in metres are allowed only for coordinates, derived plan
-    // sizes, raw tape input and rule thresholds. Anything else must be a Dimension.
+    // sizes, raw tape input, rule thresholds and viewing limits. Anything else must be a Dimension.
     const allowed = new Set([
       "Dimension.value_m",
       "Dimension.error_band_m",
@@ -88,6 +88,8 @@ describe("dimension honesty", () => {
       "PlanItem.depth_m",
       "Clearance.minimum_m",
       "TapeMeasurement.value_m",
+      "ViewOrbit.max_offset_m",
+      "SafeRegion.radius_m",
     ]);
     const bare: string[] = [];
     const walk = (node: unknown, owner: string): void => {

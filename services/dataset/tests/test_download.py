@@ -2,17 +2,29 @@ import shutil
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Literal
 
 import pytest
 from pydantic import HttpUrl, ValidationError
 
 from sajao_dataset.download import (
+    BudgetExceededError,
+    ClipRecord,
     Segment,
+    batch_rates,
     check_clip,
     clip_relpath,
     download_all,
+    is_blocked,
+    looks_like_datacenter,
+    next_session,
     plan_head_segments,
+    plan_screened_segments,
     read_ledger,
+    redact,
+    run_with_byte_budget,
+    with_endpoint,
+    ytdlp_cli_args,
     ytdlp_options,
 )
 from sajao_dataset.manifest import SourceRecord
@@ -197,3 +209,216 @@ def test_check_clip_rejects_truncated_and_empty_clips(tmp_path: Path) -> None:
     empty.write_bytes(b"\x00" * 262)  # what yt-dlp left behind on a failed seek
     with pytest.raises(RuntimeError, match="clip check failed"):
         check_clip(empty, seg(start=30, end=50), ffprobe="ffprobe")
+
+
+PROXY = "http://user-sp1-country-in-session-abc:S3cretPass@gate.example.com:10001"
+
+
+def test_ytdlp_options_route_through_the_proxy_only_when_given(tmp_path: Path) -> None:
+    assert "proxy" not in ytdlp_options(seg(), tmp_path / "x", max_height=720)
+    options = ytdlp_options(seg(), tmp_path / "x", max_height=720, proxy=PROXY)
+    assert options["proxy"] == PROXY
+    assert "external_downloader_args" not in options
+    local = "http://127.0.0.1:8899"
+    forwarded = ytdlp_options(
+        seg(), tmp_path / "x", max_height=720, proxy=PROXY, ffmpeg_proxy=local
+    )
+    assert forwarded["external_downloader_args"] == {"ffmpeg_i": ["-http_proxy", local]}
+    assert "height<=720" in options["format"]
+
+
+def test_redact_removes_the_proxy_and_any_credentials() -> None:
+    text = f"Unable to connect to proxy {PROXY}; also https://u:p@other.example/x"
+    clean = redact(text, PROXY)
+    assert "S3cretPass" not in clean and "user-sp1" not in clean
+    assert ":p@" not in clean and "[proxy]" in clean and "https://***@other.example" in clean
+    assert redact("no secrets here", None) == "no secrets here"
+
+
+def test_failed_downloads_never_store_the_proxy(tmp_path: Path) -> None:
+    def fetch(segment: Segment, tmp_stem: Path) -> Path:
+        raise RuntimeError(f"ProxyError: {PROXY} refused")
+
+    download_all(
+        [seg()],
+        clips_dir=tmp_path / "clips",
+        ledger_path=tmp_path / "d.jsonl",
+        fetch=fetch,
+        max_height=720,
+        pause_s=0,
+        secrets=(PROXY,),
+        sleep=lambda _: None,
+    )
+    stored = (tmp_path / "d.jsonl").read_text()
+    assert "S3cretPass" not in stored and "user-sp1" not in stored
+
+
+def test_download_stops_before_the_byte_cap(tmp_path: Path) -> None:
+    used = [0]
+
+    def fetch(segment: Segment, tmp_stem: Path) -> Path:
+        used[0] += 400  # what the network really carried for this segment
+        produced = tmp_stem.with_name(tmp_stem.name + ".mp4")
+        produced.write_bytes(b"x" * 100)
+        return produced
+
+    segments = [seg(start=i * 100, end=i * 100 + 10) for i in range(5)]
+    summary = download_all(
+        segments,
+        clips_dir=tmp_path / "clips",
+        ledger_path=tmp_path / "d.jsonl",
+        fetch=fetch,
+        max_height=720,
+        pause_s=0,
+        max_bytes=1000,
+        used_bytes=lambda: used[0],
+        bytes_per_s=10,  # 100 bytes estimated per 10 s segment
+        sleep=lambda _: None,
+    )
+    # 0+100, 400+100, 800+100 fit; 1200 used would not.
+    assert summary.downloaded == 3
+    assert summary.stopped_at_cap
+    assert len(read_ledger(tmp_path / "d.jsonl")) == 3
+
+
+def test_plan_screened_segments_takes_creative_commons_videos_first() -> None:
+    sources = [
+        source("aaaaaaaaaaa", "standard", 600).model_copy(update={"category": "empty_new_build"}),
+        source("bbbbbbbbbbb", "creative_commons", 600),
+        source("ccccccccccc", "standard", 600),
+        source("ddddddddddd", "creative_commons", 600).model_copy(
+            update={"category": "empty_new_build"}
+        ),
+    ]
+
+    def screened(video_id: str, start: float) -> Segment:
+        return Segment(
+            video_id=video_id,
+            start_s=start,
+            end_s=start + 20,
+            room_type="kitchen",
+            origin="screening",
+        )
+
+    segments = [
+        screened("aaaaaaaaaaa", 0),
+        screened("bbbbbbbbbbb", 60),
+        screened("bbbbbbbbbbb", 10),
+        screened("ccccccccccc", 0),
+        screened("ddddddddddd", 0),
+        screened("eeeeeeeeeee", 0),  # not in the manifest (unavailable): dropped
+        seg("ccccccccccc"),  # a head segment, not screened: dropped
+    ]
+    plan = plan_screened_segments(segments, sources, limit_videos=3)
+    assert [(s.video_id, s.start_s) for s in plan] == [
+        ("ddddddddddd", 0),  # Creative Commons and priority category
+        ("bbbbbbbbbbb", 10),  # Creative Commons, segments in time order
+        ("bbbbbbbbbbb", 60),
+        ("aaaaaaaaaaa", 0),  # standard license, priority category
+    ]
+
+
+def test_plan_screened_segments_caps_seconds_per_video() -> None:
+    sources = [source("aaaaaaaaaaa", "creative_commons", 600)]
+    segments = [
+        Segment(video_id="aaaaaaaaaaa", start_s=start, end_s=start + 50, origin="screening")
+        for start in (0, 100, 200)
+    ]
+    plan = plan_screened_segments(segments, sources, limit_videos=1, max_s_per_video=120)
+    assert [(s.start_s, s.end_s) for s in plan] == [(0, 50), (100, 150), (200, 220)]
+
+
+def test_next_session_moves_through_the_sticky_ports_and_wraps() -> None:
+    assert next_session(PROXY) == PROXY.replace(":10001", ":10002")
+    assert next_session("http://u:p@in.example.com:10009") == "http://u:p@in.example.com:10010"
+    assert next_session("http://u:p@in.example.com:10010") == "http://u:p@in.example.com:10001"
+    assert next_session("http://u:p@in.example.com:7000") == "http://u:p@in.example.com:10001"
+    with pytest.raises(ValueError):
+        next_session("http://u:p@in.example.com")
+
+
+def test_with_endpoint_keeps_the_credentials() -> None:
+    assert (
+        with_endpoint("http://u:p%40x@in.example.com:10004", "gate.example.com", 10001)
+        == "http://u:p%40x@gate.example.com:10001"
+    )
+
+
+def test_looks_like_datacenter_by_network_name() -> None:
+    assert looks_like_datacenter("AS15169 Google LLC")
+    assert looks_like_datacenter("AS16509 Amazon.com, Inc.")
+    assert looks_like_datacenter("AS24940 Hetzner Online GmbH")
+    assert not looks_like_datacenter("AS24560 Bharti Airtel Ltd., Telemedia Services")
+    assert not looks_like_datacenter("AS55836 Reliance Jio Infocomm Limited")
+    assert not looks_like_datacenter(None)
+
+
+def test_byte_budget_kills_a_runaway_download() -> None:
+    received = [0]
+
+    def used() -> int:
+        received[0] += 1_000_000  # 1 MB more every time it is checked
+        return received[0]
+
+    with pytest.raises(BudgetExceededError):
+        run_with_byte_budget(["sleep", "30"], budget_bytes=3_000_000, used_bytes=used, poll_s=0.01)
+
+
+def test_byte_budget_returns_exit_code_and_stderr() -> None:
+    code, err = run_with_byte_budget(
+        ["sh", "-c", "echo oops >&2; exit 3"], budget_bytes=10, used_bytes=lambda: 0
+    )
+    assert code == 3 and "oops" in err
+
+
+def test_ytdlp_cli_args_keep_the_proxy_out_of_the_command(tmp_path: Path) -> None:
+    args = ytdlp_cli_args(
+        seg(start=30, end=50), tmp_path / "x", max_height=720, ffmpeg_proxy="http://127.0.0.1:8899"
+    )
+    joined = " ".join(args)
+    assert "*30-50" in joined and "height<=720" in joined
+    assert "ffmpeg_i:-http_proxy http://127.0.0.1:8899" in args
+    assert "--proxy" not in args
+    fmt = args[args.index("-f") + 1]
+    assert "webm" not in fmt and all("ext=mp4" in part for part in fmt.split("/"))
+
+
+def test_is_blocked_spots_the_bot_check_and_rate_limits() -> None:
+    assert is_blocked("ERROR: [youtube] x: Sign in to confirm you're not a bot.")
+    assert is_blocked("HTTP Error 429: Too Many Requests")
+    assert is_blocked("Unable to connect to proxy: Tunnel connection failed: 502 Bad Gateway")
+    assert not is_blocked("ERROR: ffmpeg exited with code 187")
+
+
+def clip(status: Literal["ok", "failed"], error: str | None = None) -> ClipRecord:
+    return ClipRecord(
+        video_id="aaaaaaaaaaa",
+        start_s=0,
+        end_s=10,
+        room_type=None,
+        origin="screening",
+        status=status,
+        path=None,
+        sha256=None,
+        bytes=None,
+        max_height=720,
+        error=error,
+        at=NOW,
+    )
+
+
+def test_batch_rates_ignore_skips_and_apply_the_stop_rules() -> None:
+    rows = (
+        [clip("ok")] * 6
+        + [clip("failed", "stopped after 9 MB")]
+        + [clip("failed", "ERROR: ffmpeg")]
+        + [clip("failed", "skipped: this video went over its budget twice")] * 10
+    )
+    rates = batch_rates(rows)
+    assert (rates["attempted"], rates["clean"], rates["skipped"]) == (8, 6, 10)
+    assert rates["clean_rate"] == 0.75 and rates["cap_kill_rate"] == 0.125
+    assert rates["continue"]
+    many_kills = [clip("ok")] * 5 + [clip("failed", "stopped after 9 MB")] * 2
+    assert not batch_rates(many_kills)["continue"]  # 2 of 7 = 29 percent kills
+    assert not batch_rates([clip("ok"), clip("failed", "x"), clip("failed", "y")])["continue"]
+    assert not batch_rates([])["continue"]

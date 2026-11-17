@@ -69,6 +69,12 @@ class SajaoArModule : Module() {
       Prop("lite") { view: SajaoArView, value: Boolean ->
         view.lite = value
       }
+      Prop("overlay") { view: SajaoArView, value: Boolean ->
+        view.setOverlay(value)
+      }
+      Prop("capturePaused") { view: SajaoArView, value: Boolean ->
+        view.capturePaused = value
+      }
       Prop("reducedMotion") { view: SajaoArView, value: Boolean ->
         view.reducedMotion = value
       }

@@ -1,0 +1,642 @@
+{
+  "scene": "arkit_living_41159566",
+  "detectors": "listing",
+  "inventory": {
+    "items": [
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3.5-flash-lite"],
+        "name": "sofa",
+        "prompts": ["leather sofa", "couch", "brown leather sofa"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3.5-flash-lite"],
+        "name": "coffee table",
+        "prompts": ["wooden coffee table", "living room table", "center table"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3.5-flash-lite"],
+        "name": "bookshelf",
+        "prompts": ["wooden bookshelf", "book rack"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3.5-flash-lite"],
+        "name": "console table",
+        "prompts": ["hallway table", "small wooden table"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3.5-flash-lite"],
+        "name": "ladder",
+        "prompts": ["wooden ladder", "library ladder", "bookshelf ladder"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3.5-flash-lite"],
+        "name": "pouf",
+        "prompts": ["footstool", "ottoman"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3.5-flash-lite"],
+        "name": "wall lamp",
+        "prompts": ["wall sconce", "updown light"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3.5-flash-lite"],
+        "name": "pendant light",
+        "prompts": ["hanging lamp", "ceiling lamp", "hanging light"],
+        "type": "fixture"
+      },
+      {
+        "count": 7,
+        "listed_by": ["claude-opus-5-5", "gemini-3.5-flash-lite"],
+        "name": "painting",
+        "prompts": ["framed painting", "wall art", "framed picture"],
+        "type": "wall_item"
+      },
+      {
+        "count": 5,
+        "listed_by": ["claude-opus-5-5", "gemini-3.5-flash-lite"],
+        "name": "rug",
+        "prompts": ["floor rug", "carpet", "kilim rug"],
+        "type": "textile"
+      },
+      {
+        "count": 4,
+        "listed_by": ["claude-opus-5-5", "gemini-3.5-flash-lite"],
+        "name": "cushion",
+        "prompts": ["throw pillow", "sofa cushion", "pillow"],
+        "type": "textile"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3.5-flash-lite"],
+        "name": "blanket",
+        "prompts": ["throw blanket", "wool blanket", "plaid throw"],
+        "type": "textile"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3.5-flash-lite"],
+        "name": "curtain",
+        "prompts": ["window curtain", "drapery", "plaid curtain"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3.5-flash-lite"],
+        "name": "potted plant",
+        "prompts": ["indoor plant", "plant pot", "houseplant"],
+        "type": "decor"
+      },
+      {
+        "count": 3,
+        "listed_by": ["claude-opus-5-5", "gemini-3.5-flash-lite"],
+        "name": "magazine",
+        "prompts": ["reading material", "coffee table book", "book"],
+        "type": "decor"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3.5-flash-lite"],
+        "name": "bowl",
+        "prompts": ["decorative bowl", "ceramic bowl", "bowl of pine cones"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3.5-flash-lite"],
+        "name": "showpiece",
+        "prompts": ["tabletop figurine", "ornament", "ceramic ornament"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "armchair",
+        "prompts": ["blue upholstered chair"],
+        "type": "furniture"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "built-in bookshelf",
+        "prompts": ["bookcase", "wall shelving"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "log store shelf",
+        "prompts": ["firewood shelf", "alcove shelving"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "brick chimney breast",
+        "prompts": ["brick chimney", "fireplace"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "staircase balustrade",
+        "prompts": ["stair railing", "banister"],
+        "type": "built_in"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "exposed wooden beam",
+        "prompts": ["ceiling beam", "timber truss"],
+        "type": "built_in"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "wall spotlight",
+        "prompts": ["wall light", "spot lamp"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "skylight",
+        "prompts": ["roof window"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "curtain rod",
+        "prompts": ["curtain pole"],
+        "type": "fixture"
+      },
+      {
+        "count": 3,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "sheepskin rug",
+        "prompts": ["fur rug", "shaggy rug"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "floor cushion",
+        "prompts": ["floor pillow", "pouf cushion"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "decorative tray",
+        "prompts": ["dish", "plate"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "glass vase",
+        "prompts": ["glass vessel", "vase"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "bottle",
+        "prompts": ["glass bottle"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "fireplace tool",
+        "prompts": ["fire iron", "fireplace set"],
+        "type": "decor"
+      }
+    ],
+    "keyframes": ["kf0000", "kf0018", "kf0158", "kf0167", "kf0176", "kf0215", "kf0231", "kf0264"],
+    "listed_by": ["gemini-3.5-flash-lite", "claude-opus-5-5"]
+  },
+  "recall": {
+    "listed": {
+      "furniture": {
+        "items": "4 of 6",
+        "item_recall": 0.67,
+        "instance_recall": 0.62
+      },
+      "fixture": {
+        "items": "2 of 3",
+        "item_recall": 0.67,
+        "instance_recall": 0.5
+      },
+      "wall_item": {
+        "items": "1 of 1",
+        "item_recall": 1.0,
+        "instance_recall": 0.7
+      },
+      "textile": {
+        "items": "5 of 5",
+        "item_recall": 1.0,
+        "instance_recall": 0.87
+      },
+      "decor": {
+        "items": "6 of 13",
+        "item_recall": 0.46,
+        "instance_recall": 0.39
+      },
+      "built_in": {
+        "items": "2 of 3",
+        "item_recall": 0.67,
+        "instance_recall": 0.5
+      },
+      "all": {
+        "items": "20 of 31",
+        "item_recall": 0.65,
+        "instance_recall": 0.61
+      }
+    },
+    "placed": {
+      "furniture": {
+        "items": "0 of 6",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "fixture": {
+        "items": "0 of 3",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "wall_item": {
+        "items": "0 of 1",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "textile": {
+        "items": "0 of 5",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "decor": {
+        "items": "0 of 13",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "built_in": {
+        "items": "0 of 3",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "all": {
+        "items": "0 of 31",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      }
+    },
+    "per_item": [
+      {
+        "name": "sofa",
+        "type": "furniture",
+        "hand": 2,
+        "listed": 2,
+        "placed": 0
+      },
+      {
+        "name": "armchair",
+        "type": "furniture",
+        "hand": 2,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "ottoman",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "carved chair",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "wall cabinet",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "side table",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "table lamp",
+        "type": "fixture",
+        "hand": 2,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "wall light",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 2,
+        "placed": 0
+      },
+      {
+        "name": "telescope",
+        "type": "decor",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "light switch",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "framed picture",
+        "type": "wall_item",
+        "hand": 10,
+        "listed": 7,
+        "placed": 0
+      },
+      {
+        "name": "rug",
+        "type": "textile",
+        "hand": 4,
+        "listed": 5,
+        "placed": 0
+      },
+      {
+        "name": "sheepskin rug",
+        "type": "textile",
+        "hand": 1,
+        "listed": 3,
+        "placed": 0
+      },
+      {
+        "name": "curtain",
+        "type": "textile",
+        "hand": 3,
+        "listed": 2,
+        "placed": 0
+      },
+      {
+        "name": "throw blanket",
+        "type": "textile",
+        "hand": 3,
+        "listed": 2,
+        "placed": 0
+      },
+      {
+        "name": "cushion",
+        "type": "textile",
+        "hand": 4,
+        "listed": 4,
+        "placed": 0
+      },
+      {
+        "name": "vase",
+        "type": "decor",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "bowl",
+        "type": "decor",
+        "hand": 2,
+        "listed": 2,
+        "placed": 0
+      },
+      {
+        "name": "potted plant",
+        "type": "decor",
+        "hand": 2,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "candle",
+        "type": "decor",
+        "hand": 2,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "bottle",
+        "type": "decor",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "firewood",
+        "type": "decor",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "board games",
+        "type": "decor",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "cds",
+        "type": "decor",
+        "hand": 1,
+        "listed": 3,
+        "placed": 0
+      },
+      {
+        "name": "picture frame",
+        "type": "decor",
+        "hand": 3,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "fireplace tools",
+        "type": "decor",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "basket",
+        "type": "decor",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "candle stand",
+        "type": "decor",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "bookshelves",
+        "type": "built_in",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "fireplace",
+        "type": "built_in",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "radiator",
+        "type": "built_in",
+        "hand": 2,
+        "listed": 0,
+        "placed": 0
+      }
+    ],
+    "hand_total": 59,
+    "listed_total": 56,
+    "placed_total": 0,
+    "missed_by_listing": [
+      "carved chair",
+      "wall cabinet",
+      "telescope",
+      "light switch",
+      "candle",
+      "firewood",
+      "board games",
+      "picture frame",
+      "basket",
+      "candle stand",
+      "radiator"
+    ],
+    "listed_not_placed": [
+      "sofa",
+      "armchair",
+      "ottoman",
+      "side table",
+      "table lamp",
+      "wall light",
+      "framed picture",
+      "rug",
+      "sheepskin rug",
+      "curtain",
+      "throw blanket",
+      "cushion",
+      "vase",
+      "bowl",
+      "potted plant",
+      "bottle",
+      "cds",
+      "fireplace tools",
+      "bookshelves",
+      "fireplace"
+    ],
+    "matches": {
+      "listed": {
+        "sofa": "sofa",
+        "armchair": "armchair",
+        "ottoman": "pouf",
+        "wall light": "wall spotlight",
+        "framed picture": "painting",
+        "rug": "rug",
+        "sheepskin rug": "sheepskin rug",
+        "curtain": "curtain",
+        "throw blanket": "blanket",
+        "cushion": "cushion",
+        "vase": "glass vase",
+        "bowl": "bowl",
+        "potted plant": "potted plant",
+        "bottle": "bottle",
+        "cds": "magazine",
+        "fireplace tools": "fireplace tool",
+        "bookshelves": "bookshelf",
+        "fireplace": "brick chimney breast",
+        "side table": "coffee table",
+        "table lamp": "wall lamp"
+      },
+      "placed": {}
+    }
+  },
+  "listing_by_geometry": {
+    "annotated": 9,
+    "covered": 5,
+    "by_class": {
+      "cabinet": {
+        "annotated": 1,
+        "listed": 0,
+        "covered": 0
+      },
+      "chair": {
+        "annotated": 1,
+        "listed": 1,
+        "covered": 1
+      },
+      "fireplace": {
+        "annotated": 1,
+        "listed": 0,
+        "covered": 0
+      },
+      "sofa": {
+        "annotated": 3,
+        "listed": 2,
+        "covered": 2
+      },
+      "stool": {
+        "annotated": 2,
+        "listed": 1,
+        "covered": 1
+      },
+      "table": {
+        "annotated": 1,
+        "listed": 2,
+        "covered": 1
+      }
+    }
+  },
+  "inventory_meta": {
+    "items": 32,
+    "keyframes": 8,
+    "listed_by": {
+      "list": "gemini-3.5-flash-lite",
+      "cross_check": "claude-opus-5-5"
+    },
+    "per_model": {
+      "gemini-3.5-flash-lite": 17,
+      "claude-opus-5-5": 30
+    },
+    "failed": []
+  },
+  "charged_micro_inr": 4389409
+}
