@@ -1,4 +1,4 @@
-import { useTheme } from "@sajao/ui";
+import { playHaptic, useTheme } from "@sajao/ui";
 import { DeviceMotion } from "expo-sensors";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Platform } from "react-native";
@@ -28,7 +28,7 @@ import type { SurfaceHit } from "./ar/surface-coverage";
 import { motionSample, type RawMotion } from "./pose";
 import type { AnalysedFrame, CameraDiagnostics } from "./scan-camera";
 import { shouldWalk } from "./motion-coverage";
-import { meterHint } from "./coverage-meter";
+import { loopOf, meterHint, sweepsOf } from "./coverage-meter";
 import {
   canFinish,
   initialScan,
@@ -306,6 +306,24 @@ export function useScanSession(active: boolean, onImu?: (reading: RawMotion) => 
   useEffect(() => {
     counters.current.labelsRejected = labels.rejected;
   }, [labels.rejected]);
+
+  // The meter is felt as well as seen: a tick for each new sector, a success
+  // when the loop closes and when a sweep counts.
+  const meterMarks = useMemo(() => {
+    const loop = loopOf(state.meter);
+    const sweeps = sweepsOf(state.meter, loop);
+    return {
+      sectors: loop.count + sweeps.all.reduce((sum, sweep) => sum + sweep.count, 0),
+      milestones: (loop.complete ? 1 : 0) + sweeps.counted,
+    };
+  }, [state.meter]);
+  const felt = useRef(meterMarks);
+  useEffect(() => {
+    const before = felt.current;
+    felt.current = meterMarks;
+    if (meterMarks.milestones > before.milestones) void playHaptic("roomVerified");
+    else if (meterMarks.sectors > before.sectors) void playHaptic("levelReached");
+  }, [meterMarks]);
 
   return {
     state,

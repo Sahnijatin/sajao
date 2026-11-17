@@ -14,6 +14,17 @@ You scan whatever you want redone: a whole room, a corner, a balcony or any area
 
 Works on any Android or iPhone. Translucent glass guides over the camera (level line, "step back", "include a corner", "turn on lights"), a coverage ring, and sharpness and blur checks running on the device without AI. Gallery upload is allowed. ARKit or ARCore poses are attached when the phone has them, but never required. Compass headings are averaged during capture for Vastu. Uploads are compressed on the phone and resumable in the background.
 
+## Coverage meter
+
+The server's result is sharp where the phone stood and weak away from it, so on every phone whose AR gives positions, in both scan modes, Done waits for the coverage meter. It reads AR positions and headings only: no model, nothing sent to a server, and it never sets a dimension. Rules in `apps/mobile/src/capture/coverage-meter.ts`.
+
+- **Loop.** A walk round the space near the walls. Positions are binned by bearing from the middle of everything walked, in 12 sectors; a position counts only when it is at least 60% of the median distance from that middle, so turning in the middle fills nothing. Complete at 10 of 12 sectors and 6 m walked. The few centimetres a phone wanders while turning do not count as walking.
+- **Sweeps.** A slow full turn from one spot: samples within 40 cm, 10 of 12 heading sectors, with a quarter of them looking 15 to 45 degrees down so the floor and low furniture are seen. Two sweeps count when they are at least 1 m apart and at least 80 cm inside the loop; a space under 2.5 m across needs one, anywhere in it.
+- A pose counts under the simple scan's gates: tracking normal, turning slowly, steady, a sharp picture, within 60 degrees of level.
+- **What you see.** A ring in two halves, the loop then the sweeps, which never goes backwards; a map of the floor walked, the loop sectors still missing and where to stand for the next sweep; one hint at a time ("Walk along the walls", "Keep going round", "Now stand in the middle and turn slowly", "Tilt down a little", "One more spot, over there", "Done"), after the guardrail hints; a tick for each new sector and a success haptic when the loop closes and when a sweep counts.
+- **Finish anyway.** A scan never traps you: after 60 seconds without the ring moving, "Finish anyway" appears. The scan then records what was still missing (loop sectors, metres, sweeps, floor look) for the review to name.
+- A phone whose AR gives no positions keeps the simple scan's heading and steady-time rule.
+
 ## Capture package
 
 An AR scan records one package for the twin (schema: `Capture.package`). The phone captures; the server understands.
