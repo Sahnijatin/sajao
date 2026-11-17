@@ -1,0 +1,174 @@
+{
+  "room": "arkit_living_47331265",
+  "source": "hand inventory from 24 evenly spaced frames; small clutter grouped; scanning-marker posters on the floor excluded",
+  "items": [
+    {
+      "name": "sofa",
+      "type": "furniture",
+      "count": 1,
+      "aliases": ["couch", "loveseat"]
+    },
+    {
+      "name": "armchair",
+      "type": "furniture",
+      "count": 3,
+      "aliases": ["sofa chair", "lounge chair", "recliner"]
+    },
+    {
+      "name": "coffee table",
+      "type": "furniture",
+      "count": 1,
+      "aliases": ["centre table", "center table"]
+    },
+    {
+      "name": "dining table",
+      "type": "furniture",
+      "count": 1,
+      "aliases": ["table"]
+    },
+    {
+      "name": "dining chair",
+      "type": "furniture",
+      "count": 6,
+      "aliases": ["chair"]
+    },
+    {
+      "name": "display cabinet",
+      "type": "furniture",
+      "count": 1,
+      "aliases": ["glass cabinet", "china cabinet", "showcase", "cabinet"]
+    },
+    {
+      "name": "sideboard",
+      "type": "furniture",
+      "count": 1,
+      "aliases": ["cabinet", "cupboard", "dresser"]
+    },
+    {
+      "name": "tv stand",
+      "type": "furniture",
+      "count": 1,
+      "aliases": ["tv unit", "tv cabinet", "media console"]
+    },
+    {
+      "name": "wall shelf",
+      "type": "furniture",
+      "count": 1,
+      "aliases": ["shelf", "floating shelf"]
+    },
+    {
+      "name": "television",
+      "type": "fixture",
+      "count": 1,
+      "aliases": ["tv"]
+    },
+    {
+      "name": "tower speaker",
+      "type": "fixture",
+      "count": 1,
+      "aliases": ["speaker", "floor speaker"]
+    },
+    {
+      "name": "subwoofer",
+      "type": "fixture",
+      "count": 1,
+      "aliases": ["speaker"]
+    },
+    {
+      "name": "floor lamp",
+      "type": "fixture",
+      "count": 1,
+      "aliases": ["paper lantern", "lamp"]
+    },
+    {
+      "name": "light switch",
+      "type": "fixture",
+      "count": 1,
+      "aliases": ["switchboard", "switch"]
+    },
+    {
+      "name": "socket",
+      "type": "fixture",
+      "count": 1,
+      "aliases": ["power outlet", "switchboard"]
+    },
+    {
+      "name": "framed picture",
+      "type": "wall_item",
+      "count": 4,
+      "aliases": ["picture frame", "painting", "artwork", "framed print", "wall art"]
+    },
+    {
+      "name": "crucifix",
+      "type": "wall_item",
+      "count": 1,
+      "aliases": ["cross"]
+    },
+    {
+      "name": "painting",
+      "type": "decor",
+      "count": 1,
+      "aliases": ["artwork", "canvas", "framed picture"]
+    },
+    {
+      "name": "poster",
+      "type": "decor",
+      "count": 2,
+      "aliases": ["framed poster", "framed picture"]
+    },
+    {
+      "name": "framed picture",
+      "type": "decor",
+      "count": 2,
+      "aliases": ["picture frame"]
+    },
+    {
+      "name": "potted plant",
+      "type": "decor",
+      "count": 3,
+      "aliases": ["plant", "houseplant"]
+    },
+    {
+      "name": "vase",
+      "type": "decor",
+      "count": 1,
+      "aliases": []
+    },
+    {
+      "name": "candle holder",
+      "type": "decor",
+      "count": 2,
+      "aliases": ["candlestick"]
+    },
+    {
+      "name": "decorative cone",
+      "type": "decor",
+      "count": 2,
+      "aliases": ["ornament", "decor"]
+    },
+    {
+      "name": "tray",
+      "type": "decor",
+      "count": 1,
+      "aliases": ["tea set"]
+    },
+    {
+      "name": "rug",
+      "type": "textile",
+      "count": 1,
+      "aliases": ["carpet"]
+    },
+    {
+      "name": "placemat",
+      "type": "textile",
+      "count": 2,
+      "aliases": ["table runner", "table mat"]
+    },
+    {
+      "name": "radiator",
+      "type": "built_in",
+      "count": 1,
+      "aliases": ["heater"]
+    }
+  ]
+}

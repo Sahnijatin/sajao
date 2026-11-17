@@ -121,7 +121,14 @@ def _sides(box: Mapping[str, Any]) -> dict[str, tuple[float, float]]:
     return {k: (box[k]["value_m"], box[k]["error_band_m"]) for k in ("width", "depth", "height")}
 
 
-def accuracy_report(twin: Mapping[str, Any], sheet: Sheet) -> dict[str, Any]:
+def accuracy_report(
+    twin: Mapping[str, Any],
+    sheet: Sheet,
+    truth: Sequence[Mapping[str, Any]] | None = None,
+    to_space: Any = None,
+) -> dict[str, Any]:
+    """The twin against the tape; with `truth` (an annotated dataset room) also its
+    box sizes against the ground-truth boxes."""
     shell = twin["shell"]
     walls = shell["walls"]
     notes: list[str] = []
@@ -219,6 +226,8 @@ def accuracy_report(twin: Mapping[str, Any], sheet: Sheet) -> dict[str, Any]:
         "ceiling": ceiling_row,
         "openings": opening_rows,
         "furniture": furniture_rows,
+        "inventory": inventory_recall(twin),
+        "ground_truth": ground_truth_sizes(twin, truth, to_space) if truth else None,
         "notes": notes,
     }
 
@@ -269,6 +278,145 @@ def markdown(report: Mapping[str, Any]) -> str:
             )
             + f" | {'yes' if f.get('within_band') else 'no'} |"
         )
+    inventory = report.get("inventory")
+    if inventory:
+        lines += [
+            "",
+            "## Objects against the listed inventory",
+            "",
+            f"Listed by {', '.join(inventory['listed_by'])}: {inventory['listed']} items; "
+            f"placed in 3D: {inventory['placed']} (recall {inventory['recall']:.2f}).",
+            "",
+            "| Type | Listed | Placed | Recall |",
+            "| --- | --- | --- | --- |",
+            *[f"| {k} | {v['listed']} | {v['placed']} | {v['recall']:.2f} |"
+              for k, v in inventory["by_type"].items()],
+        ]  # fmt: skip
+        if inventory["unplaced"]:
+            lines += ["", "Not placed (kept in the twin, flagged):", "",
+                      "| Item | Type | Why | Tried |", "| --- | --- | --- | --- |"]  # fmt: skip
+            for u in inventory["unplaced"]:
+                lines.append(
+                    f"| {u['name']} | {u['type']} | {u['reason'].replace('_', ' ')} "
+                    f"| {'; '.join(u['tried'])} |"
+                )
+    truth = report.get("ground_truth")
+    if truth:
+        t = truth["summary"]
+        lines += [
+            "",
+            "## Box sizes against ground truth",
+            "",
+            f"Matched {t['matched']} annotated boxes; median size error "
+            f"{t['median_size_error_pct']}%; within the twin's band: {t['within_band']}.",
+            "",
+            "| Ground truth | Twin | Width % | Depth % | Height % | Centre off m | Within |",
+            "| --- | --- | --- | --- | --- | --- | --- |",
+        ]
+        for row in truth["boxes"]:
+            if not row["twin"]:
+                lines.append(f"| {row['label']} | not found | | | | | |")
+                continue
+            pct = row["error_pct"]
+            lines.append(
+                f"| {row['label']} | {row['twin']} | {pct['width']:+.1f} | {pct['depth']:+.1f} "
+                f"| {pct['height']:+.1f} | {row['centre_error_m']:.2f} "
+                f"| {'yes' if row['within_band'] else 'no'} |"
+            )
     if report["notes"]:
         lines += ["", "## Notes", "", *[f"- {n}" for n in report["notes"]]]
     return "\n".join(lines) + "\n"
+
+
+def inventory_recall(twin: Mapping[str, Any]) -> dict[str, Any] | None:
+    """Of the items the vision models listed, how many were placed in 3D, per type.
+
+    Placed items are the distinct categories among the twin's objects (by their
+    type) and built-ins; the rest are the inventory's unplaced items, each kept
+    with what was tried and why it failed."""
+    inventory = twin.get("inventory")
+    if inventory is None:
+        return None
+    placed: dict[str, set[str]] = {}
+    for obj in twin["objects"]:
+        placed.setdefault(obj.get("object_type", "furniture"), set()).add(obj["category"])
+    for built_in in twin["shell"].get("built_ins", []):
+        placed.setdefault("built_in", set()).add(built_in["category"])
+    unplaced = list(inventory["unplaced"])
+    missing: dict[str, int] = {}
+    for item in unplaced:
+        missing[item["type"]] = missing.get(item["type"], 0) + 1
+    by_type = {}
+    for kind in sorted(set(placed) | set(missing)):
+        found = len(placed.get(kind, set()))
+        listed = found + missing.get(kind, 0)
+        by_type[kind] = {"listed": listed, "placed": found, "recall": round(found / listed, 2)}
+    total_placed = sum(len(v) for v in placed.values())
+    return {
+        "listed_by": list(inventory["listed_by"]),
+        "listed": int(inventory["items_listed"]),
+        "placed": total_placed,
+        "recall": round(total_placed / max(1, int(inventory["items_listed"])), 2),
+        "by_type": by_type,
+        "unplaced": [{k: u[k] for k in ("name", "type", "reason", "tried")} for u in unplaced],
+    }
+
+
+def _group(name: str) -> str:
+    key = name.lower().replace("_", " ").strip()
+    key = GROUPS.get(key, key)
+    head = key.split(" ")[-1]
+    head = {"monitor": "television", "tv": "television"}.get(head, head)
+    return GROUPS.get(head, head)
+
+
+def ground_truth_sizes(
+    twin: Mapping[str, Any], truth: Sequence[Mapping[str, Any]], to_space: Any
+) -> dict[str, Any]:
+    """Box sizes against ground-truth boxes (an annotated dataset room).
+
+    `truth` boxes are {label, center, size_m: [longer, shorter, height]} in the
+    capture's AR world; `to_space` (4x4) maps that world to the twin's space. A
+    twin object matches the nearest ground-truth box of the same kind within
+    half its diagonal (at least 0.5 m), one to one."""
+    import numpy as np
+
+    objects = [*twin["objects"], *twin["shell"].get("built_ins", [])]
+    used: set[str] = set()
+    rows = []
+    for gt in truth:
+        centre = np.asarray(to_space, dtype=np.float64) @ np.array([*gt["center"], 1.0])
+        reach = max(0.5, 0.5 * float(np.hypot(gt["size_m"][0], gt["size_m"][1])))
+        best, best_d = None, reach
+        for obj in objects:
+            if obj["id"] in used or _group(obj["category"]) != _group(gt["label"]):
+                continue
+            c = obj["box"]["center"]
+            d = float(np.hypot(c["x_m"] - centre[0], c["y_m"] - centre[1]))
+            if d <= best_d:
+                best, best_d = obj, d
+        row: dict[str, Any] = {"label": gt["label"], "twin": best["id"] if best else None}
+        if best is not None:
+            used.add(best["id"])
+            box = best["box"]
+            sides = {"width": box["width"], "depth": box["depth"], "height": box["height"]}
+            tape = dict(zip(("width", "depth", "height"), gt["size_m"], strict=True))
+            checks = {k: _check(sides[k]["value_m"], tape[k], sides[k]["error_band_m"])
+                      for k in sides}  # fmt: skip
+            row.update(
+                category=best["category"],
+                centre_error_m=round(best_d, 2),
+                error_pct={k: c["error_pct"] for k, c in checks.items()},
+                within_band=all(c["within_band"] for c in checks.values()),
+            )
+        rows.append(row)
+    matched = [r for r in rows if r["twin"]]
+    errors = [abs(v) for r in matched for v in r["error_pct"].values()]
+    return {
+        "boxes": rows,
+        "summary": {
+            "matched": f"{len(matched)} of {len(rows)}",
+            "median_size_error_pct": round(statistics.median(errors), 1) if errors else None,
+            "within_band": f"{sum(r['within_band'] for r in matched)} of {len(matched)}",
+        },
+    }

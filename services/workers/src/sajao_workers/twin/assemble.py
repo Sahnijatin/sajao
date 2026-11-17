@@ -127,6 +127,29 @@ def _viewing(
     }
 
 
+def _box(box: Mapping[str, Any], space: Space) -> dict[str, Any]:
+    return {
+        "center": _point(space.point(box["center"])),
+        "yaw_deg": round(space.yaw_deg(box["yaw_deg"]), 2),
+        "width": box["length"],  # the longer horizontal side
+        "depth": box["width"],
+        "height": box["height"],
+    }
+
+
+def _built_ins(built_ins: Sequence[Mapping[str, Any]], space: Space) -> list[dict[str, Any]]:
+    return [
+        {
+            "id": f"b{index}",
+            "category": b["category"],
+            "label": b["label"],
+            "box": _box(b["box"], space),
+            "detection": {"source": "server_segmentation", "confidence": b["confidence"]},
+        }
+        for index, b in enumerate(built_ins, start=1)
+    ]
+
+
 def _objects(
     objects: Sequence[Mapping[str, Any]],
     crops: Mapping[tuple[str, str], str],
@@ -134,7 +157,6 @@ def _objects(
 ) -> list[Any]:
     out = []
     for index, obj in enumerate(objects, start=1):
-        box = obj["box"]
         views = [
             {
                 "keyframe_id": v["keyframe_id"],
@@ -144,24 +166,19 @@ def _objects(
             for v in obj["views"]
             if (v["keyframe_id"], v["mask"]) in crops
         ][:MAX_VIEWS]
-        out.append(
-            {
-                "id": f"o{index}",
-                "category": obj["category"],
-                "label": obj["label"],
-                "box": {
-                    "center": _point(space.point(box["center"])),
-                    "yaw_deg": round(space.yaw_deg(box["yaw_deg"]), 2),
-                    "width": box["length"],  # the longer horizontal side
-                    "depth": box["width"],
-                    "height": box["height"],
-                },
-                "detection": {"source": "server_segmentation", "confidence": obj["confidence"]},
-                "views": views,
-                "catalog_matches": [],
-                "state": "keep",
-            }
-        )
+        twin_object = {
+            "id": f"o{index}",
+            "category": obj["category"],
+            "label": obj["label"],
+            "box": _box(obj["box"], space),
+            "detection": {"source": "server_segmentation", "confidence": obj["confidence"]},
+            "views": views,
+            "catalog_matches": [],
+            "state": "keep",
+        }
+        if "object_type" in obj:
+            twin_object["object_type"] = obj["object_type"]
+        out.append(twin_object)
     return out
 
 
@@ -177,11 +194,15 @@ def assemble_twin(
     crops: Mapping[tuple[str, str], str],
     splat: str | None,
     phone_splats: Sequence[Mapping[str, Any]],
+    built_ins: Sequence[Mapping[str, Any]] = (),
+    inventory: Mapping[str, Any] | None = None,
     hero_views: Sequence[Mapping[str, Any]] = (),
     anchor_ids: Sequence[str] = (),
 ) -> dict[str, Any]:
     """The SpaceTwin as JSON-ready data, validated against the schema.
 
+    `built_ins` (from the objects step) join the shell; `inventory` records what
+    the vision models listed and every item that could not be placed.
     `hero_views` are hero.pick_hero_views' picks and `anchor_ids` the keyframes
     the safe region is built around; without hero views the twin has no viewing
     section and nothing may show it from a free camera."""
@@ -198,7 +219,10 @@ def assemble_twin(
         "space_type_source": "detected",
         "extent": space.extent,
         "extent_source": "detected",
-        "shell": space.shell,
+        "shell": {
+            **space.shell,
+            **({"built_ins": _built_ins(built_ins, space)} if built_ins else {}),
+        },
         "objects": _objects(objects, crops, space),
         "keyframes": _keyframes(capture, manifest, space),
         # AR scale with error bands; a tape value is asked only when a fit decision needs it.
@@ -215,6 +239,8 @@ def assemble_twin(
     }
     if hero_views:
         twin["viewing"] = _viewing(twin["keyframes"], hero_views, anchor_ids)
+    if inventory is not None:
+        twin["inventory"] = dict(inventory)
     if splat:
         twin["splat"] = {"key": storage_key(splat), "format": "ply"}
     if phone_splats:

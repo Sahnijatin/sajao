@@ -31,7 +31,7 @@ from sajao_workers.twin.shell import (
 from sajao_workers.twin.space import Space, fit_space
 
 # Bump when assembly, the shell fit or the crops change.
-VERSION = 4
+VERSION = 5
 CROP_MARGIN = 0.10  # of the mask's box, split between the two sides
 CROPS_PER_OBJECT = 4
 
@@ -194,6 +194,10 @@ def _crops(
     return crops
 
 
+def _optional(context: StepContext, name: str, default: Any) -> Any:
+    return json.loads(context.read(name)) if name in context.inputs else default
+
+
 def assemble_step(points_for_shell: PointsForShell = shell_points) -> Step:
     async def run(context: StepContext) -> StepOutput:
         capture = json.loads(context.read("capture"))
@@ -231,6 +235,8 @@ def assemble_step(points_for_shell: PointsForShell = shell_points) -> Step:
                 phone_splats=phone_splats,
                 hero_views=hero_views,
                 anchor_ids=anchor_ids,
+                built_ins=_optional(context, "built_ins", []),
+                inventory=_optional(context, "inventory", None),
             )
         except AssemblyError as error:
             raise NonRetryableStepError(str(error)) from error
@@ -244,6 +250,8 @@ def assemble_step(points_for_shell: PointsForShell = shell_points) -> Step:
                 "ceiling_m": twin["shell"]["ceiling_height"]["value_m"],
                 "north_deg": twin["direction"]["north_deg"],
                 "openings": [o["kind"] for o in twin["shell"]["openings"]],
+                "built_ins": len(twin["shell"].get("built_ins", [])),
+                "unplaced": len(twin.get("inventory", {}).get("unplaced", [])),
                 "texture_coverage": coverage,
                 "hero_views": [v["keyframe_id"] for v in hero_views],
             },

@@ -3,7 +3,15 @@ name = "sajao-workers"
 version = "0.0.0"
 description = "Sajao workers: durable pipeline steps"
 requires-python = ">=3.13"
-dependencies = ["sajao-gateway", "sajao-schemas", "numpy>=2.1", "pillow>=11.0"]
+dependencies = [
+    "anthropic==2.8.0",
+    "google-auth[requests]>=2.40",
+    "httpx>=0.28",
+    "numpy>=2.1",
+    "pillow>=11.0",
+    "sajao-gateway",
+    "sajao-schemas",
+]
 
 [tool.uv.sources]
 sajao-gateway = { workspace = true }

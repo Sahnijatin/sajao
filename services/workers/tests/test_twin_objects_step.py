@@ -47,19 +47,22 @@ class FakeGpu:
         self.store, self.masks, self.calls = store, masks, []  # type: ignore[var-annotated]
         self.label = label
         self.vocabulary: list[str] = []
+        self.detect_payloads: list[dict[str, Any]] = []
 
     async def __call__(self, model: str, payload: Mapping[str, Any]) -> Mapping[str, Any]:
         self.calls.append(model)
         if "images" in payload:
             self.vocabulary = list(payload["vocabulary"])
+            self.detect_payloads.append(dict(payload))
             frames = []
             for image in payload["images"]:
                 ys, xs = np.nonzero(self.masks[image["image"]])
                 box = [float(xs.min()), float(ys.min()), float(xs.max() + 1), float(ys.max() + 1)]
+                found = [{"label": self.label, "score": 0.9, "box": box}]
                 frames.append(
                     {
                         "image": image["image"],
-                        "detections": [{"label": self.label, "score": 0.9, "box": box}],
+                        "detections": found if self.label in self.vocabulary else [],
                     }
                 )
             return {"output": {"frames": frames}, "gpu_seconds": 1.0}
@@ -157,3 +160,63 @@ async def test_doors_and_windows_are_found_in_the_same_pass_and_kept_out_of_obje
     assert {o["keyframe_id"] for o in openings} == {"kf0", "kf1", "kf2", "kf3"}
     assert runner.store.has_blob(openings[0]["mask"])
     assert result.meta["opening_masks"] == 4
+
+
+def inventory_blob(runner: StepRunner, *items: tuple[str, str, list[str]]) -> str:
+    inventory = {
+        "listed_by": ["gemini-3-flash-preview"],
+        "items": [
+            {
+                "name": n,
+                "type": t,
+                "count": 1,
+                "prompts": p,
+                "listed_by": ["gemini-3-flash-preview"],
+            }
+            for n, t, p in items
+        ],
+        "keyframes": ["kf0"],
+    }
+    return runner.store.put_blob(json.dumps(inventory).encode())
+
+
+async def test_the_inventory_names_what_is_looked_for_and_every_object_gets_its_type(
+    tmp_path: Path,
+) -> None:
+    runner, gpu, manifest = setup(tmp_path)
+    inventory = inventory_blob(
+        runner, ("sofa", "furniture", ["couch"]), ("geyser", "fixture", ["water heater"])
+    )
+
+    result = await runner.run(
+        objects_step(*gateways(gpu)), {"frames": manifest, "inventory": inventory}, {}
+    )
+
+    first, retry = gpu.detect_payloads
+    assert first["vocabulary"] == ["sofa", "geyser", "door", "window"]
+    assert (retry["vocabulary"], retry["prompts"]) == (["geyser"], ["water heater"])
+    assert retry["min_score"] < 0.2
+    (sofa,) = json.loads(runner.store.read_blob(result.outputs["objects"]))
+    assert sofa["object_type"] == "furniture"
+    placement = json.loads(runner.store.read_blob(result.outputs["inventory"]))
+    assert placement["listed_by"] == ["gemini-3-flash-preview"]
+    assert placement["items_listed"] == 2
+    (geyser,) = placement["unplaced"]
+    assert geyser["name"] == "geyser" and geyser["reason"] == "not_detected"
+    assert geyser["tried"] == ["yoloe: geyser", "yoloe: water heater (min score 0.1)"]
+    assert result.meta["unplaced"] == 1
+    assert result.meta["dedupe"] == {"merged": 0, "capped": 0}
+
+
+async def test_built_ins_are_kept_apart_for_the_shell(tmp_path: Path) -> None:
+    runner, gpu, manifest = setup(tmp_path)
+    inventory = inventory_blob(runner, ("sofa", "built_in", []))
+
+    result = await runner.run(
+        objects_step(*gateways(gpu)), {"frames": manifest, "inventory": inventory}, {}
+    )
+
+    assert json.loads(runner.store.read_blob(result.outputs["objects"])) == []
+    (built_in,) = json.loads(runner.store.read_blob(result.outputs["built_ins"]))
+    assert built_in["category"] == "sofa"
+    assert len(gpu.detect_payloads) == 1  # everything was placed: no retry
