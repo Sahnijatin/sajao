@@ -313,3 +313,35 @@ async def test_capture_package_data_files_upload_and_resume(
             headers=headers(),
         )
         assert done.json() == {"key": plan["key"], "size_bytes": 2000}
+
+
+async def test_the_stores_own_limit_refuses_a_larger_file_before_any_part_is_sent() -> None:
+    settings = Settings(storage_max_object_bytes=50 * MIB)
+    app = create_app(settings, InMemoryIdempotencyStore(), VERIFIER, InMemoryObjectStorage())
+    transport = httpx.ASGITransport(app=app, raise_app_exceptions=False)
+    async with httpx.AsyncClient(transport=transport, base_url="http://api.test") as api:
+        too_large = await api.post("/v1/uploads", json=video(51 * MIB), headers=headers())
+        assert too_large.status_code == 413
+        assert too_large.json()["error"]["code"] == "file_too_large"
+        fits = await api.post("/v1/uploads", json=video(49 * MIB), headers=headers())
+        assert fits.status_code == 201
+
+
+async def test_user_session_storage_signs_with_the_callers_own_token() -> None:
+    settings = Settings(
+        storage_endpoint="https://project.storage.example/storage/v1/s3",
+        storage_region="ap-south-1",
+        storage_bucket="captures",
+        storage_access_key_id=SecretStr("project-ref"),
+        storage_secret_access_key=SecretStr("public-anon-key"),
+        storage_user_sessions=True,
+    )
+    app = create_app(settings, InMemoryIdempotencyStore(), VERIFIER)
+    assert app.state.storage is None
+    access_token = token(sub=USER_A)
+    scoped = app.state.storage_for_session(access_token)
+    assert isinstance(scoped, S3ObjectStorage)
+    # Signing is local: the caller's token travels in the URL as the session token.
+    url = scoped.sign_part(f"{USER_A}/{'0' * 32}.jpg", "upload-1", 1, 900)
+    assert "X-Amz-Security-Token=" in url and access_token[:20] in url
+    assert "public-anon-key" not in url

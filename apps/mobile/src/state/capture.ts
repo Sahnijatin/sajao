@@ -13,10 +13,15 @@ export interface UploadStatus {
   finished: number;
   total: number;
   error?: string;
+  /** The video was over the server's size limit and was left out. */
+  videoSkipped?: boolean;
 }
 
 interface CaptureStore {
   last: LocalCapture | null;
+  /** The phone the last scan was made on, for a retry of its upload. */
+  device: { platform: "ios" | "android"; tier: "standard" | "low"; has_ar: boolean } | null;
+  setDevice(device: CaptureStore["device"]): void;
   upload: UploadStatus;
   setLast(capture: LocalCapture | null): void;
   setUpload(upload: UploadStatus): void;
@@ -24,6 +29,8 @@ interface CaptureStore {
 
 export const useCaptureStore = create<CaptureStore>((set) => ({
   last: null,
+  device: null,
+  setDevice: (device) => set({ device }),
   upload: { state: "idle", finished: 0, total: 0 },
   setLast: (last) => set({ last }),
   setUpload: (upload) => set({ upload }),

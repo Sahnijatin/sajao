@@ -1,6 +1,7 @@
 // The real upload calls, typed from the API's OpenAPI document.
 import type { ApiClient } from "@sajao/api-client";
 import {
+  FileTooLargeError,
   PartUrlExpiredError,
   type PutPart,
   UploadGoneError,
@@ -12,7 +13,8 @@ class UploadApiError extends Error {}
 export function uploadsApi(client: ApiClient): UploadsApi {
   return {
     async create(body) {
-      const { data } = await client.POST("/v1/uploads", { body });
+      const { data, response } = await client.POST("/v1/uploads", { body });
+      if (response.status === 413) throw new FileTooLargeError();
       if (!data) throw new UploadApiError("Could not start the upload");
       return data;
     },

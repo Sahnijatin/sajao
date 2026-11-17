@@ -59,6 +59,18 @@ Rules: callers must be signed in or guests; keys live under the caller's user id
 
 Secrets are set in the platform's secret manager and reach the service as environment variables. Never commit them.
 
+## Interim hosting
+
+Until the production deployment exists, the API runs as one Modal web endpoint (`deploy/modal_app.py`) that serves the same ASGI app, with settings from the `sajao-api` Modal secret. This is an approved, temporary route so real scans can reach the twin worker; Cloud Run in Mumbai stays the production target.
+
+Capture files go to the private `captures` bucket in Supabase Storage on the development project (`supabase/migrations/*_captures_bucket.sql`). With `SAJAO_STORAGE_USER_SESSIONS=true` the API signs every storage request, signed part URLs included, with the caller's own access token as the session token: the access key id is the project ref and the secret is the project's public anon key. The bucket's row level security keeps each user inside the folder named after their user id, so the API holds no storage credential that could read another user's files. `SAJAO_STORAGE_MAX_OBJECT_BYTES` carries the store's own limit for one file (50 MiB there); a larger file is refused before any part is sent, and the app then leaves the scan video out and uploads the rest.
+
+Known limits of the interim store: listing the parts of an unfinished upload returns none under a user session, so an interrupted file restarts from its first part (finished files are still skipped); and the worker needs its own server-side access to read the bucket.
+
+```bash
+uv run --with 'modal[api-proxy-support]==1.6.4' modal deploy services/api/deploy/modal_app.py
+```
+
 ## Development environment
 
 The development Supabase project is `sajao-dev` (see `supabase/README.md`). To point the API at it, set `SAJAO_AUTH_JWKS_URL` and `SAJAO_AUTH_ISSUER` to that project's values and `SAJAO_DATABASE_URL` to its connection string from the secret manager. The idempotency table is already applied there.

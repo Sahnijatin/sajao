@@ -53,6 +53,8 @@ export interface UploadStateStore {
 export type PutPart = (url: string, body: Blob | ArrayBuffer) => Promise<string>;
 
 export class UploadGoneError extends Error {}
+/** The server refused the file as too large; retrying will not help. */
+export class FileTooLargeError extends Error {}
 export class PartUrlExpiredError extends Error {}
 /** The upload stopped but nothing is lost: call uploadResumable again to continue. */
 export class UploadInterruptedError extends Error {}
