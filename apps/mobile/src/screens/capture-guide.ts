@@ -18,7 +18,7 @@ export type InstructionId =
   | "walkWalls"
   | "keepGoing"
   | "standMiddle"
-  | "tiltDown"
+  | "tiltWall"
   | "oneMoreSpot"
   | "dark"
   | "fast"
@@ -56,7 +56,8 @@ const HINTS: Record<NonNullable<Hint>["id"], { id: InstructionId; tone: Instruct
   walkWalls: { id: "walkWalls", tone: "guide" },
   keepGoing: { id: "keepGoing", tone: "guide" },
   standMiddle: { id: "standMiddle", tone: "guide" },
-  tiltDown: { id: "tiltDown", tone: "nudge" },
+  // One slow tilt up and down per wall: a step of the scan, not a correction.
+  tiltWall: { id: "tiltWall", tone: "guide" },
   oneMoreSpot: { id: "oneMoreSpot", tone: "guide" },
   meterDone: { id: "complete", tone: "guide" },
 };

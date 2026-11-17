@@ -117,6 +117,31 @@ describe("capture upload", () => {
     expect(registered[1]).toEqual(registered[0]);
   });
 
+  it("sends several files at once, and lets files in flight finish when one fails", async () => {
+    const { value, uploaded } = deps();
+    let inFlight = 0;
+    let most = 0;
+    const slow: CaptureUploadDeps = {
+      ...value,
+      concurrency: 3,
+      async uploadFile(file) {
+        inFlight += 1;
+        most = Math.max(most, inFlight);
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        inFlight -= 1;
+        if (file.localId.endsWith("keyframe-k1")) throw new Error("connection lost");
+        return value.uploadFile(file);
+      },
+    };
+    await expect(uploadAndRegister(scan(), DEVICE, slow)).rejects.toThrow("connection lost");
+    expect(most).toBe(3);
+    // Files sent alongside the one that failed are kept; the rest were never started.
+    const sent = uploaded.map((file) => file.localId.split("/")[1]);
+    expect(sent).toEqual(expect.arrayContaining(["sensor_log", "keyframe-k2"]));
+    expect(sent).not.toContain("video");
+    expect(sent).not.toContain("keyframe-k1");
+  });
+
   it("maps package files to upload kinds and content types", () => {
     expect(uploadSpec("keyframe")).toEqual({ kind: "photo", contentType: "image/jpeg" });
     expect(uploadSpec("video")).toEqual({ kind: "video", contentType: "video/mp4" });
