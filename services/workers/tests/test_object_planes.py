@@ -2,8 +2,9 @@
 
 from typing import Any
 
-from sajao_workers.ar_measurements import measure
+from sajao_workers.ar_measurements import measure, read_planes
 from sajao_workers.object_planes import (
+    object_plane_drop,
     objects_from_boxes,
     objects_from_detections,
     remove_object_planes,
@@ -131,3 +132,15 @@ def test_the_input_document_is_not_changed() -> None:
     before = len(doc["planes"])
     remove_object_planes(doc, objects_from_detections(seen("refrigerator", 0.85, -1.0)))
     assert len(doc["planes"]) == before
+
+
+def test_the_same_rule_filters_parsed_planes_for_a_shell_builder() -> None:
+    doc = room(*FRIDGE_SIDES)
+    evidence = objects_from_detections(seen("refrigerator", 0.85, -1.0))
+    upright = [p for p in read_planes(doc) if p.kind == "vertical"]
+
+    kept = object_plane_drop(doc, evidence)(upright)
+
+    assert len(kept) == len(upright) - 2
+    assert all(p.classification == "none" or p in kept for p in upright)
+    assert {round(p.centre[0], 2) for p in upright if p not in kept} == {0.5, 1.2}

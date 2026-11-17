@@ -22,7 +22,7 @@ filtered copy comes out, with what was removed and why.
 
 import copy
 import math
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from typing import Any, TypedDict
 
 from sajao_workers.ar_measurements import Plane, _ceiling, _floor, read_planes
@@ -252,6 +252,30 @@ class Filtered(TypedDict):
     removed: list[Removed]
 
 
+def _wall_top(planes: Sequence[Plane]) -> float:
+    """Height in the AR world from which a plane counts as reaching the ceiling."""
+    floor_y, _ = _floor(planes)
+    ceiling_y = _ceiling(planes, floor_y)
+    if ceiling_y is not None:
+        return ceiling_y - CEILING_NEAR_M
+    if floor_y is not None:
+        return floor_y + WALL_TOP_M
+    return math.inf
+
+
+def _face_of(
+    plane: Plane, wall_top: float, objects: Sequence[ObjectEvidence]
+) -> tuple[ObjectEvidence, float] | None:
+    """The object this plane is a face of, and how far from it; None for anything else."""
+    if plane.kind != "vertical" or plane.classification in KEEP_CLASSES:
+        return None
+    segment = _segment(plane)
+    top_y = max(p[1] for p in plane.points)
+    if segment is None or top_y >= wall_top or math.dist(segment[0], segment[1]) > MAX_FACE_M:
+        return None
+    return _owner(segment, top_y, objects)
+
+
 def remove_object_planes(
     planes_doc: Mapping[str, Any], objects: Sequence[ObjectEvidence]
 ) -> Filtered:
@@ -260,29 +284,12 @@ def remove_object_planes(
     Pure: the input is not changed. Horizontal planes are always kept."""
     raw = list(planes_doc.get("planes", []))
     parsed = [read_planes({"planes": [r]}) for r in raw]
-    every = [p for one in parsed for p in one]
-    floor_y, _ = _floor(every)
-    ceiling_y = _ceiling(every, floor_y)
-    if ceiling_y is not None:
-        wall_top = ceiling_y - CEILING_NEAR_M
-    elif floor_y is not None:
-        wall_top = floor_y + WALL_TOP_M
-    else:
-        wall_top = math.inf
+    wall_top = _wall_top([p for one in parsed for p in one])
 
     removed: list[Removed] = []
     kept = []
     for index, (entry, one) in enumerate(zip(raw, parsed, strict=True)):
-        plane = one[0] if one else None
-        if plane is None or plane.kind != "vertical" or plane.classification in KEEP_CLASSES:
-            kept.append(entry)
-            continue
-        segment = _segment(plane)
-        top_y = max(p[1] for p in plane.points)
-        if segment is None or top_y >= wall_top or math.dist(segment[0], segment[1]) > MAX_FACE_M:
-            kept.append(entry)
-            continue
-        owner = _owner(segment, top_y, objects)
+        owner = _face_of(one[0], wall_top, objects) if one else None
         if owner is None:
             kept.append(entry)
             continue
@@ -297,3 +304,16 @@ def remove_object_planes(
     out = copy.deepcopy(dict(planes_doc))
     out["planes"] = copy.deepcopy(kept)
     return {"planes": out, "removed": removed}
+
+
+def object_plane_drop(
+    planes_doc: Mapping[str, Any], objects: Sequence[ObjectEvidence]
+) -> Callable[[Sequence[Plane]], list[Plane]]:
+    """The same rule as a filter over parsed planes, for a shell builder that takes one
+    (`drop` in the measured shell): it keeps every plane that is not an object face."""
+    wall_top = _wall_top(read_planes(planes_doc))
+
+    def drop(planes: Sequence[Plane]) -> list[Plane]:
+        return [p for p in planes if _face_of(p, wall_top, objects) is None]
+
+    return drop
