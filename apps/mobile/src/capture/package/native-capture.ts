@@ -64,6 +64,10 @@ export interface LocalCapture {
   captureId: string;
   state: RecorderState;
   files: PackageFiles;
+  /** Where the pictures came from; a scan when absent. */
+  origin?: "camera" | "gallery";
+  /** The first picture's size, when it has no camera intrinsics to read it from. */
+  firstPictureSize?: { width_px: number; height_px: number };
 }
 
 /** Put the recorder state and the native files together once the native view has finished. */
