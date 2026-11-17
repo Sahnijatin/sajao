@@ -1,4 +1,4 @@
-import { uploadMessage } from "./upload-status";
+import { megabytes, uploadMessage } from "./upload-status";
 
 jest.mock("@/capture/package/start-upload", () => ({ startCaptureUpload: jest.fn() }));
 
@@ -28,5 +28,16 @@ describe("upload status", () => {
     expect(uploadMessage({ state: "waiting", finished: 0, total: 0 })?.key).toBe(
       "home.upload.waiting",
     );
+  });
+
+  it("shows what the scan cost to upload, in megabytes", () => {
+    expect(megabytes(88_400_000)).toBe("84.3");
+    expect(uploadMessage({ state: "done", finished: 1, total: 1, bytes: 88_400_000 })).toEqual({
+      key: "home.upload.doneSize",
+      values: { megabytes: "84.3" },
+    });
+    expect(
+      uploadMessage({ state: "done", finished: 1, total: 1, bytes: 1_048_576, videoSkipped: true }),
+    ).toEqual({ key: "home.upload.doneNoVideoSize", values: { megabytes: "1.0" } });
   });
 });

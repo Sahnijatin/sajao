@@ -7,30 +7,45 @@ import { Text, useTheme } from "@sajao/ui";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
-import { ringSweepDegrees } from "./ring-geometry";
+import { ringHalves, ringSweepDegrees } from "./ring-geometry";
 
 export interface ProgressRingProps {
   /** 0 to 1. */
   progress: number;
   /** Done is on. */
   ready: boolean;
+  /**
+   * The coverage meter's two parts, 0 to 1 each: the loop fills the first
+   * half of the ring, the sweeps the second. Without it the ring is one arc.
+   */
+  parts?: { loop: number; sweeps: number };
   size?: number;
 }
 
 const STROKE = 5;
 
-export function ProgressRing({ progress, ready, size = 64 }: ProgressRingProps) {
+export function ProgressRing({ progress, ready, parts, size = 64 }: ProgressRingProps) {
   const { t } = useTranslation();
   const { tokens } = useTheme();
   const centre = size / 2;
   const radius = (size - STROKE) / 2 - 1;
   const sweep = ringSweepDegrees(progress);
   const percent = Math.round(Math.min(1, Math.max(0, progress)) * 100);
+  const loop = parts?.loop;
+  const sweeps = parts?.sweeps;
   const arc = useMemo(() => {
     const oval = Skia.XYWHRect(centre - radius, centre - radius, radius * 2, radius * 2);
+    const builder = Skia.PathBuilder.Make();
+    if (loop !== undefined && sweeps !== undefined) {
+      // Two halves with a small gap between: the loop, then the sweeps.
+      for (const half of ringHalves(loop, sweeps)) {
+        if (half.sweep > 0) builder.arcToOval(oval, half.start, half.sweep, true);
+      }
+      return builder.detach();
+    }
     // From the top, clockwise.
-    return Skia.PathBuilder.Make().arcToOval(oval, -90, sweep, true).detach();
-  }, [centre, radius, sweep]);
+    return builder.arcToOval(oval, -90, sweep, true).detach();
+  }, [centre, radius, sweep, loop, sweeps]);
 
   return (
     <View
@@ -51,7 +66,7 @@ export function ProgressRing({ progress, ready, size = 64 }: ProgressRingProps) 
           style="stroke"
           strokeWidth={STROKE}
         />
-        {sweep > 0 ? (
+        {sweep > 0 || parts ? (
           <Path
             path={arc}
             color={ready ? tokens.colors.success : tokens.colors.accent}

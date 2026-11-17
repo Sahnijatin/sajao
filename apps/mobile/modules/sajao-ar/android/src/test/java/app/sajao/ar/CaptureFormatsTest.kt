@@ -69,4 +69,19 @@ class CaptureFormatsTest {
     val nv21 = Nv21.from(2, 2, y, yRowStride = 3, u = u, v = v, uvRowStride = 1, uvPixelStride = 1)
     assertArrayEquals(byteArrayOf(1, 2, 3, 4, 60, 50), nv21)
   }
+
+  @Test
+  fun aNewPlaceIsANewViewpointEvenLookingTheSameWay() {
+    // keyframes.ts: "p<column>_<row>-d<sector>-<band>", places 0.5 m square.
+    assertEquals("p0_0-d0-1", KeyframeGate.cellFor(10.0, 0.0, 0, 0.2f, 0.4f))
+    assertEquals("p1_0-d0-1", KeyframeGate.cellFor(10.0, 0.0, 0, 0.7f, 0.4f))
+    assertEquals("p-1_-3-d0-1", KeyframeGate.cellFor(10.0, 0.0, 0, -0.1f, -1.2f))
+    val gate = KeyframeGate()
+    gate.saved(KeyframeGate.cellFor(10.0, 0.0, 0, 0.2f, 0.4f), 100.0)
+    // The same place and direction needs a clearly sharper frame; a step away does not.
+    assertFalse(gate.shouldSave(KeyframeGate.cellFor(12.0, 0.0, 0, 0.3f, 0.3f), 100.0))
+    assertTrue(gate.shouldSave(KeyframeGate.cellFor(12.0, 0.0, 0, 1.3f, 0.3f), 20.0))
+    // Without tracking there is no place: time decides, as before.
+    assertEquals("t2", KeyframeGate.cellFor(null, null, 3200, 0.2f, 0.4f))
+  }
 }

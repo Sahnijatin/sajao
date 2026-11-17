@@ -2,11 +2,11 @@
 // no planes and no detector reports, and what the screen shows for it.
 import { simpleHint } from "./ar/guidance";
 import { AUTO_SIMPLE_AFTER_MS } from "./capture-mode";
-import { shouldWalk } from "./motion-coverage";
 import type { MotionSample } from "./pose";
 import {
   canFinish,
   initialScan,
+  isMeter,
   isSimple,
   mappedShare,
   type ScanEvent,
@@ -53,18 +53,23 @@ const still: MotionSample = {
   hasGyro: true,
 };
 
-/** Pan at 20 degrees a second, with the status the founder's Android showed: no planes, no detector. */
+/**
+ * Pan at 20 degrees a second, with the status the founder's Android showed:
+ * no planes, no detector. Without positions the simple scan's own rule
+ * applies; with them the coverage meter takes over (coverage-meter.test.ts).
+ */
 function slowPan(
   state: ScanState,
   degrees: number,
   startMs = 0,
-  x = (_i: number) => 0,
+  x: ((i: number) => number) | null = null,
   signals = NOTHING_WORKS,
 ) {
   let next = state;
   for (let i = 0; i * 2 <= degrees; i += 1) {
     const at = startMs + i * 100;
-    next = run(next, [arPose(i * 2, at, { position: { x: x(i), z: 0 } })]);
+    // No position: a phone whose AR gives headings but never a place to stand.
+    next = run(next, [arPose(i * 2, at, x ? { position: { x: x(i), z: 0 } } : {})]);
     if (i % 3 === 0) next = run(next, [arFrame(at + 10, { signals })]);
   }
   return next;
@@ -77,7 +82,9 @@ describe("simple scan", () => {
     const state = slowPan(start, 280);
     expect(isSimple(state)).toBe(true);
     expect(state.surfaces.accepted).toBe(0);
-    expect(mappedShare(state)).toBeCloseTo(0.7);
+    // The whole heading share, and part of the steady-time share that stands in for walking.
+    expect(mappedShare(state)).toBeGreaterThanOrEqual(0.7);
+    expect(isMeter(state)).toBe(false);
     expect(canFinish(state)).toBe(true);
   });
 
@@ -118,7 +125,7 @@ describe("simple scan", () => {
 
   it("an iPhone turns simple at ten seconds without planes and keeps what it earned", () => {
     let state = initialScan("ios");
-    state = slowPan(state, 180, 0, () => 0, { ...ALL_WORKS, planes: 0 });
+    state = slowPan(state, 180, 0, null, { ...ALL_WORKS, planes: 0 });
     expect(isSimple(state)).toBe(false);
     const earned = state.motionCoverage;
     state = run(state, [
@@ -175,13 +182,25 @@ describe("simple scan", () => {
     expect(shouldStepBack(state)).toBe(false);
   });
 
-  it("asks to walk after turning on one spot, then says all covered after walking", () => {
-    let state = slowPan(initialScan("android"), 360);
-    expect(shouldWalk(state.motionCoverage)).toBe(true);
-    expect(mappedShare(state)).toBeLessThan(1);
-    state = slowPan(state, 140, 60_000, (i) => i * 0.05);
-    expect(shouldWalk(state.motionCoverage)).toBe(false);
-    expect(mappedShare(state)).toBeCloseTo(1);
+  it("with AR positions the coverage meter decides: a turn on one spot no longer enables Done", () => {
+    let state = initialScan("android");
+    // A full slow turn on one spot, AR tracking and giving positions.
+    for (let i = 0; i <= 180; i += 1) {
+      state = run(state, [arPose(i * 2, i * 100, { position: { x: 0, z: 0 } })]);
+    }
+    expect(isMeter(state)).toBe(true);
+    expect(canFinish(state)).toBe(false);
+    expect(state.meter.samples).toBeGreaterThan(100);
+    // The old rule would have offered Done here.
+    expect(state.motionCoverage.accepted).toBeGreaterThan(100);
+  });
+
+  it("a fast turn gives the meter nothing", () => {
+    let state = initialScan("android");
+    for (let i = 0; i < 40; i += 1) {
+      state = run(state, [arPose(i * 12, i * 100, { position: { x: i * 0.1, z: 0 } })]);
+    }
+    expect(state.meter.samples).toBeLessThanOrEqual(1);
   });
 
   it("shows one hint at a time: slow down, step back, walk, then Done", () => {

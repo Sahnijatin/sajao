@@ -10,6 +10,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCameraPermission } from "react-native-vision-camera";
 import { getArCapabilities, getArView } from "../../modules/sajao-ar";
 import { shownLabels } from "@/capture/ar/labels";
+import { meterMissing } from "@/capture/coverage-meter";
+import { MeterMap } from "@/capture/meter-map";
+import { NoArNotice } from "@/capture/no-ar-notice";
 import { toScreen } from "@/capture/mesh-tracker";
 import { imuReading } from "@/capture/package/imu";
 import type { LocalCapture } from "@/capture/package/native-capture";
@@ -17,11 +20,12 @@ import type { CaptureDeviceInfo } from "@/capture/package/upload-capture";
 import { useCaptureRecorder } from "@/capture/package/use-capture-recorder";
 import type { RawMotion } from "@/capture/pose";
 import { ScanCamera } from "@/capture/scan-camera";
-import { canFinish, isSimple, mappedShare } from "@/capture/scan-session";
+import { canFinish, canFinishEarly, isMeter, isSimple, mappedShare } from "@/capture/scan-session";
 import { useScanSession } from "@/capture/use-scan-session";
 import { ScanInstruction } from "@/components/scan-instruction";
 import { ScanRing } from "@/components/scan-ring";
 import { previewScreensEnabled } from "@/preview-screens";
+import { useCaptureStore } from "@/state/capture";
 import { CaptureDebugLayer } from "./capture-debug";
 import { coverageStep, scanInstruction, shouldTick } from "./capture-guide";
 import { Review } from "./review";
@@ -224,9 +228,12 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
   const [arStartError, setArStartError] = useState<string | null>(null);
   const arMode = capabilities.arSupported && ArView !== null && arStartError === null;
   const [finishing, setFinishing] = useState(false);
+  const setMissing = useCaptureStore((store) => store.setMissing);
   const finishScan = useCallback(async () => {
     setFinishing(true);
     if (arMode) {
+      // What the meter still wanted, for the review to name after "Finish anyway".
+      setMissing(isMeter(state) ? meterMissing(state.meter) : null);
       const local = await capture.finish();
       onCaptured?.(local, {
         platform: capabilities.platform === "ios" ? "ios" : "android",
@@ -235,7 +242,7 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
       });
     }
     onDone();
-  }, [arMode, capabilities.platform, capture, onCaptured, onDone, tier]);
+  }, [arMode, capabilities.platform, capture, onCaptured, onDone, setMissing, state, tier]);
   const labelProps = useMemo(
     () =>
       shownLabels(labels).map((label) => ({
@@ -252,6 +259,8 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
   const share = mappedShare(state);
   const ready = canFinish(state);
   const simple = arMode && isSimple(state);
+  // Where AR gives positions the coverage meter decides Done, in both scan modes.
+  const meter = arMode && isMeter(state);
   const [showDebug, setShowDebug] = useState(false);
   const taps = useRef<number[]>([]);
   // The debug flag: three taps on the camera within a second, in development
@@ -306,14 +315,20 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
   useEffect(() => {
     if (!shouldTick(step.current, share)) return;
     step.current = coverageStep(share);
-    // No ticks while the review is being read.
-    if (!reviewing.current) void playHaptic("cornerCaptured");
-  }, [share]);
+    // The coverage meter is felt sector by sector by the scan session itself,
+    // and nothing ticks while the review is being read.
+    if (meter || reviewing.current) return;
+    void playHaptic("cornerCaptured");
+  }, [share, meter]);
   const wasReady = useRef(false);
   useEffect(() => {
     if (ready && !wasReady.current) void playHaptic("levelReached");
     wasReady.current = ready;
   }, [ready]);
+
+  // A phone that cannot run AR cannot measure the room: it goes to photos
+  // with a friendly note, before any camera permission is asked for.
+  if (!arMode) return <NoArNotice onUsePhotos={onUsePhotos} onClose={onClose} />;
 
   if (!permission.hasPermission) {
     return (
@@ -365,7 +380,8 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
           reducedMotion={reducedMotion}
           // The mesh, planes and live labels are diagnostics: the scan shows
           // the camera image only, unless the debug flag is on.
-          overlay={showDebug}
+          // The review shows it for a moment too: "we got your room".
+          overlay={showDebug || review !== null}
           labels={showDebug ? labelProps : NO_LABELS}
           onArStatus={({ nativeEvent }) => {
             // A session that cannot start falls back to the 2D scan.
@@ -500,6 +516,10 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
               gap: spacing.gutter,
             }}
           >
+            {/* "One more spot, over there" needs a there: the meter's map shows it, for that step only. */}
+            {meter && instruction.id === "oneMoreSpot" && !pointAt ? (
+              <MeterMap meter={state.meter} position={state.position} yaw={state.pose.yaw} />
+            ) : null}
             <ScanInstruction id={instructionId} text={instructionText} />
             {instruction.tone === "fix" ? (
               // The scan resumes by itself once the reading is good again.
@@ -519,6 +539,16 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
                   onPress={scanAnyway}
                 />
               </View>
+            ) : null}
+            {canFinishEarly(state) && !ready && !finishing ? (
+              // Coverage has not moved for a minute: never trap the person in the
+              // scan. The review then names what is missing.
+              <Button
+                label={t("capture.finishAnyway")}
+                variant="outline"
+                size="small"
+                onPress={openReview}
+              />
             ) : null}
             <DoneRing progress={share} ready={ready} busy={finishing} onPress={openReview} />
           </View>

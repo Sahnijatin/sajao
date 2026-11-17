@@ -220,6 +220,37 @@
         "detection": {
           "source": "server_segmentation",
           "confidence": 0.8
+        },
+        "footprint": {
+          "polygon": [
+            {
+              "x_m": 0.4,
+              "y_m": 0.03
+            },
+            {
+              "x_m": 1.6,
+              "y_m": 0.03
+            },
+            {
+              "x_m": 1.6,
+              "y_m": 0.13
+            },
+            {
+              "x_m": 0.4,
+              "y_m": 0.13
+            }
+          ],
+          "width": {
+            "value_m": 1.2,
+            "source": "estimated",
+            "error_band_m": 0.06
+          },
+          "depth": {
+            "value_m": 0.1,
+            "source": "estimated",
+            "error_band_m": 0.06
+          },
+          "on_floor": true
         }
       }
     ]
@@ -277,7 +308,50 @@
         }
       ],
       "state": "keep",
-      "object_type": "furniture"
+      "object_type": "furniture",
+      "footprint": {
+        "polygon": [
+          {
+            "x_m": 1.05,
+            "y_m": 0.15
+          },
+          {
+            "x_m": 3.15,
+            "y_m": 0.15
+          },
+          {
+            "x_m": 3.15,
+            "y_m": 1.05
+          },
+          {
+            "x_m": 1.05,
+            "y_m": 1.05
+          }
+        ],
+        "width": {
+          "value_m": 2.1,
+          "source": "estimated",
+          "error_band_m": 0.06
+        },
+        "depth": {
+          "value_m": 0.9,
+          "source": "estimated",
+          "error_band_m": 0.06
+        },
+        "on_floor": true
+      },
+      "redesign": {
+        "state": "replace",
+        "source": "rule"
+      },
+      "hero_masks": [
+        {
+          "hero_view_id": "h1",
+          "mask": "twins/00000000-0000-4000-8000-0000000000a1/masks/h1-sofa-1.png",
+          "visible_share": 0.82,
+          "source": "detected"
+        }
+      ]
     },
     {
       "id": "almirah-1",
@@ -313,7 +387,11 @@
       "views": [],
       "catalog_matches": [],
       "state": "keep",
-      "object_type": "furniture"
+      "object_type": "furniture",
+      "redesign": {
+        "state": "keep",
+        "source": "user"
+      }
     }
   ],
   "keyframes": [
@@ -420,5 +498,11 @@
         "reason": "not_detected"
       }
     ]
+  },
+  "free_floor": {
+    "area_m2": 11.62,
+    "error_band_m2": 0.74,
+    "floor_area_m2": 14.28,
+    "kept_ids": ["almirah-1", "b1"]
   }
 }
