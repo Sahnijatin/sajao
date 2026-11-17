@@ -149,20 +149,36 @@ def gemini_edit(pils, prompt: str, seed: int):
         payload={"prompt": prompt, "seed": seed},
         blobs=tuple(blobs),
     )
+    import re
+    import time
+
     from sajao_gateway.errors import AllProvidersFailedError
 
-    try:
-        resp = _run(gateway().call(req, validate=_validate))
-    except AllProvidersFailedError:
-        # Surface the provider's reason (redacted) instead of the gateway's summary.
-        import re
-
+    global _gw
+    for attempt in range(5):
         try:
-            r = _run(GeminiImageProvider().call(req))
-            reason = f"direct call ok but output rejected: {r.output}"
-        except Exception as e:
-            reason = re.sub(r"[A-Za-z0-9_\-]{28,}", "<redacted>", f"{type(e).__name__}: {e}")[:600]
-        raise RuntimeError(f"Gemini arm B call failed: {reason}") from None
+            resp = _run(gateway().call(req, validate=_validate))
+            break
+        except AllProvidersFailedError:
+            # Surface the provider's reason (redacted) instead of the gateway's summary.
+            try:
+                r = _run(GeminiImageProvider().call(req))
+                try:
+                    _validate(r)
+                    resp = r  # a paid, valid image: use it (same blobs and cost fields)
+                    break
+                except Exception:
+                    reason = f"direct call ok but output rejected: {r.output}"
+            except Exception as e:
+                reason = re.sub(r"[A-Za-z0-9_\\-]{28,}", "<redacted>", f"{type(e).__name__}: {e}")[
+                    :600
+                ]
+            if ("429" in reason or "RESOURCE_EXHAUSTED" in reason) and attempt < 4:
+                # Vertex quota: wait it out, and start a fresh gateway (its breaker opened).
+                time.sleep(30 * 2**attempt)
+                _gw = None
+                continue
+            raise RuntimeError(f"Gemini arm B call failed: {reason}") from None
     SPEND["calls"] += 1
     SPEND["micro_inr"] += int(resp.cost_micro_inr)
     return Image.open(io.BytesIO(resp.blobs[0])).convert("RGB")
