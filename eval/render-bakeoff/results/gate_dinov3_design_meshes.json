@@ -1,0 +1,364 @@
+[
+ {
+  "id": "ikea_00582036",
+  "model": "triposg",
+  "category": "chair",
+  "clean_views": [
+   0,
+   1,
+   3,
+   4
+  ],
+  "input_view": 0,
+  "pairs": [
+   {
+    "asset": "ikea_00582036",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.34803046263425647,
+      0.37698855104998186,
+      0.3496042218901739
+     ],
+     "size_m": [
+      0.69,
+      0.71,
+      0.64
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.34614890390892034,
+      "de": 2.2990499849293866,
+      "emb": 0.8675872087478638,
+      "az": 232.5,
+      "el": 5.0,
+      "fov": 20.0,
+      "view": 1,
+      "is_input": false
+     },
+     {
+      "iou": 0.36979975317488756,
+      "de": 10.904310466880661,
+      "emb": 0.8713230490684509,
+      "az": 27.5,
+      "el": 2.5,
+      "fov": 20.0,
+      "view": 4,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "excluded_drawings": [
+   3
+  ],
+  "held_out_views": [
+   1,
+   4
+  ]
+ },
+ {
+  "id": "ikea_10478124",
+  "model": "triposg",
+  "category": "lamp",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "excluded_drawings": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_10500356",
+  "model": "triposg",
+  "category": "table",
+  "clean_views": [
+   0,
+   1,
+   3,
+   5
+  ],
+  "input_view": 0,
+  "pairs": [
+   {
+    "asset": "ikea_10500356",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.3734888682102697,
+      0.36723728217661356,
+      0.37362014068467625
+     ],
+     "size_m": [
+      0.7,
+      0.42,
+      0.7
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.5357592365414947,
+      "de": 2.685358628851572,
+      "emb": 0.8032795190811157,
+      "az": 105.0,
+      "el": 10.0,
+      "fov": 20.0,
+      "view": 1,
+      "is_input": false
+     },
+     {
+      "iou": 0.705728125849307,
+      "de": 2.415527833749961,
+      "emb": 0.8890527486801147,
+      "az": 77.5,
+      "el": 10.0,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "excluded_drawings": [
+   5
+  ],
+  "held_out_views": [
+   1,
+   3
+  ]
+ },
+ {
+  "id": "ikea_30651392",
+  "model": "triposg",
+  "category": "table",
+  "clean_views": [
+   0,
+   2,
+   3
+  ],
+  "input_view": 0,
+  "pairs": [
+   {
+    "asset": "ikea_30651392",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.48027774851484245,
+      0.45789167936714215,
+      0.48058130005095606
+     ],
+     "size_m": [
+      0.9,
+      0.48,
+      0.9
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.6960673798838718,
+      "de": 6.426216718837188,
+      "emb": 0.7906367778778076,
+      "az": -5.0,
+      "el": 20.0,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.7181209850107066,
+      "de": 3.1071866794128713,
+      "emb": 0.874099612236023,
+      "az": 25.0,
+      "el": 12.5,
+      "fov": 20.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "excluded_drawings": [],
+  "held_out_views": [
+   2,
+   3
+  ]
+ },
+ {
+  "id": "ikea_90581914",
+  "model": "triposg",
+  "category": "chair",
+  "clean_views": [
+   0,
+   1,
+   4,
+   5,
+   6
+  ],
+  "input_view": 0,
+  "pairs": [
+   {
+    "asset": "ikea_90581914",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.4347052724317831,
+      0.4591887885634228,
+      0.45966211260984524
+     ],
+     "size_m": [
+      0.81,
+      0.68,
+      0.86
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8215019497672859,
+      "de": 2.8128670875393578,
+      "emb": 0.9025790691375732,
+      "az": 225.0,
+      "el": 15.0,
+      "fov": 20.0,
+      "view": 1,
+      "is_input": false
+     },
+     {
+      "iou": 0.8429909038298883,
+      "de": 3.61570815075435,
+      "emb": 0.9059938788414001,
+      "az": 32.5,
+      "el": 17.5,
+      "fov": 20.0,
+      "view": 5,
+      "is_input": false
+     },
+     {
+      "iou": 0.8914824613808996,
+      "de": 4.2138835730754645,
+      "emb": 0.8887205123901367,
+      "az": 350.0,
+      "el": 5.0,
+      "fov": 20.0,
+      "view": 6,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "excluded_drawings": [
+   4
+  ],
+  "held_out_views": [
+   1,
+   5,
+   6
+  ]
+ },
+ {
+  "id": "ikea_s39270312",
+  "model": "triposg",
+  "category": "sofa",
+  "clean_views": [
+   0,
+   7,
+   8
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "excluded_drawings": [
+   7,
+   8
+  ],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ikea_s39620339",
+  "model": "triposg",
+  "category": "sofa",
+  "clean_views": [
+   0
+  ],
+  "input_view": 0,
+  "pairs": [],
+  "excluded_drawings": [],
+  "held_out_views": [],
+  "unverifiable": true
+ },
+ {
+  "id": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+  "model": "triposg",
+  "category": "sofa",
+  "clean_views": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "input_view": 1,
+  "pairs": [
+   {
+    "asset": "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s",
+    "true": true,
+    "textured_by_model": false,
+    "size": {
+     "scale": [
+      0.8144699890866626,
+      0.795441043037238,
+      0.7740396388206694
+     ],
+     "size_m": [
+      1.524,
+      0.8640000000000001,
+      0.8640000000000001
+     ]
+    },
+    "views": [
+     {
+      "iou": 0.8239007891770012,
+      "de": 1.295287563939165,
+      "emb": 0.8349446058273315,
+      "az": 327.5,
+      "el": 2.5,
+      "fov": 45.0,
+      "view": 0,
+      "is_input": false
+     },
+     {
+      "iou": 0.795587079697258,
+      "de": 4.607447728245409,
+      "emb": 0.7773380279541016,
+      "az": 315.0,
+      "el": 0.0,
+      "fov": 20.0,
+      "view": 2,
+      "is_input": false
+     },
+     {
+      "iou": 0.8205375152186949,
+      "de": 1.5935740660270006,
+      "emb": 0.7914038300514221,
+      "az": 325.0,
+      "el": 7.5,
+      "fov": 45.0,
+      "view": 3,
+      "is_input": false
+     }
+    ]
+   }
+  ],
+  "excluded_drawings": [],
+  "held_out_views": [
+   0,
+   2,
+   3
+  ]
+ }
+]

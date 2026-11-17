@@ -1,0 +1,409 @@
+[
+ {
+  "design": "41159566_best_match",
+  "product": "SK\u00c5LBODA Armchair",
+  "version": "C3_qwen",
+  "drift": [
+   "colour",
+   "embedding"
+  ],
+  "silhouette": 0.97,
+  "colour_de": 10.6,
+  "embedding": 0.468
+ },
+ {
+  "design": "41159566_best_match",
+  "product": "SK\u00c5LBODA Armchair",
+  "version": "C3L_qwen",
+  "drift": [
+   "colour"
+  ],
+  "silhouette": 1.0,
+  "colour_de": 10.5,
+  "embedding": 0.562
+ },
+ {
+  "design": "41159566_best_match",
+  "product": "SK\u00c5LBODA Armchair",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette",
+   "colour"
+  ],
+  "silhouette": 0.5,
+  "colour_de": 15.5,
+  "embedding": 0.788
+ },
+ {
+  "design": "41159566_bold",
+  "product": "KRAGSTA Coffee table",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette"
+  ],
+  "silhouette": 0.32,
+  "colour_de": 5.6,
+  "embedding": 0.739
+ },
+ {
+  "design": "41159566_bold",
+  "product": "SOTEN\u00c4S Armchair",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette"
+  ],
+  "silhouette": 0.69,
+  "colour_de": 2.0,
+  "embedding": 0.884
+ },
+ {
+  "design": "41159566_bold",
+  "product": "ikea_50597318",
+  "version": "C3_qwen",
+  "drift": [
+   "embedding"
+  ],
+  "silhouette": 0.7,
+  "colour_de": 7.3,
+  "embedding": 0.287
+ },
+ {
+  "design": "41159566_bold",
+  "product": "ikea_50597318",
+  "version": "C3L_qwen",
+  "drift": [
+   "embedding"
+  ],
+  "silhouette": 0.97,
+  "colour_de": 6.3,
+  "embedding": 0.318
+ },
+ {
+  "design": "41159566_bold",
+  "product": "ikea_50597318",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette"
+  ],
+  "silhouette": 0.27,
+  "colour_de": 9.1,
+  "embedding": 0.663
+ },
+ {
+  "design": "0_best_match",
+  "product": "BORGEBY Coffee table",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette"
+  ],
+  "silhouette": 0.47,
+  "colour_de": 5.2,
+  "embedding": 0.815
+ },
+ {
+  "design": "0_best_match",
+  "product": "SK\u00c5LBODA Armchair",
+  "version": "C3_qwen",
+  "drift": [
+   "colour"
+  ],
+  "silhouette": 0.89,
+  "colour_de": 14.0,
+  "embedding": 0.619
+ },
+ {
+  "design": "0_best_match",
+  "product": "SK\u00c5LBODA Armchair",
+  "version": "C3L_qwen",
+  "drift": [
+   "colour"
+  ],
+  "silhouette": 0.99,
+  "colour_de": 13.4,
+  "embedding": 0.683
+ },
+ {
+  "design": "0_best_match",
+  "product": "SK\u00c5LBODA Armchair",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette",
+   "colour"
+  ],
+  "silhouette": 0.53,
+  "colour_de": 20.5,
+  "embedding": 0.666
+ },
+ {
+  "design": "0_bold",
+  "product": "KRAGSTA Coffee table",
+  "version": "C3_qwen",
+  "drift": [
+   "colour"
+  ],
+  "silhouette": 0.97,
+  "colour_de": 15.9,
+  "embedding": 0.86
+ },
+ {
+  "design": "0_bold",
+  "product": "KRAGSTA Coffee table",
+  "version": "C3L_qwen",
+  "drift": [
+   "colour"
+  ],
+  "silhouette": 0.99,
+  "colour_de": 16.0,
+  "embedding": 0.878
+ },
+ {
+  "design": "0_bold",
+  "product": "KRAGSTA Coffee table",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette"
+  ],
+  "silhouette": 0.44,
+  "colour_de": 3.3,
+  "embedding": 0.935
+ },
+ {
+  "design": "0_bold",
+  "product": "ikea_50597318",
+  "version": "C3_qwen",
+  "drift": [
+   "embedding"
+  ],
+  "silhouette": 0.89,
+  "colour_de": 6.2,
+  "embedding": 0.149
+ },
+ {
+  "design": "0_bold",
+  "product": "ikea_50597318",
+  "version": "C3L_qwen",
+  "drift": [
+   "embedding"
+  ],
+  "silhouette": 0.98,
+  "colour_de": 6.4,
+  "embedding": 0.252
+ },
+ {
+  "design": "0_bold",
+  "product": "ikea_50597318",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette",
+   "colour",
+   "embedding"
+  ],
+  "silhouette": 0.58,
+  "colour_de": 13.2,
+  "embedding": 0.148
+ },
+ {
+  "design": "41159541_best_match",
+  "product": "BORGEBY Coffee table",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette"
+  ],
+  "silhouette": 0.69,
+  "colour_de": 1.1,
+  "embedding": 0.86
+ },
+ {
+  "design": "41159541_best_match",
+  "product": "SK\u00c5LBODA Armchair",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette"
+  ],
+  "silhouette": 0.4,
+  "colour_de": 5.5,
+  "embedding": 0.634
+ },
+ {
+  "design": "41159541_bold",
+  "product": "Kairav Modern 2 Seater Wooden Sofa",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette"
+  ],
+  "silhouette": 0.65,
+  "colour_de": 3.1,
+  "embedding": 0.662
+ },
+ {
+  "design": "41159541_bold",
+  "product": "SOTEN\u00c4S Armchair",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette",
+   "colour",
+   "embedding"
+  ],
+  "silhouette": 0.06,
+  "colour_de": 27.4,
+  "embedding": 0.065
+ },
+ {
+  "design": "41159541_bold",
+  "product": "ikea_50597318",
+  "version": "C3_qwen",
+  "drift": [
+   "colour",
+   "embedding"
+  ],
+  "silhouette": 0.83,
+  "colour_de": 10.1,
+  "embedding": 0.217
+ },
+ {
+  "design": "41159541_bold",
+  "product": "ikea_50597318",
+  "version": "C3L_qwen",
+  "drift": [
+   "embedding"
+  ],
+  "silhouette": 0.93,
+  "colour_de": 9.8,
+  "embedding": 0.162
+ },
+ {
+  "design": "41159541_bold",
+  "product": "ikea_50597318",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette",
+   "embedding"
+  ],
+  "silhouette": 0.42,
+  "colour_de": 9.1,
+  "embedding": 0.126
+ },
+ {
+  "design": "47331265_best_match",
+  "product": "BORGEBY Coffee table",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette"
+  ],
+  "silhouette": 0.56,
+  "colour_de": 5.5,
+  "embedding": 0.797
+ },
+ {
+  "design": "47331265_best_match",
+  "product": "SK\u00c5LBODA Armchair",
+  "version": "C3_qwen",
+  "drift": [
+   "colour"
+  ],
+  "silhouette": 0.8,
+  "colour_de": 19.4,
+  "embedding": 0.579
+ },
+ {
+  "design": "47331265_best_match",
+  "product": "SK\u00c5LBODA Armchair",
+  "version": "C3L_qwen",
+  "drift": [
+   "colour"
+  ],
+  "silhouette": 1.0,
+  "colour_de": 18.3,
+  "embedding": 0.645
+ },
+ {
+  "design": "47331265_best_match",
+  "product": "SK\u00c5LBODA Armchair",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette",
+   "colour"
+  ],
+  "silhouette": 0.43,
+  "colour_de": 20.7,
+  "embedding": 0.74
+ },
+ {
+  "design": "47331265_bold",
+  "product": "KRAGSTA Coffee table",
+  "version": "C3_qwen",
+  "drift": [
+   "colour"
+  ],
+  "silhouette": 0.98,
+  "colour_de": 15.9,
+  "embedding": 0.765
+ },
+ {
+  "design": "47331265_bold",
+  "product": "KRAGSTA Coffee table",
+  "version": "C3L_qwen",
+  "drift": [
+   "colour"
+  ],
+  "silhouette": 0.99,
+  "colour_de": 11.6,
+  "embedding": 0.774
+ },
+ {
+  "design": "47331265_bold",
+  "product": "KRAGSTA Coffee table",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette"
+  ],
+  "silhouette": 0.45,
+  "colour_de": 3.0,
+  "embedding": 0.886
+ },
+ {
+  "design": "47331265_bold",
+  "product": "SOTEN\u00c4S Armchair",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette"
+  ],
+  "silhouette": 0.57,
+  "colour_de": 0.9,
+  "embedding": 0.923
+ },
+ {
+  "design": "47331265_bold",
+  "product": "ikea_50597318",
+  "version": "C3_qwen",
+  "drift": [
+   "embedding"
+  ],
+  "silhouette": 0.86,
+  "colour_de": 4.9,
+  "embedding": 0.125
+ },
+ {
+  "design": "47331265_bold",
+  "product": "ikea_50597318",
+  "version": "C3L_qwen",
+  "drift": [
+   "embedding"
+  ],
+  "silhouette": 0.96,
+  "colour_de": 5.6,
+  "embedding": 0.306
+ },
+ {
+  "design": "47331265_bold",
+  "product": "ikea_50597318",
+  "version": "B_gemini",
+  "drift": [
+   "silhouette",
+   "embedding"
+  ],
+  "silhouette": 0.57,
+  "colour_de": 3.7,
+  "embedding": 0.249
+ }
+]

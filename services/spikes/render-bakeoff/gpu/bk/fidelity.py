@@ -47,7 +47,14 @@ def dino():
 
 
 def embed(imgs: list[np.ndarray]) -> np.ndarray:
+    import os
+
     import torch
+
+    if os.environ.get("GATE_EMBED") == "dinov3":  # the DINOv3 gate (thresholds in prodgate)
+        from bk.prodgate import embed as embed_v3
+
+        return embed_v3(imgs)
 
     proc, model = dino()
     with torch.no_grad():
@@ -293,6 +300,11 @@ def gate_listing(model: str, lid: str, against: list[str]) -> dict:
     # agreeing with that photo proves little. A listing with no other clean photo
     # is unverifiable, never a pass.
     clean = [i for i in clean if i != views["input"]]
+    from bk.assets import is_drawing
+
+    drawings = [i for i in clean if is_drawing(load_rgba(lid, i))]
+    clean = [i for i in clean if i not in drawings]
+    out["excluded_drawings"] = drawings
     out["held_out_views"] = clean
     if not clean:
         out["unverifiable"] = True

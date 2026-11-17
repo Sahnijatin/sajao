@@ -236,6 +236,23 @@ def recut_with_detector(lid: str, category: str) -> dict:
     return {"id": lid, "recovered": changed, "clean": len(vj["clean"])}
 
 
+def is_drawing(rgba: np.ndarray) -> bool:
+    """Dimension drawings and flat detail crops are not product photos: almost no colour and
+    almost no mid-tones inside the product mask (line art is white and dark lines only).
+    Calibrated on IKEA listings: drawings score sat <= 0.08 and mid <= 0.16 (closest real photo: 0.09); real photos of
+    white and black products stay above one of the two."""
+    import cv2
+
+    m = rgba[..., 3] > 127
+    if m.sum() < 100:
+        return True
+    hsv = cv2.cvtColor(np.ascontiguousarray(rgba[..., :3]), cv2.COLOR_RGB2HSV)
+    v, s = hsv[..., 2][m].astype(float), hsv[..., 1][m].astype(float)
+    mid = float(((v > 110) & (v < 235)).mean())
+    sat = float((s > 40).mean())
+    return sat <= 0.08 and mid <= 0.16
+
+
 def load_rgba(lid: str, idx: int) -> np.ndarray:
     import cv2
 

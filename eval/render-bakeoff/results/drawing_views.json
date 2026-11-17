@@ -1,0 +1,474 @@
+{
+ "ikea_00352573": [
+  3
+ ],
+ "ikea_00411997": [
+  0,
+  3
+ ],
+ "ikea_00417579": [],
+ "ikea_00440829": [],
+ "ikea_00522047": [
+  8
+ ],
+ "ikea_00582036": [
+  3
+ ],
+ "ikea_00586553": [
+  2
+ ],
+ "ikea_00594614": [],
+ "ikea_00598216": [],
+ "ikea_10314024": [
+  0
+ ],
+ "ikea_10339331": [
+  5
+ ],
+ "ikea_10351686": [
+  3
+ ],
+ "ikea_10407928": [
+  7
+ ],
+ "ikea_10428327": [
+  6
+ ],
+ "ikea_10478124": [],
+ "ikea_10500356": [
+  5
+ ],
+ "ikea_10535544": [
+  4
+ ],
+ "ikea_10590408": [
+  5
+ ],
+ "ikea_10604349": [
+  5
+ ],
+ "ikea_10608837": [
+  4
+ ],
+ "ikea_10615526": [],
+ "ikea_10623357": [],
+ "ikea_10629161": [],
+ "ikea_20174216": [],
+ "ikea_20294520": [
+  3
+ ],
+ "ikea_20321321": [],
+ "ikea_20351884": [
+  8
+ ],
+ "ikea_20352987": [
+  3
+ ],
+ "ikea_20368832": [
+  5
+ ],
+ "ikea_20405047": [],
+ "ikea_20437699": [],
+ "ikea_20465772": [],
+ "ikea_20500407": [],
+ "ikea_20518271": [
+  5
+ ],
+ "ikea_20519765": [],
+ "ikea_20534153": [
+  0,
+  2,
+  8
+ ],
+ "ikea_20568223": [],
+ "ikea_20575450": [
+  10
+ ],
+ "ikea_20619072": [
+  5
+ ],
+ "ikea_20623074": [],
+ "ikea_20623470": [],
+ "ikea_20625780": [],
+ "ikea_30214679": [
+  5
+ ],
+ "ikea_30413527": [
+  4,
+  5
+ ],
+ "ikea_30437241": [
+  3
+ ],
+ "ikea_30437811": [],
+ "ikea_30460892": [
+  3,
+  4
+ ],
+ "ikea_30492317": [
+  0,
+  1,
+  2,
+  5
+ ],
+ "ikea_30503655": [],
+ "ikea_30504631": [
+  8
+ ],
+ "ikea_30542162": [],
+ "ikea_30575812": [
+  5,
+  6
+ ],
+ "ikea_30580074": [],
+ "ikea_30594033": [
+  5
+ ],
+ "ikea_30636660": [],
+ "ikea_30638777": [
+  0
+ ],
+ "ikea_30651392": [],
+ "ikea_40161557": [],
+ "ikea_40375134": [
+  5
+ ],
+ "ikea_40417092": [],
+ "ikea_40453768": [
+  0,
+  1,
+  4
+ ],
+ "ikea_40456917": [
+  6
+ ],
+ "ikea_40476835": [],
+ "ikea_40551226": [
+  6
+ ],
+ "ikea_40571979": [],
+ "ikea_40573681": [],
+ "ikea_40587174": [],
+ "ikea_40597781": [],
+ "ikea_40623233": [],
+ "ikea_40623474": [],
+ "ikea_50314814": [],
+ "ikea_50409893": [
+  4,
+  5
+ ],
+ "ikea_50483878": [
+  3,
+  4
+ ],
+ "ikea_50497583": [
+  0,
+  10
+ ],
+ "ikea_50503292": [
+  4
+ ],
+ "ikea_50510400": [],
+ "ikea_50534104": [
+  8
+ ],
+ "ikea_50541595": [
+  6
+ ],
+ "ikea_50561041": [
+  5
+ ],
+ "ikea_50579055": [
+  0
+ ],
+ "ikea_50579215": [
+  5
+ ],
+ "ikea_50597318": [],
+ "ikea_50646413": [],
+ "ikea_60186401": [],
+ "ikea_60353536": [
+  0,
+  4,
+  5
+ ],
+ "ikea_60404913": [
+  0
+ ],
+ "ikea_60405955": [],
+ "ikea_60458755": [],
+ "ikea_60459712": [],
+ "ikea_60483873": [
+  4
+ ],
+ "ikea_60487753": [],
+ "ikea_60563577": [],
+ "ikea_60570827": [
+  3
+ ],
+ "ikea_60602041": [
+  5
+ ],
+ "ikea_70311070": [],
+ "ikea_70378683": [],
+ "ikea_70431317": [],
+ "ikea_70524458": [],
+ "ikea_70533491": [
+  4
+ ],
+ "ikea_70535895": [
+  4
+ ],
+ "ikea_70638723": [],
+ "ikea_80361494": [
+  1,
+  7
+ ],
+ "ikea_80363426": [
+  6
+ ],
+ "ikea_80441759": [
+  5
+ ],
+ "ikea_80482052": [
+  9
+ ],
+ "ikea_80498939": [
+  0,
+  6
+ ],
+ "ikea_80507057": [
+  4,
+  5
+ ],
+ "ikea_80566749": [
+  7
+ ],
+ "ikea_80573580": [],
+ "ikea_80576319": [
+  0,
+  5
+ ],
+ "ikea_80581919": [
+  5
+ ],
+ "ikea_80605430": [],
+ "ikea_90325472": [],
+ "ikea_90409297": [
+  3
+ ],
+ "ikea_90409754": [],
+ "ikea_90520355": [
+  7
+ ],
+ "ikea_90574918": [
+  6
+ ],
+ "ikea_90581914": [
+  4
+ ],
+ "ikea_90610426": [
+  5
+ ],
+ "ikea_90614170": [
+  8
+ ],
+ "ikea_90618502": [],
+ "ikea_90620350": [
+  5
+ ],
+ "ikea_90630330": [],
+ "ikea_s09128565": [],
+ "ikea_s09297191": [
+  1,
+  2,
+  6
+ ],
+ "ikea_s09432306": [],
+ "ikea_s09545346": [
+  8,
+  9,
+  10
+ ],
+ "ikea_s19625328": [
+  4
+ ],
+ "ikea_s29270280": [
+  4,
+  9
+ ],
+ "ikea_s29308527": [],
+ "ikea_s29336568": [],
+ "ikea_s29387355": [],
+ "ikea_s29398698": [
+  7,
+  8,
+  9
+ ],
+ "ikea_s39270312": [
+  7,
+  8
+ ],
+ "ikea_s39551722": [],
+ "ikea_s39581837": [
+  5
+ ],
+ "ikea_s39585821": [],
+ "ikea_s39620339": [],
+ "ikea_s39626280": [],
+ "ikea_s49241183": [
+  10
+ ],
+ "ikea_s49395019": [
+  7
+ ],
+ "ikea_s49471268": [
+  4
+ ],
+ "ikea_s49482832": [
+  5
+ ],
+ "ikea_s49545354": [
+  7,
+  8
+ ],
+ "ikea_s49565243": [
+  5,
+  6
+ ],
+ "ikea_s59478085": [],
+ "ikea_s59536306": [
+  0,
+  1,
+  2
+ ],
+ "ikea_s59569448": [
+  3,
+  4
+ ],
+ "ikea_s69200643": [
+  0,
+  9
+ ],
+ "ikea_s69449691": [
+  4
+ ],
+ "ikea_s69510607": [
+  7
+ ],
+ "ikea_s69528344": [
+  6
+ ],
+ "ikea_s69580997": [
+  0,
+  6,
+  7,
+  8
+ ],
+ "ikea_s69615336": [],
+ "ikea_s69625203": [
+  5
+ ],
+ "ikea_s79443368": [
+  0,
+  7
+ ],
+ "ikea_s79494659": [
+  6,
+  7
+ ],
+ "ikea_s79561309": [],
+ "ikea_s79627659": [
+  5
+ ],
+ "ikea_s89198465": [
+  9
+ ],
+ "ikea_s89240983": [
+  7
+ ],
+ "ikea_s89304338": [],
+ "ikea_s89432369": [
+  1,
+  2
+ ],
+ "ikea_s89500966": [],
+ "ikea_s99442184": [
+  2,
+  3
+ ],
+ "ikea_s99502371": [],
+ "ikea_s99562794": [],
+ "ikea_s99571835": [],
+ "ikea_s99613524": [
+  2
+ ],
+ "ikea_s99628653": [
+  5
+ ],
+ "ws_adire-lounge-chair-cream-robins": [],
+ "ws_adolph-bed-honey-finish": [],
+ "ws_adolph-bedside-table-honey-finish": [],
+ "ws_adolph-queen-size-bed-walnut-finish": [],
+ "ws_adolph-wardrobe-honey-finish": [],
+ "ws_adroit-wall-mounted-tv-unit-exotic-teak-finish": [],
+ "ws_alex-wall-shelf-with-key-holders-flowery-wenge-finish": [],
+ "ws_alex-wall-shelf-with-key-holders-flowery-wenge-frosty-white-": [
+  7
+ ],
+ "ws_allan-bedside-honey-finish": [],
+ "ws_allan-tv-unit-walnut-finish": [],
+ "ws_bryson-bedside-table-walnut-finish": [],
+ "ws_cambrey-1-door-with-3-drawers-wardrobe-walnut-finish": [],
+ "ws_caramel-side-end-table-honey-finish": [],
+ "ws_charles-2-door-multi-utility-wardrobe-walnut-finish": [],
+ "ws_citroen-1-door-multi-utility-wardrobe-walnut-finish": [],
+ "ws_crisper-lounge-chair-bubble-robins": [],
+ "ws_crisper-lounge-chair-cotton-grey-robins": [],
+ "ws_danon-lounge-chair-blue-stripe": [],
+ "ws_denzel-bedside-table-walnut-finish": [],
+ "ws_dispito-wall-shelf-exotic-teak-ice-beech-finish": [],
+ "ws_dome-round-end-table-honey-finish": [],
+ "ws_emboss-1-door-multi-utility-wardrobe-honey-finish": [],
+ "ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish": [],
+ "ws_ferguson-bedside-table-walnut-finish": [],
+ "ws_florian-bedside-table-honey-finish": [],
+ "ws_greta-book-shelf-honey-finish": [],
+ "ws_hailey-wall-mounted-tv-unit-exotic-teak": [],
+ "ws_harvey-tv-unit-frosty-white": [
+  6
+ ],
+ "ws_henry-l-shape-right-arm-corner-sofa-indigo-blue": [],
+ "ws_holden-1-door-multi-utility-wardrobe-walnut-finish": [],
+ "ws_isla-floral-designed-mother-of-pearl-coffee-table": [],
+ "ws_jace-wall-shelf-with-key-holders-exotic-teak-frosty-white-fi": [
+  5
+ ],
+ "ws_jace-wall-shelf-with-key-holders-flowery-wenge-finish": [],
+ "ws_jace-wall-shelf-with-key-holders-flowery-wenge-frosty-white-": [
+  5
+ ],
+ "ws_javier-bookshelf-honey-finish": [],
+ "ws_jett-tv-unit-honey-finish": [],
+ "ws_juniper-book-shelf-honey": [],
+ "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s": [],
+ "ws_keller-wall-shelf-walnut-finish": [],
+ "ws_kelvin-arm-chair-with-cane-cream-robins": [],
+ "ws_knot-floor-lamp": [],
+ "ws_lotus-premium-ash-wood-bed-with-brass-inlay-queen-size-teak-": [],
+ "ws_lynton-large-tv-unit-honey-finish": [],
+ "ws_mariana-coffee-table": [],
+ "ws_mark-wall-shelf-exotic-teak-finish": [],
+ "ws_melvina-tv-unit-honey-finish": [],
+ "ws_morse-bedside-table-honey-finish": [],
+ "ws_orwell-round-coffee-table-honey-finish": [],
+ "ws_rachit-sheesham-wood-and-cane-door-brass-piping-book-shelf-t": [],
+ "ws_radiant-tv-unit-frosty-white-finish": [
+  9
+ ],
+ "ws_swirl-bedside-table": [],
+ "ws_thrace-lounge-chair-salmon-pink": [],
+ "ws_udaya-sheesham-wood-arm-chair-green-stripe-teak-finish": [],
+ "ws_valeno-side-end-table": [],
+ "ws_walken-queen-size-bed-honey-finish": []
+}

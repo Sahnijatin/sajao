@@ -71,36 +71,49 @@ def _base(py: str = "3.11"):
     )
 
 
-asset_image = (
-    _base()
-    .pip_install(
-        "numpy==1.26.4",
-        "transformers==4.51.3",
-        "diffusers==0.33.1",
-        "huggingface_hub==0.30.2",
-        "accelerate==1.6.0",
-        "timm==1.0.15",
-        "kornia==0.8.1",
-        "einops==0.8.1",
-        "opencv-python-headless==4.10.0.84",
-        "trimesh==4.6.8",
-        "scikit-image==0.25.2",
-        "scipy==1.15.2",
-        "omegaconf==2.3.0",
-        "peft==0.15.2",
-        "jaxtyping==0.3.2",
-        "typeguard==4.4.2",
-        "pymeshlab==2023.12.post3",
-        "pillow==11.2.1",
+def _asset_core():
+    return (
+        _base()
+        .pip_install(
+            "numpy==1.26.4",
+            "transformers==4.51.3",
+            "diffusers==0.33.1",
+            "huggingface_hub==0.30.2",
+            "accelerate==1.6.0",
+            "timm==1.0.15",
+            "kornia==0.8.1",
+            "einops==0.8.1",
+            "opencv-python-headless==4.10.0.84",
+            "trimesh==4.6.8",
+            "scikit-image==0.25.2",
+            "scipy==1.15.2",
+            "omegaconf==2.3.0",
+            "peft==0.15.2",
+            "jaxtyping==0.3.2",
+            "typeguard==4.4.2",
+            "pymeshlab==2023.12.post3",
+            "pillow==11.2.1",
+        )
+        .run_commands(
+            f"pip install --no-build-isolation 'git+https://github.com/NVlabs/nvdiffrast@{NVDIFFRAST_REF}'",
+            "pip install --no-build-isolation diso==0.1.4",
+            f"git clone https://github.com/VAST-AI-Research/TripoSG /opt/triposg && cd /opt/triposg && git checkout {TRIPOSG_REF}",
+        )
     )
-    .run_commands(
-        f"pip install --no-build-isolation 'git+https://github.com/NVlabs/nvdiffrast@{NVDIFFRAST_REF}'",
-        "pip install --no-build-isolation diso==0.1.4",
-        f"git clone https://github.com/VAST-AI-Research/TripoSG /opt/triposg && cd /opt/triposg && git checkout {TRIPOSG_REF}",
+
+
+def _with_code(img):
+    return (
+        img.env({"HF_HOME": "/bk/hf", "PYTHONUNBUFFERED": "1", "PYTHONPATH": "/root"})
+        .add_local_dir(SRC, "/root/bakeoff")
+        .add_local_dir(HERE / "bk", "/root/bk")
     )
-    .env({"HF_HOME": "/bk/hf", "PYTHONUNBUFFERED": "1", "PYTHONPATH": "/root"})
-    .add_local_dir(SRC, "/root/bakeoff")
-    .add_local_dir(HERE / "bk", "/root/bk")
+
+
+asset_image = _with_code(_asset_core())
+# The DINOv3 gate needs a newer transformers; TripoSG keeps its own pins above.
+asset_v3_image = _with_code(
+    _asset_core().pip_install("transformers==4.57.1", "huggingface_hub==0.35.3")
 )
 
 # Twin image: the SJ-116 spike's pinned torch and gsplat, plus Blender (bpy) for products.
@@ -644,6 +657,99 @@ def gemini_probe(models: list[str], location: str = "") -> list[str]:
         except Exception as e:
             msg = re.sub(r"[A-Za-z0-9_\-]{28,}", "<redacted>", repr(e))[:700]
             out.append(f"{m}: {type(e).__name__}: {msg}")
+    return out
+
+
+@app.function(image=gen_image, timeout=300, secrets=[hf_secret])
+def hf_check(repos: list[str]) -> dict:
+    """Which Hugging Face account the secret's token belongs to, and whether it can open
+    each repo. Returns names and booleans only, never the token."""
+    import os
+
+    from huggingface_hub import HfApi, hf_hub_download
+
+    api = HfApi(token=os.environ["HF_TOKEN"])
+    me = api.whoami()
+    out = {"account": me.get("name"), "type": me.get("type"), "access": {}}
+    for r in repos:
+        try:
+            hf_hub_download(r, "config.json", token=os.environ["HF_TOKEN"])
+            out["access"][r] = True
+        except Exception as e:
+            out["access"][r] = type(e).__name__
+    return out
+
+
+@app.function(
+    image=gen_image,
+    gpu=SMALL_GPU,
+    volumes=VOLS,
+    timeout=3600,
+    max_containers=2,
+    secrets=[hf_secret],
+)
+def product_gate(room: str, design_id: str, arms: list[str]) -> dict:
+    """DINOv3 product fidelity for every version of one design (bk.prodgate)."""
+    from bk.prodgate import product_gate as run
+
+    _reload()
+    r = run(room, design_id, arms)
+    bk_vol.commit()
+    return r
+
+
+@app.function(
+    image=asset_v3_image,
+    gpu=SMALL_GPU,
+    volumes=VOLS,
+    timeout=3600,
+    max_containers=1,
+    secrets=[hf_secret],
+)
+def gate_v3(model: str, lids: list[str]) -> list[dict]:
+    """The asset gate on held-out photos with DINOv3 embeddings (true pairs only)."""
+    import os
+
+    os.environ["GATE_EMBED"] = "dinov3"
+    from bk.fidelity import gate_listing
+
+    out = []
+    for lid in lids:
+        try:
+            out.append(gate_listing(model, lid, []))
+        except Exception as e:
+            out.append({"id": lid, "error": repr(e)[:400]})
+    return out
+
+
+@app.function(image=gen_image, timeout=300, secrets=[hf_secret])
+def hf_text(repo: str, names: list[str]) -> dict:
+    """Text files from a (gated) repo, e.g. its license, read with the secret's token."""
+    import os
+
+    from huggingface_hub import HfApi, hf_hub_download
+
+    files = HfApi(token=os.environ["HF_TOKEN"]).list_repo_files(repo)
+    out = {"files": [f for f in files if not f.endswith((".safetensors", ".bin"))]}
+    for n in names:
+        if n in files:
+            p = hf_hub_download(repo, n, token=os.environ["HF_TOKEN"])
+            out[n] = Path(p).read_text(encoding="utf-8", errors="replace")[:20000]
+    return out
+
+
+@app.function(image=asset_image, volumes=VOLS, timeout=1800, cpu=4)
+def drawing_index() -> dict:
+    """Which listing views are dimension drawings or detail crops (bk.assets.is_drawing)."""
+    from bk.assets import BK, is_drawing, load_rgba
+
+    out = {}
+    for d in sorted((BK / "cutouts").iterdir()):
+        vf = d / "views.json"
+        if not vf.exists():
+            continue
+        v = json.loads(vf.read_text())
+        out[d.name] = [i for i in v.get("clean", []) if is_drawing(load_rgba(d.name, i))]
     return out
 
 
