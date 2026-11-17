@@ -602,6 +602,10 @@ def kept_object_depth(room, original, labels, variant, k, c2w, w, h, footprints=
         keep &= ~np.load(rm)
     if footprints:
         keep &= ~np.isin(labels, displaced_ids(room, list(footprints)))
+    # Low things (old rugs, mats, books on the floor) lie under products, never over them.
+    boxes = json.loads((room_dir(room) / "survey.json").read_text())["boxes"]
+    low = [b["id"] for b in boxes if "rug" in b["label"] or b["size"][2] < 0.15]
+    keep &= ~np.isin(labels, low)
     if not keep.any():
         return np.full((h, w), np.inf)
     _, depth, alpha = render_splat(original, k, c2w, w, h, mask=torch.from_numpy(keep).cuda())
@@ -680,9 +684,17 @@ def composite(
     occl = kept_object_depth(room, original, labels, variant, k, c2w, w, h, standing)
     if region is not None and region.any():
         occl = np.where(region, np.inf, occl)  # C3: nothing stands where the photo was emptied
-    visible_px = (a > 0.01) & ~(np.isfinite(occl) & (occl < pdepth - 0.03))
-    # Shadows land only where a catcher (floor or wall) is the surface the twin shows there.
+    # Floor-level kept surfaces (old rugs, flat floaters) never hide a product.
     fdepth = floor_depth(k, c2w, w, h, fr)
+    occl = np.where(np.isfinite(fdepth) & (occl > fdepth - 0.05), np.inf, occl)
+    hidden = np.isfinite(occl) & (occl < pdepth - 0.03)
+    # Splat speckle must not cut holes: keep solid occluders only.
+    hidden = cv2.morphologyEx(hidden.astype(np.uint8), cv2.MORPH_OPEN, np.ones((9, 9), np.uint8))
+    from scipy.ndimage import binary_fill_holes
+
+    hidden = binary_fill_holes(hidden.astype(bool))
+    visible_px = (a > 0.01) & ~hidden
+    # Shadows land only where a catcher (floor or wall) is the surface the twin shows there.
     catcher = br["index"] >= CATCHER_INDEX
     cdepth = np.where(catcher, br["depth"], fdepth)
     # The cleared splat is unreliable where furniture was removed (floaters), so test only
