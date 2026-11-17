@@ -8,6 +8,7 @@ from psycopg_pool import AsyncConnectionPool
 from starlette.types import Scope
 
 from sajao_api import __version__, v1
+from sajao_api.accounts import AccountStore, InMemoryAccountStore, PostgresAccountStore
 from sajao_api.auth import JwksTokenVerifier, TokenVerifier
 from sajao_api.captures import CaptureStore, InMemoryCaptureStore, PostgresCaptureStore
 from sajao_api.errors import ApiError, api_error_handler
@@ -41,6 +42,7 @@ def create_app(
     capture_store: CaptureStore | None = None,
     room_store: RoomStore | None = None,
     pipeline: PipelineLauncher | None = None,
+    account_store: AccountStore | None = None,
 ) -> FastAPI:
     settings = settings or Settings()
     configure_logging(settings.log_level)
@@ -50,7 +52,7 @@ def create_app(
 
     pool: AsyncConnectionPool | None = None
     store = idempotency_store
-    stores = (store, capture_store, room_store)
+    stores = (store, capture_store, room_store, account_store)
     if any(given is None for given in stores) and settings.database_url is not None:
         # prepare_threshold=None: safe behind a transaction-mode connection pooler.
         pool = AsyncConnectionPool(
@@ -120,6 +122,9 @@ def create_app(
     if room_store is None:
         room_store = PostgresRoomStore(pool) if pool is not None else InMemoryRoomStore()
     app.state.rooms = room_store
+    if account_store is None:
+        account_store = PostgresAccountStore(pool) if pool is not None else InMemoryAccountStore()
+    app.state.accounts = account_store
     if pipeline is None:
         pipeline = (
             ModalLauncher(settings.pipeline_modal_app)
