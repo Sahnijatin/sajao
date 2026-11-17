@@ -5,7 +5,13 @@ import math
 import numpy as np
 import pytest
 
-from sajao_workers.twin.photos import level_rotation, metric_scale, tape_factor
+from sajao_workers.twin.photos import (
+    floor_up_correction,
+    level_rotation,
+    metric_scale,
+    tape_factor,
+    up_from_floor_normals,
+)
 
 
 def test_the_metric_scale_is_the_median_ratio_of_metric_to_model_depth() -> None:
@@ -76,3 +82,55 @@ def test_without_a_wall_tape_value_there_is_no_correction() -> None:
 def test_a_tape_value_far_from_every_wall_is_refused() -> None:
     with pytest.raises(ValueError, match="matches no wall"):
         tape_factor(walls(4.0, 3.0), [{"target": "wall_length", "value_m": 9.5}])
+
+
+def floor_points(tilt_deg: float, n: int = 4000, seed: int = 0) -> np.ndarray:
+    """A 5 by 4 m floor at y = 0 with some furniture tops, seen in a world tilted about x."""
+    rng = np.random.default_rng(seed)
+    floor = np.column_stack([rng.uniform(0, 5, n), rng.normal(0, 0.005, n), rng.uniform(0, 4, n)])
+    tops = np.column_stack(
+        [rng.uniform(1, 2, n // 8), np.full(n // 8, 0.45), rng.uniform(1, 2, n // 8)]
+    )
+    walls = np.column_stack(
+        [np.zeros(n // 4), rng.uniform(0, 2.7, n // 4), rng.uniform(0, 4, n // 4)]
+    )
+    t = math.radians(tilt_deg)
+    turn = np.array([[1, 0, 0], [0, math.cos(t), -math.sin(t)], [0, math.sin(t), math.cos(t)]])
+    out: np.ndarray = np.vstack([floor, tops, walls]) @ turn.T
+    return out
+
+
+def test_the_floor_corrects_an_up_that_the_cameras_got_a_little_wrong() -> None:
+    points = floor_points(10.0)  # the cameras' up is 10 degrees off
+
+    turn = floor_up_correction(points, np.array([0.0, 1.0, 0.0]))
+
+    assert turn is not None
+    levelled = points @ turn.T
+    floor = levelled[levelled[:, 1] < np.percentile(levelled[:, 1], 30)]
+    assert float(np.ptp(floor[:, 1])) < 0.1  # flat again
+
+
+def test_a_floor_far_from_the_cameras_up_is_not_trusted() -> None:
+    assert floor_up_correction(floor_points(40.0), np.array([0.0, 1.0, 0.0])) is None
+
+
+def test_too_few_points_give_no_correction() -> None:
+    assert floor_up_correction(floor_points(5.0, n=20), np.array([0.0, 1.0, 0.0])) is None
+
+
+def test_floor_normals_from_single_photos_agree_on_up_despite_one_bad_photo() -> None:
+    t = math.radians(8.0)
+    true = np.array([0.0, math.cos(t), math.sin(t)])
+    rng = np.random.default_rng(1)
+    normals = [true + rng.normal(0, 0.01, 3) for _ in range(6)]
+    normals.append(np.array([0.0, math.cos(0.5), math.sin(0.5)]))  # one photo's table top
+
+    turn = up_from_floor_normals(normals, np.array([0.0, 1.0, 0.0]))
+
+    assert turn is not None
+    assert turn @ (true / np.linalg.norm(true)) == pytest.approx([0.0, 1.0, 0.0], abs=0.02)
+
+
+def test_too_few_photos_with_a_floor_give_no_correction() -> None:
+    assert up_from_floor_normals([np.array([0.0, 1.0, 0.0])], np.array([0.0, 1.0, 0.0])) is None

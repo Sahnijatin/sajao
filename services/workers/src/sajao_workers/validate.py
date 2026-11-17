@@ -86,6 +86,7 @@ def check_masks(payload: Mapping[str, Any]) -> Validator:
 
 # Depth: most of each frame covered, and a median distance a room can have.
 MIN_DEPTH_COVERAGE = 0.5
+MIN_POSE_DEPTH_COVERAGE = 0.2
 DEPTH_MEDIAN_RANGE_M = (0.3, 15.0)
 
 
@@ -106,6 +107,57 @@ def check_depths(payload: Mapping[str, Any]) -> Validator:
                 isinstance(median, int | float) and math.isfinite(median) and low <= median <= high,
                 "median depth is plausible for a room",
             )
+
+    return validate
+
+
+def check_poses(payload: Mapping[str, Any]) -> Validator:
+    """A camera (a rotation and a position), intrinsics inside the image and a depth map
+    for every photo asked, in order."""
+    asked: Sequence[Mapping[str, Any]] = payload["frames"]
+
+    def validate(result: ProviderResult) -> None:
+        for frame in _frames(result, asked):
+            c2w = frame.get("c2w")
+            _require(
+                isinstance(c2w, list)
+                and len(c2w) == 4
+                and all(isinstance(r, list) and len(r) == 4 for r in c2w)
+                and all(isinstance(v, int | float) and math.isfinite(v) for r in c2w for v in r),
+                "c2w is a finite 4 by 4 matrix",
+            )
+            rows = [r[:3] for r in c2w[:3]]
+            for i in range(3):
+                for j in range(3):
+                    dot = sum(rows[k][i] * rows[k][j] for k in range(3))
+                    _require(abs(dot - (1.0 if i == j else 0.0)) < 1e-2, "c2w turns, not stretches")
+            k = frame.get("intrinsics")
+            width, height = frame.get("width"), frame.get("height")
+            _require(
+                isinstance(width, int) and isinstance(height, int) and width > 0 and height > 0,
+                "the photo's size",
+            )
+            _require(
+                isinstance(k, list)
+                and len(k) == 3
+                and all(isinstance(v, int | float) and math.isfinite(v) for r in k for v in r)
+                and k[0][0] > 0
+                and k[1][1] > 0
+                and 0 <= k[0][2] <= width
+                and 0 <= k[1][2] <= height,
+                "intrinsics with a focal length and a centre inside the photo",
+            )
+            _require(
+                DIGEST.match(str(frame.get("pose_depth"))) is not None, "depth is a blob digest"
+            )
+            _require(_unit(frame.get("coverage")), "depth coverage is a share")
+        # One dark or blank photo may have little depth; the set as a whole may not.
+        # The pose model's depth only sets the scale, so it may be sparser than metric depth.
+        coverages = sorted(float(f["coverage"]) for f in result.output["frames"])
+        _require(
+            coverages[len(coverages) // 2] >= MIN_POSE_DEPTH_COVERAGE,
+            f"depth covers at least {MIN_POSE_DEPTH_COVERAGE:.0%} of most photos",
+        )
 
     return validate
 

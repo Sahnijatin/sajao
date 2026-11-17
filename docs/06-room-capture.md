@@ -76,6 +76,7 @@ Photos or one video the person already has go up through the same package and th
 - A video is not uploaded. Up to 20 frames are taken from it on the phone, evenly through its length and never at its first or last moment, at most two a second; those are the keyframes.
 - The pictures are marked as from the gallery and their sharpness is left at 0 (not measured on the phone).
 - A room from imported pictures is at the estimated confidence level: nothing is claimed to fit until a measurement confirms it. Until the photos path is part of the pipeline, such a room's first stage ends with the reason `no_ar_data`, and the app says the pictures are uploaded and rooms from photos are not ready yet.
+- On the server, `twin/photo_frames.py` turns imported pictures into the same frames manifest a scan gives: the pose model (MapAnything, Apache 2.0 checkpoint, through the gateway) gives each picture a camera; metric depth (MoGe-3, the depth step) sets the scale; and the floor in each picture's own depth stands the room up, since pictures are mostly taken looking down. Pictures with almost no depth are left out. The twin steps then run as for any phone without LiDAR, and the room is `estimated`.
 
 ## Upload safety and privacy
 
