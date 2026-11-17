@@ -349,7 +349,7 @@
             "items": {
               "$ref": "#/components/schemas/CaptureKeyframe"
             },
-            "maxItems": 120,
+            "maxItems": 200,
             "minItems": 1,
             "title": "Keyframes",
             "type": "array"
@@ -367,6 +367,22 @@
             ],
             "description": "AR planes as JSON.",
             "title": "Planes"
+          },
+          "review_windows": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ReviewWindow"
+                },
+                "maxItems": 50,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Times when the review was open over the scan, in milliseconds from the start of the capture. The phone was lowered then: frames of the video inside a window are not part of the scan and are dropped on the server.",
+            "title": "Review Windows"
           },
           "scene_mesh": {
             "anyOf": [
@@ -402,6 +418,19 @@
             ],
             "description": "The scan video, when recorded.",
             "title": "Video"
+          },
+          "video_start_ms": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When the scan video's first frame was taken, in milliseconds from the start of the capture, so the video can be lined up with the keyframes and the sensor log.",
+            "title": "Video Start Ms"
           }
         },
         "required": [
@@ -736,6 +765,27 @@
           "size_bytes"
         ],
         "title": "ResumeUpload",
+        "type": "object"
+      },
+      "ReviewWindow": {
+        "additionalProperties": false,
+        "properties": {
+          "end_ms": {
+            "minimum": 0.0,
+            "title": "End Ms",
+            "type": "integer"
+          },
+          "start_ms": {
+            "minimum": 0.0,
+            "title": "Start Ms",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "start_ms",
+          "end_ms"
+        ],
+        "title": "ReviewWindow",
         "type": "object"
       },
       "RotationItem": {

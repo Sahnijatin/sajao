@@ -26,6 +26,8 @@ An AR scan records one package for the twin (schema: `Capture.package`). The pho
 - **LiDAR scene mesh** as binary PLY in the AR world frame with ARKit's surface class per face.
 - **Live detections** with world points, and a **sensor log** as JSON lines: AR poses (`source: "ar_pose"`, at most five a second) and motion sensor readings (`source: "imu"`, about ten a second: turn rates in degrees a second as `gyro_alpha`, `gyro_beta`, `gyro_gamma`, and acceleration in m/s² without gravity as `accel_x`, `accel_y`, `accel_z` and with gravity as `gravity_accel_*`, on the axes the platform reports). Each line carries `t`, milliseconds since the scan started.
 
+- **Review windows** (`review_windows`): the times, from the start of the capture, when the review was open over the scan and the phone was lowered. The phone records no keyframe then, and no video frame on iOS; ARCore's video cannot pause, so the server drops the frames inside each window, using `video_start_ms` to line the video up.
+
 The package works without AR (keyframes and video, no poses). Depth, planes and mesh are measurements from the phone's sensors; nothing in the package is set by a generative model, and tape still decides fit. Keyframes follow the same upload safety path as photos.
 
 ## Server pipeline

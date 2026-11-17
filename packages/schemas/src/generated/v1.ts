@@ -397,8 +397,12 @@ depth: boolean
 }
 video?: StorageKey
 /**
+ * When the scan video's first frame was taken, in milliseconds from the start of the capture, so the video can be lined up with the keyframes and the sensor log.
+ */
+video_start_ms?: number
+/**
  * @minItems 1
- * @maxItems 120
+ * @maxItems 200
  */
 keyframes: [CaptureKeyframe, ...(CaptureKeyframe)[]]
 planes?: StorageKey
@@ -411,6 +415,15 @@ depth?: StorageKey
  */
 detections: LiveDetection[]
 sensor_log: StorageKey
+/**
+ * Times when the review was open over the scan, in milliseconds from the start of the capture. The phone was lowered then: frames of the video inside a window are not part of the scan and are dropped on the server.
+ * 
+ * @maxItems 50
+ */
+review_windows?: {
+start_ms: number
+end_ms: number
+}[]
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
