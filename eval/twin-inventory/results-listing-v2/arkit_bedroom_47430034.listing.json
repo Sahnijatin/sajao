@@ -1,0 +1,479 @@
+{
+  "scene": "arkit_bedroom_47430034",
+  "detectors": "listing",
+  "inventory": {
+    "items": [
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "desk",
+        "prompts": ["study table", "work table", "study desk"],
+        "type": "furniture"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "chair",
+        "prompts": ["desk chair", "office chair", "dining chair"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "chest of drawers",
+        "prompts": ["dresser", "bureau"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "bunk bed",
+        "prompts": ["double decker bed", "bed", "wooden bed"],
+        "type": "furniture"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "wall shelf",
+        "prompts": ["floating shelf", "display shelf", "shelf"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "hammock chair",
+        "prompts": ["hanging chair", "swing chair"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "television",
+        "prompts": ["tv", "monitor"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "radiator",
+        "prompts": ["heater"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "desk lamp",
+        "prompts": ["table lamp", "reading light", "reading lamp"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "poster",
+        "prompts": ["print", "wall art", "art print"],
+        "type": "wall_item"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "corkboard",
+        "prompts": ["notice board", "bulletin board", "pin board"],
+        "type": "wall_item"
+      },
+      {
+        "count": 4,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "picture frame",
+        "prompts": ["photo frame", "wall picture", "framed picture"],
+        "type": "wall_item"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "mirror",
+        "prompts": ["looking glass", "wall mirror"],
+        "type": "wall_item"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "curtain",
+        "prompts": ["drape", "window covering"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "rug",
+        "prompts": ["carpet", "floor mat", "area rug"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "bedding",
+        "prompts": ["bedsheet", "blanket"],
+        "type": "textile"
+      },
+      {
+        "count": 3,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "plush toy",
+        "prompts": ["stuffed animal", "soft toy", "teddy bear"],
+        "type": "decor"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "desk organizer",
+        "prompts": ["pen holder", "stationery stand", "pencil cup"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "calendar",
+        "prompts": ["desk calendar"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "tablet",
+        "prompts": ["ipad", "electronic device"],
+        "type": "decor"
+      },
+      {
+        "count": 3,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "bag",
+        "prompts": ["handbag", "backpack", "shoulder bag"],
+        "type": "decor"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "box",
+        "prompts": ["storage box", "carton", "toy box"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "wardrobe",
+        "prompts": ["almirah", "fitted closet", "wooden cupboard"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "curtain rod",
+        "prompts": ["curtain pole"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "plant",
+        "prompts": ["potted plant"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "book",
+        "prompts": ["magazine"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "figurine",
+        "prompts": ["showpiece", "small statue"],
+        "type": "decor"
+      }
+    ],
+    "keyframes": ["kf0000", "kf0023", "kf0047", "kf0081", "kf0124", "kf0142", "kf0190", "kf0212"],
+    "listed_by": ["gemini-3-flash-preview", "claude-opus-5-5"]
+  },
+  "recall": {
+    "listed": {
+      "furniture": {
+        "items": "7 of 9",
+        "item_recall": 0.78,
+        "instance_recall": 0.67
+      },
+      "fixture": {
+        "items": "1 of 2",
+        "item_recall": 0.5,
+        "instance_recall": 0.5
+      },
+      "wall_item": {
+        "items": "2 of 2",
+        "item_recall": 1.0,
+        "instance_recall": 0.4
+      },
+      "textile": {
+        "items": "3 of 3",
+        "item_recall": 1.0,
+        "instance_recall": 0.75
+      },
+      "decor": {
+        "items": "2 of 3",
+        "item_recall": 0.67,
+        "instance_recall": 0.5
+      },
+      "built_in": {
+        "items": "1 of 1",
+        "item_recall": 1.0,
+        "instance_recall": 0.5
+      },
+      "all": {
+        "items": "16 of 20",
+        "item_recall": 0.8,
+        "instance_recall": 0.58
+      }
+    },
+    "placed": {
+      "furniture": {
+        "items": "0 of 9",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "fixture": {
+        "items": "0 of 2",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "wall_item": {
+        "items": "0 of 2",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "textile": {
+        "items": "0 of 3",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "decor": {
+        "items": "0 of 3",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "built_in": {
+        "items": "0 of 1",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "all": {
+        "items": "0 of 20",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      }
+    },
+    "per_item": [
+      {
+        "name": "bookshelf",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 2,
+        "placed": 0
+      },
+      {
+        "name": "desk",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "chair",
+        "type": "furniture",
+        "hand": 2,
+        "listed": 2,
+        "placed": 0
+      },
+      {
+        "name": "chest of drawers",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "cube shelf",
+        "type": "furniture",
+        "hand": 3,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "loft bed",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "vanity",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "wardrobe",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "television",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "light switch",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "hanging swing",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "pet cage",
+        "type": "decor",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "framed picture",
+        "type": "wall_item",
+        "hand": 3,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "poster",
+        "type": "wall_item",
+        "hand": 2,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "rug",
+        "type": "textile",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "curtain",
+        "type": "textile",
+        "hand": 2,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "bean bag",
+        "type": "textile",
+        "hand": 1,
+        "listed": 3,
+        "placed": 0
+      },
+      {
+        "name": "stuffed toy",
+        "type": "decor",
+        "hand": 2,
+        "listed": 3,
+        "placed": 0
+      },
+      {
+        "name": "potted plant",
+        "type": "decor",
+        "hand": 3,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "radiator",
+        "type": "built_in",
+        "hand": 2,
+        "listed": 1,
+        "placed": 0
+      }
+    ],
+    "hand_total": 31,
+    "listed_total": 38,
+    "placed_total": 0,
+    "missed_by_listing": ["cube shelf", "vanity", "light switch", "pet cage"],
+    "listed_not_placed": [
+      "bookshelf",
+      "desk",
+      "chair",
+      "chest of drawers",
+      "loft bed",
+      "wardrobe",
+      "television",
+      "hanging swing",
+      "framed picture",
+      "poster",
+      "rug",
+      "curtain",
+      "bean bag",
+      "stuffed toy",
+      "potted plant",
+      "radiator"
+    ],
+    "matches": {
+      "listed": {
+        "bookshelf": "wall shelf",
+        "desk": "desk",
+        "chair": "chair",
+        "chest of drawers": "chest of drawers",
+        "loft bed": "bunk bed",
+        "wardrobe": "wardrobe",
+        "television": "television",
+        "hanging swing": "hammock chair",
+        "framed picture": "poster",
+        "poster": "calendar",
+        "rug": "rug",
+        "curtain": "curtain",
+        "stuffed toy": "plush toy",
+        "potted plant": "plant",
+        "radiator": "radiator",
+        "bean bag": "bag"
+      },
+      "placed": {}
+    }
+  },
+  "listing_by_geometry": {
+    "annotated": 0,
+    "covered": 0,
+    "by_class": {}
+  },
+  "inventory_meta": {
+    "items": 27,
+    "keyframes": 8,
+    "listed_by": {
+      "list": "gemini-3-flash-preview",
+      "cross_check": "claude-opus-5-5"
+    },
+    "per_model": {
+      "gemini-3-flash-preview": 23,
+      "claude-opus-5-5": 25
+    },
+    "failed": []
+  },
+  "charged_micro_inr": 4804293
+}

@@ -1,0 +1,629 @@
+{
+  "scene": "arkit_living_41159541",
+  "detectors": "listing",
+  "inventory": {
+    "items": [
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "sofa",
+        "prompts": ["couch", "settee"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "armchair",
+        "prompts": ["easy chair", "single sofa", "upholstered chair"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "coffee table",
+        "prompts": ["center table", "side table", "black table"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "tv stand",
+        "prompts": ["media console", "television table", "white stool"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "dining table",
+        "prompts": ["eating table", "table"],
+        "type": "furniture"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "dining chair",
+        "prompts": ["side chair", "wooden chair"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "wooden chest",
+        "prompts": ["trunk", "storage box", "carton"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "television",
+        "prompts": ["tv", "flat screen"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "soundbar",
+        "prompts": ["speaker"],
+        "type": "fixture"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "pendant light",
+        "prompts": ["hanging lamp", "ceiling light", "ceiling lamp"],
+        "type": "fixture"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "media player",
+        "prompts": ["dvd player", "game console", "set-top box"],
+        "type": "fixture"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "switchboard",
+        "prompts": ["switch panel", "electrical outlet", "light switch"],
+        "type": "fixture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "wall art",
+        "prompts": ["painting", "poster", "framed print"],
+        "type": "wall_item"
+      },
+      {
+        "count": 3,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "photo frame",
+        "prompts": ["picture frame"],
+        "type": "wall_item"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "area rug",
+        "prompts": ["carpet", "floor mat", "rug"],
+        "type": "textile"
+      },
+      {
+        "count": 4,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "curtain",
+        "prompts": ["drape", "window blind"],
+        "type": "textile"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "cushion",
+        "prompts": ["pillow"],
+        "type": "textile"
+      },
+      {
+        "count": 3,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "throw blanket",
+        "prompts": ["shawl", "coverlet", "blanket"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "tablecloth",
+        "prompts": ["table cover"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "cover cloth",
+        "prompts": ["protective cover"],
+        "type": "textile"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "telescope",
+        "prompts": ["spyglass", "tripod telescope"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "chess set",
+        "prompts": ["board game", "chess board"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "stack of plates",
+        "prompts": ["crockery", "plate"],
+        "type": "decor"
+      },
+      {
+        "count": 4,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "dvd stack",
+        "prompts": ["disc collection", "stack of dvds", "movie case"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "headphone",
+        "prompts": ["headset"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "game controller",
+        "prompts": ["joystick", "gamepad"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "power adapter",
+        "prompts": ["charger", "power brick"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "built-in cabinet",
+        "prompts": ["fitted cupboard", "wall unit"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "skylight",
+        "prompts": ["roof window"],
+        "type": "built_in"
+      },
+      {
+        "count": 2,
+        "listed_by": ["gemini-3-flash-preview"],
+        "name": "ceiling beam",
+        "prompts": ["exposed beam", "rafter"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5", "gemini-3-flash-preview"],
+        "name": "railing",
+        "prompts": ["balustrade", "handrail", "staircase railing"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "cupboard door panel",
+        "prompts": ["wooden board", "panel"],
+        "type": "furniture"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "built-in cupboard",
+        "prompts": ["fitted cabinet", "eaves storage"],
+        "type": "built_in"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "book",
+        "prompts": ["book stack"],
+        "type": "decor"
+      },
+      {
+        "count": 2,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "remote control",
+        "prompts": ["remote"],
+        "type": "decor"
+      },
+      {
+        "count": 1,
+        "listed_by": ["claude-opus-5-5"],
+        "name": "red basket",
+        "prompts": ["storage crate"],
+        "type": "decor"
+      }
+    ],
+    "keyframes": ["kf0000", "kf0088", "kf0156", "kf0203", "kf0208", "kf0217", "kf0244", "kf0253"],
+    "listed_by": ["gemini-3-flash-preview", "claude-opus-5-5"]
+  },
+  "recall": {
+    "listed": {
+      "furniture": {
+        "items": "7 of 7",
+        "item_recall": 1.0,
+        "instance_recall": 0.62
+      },
+      "fixture": {
+        "items": "4 of 8",
+        "item_recall": 0.5,
+        "instance_recall": 0.6
+      },
+      "wall_item": {
+        "items": "1 of 1",
+        "item_recall": 1.0,
+        "instance_recall": 1.0
+      },
+      "textile": {
+        "items": "5 of 5",
+        "item_recall": 1.0,
+        "instance_recall": 0.92
+      },
+      "decor": {
+        "items": "4 of 4",
+        "item_recall": 1.0,
+        "instance_recall": 1.0
+      },
+      "built_in": {
+        "items": "1 of 2",
+        "item_recall": 0.5,
+        "instance_recall": 0.33
+      },
+      "all": {
+        "items": "22 of 27",
+        "item_recall": 0.81,
+        "instance_recall": 0.72
+      }
+    },
+    "placed": {
+      "furniture": {
+        "items": "0 of 7",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "fixture": {
+        "items": "0 of 8",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "wall_item": {
+        "items": "0 of 1",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "textile": {
+        "items": "0 of 5",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "decor": {
+        "items": "0 of 4",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "built_in": {
+        "items": "0 of 2",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      },
+      "all": {
+        "items": "0 of 27",
+        "item_recall": 0.0,
+        "instance_recall": 0.0
+      }
+    },
+    "per_item": [
+      {
+        "name": "sofa",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "armchair",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "dining table",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "dining chair",
+        "type": "furniture",
+        "hand": 7,
+        "listed": 2,
+        "placed": 0
+      },
+      {
+        "name": "side table",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "tv stand",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "wooden chest",
+        "type": "furniture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "television",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "soundbar",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "media player",
+        "type": "fixture",
+        "hand": 2,
+        "listed": 2,
+        "placed": 0
+      },
+      {
+        "name": "game console",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "pedestal fan",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "pendant lamp",
+        "type": "fixture",
+        "hand": 2,
+        "listed": 2,
+        "placed": 0
+      },
+      {
+        "name": "telescope",
+        "type": "decor",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "laptop",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "power strip",
+        "type": "fixture",
+        "hand": 1,
+        "listed": 0,
+        "placed": 0
+      },
+      {
+        "name": "wall art",
+        "type": "wall_item",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "rug",
+        "type": "textile",
+        "hand": 3,
+        "listed": 2,
+        "placed": 0
+      },
+      {
+        "name": "curtain",
+        "type": "textile",
+        "hand": 3,
+        "listed": 4,
+        "placed": 0
+      },
+      {
+        "name": "throw blanket",
+        "type": "textile",
+        "hand": 3,
+        "listed": 3,
+        "placed": 0
+      },
+      {
+        "name": "tablecloth",
+        "type": "textile",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "cushion",
+        "type": "textile",
+        "hand": 2,
+        "listed": 2,
+        "placed": 0
+      },
+      {
+        "name": "dvd stack",
+        "type": "decor",
+        "hand": 1,
+        "listed": 4,
+        "placed": 0
+      },
+      {
+        "name": "books",
+        "type": "decor",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "plates",
+        "type": "decor",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "built-in cupboards",
+        "type": "built_in",
+        "hand": 1,
+        "listed": 1,
+        "placed": 0
+      },
+      {
+        "name": "radiator",
+        "type": "built_in",
+        "hand": 2,
+        "listed": 0,
+        "placed": 0
+      }
+    ],
+    "hand_total": 43,
+    "listed_total": 54,
+    "placed_total": 0,
+    "missed_by_listing": ["game console", "pedestal fan", "laptop", "power strip", "radiator"],
+    "listed_not_placed": [
+      "sofa",
+      "armchair",
+      "dining table",
+      "dining chair",
+      "side table",
+      "tv stand",
+      "wooden chest",
+      "television",
+      "soundbar",
+      "media player",
+      "pendant lamp",
+      "telescope",
+      "wall art",
+      "rug",
+      "curtain",
+      "throw blanket",
+      "tablecloth",
+      "cushion",
+      "dvd stack",
+      "books",
+      "plates",
+      "built-in cupboards"
+    ],
+    "matches": {
+      "listed": {
+        "sofa": "sofa",
+        "armchair": "armchair",
+        "dining table": "dining table",
+        "dining chair": "dining chair",
+        "side table": "coffee table",
+        "tv stand": "tv stand",
+        "wooden chest": "wooden chest",
+        "television": "television",
+        "soundbar": "soundbar",
+        "media player": "media player",
+        "pendant lamp": "pendant light",
+        "telescope": "telescope",
+        "wall art": "wall art",
+        "rug": "area rug",
+        "curtain": "curtain",
+        "throw blanket": "throw blanket",
+        "tablecloth": "tablecloth",
+        "cushion": "cushion",
+        "dvd stack": "dvd stack",
+        "books": "book",
+        "plates": "stack of plates",
+        "built-in cupboards": "built-in cupboard"
+      },
+      "placed": {}
+    }
+  },
+  "listing_by_geometry": {
+    "annotated": 9,
+    "covered": 7,
+    "by_class": {
+      "cabinet": {
+        "annotated": 1,
+        "listed": 4,
+        "covered": 1
+      },
+      "chair": {
+        "annotated": 2,
+        "listed": 3,
+        "covered": 2
+      },
+      "sofa": {
+        "annotated": 2,
+        "listed": 1,
+        "covered": 1
+      },
+      "table": {
+        "annotated": 3,
+        "listed": 2,
+        "covered": 2
+      },
+      "tv_monitor": {
+        "annotated": 1,
+        "listed": 1,
+        "covered": 1
+      }
+    }
+  },
+  "inventory_meta": {
+    "items": 36,
+    "keyframes": 8,
+    "listed_by": {
+      "list": "gemini-3-flash-preview",
+      "cross_check": "claude-opus-5-5"
+    },
+    "per_model": {
+      "gemini-3-flash-preview": 32,
+      "claude-opus-5-5": 32
+    },
+    "failed": []
+  },
+  "charged_micro_inr": 5468913
+}

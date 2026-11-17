@@ -5,7 +5,7 @@ Inputs (blob digests): `capture` (Capture JSON), `frames` (frames manifest),
 and window masks), `splat` (room PLY), `phone` (phone step metadata) with
 `sog_500k` and `sog_250k`. Params: `twin_id`, `version`, `created_at`. CPU
 only: shell points from depth, doors and windows on the walls, surface
-textures, object crops, the twin.
+textures, object crops, hero views and the safe viewing region, the twin.
 """
 
 import io
@@ -18,6 +18,7 @@ from PIL import Image
 
 from sajao_workers.steps import ArtifactStore, NonRetryableStepError, Step, StepContext, StepOutput
 from sajao_workers.twin.assemble import AssemblyError, assemble_twin, storage_key
+from sajao_workers.twin.hero import FrameView, frame_view, pick_hero_views
 from sajao_workers.twin.objects import decode_depth_mm, decode_mask
 from sajao_workers.twin.shell import (
     TextureBuilder,
@@ -30,7 +31,7 @@ from sajao_workers.twin.shell import (
 from sajao_workers.twin.space import Space, fit_space
 
 # Bump when assembly, the shell fit or the crops change.
-VERSION = 3
+VERSION = 5
 CROP_MARGIN = 0.10  # of the mask's box, split between the two sides
 CROPS_PER_OBJECT = 4
 
@@ -124,6 +125,37 @@ def _shell_from_frames(
     return coverage
 
 
+SHARPNESS_WIDTH = 480  # keyframes are read at this width to measure sharpness
+
+
+def _hero_views(
+    store: ArtifactStore, manifest: Mapping[str, Any]
+) -> tuple[list[dict[str, float | str]], list[str]]:
+    """Hero views, and the keyframes the safe region is built around (all of them).
+
+    Nothing here depends on the room splat, so a twin without one still names
+    its hero photos."""
+    views: list[FrameView] = []
+    for frame in manifest["frames"]:
+        if not frame.get("depth"):
+            continue
+        grey = np.asarray(
+            Image.fromarray(_rgb(store.read_blob(frame["image"]), SHARPNESS_WIDTH)).convert("L")
+        )
+        views.append(
+            frame_view(
+                frame["keyframe_id"],
+                decode_depth_mm(store.read_blob(frame["depth"])),
+                grey,
+                frame["intrinsics"],
+                frame["width"],
+                frame["c2w"],
+                manifest["up_axis"],
+            )
+        )
+    return pick_hero_views(views), [f["keyframe_id"] for f in manifest["frames"]]
+
+
 def _crop(image: bytes, mask: np.ndarray) -> bytes:
     rgb = Image.open(io.BytesIO(image)).convert("RGB")
     ys, xs = np.nonzero(mask)
@@ -162,6 +194,10 @@ def _crops(
     return crops
 
 
+def _optional(context: StepContext, name: str, default: Any) -> Any:
+    return json.loads(context.read(name)) if name in context.inputs else default
+
+
 def assemble_step(points_for_shell: PointsForShell = shell_points) -> Step:
     async def run(context: StepContext) -> StepOutput:
         capture = json.loads(context.read("capture"))
@@ -175,6 +211,7 @@ def assemble_step(points_for_shell: PointsForShell = shell_points) -> Step:
         openings = json.loads(context.read("openings")) if "openings" in context.inputs else []
         coverage = _shell_from_frames(context.store, manifest, objects, openings, space)
         crops = _crops(context.store, manifest, objects)
+        hero_views, anchor_ids = _hero_views(context.store, manifest)
         phone_splats = [
             {
                 "budget": int(tag.rstrip("k")) * 1000,
@@ -196,6 +233,10 @@ def assemble_step(points_for_shell: PointsForShell = shell_points) -> Step:
                 crops=crops,
                 splat=context.inputs.get("splat"),
                 phone_splats=phone_splats,
+                hero_views=hero_views,
+                anchor_ids=anchor_ids,
+                built_ins=_optional(context, "built_ins", []),
+                inventory=_optional(context, "inventory", None),
             )
         except AssemblyError as error:
             raise NonRetryableStepError(str(error)) from error
@@ -209,7 +250,10 @@ def assemble_step(points_for_shell: PointsForShell = shell_points) -> Step:
                 "ceiling_m": twin["shell"]["ceiling_height"]["value_m"],
                 "north_deg": twin["direction"]["north_deg"],
                 "openings": [o["kind"] for o in twin["shell"]["openings"]],
+                "built_ins": len(twin["shell"].get("built_ins", [])),
+                "unplaced": len(twin.get("inventory", {}).get("unplaced", [])),
                 "texture_coverage": coverage,
+                "hero_views": [v["keyframe_id"] for v in hero_views],
             },
         )
 
