@@ -847,6 +847,38 @@
         "title": "MustHave",
         "type": "string"
       },
+      "Opened": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "price": {
+            "$ref": "#/components/schemas/Price"
+          },
+          "retailer": {
+            "title": "Retailer",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "retailer",
+          "kind",
+          "price"
+        ],
+        "title": "Opened",
+        "type": "object"
+      },
       "Part": {
         "properties": {
           "etag": {
@@ -891,6 +923,25 @@
           "url"
         ],
         "title": "PartUrl",
+        "type": "object"
+      },
+      "Price": {
+        "properties": {
+          "amount_minor": {
+            "title": "Amount Minor",
+            "type": "integer"
+          },
+          "currency": {
+            "const": "INR",
+            "title": "Currency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "currency",
+          "amount_minor"
+        ],
+        "title": "Price",
         "type": "object"
       },
       "RegisterCapture": {
@@ -1096,6 +1147,54 @@
         "title": "StageStatus",
         "type": "object"
       },
+      "Tap": {
+        "additionalProperties": false,
+        "properties": {
+          "design_id": {
+            "format": "uuid",
+            "title": "Design Id",
+            "type": "string"
+          },
+          "design_request_id": {
+            "format": "uuid",
+            "title": "Design Request Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "default": "buy",
+            "enum": [
+              "buy",
+              "rent"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "position": {
+            "minimum": 0.0,
+            "title": "Position",
+            "type": "integer"
+          },
+          "product_id": {
+            "format": "uuid",
+            "title": "Product Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "design_request_id",
+          "design_id",
+          "product_id",
+          "position"
+        ],
+        "title": "Tap",
+        "type": "object"
+      },
       "UploadPlan": {
         "properties": {
           "key": {
@@ -1280,6 +1379,48 @@
         "summary": "Get Capture",
         "tags": [
           "captures"
+        ]
+      }
+    },
+    "/v1/clicks": {
+      "post": {
+        "description": "Log a buy or rent tap and return the retailer link for it. Safe to repeat.",
+        "operationId": "openProduct",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Tap"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Opened"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Open Product",
+        "tags": [
+          "clicks"
         ]
       }
     },

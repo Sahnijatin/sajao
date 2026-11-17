@@ -44,6 +44,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/clicks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open Product
+         * @description Log a buy or rent tap and return the retailer link for it. Safe to repeat.
+         */
+        post: operations["openProduct"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/health": {
         parameters: {
             query?: never;
@@ -611,6 +631,18 @@ export interface components {
         };
         /** MustHave */
         MustHave: string;
+        /** Opened */
+        Opened: {
+            /** Id */
+            id: string;
+            /** Kind */
+            kind: string;
+            price: components["schemas"]["Price"];
+            /** Retailer */
+            retailer: string;
+            /** Url */
+            url: string;
+        };
         /** Part */
         Part: {
             /** Etag */
@@ -626,6 +658,16 @@ export interface components {
             part_number: number;
             /** Url */
             url: string;
+        };
+        /** Price */
+        Price: {
+            /** Amount Minor */
+            amount_minor: number;
+            /**
+             * Currency
+             * @constant
+             */
+            currency: "INR";
         };
         /** RegisterCapture */
         RegisterCapture: {
@@ -693,6 +735,37 @@ export interface components {
             stage: string;
             /** Status */
             status: string;
+        };
+        /** Tap */
+        Tap: {
+            /**
+             * Design Id
+             * Format: uuid
+             */
+            design_id: string;
+            /**
+             * Design Request Id
+             * Format: uuid
+             */
+            design_request_id: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Kind
+             * @default buy
+             * @enum {string}
+             */
+            kind: "buy" | "rent";
+            /** Position */
+            position: number;
+            /**
+             * Product Id
+             * Format: uuid
+             */
+            product_id: string;
         };
         /** UploadPlan */
         UploadPlan: {
@@ -788,6 +861,39 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    openProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Tap"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Opened"];
                 };
             };
             /** @description Validation Error */
