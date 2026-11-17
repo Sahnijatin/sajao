@@ -20,6 +20,14 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[4]
 ARMS = ["A", "C1_qwen", "C2_qwen", "C3_qwen", "B_qwen", "B_gemini"]
 STUDY = "s1"
+# The ARKit bedroom is left out: its capture has no frame that shows the design zone
+# (close-ups only), so every arm would render it equally badly.
+VOTE_ROOMS = [
+    "arkit_living_41159566",
+    "frl_apartment_0",
+    "arkit_living_41159541",
+    "arkit_living_47331265",
+]
 
 
 def fetch(room: str, design: str, arm: str, dst: Path) -> bool:
@@ -44,7 +52,7 @@ def main(out: Path, arms: list[str]) -> None:
 
     rooms = {}
     for f in sorted((REPO / "eval" / "render-bakeoff" / "designs").glob("*.json")):
-        if not f.name.endswith(".designs.json"):
+        if not f.name.endswith(".designs.json") and f.stem in VOTE_ROOMS:
             rooms[f.stem] = json.loads(f.read_text())
     (out / "img").mkdir(parents=True, exist_ok=True)
     salt = secrets.token_hex(8)

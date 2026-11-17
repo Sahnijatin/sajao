@@ -12,7 +12,7 @@ import io
 import json
 import os
 
-MODEL = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-3-pro-image-preview")
+MODEL = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-3-pro-image")
 USD_INR = 95.0  # the Spends ledger rate
 # Upper bound per edit (one high-resolution output image plus inputs), in micro-rupees.
 EST_MICRO_INR = int(0.25 * USD_INR * 1_000_000)

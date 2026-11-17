@@ -602,6 +602,48 @@ def check(room: str, design_id: str, arms: list[str], planted: str = "") -> dict
     return r
 
 
+@app.function(image=gen_image, volumes=VOLS, timeout=300, secrets=[gcp_secret])
+def gemini_probe(models: list[str]) -> list[str]:
+    """One tiny edit per model through the provider, errors redacted (no keys, no ids)."""
+    import asyncio
+    import io
+    import re
+
+    from bk import gemini as g
+    from PIL import Image
+
+    from sajao_gateway.types import ModelRequest
+
+    b = io.BytesIO()
+    Image.new("RGB", (512, 512), (200, 180, 160)).save(b, format="PNG")
+    req = ModelRequest(
+        task="probe",
+        modality="image",
+        prompt_id="probe@1",
+        payload={"prompt": "Add a small blue vase in the centre.", "seed": 1},
+        blobs=(b.getvalue(),),
+    )
+    out = []
+    if models == ["list"]:
+        cl = g.GeminiImageProvider()._client
+        names = []
+        for mm in cl.models.list(config={"query_base": True, "page_size": 200}):
+            n = getattr(mm, "name", "")
+            if "image" in n or "imagen" in n or "gemini-3" in n:
+                names.append(n.split("/")[-1])
+        return sorted(set(names))
+    for m in models:
+        p = g.GeminiImageProvider()
+        p.model = m
+        try:
+            r = asyncio.run(p.call(req))
+            out.append(f"{m}: ok {r.output}")
+        except Exception as e:
+            msg = re.sub(r"[A-Za-z0-9_\-]{28,}", "<redacted>", repr(e))[:700]
+            out.append(f"{m}: {type(e).__name__}: {msg}")
+    return out
+
+
 def _chunks(xs, n):
     k = max(1, (len(xs) + n - 1) // n)
     return [xs[i : i + k] for i in range(0, len(xs), k)]
