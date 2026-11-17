@@ -95,3 +95,19 @@ def test_cost_levers_never_cost_more() -> None:
     saved = c.per_room_plain() - c.per_room_with_levers()
     assert abs(saved - (2 * c.clear + 2 * c.light * c.hero_views)) < 1e-9
     assert inr(1.0) == 95.0
+
+
+def test_lock_brightness_only_keeps_hue() -> None:
+    rng = np.random.default_rng(1)
+    comp = (rng.uniform(60, 200, (64, 64, 3))).astype(np.uint8)
+    passed = comp.astype(np.float64)
+    passed[..., 0] *= 1.5  # the pass tints everything red
+    passed = np.clip(passed, 0, 255).astype(np.uint8)
+    m = np.zeros((64, 64), bool)
+    m[16:48, 16:48] = True
+    tinted = lock(comp, passed, m, sigma=4)
+    kept = lock(comp, passed, m, sigma=4, brightness_only=m)
+    c = comp[m].astype(float)
+    hue_shift = lambda o: abs(np.mean(o[m][:, 0] / o[m].sum(1)) - np.mean(c[:, 0] / c.sum(1)))  # noqa: E731
+    assert hue_shift(tinted) > 0.03
+    assert hue_shift(kept) < 0.005

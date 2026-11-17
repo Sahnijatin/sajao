@@ -2,6 +2,8 @@
 
 Inside product masks:   final = composite * blur(pass) / blur(composite)
 Outside product masks:  final = pass
+With `brightness_only`, pixels in that mask take one luminance ratio for all three
+channels, so the pass can brighten or darken a product but never shift its hue.
 The ratio is blurred so it carries smooth shading and colour cast only; edges,
 texture and proportions inside the masks come from the composite by construction.
 """
@@ -34,6 +36,7 @@ def lock(
     sigma: float = 8.0,
     ratio_range: tuple[float, float] = (0.5, 2.0),
     feather: float = 1.5,
+    brightness_only: np.ndarray | None = None,
 ) -> np.ndarray:
     """Return the locked image (uint8). `composite` and `passed` are uint8 RGB of the
     same size; `product_mask` is bool (union of all product masks)."""
@@ -43,6 +46,14 @@ def lock(
     eps = 1e-3
     ratio = (masked_blur(p, m, sigma) + eps) / (masked_blur(c, m, sigma) + eps)
     ratio = np.clip(ratio, *ratio_range)
+    if brightness_only is not None:
+        lum = np.array([0.2126, 0.7152, 0.0722])
+        b = brightness_only.astype(bool) & m
+        ratio_y = (masked_blur((p @ lum)[..., None], b, sigma) + eps) / (
+            masked_blur((c @ lum)[..., None], b, sigma) + eps
+        )
+        ratio_y = np.clip(ratio_y, *ratio_range)
+        ratio = np.where(b[..., None], np.repeat(ratio_y, 3, -1), ratio)
     inside = np.clip(c * ratio, 0, 1)
     w = (
         _blur(m.astype(np.float64), feather)[..., None]

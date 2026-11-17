@@ -145,6 +145,11 @@ def product_gate(room: str, design_id: str, arms: list[str]) -> dict:
             if vis.mean() < 0.002:
                 rows.append({**row, "status": "not in view"})
                 continue
+            if it["tier"] == "rug":
+                # A flat studio rug photo does not resemble a rug seen at a grazing angle;
+                # a rectified top-view check is a separate task. Reported, never scored.
+                rows.append({**row, "status": "unknown", "reason": "rug: no valid check yet"})
+                continue
             if kind in ("A", "C3base"):
                 m, sil = vis, 1.0  # the code-made layouts themselves
             else:

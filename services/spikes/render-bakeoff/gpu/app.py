@@ -703,7 +703,7 @@ def product_gate(room: str, design_id: str, arms: list[str]) -> dict:
     gpu=SMALL_GPU,
     volumes=VOLS,
     timeout=3600,
-    max_containers=1,
+    max_containers=2,
     secrets=[hf_secret],
 )
 def gate_v3(model: str, lids: list[str]) -> list[dict]:
@@ -749,7 +749,11 @@ def drawing_index() -> dict:
         if not vf.exists():
             continue
         v = json.loads(vf.read_text())
-        out[d.name] = [i for i in v.get("clean", []) if is_drawing(load_rgba(d.name, i))]
+        out[d.name] = {
+            "clean": v.get("clean", []),
+            "input": v.get("input"),
+            "drawings": [i for i in v.get("clean", []) if is_drawing(load_rgba(d.name, i))],
+        }
     return out
 
 
@@ -776,7 +780,7 @@ def _room_files() -> dict:
 
 
 PLANTED = ["swap", "scale10", "move15", "plant"]
-ARMS_OPEN = ["C1", "C2", "C3", "B"]
+ARMS_OPEN = ["C1", "C2", "C3", "C3L", "B"]
 
 
 @app.local_entrypoint()

@@ -285,6 +285,8 @@ def verifiability_by_retailer() -> dict:
         if "id" in r
     }
     after = dict(first)
+    dv = R / "drawing_views.json"
+    drawings = json.loads(dv.read_text()) if dv.exists() else {}
     if (R / "recut.json").exists():
         for r in json.loads((R / "recut.json").read_text()):
             if "clean" in r:
@@ -299,11 +301,18 @@ def verifiability_by_retailer() -> dict:
         src["verifiable_studio_only"] += first[lid] >= 2
         src["verifiable_with_room_shots"] += after.get(lid, 0) >= 2
         src["no_clean_photo"] += after.get(lid, 0) == 0
+        # Dimension drawings and detail crops are not photos: count only real ones.
+        if lid in drawings:
+            d = drawings[lid]
+            real = [i for i in d["clean"] if i not in d["drawings"]]
+            src["verifiable_drawings_excluded"] += len(real) >= 2
+            src["drawing_views"] += len(d["drawings"])
     return {
         k: {
             **v,
             "share_studio_only": v["verifiable_studio_only"] / v["listings"],
             "share_with_room_shots": v["verifiable_with_room_shots"] / v["listings"],
+            "share_drawings_excluded": v["verifiable_drawings_excluded"] / v["listings"],
         }
         for k, v in out.items()
     }

@@ -86,8 +86,8 @@ def generate_arms(room: str, design_id: str, model: str, arms: list[str]) -> dic
         _write(base / f"C3pass_{model}", p3, {"arm": "C3pass", "model": model, "model_seconds": dt})
         _write(
             base / f"C3_{model}",
-            lock(c3b, p3, union),
-            {"arm": "C3", "model": model, "model_seconds": dt},
+            lock(c3b, p3, union, brightness_only=union),
+            {"arm": "C3", "model": model, "model_seconds": dt, "product_light": "brightness only"},
         )
     if "C3L" in arms:
         # Light only: the C3 pass contributes smooth shading everywhere, never structure,
@@ -95,10 +95,25 @@ def generate_arms(room: str, design_id: str, model: str, arms: list[str]) -> dic
         c3b = _read(base / "C3base" / "image.png")
         p3 = _read(base / f"C3pass_{model}" / "image.png")
         whole = np.ones(c3b.shape[:2], bool)
+        m3l = _masks(base / "C3base")
+        prod = m3l["vis"].any(0) if len(m3l["vis"]) else np.zeros(c3b.shape[:2], bool)
         _write(
             base / f"C3L_{model}",
-            lock(c3b, p3, whole, sigma=12.0, ratio_range=(0.6, 1.6), feather=0.0),
-            {"arm": "C3L", "model": model, "model_seconds": 0.0},
+            lock(
+                c3b,
+                p3,
+                whole,
+                sigma=12.0,
+                ratio_range=(0.6, 1.6),
+                feather=0.0,
+                brightness_only=prod,
+            ),
+            {
+                "arm": "C3L",
+                "model": model,
+                "model_seconds": 0.0,
+                "product_light": "brightness only",
+            },
         )
     if "B" in arms:
         d = load_render_design(room, design_id)
