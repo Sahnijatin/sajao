@@ -183,10 +183,13 @@ describe("the calm scan screen", () => {
     mockScan.share = 0.6;
     await view.rerender(ui());
     expect(screen.getByText("Get the corners")).toBeTruthy();
+    expect(screen.queryByTestId("scan-done-ready")).toBeNull();
     mockScan.share = 0.8;
     mockScan.ready = true;
     await view.rerender(ui());
-    expect(screen.getByText("Looking good. Keep going, or tap Done")).toBeTruthy();
+    // The moment there is enough: one plain line, and Done arrives in the ring.
+    expect(screen.getByText("You have enough. Tap Done")).toBeTruthy();
+    expect(screen.getByTestId("scan-done-ready")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Done" })).toBeTruthy();
   });
 
@@ -198,11 +201,18 @@ describe("the calm scan screen", () => {
   });
 
   it("shows a nudge from the scan in place of the steady instruction", async () => {
-    mockScan.hint = { id: "walkAround", kind: "sofa" };
+    mockScan.hint = { id: "slowDown" };
     await render(ui());
-    expect(screen.getByText("Walk around the sofa")).toBeTruthy();
+    expect(screen.getByText("A little slower")).toBeTruthy();
     expect(screen.queryByText("Move slowly around the room")).toBeNull();
     expect(screen.queryByRole("button", { name: "Keep going" })).toBeNull();
+  });
+
+  it("never asks you to walk around an object", async () => {
+    mockScan.hint = { id: "walkAround", kind: "fridge" };
+    await render(ui());
+    expect(screen.getByText("Move slowly around the room")).toBeTruthy();
+    expect(screen.queryByText(/fridge/i)).toBeNull();
   });
 
   it("when it is too dark: says so, offers the torch and a way to keep going", async () => {
@@ -391,7 +401,7 @@ describe("review before upload", () => {
         jest.advanceTimersByTime(RESCAN_NUDGE_MS + 1);
       });
       expect(screen.queryByText("Show the walls you missed")).toBeNull();
-      expect(screen.getByText("Looking good. Keep going, or tap Done")).toBeTruthy();
+      expect(screen.getByText("You have enough. Tap Done")).toBeTruthy();
     } finally {
       jest.useRealTimers();
     }

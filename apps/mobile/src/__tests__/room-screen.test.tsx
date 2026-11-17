@@ -263,6 +263,19 @@ describe("Shopping list tab", () => {
     open.mockRestore();
   });
 
+  it("carries the same sample label on every tab, above the content", async () => {
+    await show();
+    for (const [tab, text] of [
+      [null, /^These are sample views and measurements\./],
+      ["Designs", /^These are sample looks\./],
+      ["Shopping list", /^These are sample products\./],
+    ] as const) {
+      if (tab) await openTab(tab);
+      expect(screen.getAllByTestId("sample-note")).toHaveLength(1);
+      expect(within(screen.getByTestId("sample-note")).getByText(text)).toBeTruthy();
+    }
+  });
+
   it("does not open example links for sample products, and says they are samples", async () => {
     const open = jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
     await show();

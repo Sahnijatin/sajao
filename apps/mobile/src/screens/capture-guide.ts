@@ -3,17 +3,15 @@
 // changes how coverage is counted.
 import type { Hint } from "@/capture/ar/guidance";
 import type { GuardrailId } from "@/capture/guardrails";
-import type { LabelKind } from "@/capture/ar/labels";
 
 export type InstructionId =
   | "move"
   | "corners"
   | "slowDown"
   | "stepBack"
-  | "walkAround"
   | "walk"
   | "doorway"
-  | "almost"
+  | "enough"
   | "complete"
   | "walkWalls"
   | "keepGoing"
@@ -26,8 +24,6 @@ export type InstructionId =
 
 export interface Instruction {
   id: InstructionId;
-  /** The object to walk around, for "walkAround". */
-  kind?: LabelKind;
   /**
    * guide: the steady instruction. nudge: shown only while something needs
    * fixing. fix: the scan is paused until it is fixed or you choose to go on.
@@ -44,13 +40,22 @@ const FIXES: Record<Exclude<GuardrailId, "level">, InstructionId> = {
   glare: "glare",
 };
 
-const HINTS: Record<NonNullable<Hint>["id"], { id: InstructionId; tone: Instruction["tone"] }> = {
+/**
+ * Hints the scan session still raises that the screen no longer shows:
+ * "walk around the fridge" and its like named an object the person never
+ * asked about. The steady guide carries on in their place.
+ */
+const RETIRED: ReadonlySet<NonNullable<Hint>["id"]> = new Set(["walkAround"]);
+
+const HINTS: Record<
+  Exclude<NonNullable<Hint>["id"], "walkAround">,
+  { id: InstructionId; tone: Instruction["tone"] }
+> = {
   doorway: { id: "doorway", tone: "nudge" },
   slowDown: { id: "slowDown", tone: "nudge" },
   stepBack: { id: "stepBack", tone: "nudge" },
-  walkAround: { id: "walkAround", tone: "nudge" },
   walk: { id: "walk", tone: "nudge" },
-  coverMore: { id: "almost", tone: "guide" },
+  coverMore: { id: "enough", tone: "guide" },
   complete: { id: "complete", tone: "guide" },
   // The coverage meter's next step: these are the scan's steady instructions.
   walkWalls: { id: "walkWalls", tone: "guide" },
@@ -63,8 +68,9 @@ const HINTS: Record<NonNullable<Hint>["id"], { id: InstructionId; tone: Instruct
 };
 
 /**
- * The one instruction to show: a pause to fix first, then the session's own
- * hint, then the steady guide for how far the scan has come.
+ * The one instruction to show: a pause to fix first; once there is enough,
+ * that and nothing else; before then the session's own hint, then the steady
+ * guide for how far the scan has come.
  */
 export function scanInstruction(input: {
   /** Why the scan is paused, if it is. A tilted phone never pauses the scan. */
@@ -78,11 +84,13 @@ export function scanInstruction(input: {
   if (input.pausedFor && input.pausedFor !== "level") {
     return { id: FIXES[input.pausedFor], tone: "fix" };
   }
-  if (input.hint) {
-    const mapped = HINTS[input.hint.id];
-    return input.hint.id === "walkAround" ? { ...mapped, kind: input.hint.kind } : mapped;
+  const hint = input.hint && !RETIRED.has(input.hint.id) ? input.hint : null;
+  if (input.ready) {
+    // Done is on: say so plainly and stop asking for more.
+    const all = hint?.id === "complete" || hint?.id === "meterDone";
+    return { id: all ? "complete" : "enough", tone: "guide" };
   }
-  if (input.ready) return { id: "almost", tone: "guide" };
+  if (hint) return HINTS[hint.id as keyof typeof HINTS];
   return { id: input.share >= CORNERS_FROM_SHARE ? "corners" : "move", tone: "guide" };
 }
 
