@@ -29,6 +29,13 @@ RULES: list[tuple[str, re.Pattern[str]]] = [
 # third-party projects whose name contains a flagged word and must be credited by name.
 PATHS = re.compile(r"\.claude/[\w./-]*|\bCLAUDE\.md\b|\bbradautomates/claude-video\b")
 
+# Words allowed in one file only. The third-party register lists every model and SDK the
+# product uses, for legal review; the product calls a Claude model through the Anthropic
+# SDK, so the register must name them. Coding tools stay banned there as everywhere.
+ALLOWED_WORDS: dict[str, re.Pattern[str]] = {
+    "docs/24-third-party-register.md": re.compile(r"\b(claude|anthropic)\b", re.IGNORECASE),
+}
+
 
 def main() -> int:
     findings = 0
@@ -37,6 +44,9 @@ def main() -> int:
             continue
         for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
             scrubbed = PATHS.sub("", line)
+            allowed = ALLOWED_WORDS.get(path.relative_to(ROOT).as_posix())
+            if allowed is not None:
+                scrubbed = allowed.sub("", scrubbed)
             for rule, pattern in RULES:
                 if pattern.search(scrubbed):
                     findings += 1

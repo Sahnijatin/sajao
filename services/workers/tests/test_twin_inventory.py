@@ -309,3 +309,39 @@ def test_pieces_of_one_chair_pool_their_views_and_seven_chairs_stay_seven() -> N
     chairs = [o for o in kept if o["category"] in ("dining chair", "armchair")]
     assert len(chairs) == 7
     assert all(o["category"] == "dining chair" for o in chairs)
+
+
+def stacked(
+    category: str, x: float, z0: float, z1: float, length: float, frames: int
+) -> dict[str, Any]:
+    o = obj(category, x, size=length, frames=frames)
+    o["box"]["center"][2] = (z0 + z1) / 2
+    o["box"]["height"] = {"value_m": z1 - z0, "source": "estimated", "error_band_m": 0.05}
+    return o
+
+
+def test_a_tv_on_its_stand_stays_two_things() -> None:
+    from sajao_workers.twin.inventory import dedupe
+
+    items = merge_inventories({"m": [item("tv", "fixture"), item("tv stand", "furniture")]})
+    tv = stacked("tv", 0.0, 0.15, 1.19, 1.1, frames=7)  # noisy depth: its box dips into the stand
+    stand = stacked("tv stand", 0.05, 0.0, 0.43, 1.0, frames=12)
+    # The best TV and the best stand are elsewhere, so neither box here is protected.
+    stand2 = stacked("tv stand", 3.0, 0.0, 0.43, 1.0, frames=20)
+    tv2 = stacked("tv", 6.0, 0.42, 1.19, 1.1, frames=20)
+
+    kept, _ = dedupe([tv, stand, stand2, tv2], items)
+
+    assert sorted(o["category"] for o in kept) == ["tv", "tv", "tv stand", "tv stand"]
+
+
+def test_a_tall_thing_is_not_merged_into_a_lower_neighbour() -> None:
+    from sajao_workers.twin.inventory import dedupe
+
+    items = merge_inventories({"m": [item("cabinet", "furniture", 2)]})
+    low = stacked("cabinet", 0.0, 0.0, 1.3, 1.3, frames=16)
+    tall = stacked("cabinet", 0.2, 0.0, 2.0, 0.5, frames=6)
+
+    kept, _ = dedupe([low, tall], items)
+
+    assert sorted(round(o["box"]["height"]["value_m"], 1) for o in kept) == [1.3, 2.0]

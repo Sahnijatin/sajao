@@ -264,6 +264,12 @@ def _support(obj: Mapping[str, Any]) -> float:
     return float(obj["frames"]) * float(obj["confidence"])
 
 
+# A thing this tall (a wardrobe, a tall cabinet, a floor lamp) is only merged with a box of
+# similar height: it is not one of the lower things beside it.
+TALL_M = 1.5
+SIMILAR_HEIGHT = 0.75
+
+
 def _kind(name: str) -> str:
     """What kind of thing a name is: its head noun, grouped as fusion groups names
     (armchair and dining chair are both chairs; photo frame and painting are not)."""
@@ -296,8 +302,11 @@ def dedupe(
        heights (the back and the seat of one chair). The best-seen box (frames
        times confidence) stays, the group pools its views, and it takes the name
        most of its views gave.
-    2. The best box of each listed item is never merged into a different kind of
-       thing, so every listed item keeps one object.
+    2. Boxes are never one thing when they are different kinds one above the other
+       (a TV on its stand: centres further apart in height than half the shorter
+       box), or when one is at least `TALL_M` tall and the other is under
+       `SIMILAR_HEIGHT` of its height. The best box of each listed item is never
+       merged into a different kind of thing, so every listed item keeps one object.
     3. A group seen far less than the best of its name (pooled support below
        `min_relative_support` of it) and in fewer than `min_frames` frames is
        dropped: a common name (book, box) gets put on many things briefly.
@@ -319,8 +328,21 @@ def dedupe(
         (lo_i, hi_i), (lo_k, hi_k) = boxes[i].vertical_range(), boxes[k].vertical_range()
         return bool(min(hi_i, hi_k) > max(lo_i, lo_k))
 
+    def apart(i: int, k: int) -> bool:
+        """Two things however their boxes overlap: different kinds one above the other
+        (a TV on its stand), or a tall thing next to a much lower one."""
+        hi, hk = boxes[i].height, boxes[k].height
+        up = boxes[i].up_axis
+        if kinds[i] != kinds[k] and abs(boxes[i].center[up] - boxes[k].center[up]) > 0.5 * min(
+            hi, hk
+        ):
+            return True
+        return bool(max(hi, hk) >= TALL_M and min(hi, hk) < SIMILAR_HEIGHT * max(hi, hk))
+
     def same_thing(i: int, k: int) -> bool:
         if i in protected and kinds[i] != kinds[k]:
+            return False
+        if apart(i, k):
             return False
         overlap_iou, contained = box_overlap(boxes[i], boxes[k])
         small, large = sorted((boxes[i].volume(), boxes[k].volume()))

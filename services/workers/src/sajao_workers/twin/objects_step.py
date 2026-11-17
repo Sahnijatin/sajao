@@ -40,7 +40,7 @@ from sajao_workers.twin.objects import (
 from sajao_workers.validate import check_detections, check_masks
 
 # Bump when this step's logic, prompts or pinned model chains change.
-VERSION = 10
+VERSION = 11
 # The retry for listed items not placed: other names and a lower score threshold.
 RETRY_MIN_SCORE = 0.1
 # Listed items of these types may be small (a clock, a switchboard, an idol).
