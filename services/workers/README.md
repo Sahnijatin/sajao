@@ -42,10 +42,16 @@ modal billing report --for today -r h --json   # billed spend per app, reported 
 ```bash
 uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/workers/gpu/app.py::objects_smoke
 ```
-- **Splat** (`sajao_workers.twin.splat_step`): train the room splat with per-camera pose and exposure refinement (gsplat 1.5.3, `gpu/splat_gpu.py`, ported from the spike), seeded from depth points, with every eighth keyframe held out. Each Gaussian joins an object by mask votes at the refined poses. The GPU writes the splat, labels and refined cameras straight to the store; the step records them by digest. A splat under 20 dB on held-out views fails validation.
+- **Splat** (`sajao_workers.twin.splat_step`): train the room splat with per-camera pose and exposure refinement (gsplat 1.5.3, `gpu/splat_gpu.py`, ported from the spike), seeded from depth points, with every tenth keyframe held out. Each Gaussian joins an object by mask votes at the refined poses. The GPU writes the splat, labels and refined cameras straight to the store; the step records them by digest. Held-out views are scored against their photos with PSNR, SSIM and LPIPS (AlexNet), near the capture path (a training camera within 30 cm) and far from it. A splat under 20 dB on the near-path views fails validation. Golden rooms pass `holdout: split`, which also keeps one run of consecutive keyframes out of training so some held-out views are far from every training camera (`splat_inputs.held_out_split`). Four steps keep the splat clean away from the training cameras, each a switch in the payload's `quality` so a benchmark can measure it: `depth` pulls the rendered depth to the sensor's (LiDAR, or the depth step's estimate at a lower weight); `regularise` penalises opacity, scale and needle-shaped Gaussians; `prune` removes Gaussians fewer than two training cameras had in view; `cull` removes floaters within 50 cm of a camera position that at least two cameras measured depth straight through (`twin/splat_clean.py`). Pruning and culling run when densification stops and again at the end. Exposure refinement is unchanged.
 
 ```bash
 uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/workers/gpu/app.py::splat_smoke
+```
+
+`quality_bench` trains the trainer variants (baseline, then adding depth, regularisation, pruning and culling) on one ARKitScenes room with the same held-out views, prints the near and far table, and renders the first and last variant from the same viewpoints: the six fixed stills, the fly-through and each hero keyframe's photo beside its renders.
+
+```bash
+uv run --with 'modal[api-proxy-support]==1.6.4' modal run services/workers/gpu/app.py::quality_bench --out quality-bench
 ```
 - **Hero views and safe region** (`sajao_workers.twin.hero`, run in the assembly step): six to ten keyframes that together show the most of the room (10 cm cells from each keyframe's depth, floor to 1.8 m, so ceiling earns nothing), weighted towards level views across the room, never the blurriest 30% and never two near duplicates. The safe region is 30 cm around the keyframe positions. Both go into the twin's `viewing`; pure code, no model, and no dependence on the room splat.
 - **Phone splat** (`sajao_workers.twin.phone_step`): decimate the room splat to 500k Gaussians (capable phones) and 250k (budget Android) and save each as colour-only SOG with PlayCanvas splat-transform on CPU (`compress_splat`, one container). Each variant must be 0.2 to 12 MB and hold exactly its budget. Not a model, so no gateway; the step keeps it durable.

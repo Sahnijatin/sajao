@@ -11,14 +11,18 @@ from sajao_workers.steps import Step, StepContext, StepOutput
 from sajao_workers.validate import check_splat
 
 # Bump when this step's logic or the pinned trainer changes.
-VERSION = 1
+VERSION = 3
 STEPS = 15_000
 REPORTED = (
     "gaussians",
     "psnr_heldout",
     "psnr_heldout_raw",
+    "heldout",
     "train_seconds",
     "gaussians_on_objects",
+    "gaussians_pruned_unseen",
+    "gaussians_culled_floaters",
+    "quality",
     "objects_with_gaussians",
     "gpu",
 )
@@ -29,8 +33,15 @@ def splat_step(gateway: ModelGateway) -> Step:
         payload = {
             "frames": context.inputs["frames"],
             "objects": context.inputs["objects"],
-            "steps": STEPS,
+            "steps": int(context.params.get("steps", STEPS)),
+            # "spread" for people's rooms; "split" for golden rooms, which also
+            # score views far from the capture path (splat_inputs.held_out_split).
+            "holdout": context.params.get("holdout", "spread"),
         }
+        # Quality switches (depth, regularise, prune, cull) are all on unless a
+        # benchmark turns some off to measure them (gpu/splat_gpu.QUALITY).
+        if "quality" in context.params:
+            payload["quality"] = dict(context.params["quality"])
         response = await gateway.call(
             ModelRequest("twin_splat", "vision", "twin_splat@1", payload), validate=check_splat()
         )

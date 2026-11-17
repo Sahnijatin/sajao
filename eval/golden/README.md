@@ -18,12 +18,21 @@ Written to `golden-runs/<room>/` (not committed), or to `--out`:
 
 | File | What |
 | --- | --- |
-| `report.md` | The report to read: dimension error, walls and ceiling against the tape (with the twin's error band and whether the tape value falls inside it), doors and windows found, furniture size errors |
+| `report.md` | The report to read: dimension error, walls and ceiling against the tape (with the twin's error band and whether the tape value falls inside it), doors and windows found, furniture size errors, render quality |
 | `report.json` | The same, for the accuracy evals (SJ-118) |
 | `twin.json` | The SpaceTwin built from the capture |
 | `run.json` | What ran: depth source, detector and segmenter, splat quality, GPU charge |
 
 The report's "Dimension error %" is the value for the Golden set row in Notion.
+
+## Render quality
+
+About a tenth of the keyframes are kept out of splat training and each is rendered from the splat and compared with its photo: PSNR and SSIM (higher is better) and LPIPS (lower is better). The report splits them in two:
+
+- **Near the capture path:** a training camera stood within 30 cm of the view. Half of the held-out keyframes are spread evenly through the capture, so they land here.
+- **Far from the capture path:** the other half are one run of consecutive keyframes. With the whole run out of training, its middle views are as far from any training camera as the capture allows. The run is placed where that distance is largest.
+
+The far row is the honest number for views away from where the phone stood. `report.json` lists every held-out view with its distance to the nearest training camera and its three scores.
 
 ## How walls are matched
 

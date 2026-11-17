@@ -266,6 +266,65 @@ def _still(store, scene, shot, name, pose, kind) -> dict:
     }
 
 
+def fixed_views(c2w: np.ndarray, scene: Scene) -> tuple[list[np.ndarray], list[tuple]]:
+    """The viewpoints every pack uses, so packs can be compared: the fly-through (the
+    capture path, smoothed, moved 0.2 m right and 0.1 m up) and six stills, three near
+    the capture path (0.3 m right, 0.2 m back, turned 12 degrees) and three from the
+    middle of the room, looking out."""
+    path = _smooth_path(c2w, FPS * SECONDS)
+    flight = [_offset(pose, 0.2, 0.0, 0.1, 0.0, scene.up) for pose in path]
+    stills = []
+    for j, t in enumerate((1 / 6, 3 / 6, 5 / 6)):
+        pose = _offset(path[int(t * (len(path) - 1))], 0.3, 0.2, 0.0, 12.0, scene.up)
+        stills.append((f"still_{j + 1}_near_path", "near", pose))
+    for j in range(3):
+        angle = 2 * math.pi * j / 3 + 0.3
+        pose = scene.outward(angle + math.pi, 0.35 * scene.radius, scene.eye, angle)
+        stills.append((f"still_{j + 4}_room_middle", "far", pose))
+    return flight, stills
+
+
+def compare(payload: dict, store) -> dict:
+    """The same viewpoints rendered from several splats of one room, to judge a
+    trainer change: the fixed stills and fly-through, and each hero keyframe's
+    photo beside its renders. Viewpoints come from the first splat's cameras."""
+    import cv2
+    from removal_gpu import load_ply
+    from splat_gpu import _decode_rgb as decode_rgb
+
+    frames = json.loads(store.read_blob(payload["frames"]))
+    index = {f["keyframe_id"]: i for i, f in enumerate(frames["frames"])}
+    cameras = {c["keyframe_id"]: c["c2w"] for c in json.loads(store.read_blob(payload["cameras"]))}
+    c2w = np.array([cameras[f["keyframe_id"]] for f in frames["frames"]], dtype=np.float64)
+    first = frames["frames"][0]
+    scene = Scene(c2w, frames["up_axis"], np.asarray(first["intrinsics"]), first["width"])
+    flight, stills = fixed_views(c2w, scene)
+    out: dict = {"fps": FPS, "splats": {}, "hero": []}
+    shots = {}
+    for entry in payload["splats"]:
+        shot = _renderer(load_ply(store.read_blob(entry["splat"])))
+        shots[entry["name"]] = shot
+        out["splats"][entry["name"]] = {
+            "stills": [_still(store, scene, shot, name, pose, kind) for name, kind, pose in stills],
+            "video_frames": [store.put_blob(_jpeg(shot(pose, scene.k)[0], 90)) for pose in flight],
+        }
+    for keyframe_id in payload.get("hero", []):
+        i = index[keyframe_id]
+        photo = decode_rgb(store.read_blob(frames["frames"][i]["image"]))
+        photo = cv2.resize(photo, (W, H), interpolation=cv2.INTER_AREA)
+        out["hero"].append(
+            {
+                "keyframe_id": keyframe_id,
+                "photo": store.put_blob(_jpeg(photo)),
+                "renders": {
+                    name: store.put_blob(_jpeg(shot(c2w[i], scene.k)[0]))
+                    for name, shot in shots.items()
+                },
+            }
+        )
+    return out
+
+
 def review(payload: dict, store) -> dict:
     """All renders for one twin; images and frames go to the store as JPEG blobs."""
     from removal_gpu import load_ply
@@ -296,26 +355,15 @@ def review(payload: dict, store) -> dict:
         _jpeg(np.concatenate([photo, np.full((H, 8, 3), 255, np.uint8), rendered], axis=1))
     )
 
-    # 1. Fly-through: the capture path, smoothed, moved 0.2 m right and 0.1 m up.
+    # 1 and 2. The fly-through and six stills, by the fixed rule in fixed_views.
+    flight, rule_stills = fixed_views(c2w, scene)
     video = []
-    path = _smooth_path(c2w, FPS * SECONDS)
     novelty = []
-    for pose in path:
-        moved = _offset(pose, 0.2, 0.0, 0.1, 0.0, up)
+    for moved in flight:
         rgb, _ = shot(moved, scene.k)
         video.append(store.put_blob(_jpeg(rgb, 90)))
         novelty.append(scene.novelty(moved)["nearest_m"])
-
-    # 2. Six stills by a fixed rule: three near the capture path (0.3 m right, 0.2 m back,
-    # turned 12 degrees) and three far from it (the middle of the room, looking out).
-    stills = []
-    for j, t in enumerate((1 / 6, 3 / 6, 5 / 6)):
-        pose = _offset(path[int(t * (len(path) - 1))], 0.3, 0.2, 0.0, 12.0, up)
-        stills.append(_still(store, scene, shot, f"still_{j + 1}_near_path", pose, "near"))
-    for j in range(3):
-        angle = 2 * math.pi * j / 3 + 0.3
-        pose = scene.outward(angle + math.pi, 0.35 * scene.radius, scene.eye, angle)
-        stills.append(_still(store, scene, shot, f"still_{j + 4}_room_middle", pose, "far"))
+    stills = [_still(store, scene, shot, name, pose, kind) for name, kind, pose in rule_stills]
 
     # Best and worst of random views: a training camera moved up to 1 m and turned up to 40 deg.
     candidates = []

@@ -3,7 +3,15 @@
 import numpy as np
 import pytest
 
-from sajao_workers.twin.splat_inputs import held_out, initial_points
+from sajao_workers.twin.splat_inputs import (
+    NEAR_PATH_M,
+    held_out,
+    held_out_split,
+    initial_points,
+    nearest_training_camera,
+    split_views,
+    summarise,
+)
 from sajao_workers.twin.split import BACKGROUND, assign_labels, decide_label
 
 
@@ -57,6 +65,70 @@ def test_initial_points_are_capped_and_skip_missing_depth() -> None:
     assert np.all(points[:, 0] < 0)  # only the left half had depth
 
 
-@pytest.mark.parametrize(("n", "expected"), [(16, [7, 15]), (10, [7]), (5, [])])
-def test_every_eighth_frame_is_held_out(n: int, expected: list[int]) -> None:
+@pytest.mark.parametrize(("n", "expected"), [(20, [9, 19]), (12, [9]), (5, [])])
+def test_every_tenth_frame_is_held_out(n: int, expected: list[int]) -> None:
     assert held_out(n) == expected
+
+
+def walk(n: int, step_m: float) -> np.ndarray:
+    """Cameras walking along x, `step_m` apart, all facing +z."""
+    c2w = np.tile(np.eye(4), (n, 1, 1))
+    c2w[:, 0, 3] = np.arange(n) * step_m
+    return c2w
+
+
+def test_the_nearest_training_camera_gives_metres_and_degrees() -> None:
+    c2w = walk(3, 0.5)
+    turn = np.radians(90.0)
+    c2w[2, :3, :3] = [[np.cos(turn), 0, np.sin(turn)], [0, 1, 0], [-np.sin(turn), 0, np.cos(turn)]]
+
+    (near,) = nearest_training_camera(c2w, [1], [0, 2])
+    (turned,) = nearest_training_camera(c2w, [1], [2])
+
+    assert near == pytest.approx((0.5, 0.0))
+    assert turned == pytest.approx((0.5, 90.0))
+
+
+def test_the_split_holds_out_a_tenth_with_views_near_and_far_from_the_path() -> None:
+    c2w = walk(120, 0.2)
+
+    test = held_out_split(c2w)
+    train = [i for i in range(120) if i not in test]
+    views = split_views(c2w, test, train)
+
+    assert len(test) == 12
+    assert 0 not in test and 119 not in test
+    assert sum(v["split"] == "far" for v in views) == 4  # the middle of a 6-frame run
+    assert sum(v["split"] == "near" for v in views) == 8
+    assert all((v["nearest_m"] <= NEAR_PATH_M) == (v["split"] == "near") for v in views)
+    assert held_out_split(c2w) == test  # the same room always gives the same split
+
+
+def test_the_run_goes_where_it_leaves_views_farthest_from_training_cameras() -> None:
+    c2w = walk(120, 0.05)  # a slow walk: no run of six is far from its neighbours...
+    c2w[60:, 0, 3] = 3.0 + np.arange(60) * 0.4  # ...until the second half speeds up
+
+    test = held_out_split(c2w)
+    views = split_views(c2w, test, [i for i in range(120) if i not in test])
+
+    far = [v["index"] for v in views if v["split"] == "far"]
+    assert far and min(far) >= 60
+
+
+def test_a_short_capture_falls_back_to_every_tenth_frame() -> None:
+    assert held_out_split(walk(12, 0.2)) == held_out(12)
+
+
+def test_scores_are_averaged_per_side_of_the_split() -> None:
+    views = [
+        {"split": "near", "psnr": 26.0, "ssim": 0.9, "lpips": 0.1},
+        {"split": "near", "psnr": 24.0, "ssim": 0.8, "lpips": 0.2},
+        {"split": "far", "psnr": 18.0, "ssim": 0.6, "lpips": 0.5},
+    ]
+
+    summary = summarise(views)
+
+    assert summary["near"] == {"views": 2, "psnr": 25.0, "ssim": 0.85, "lpips": 0.15}
+    assert summary["far"] == {"views": 1, "psnr": 18.0, "ssim": 0.6, "lpips": 0.5}
+    assert summary["all"]["views"] == 3
+    assert summarise(views[:2])["far"] == {"views": 0}

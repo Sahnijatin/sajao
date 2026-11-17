@@ -4,6 +4,12 @@ Training, rendering and evaluation are ported from the SJ-116 spike, where they
 reached 26 dB on phone captures with pose and exposure refinement. `train` reads
 the capture's keyframes from the artifact store and writes the splat, refined
 cameras and per-Gaussian object labels back to it.
+
+On top of the spike's trainer, four things keep the splat clean away from the
+training cameras (each can be switched off through the payload's `quality`, to
+measure it): the rendered depth is pulled to the sensor's depth, opacity and
+scale are regularised, Gaussians fewer than two cameras had in view are pruned,
+and floaters near the camera positions are culled.
 """
 
 from __future__ import annotations
@@ -19,6 +25,17 @@ from pathlib import Path
 import numpy as np
 
 C0 = 0.28209479177387814
+# What the trainer does beyond the spike's recipe; all on unless the payload says otherwise.
+QUALITY = {"depth": True, "regularise": True, "prune": True, "cull": True}
+# Weight of the depth loss (metres of L1). Estimated depth is trusted less than LiDAR.
+DEPTH_WEIGHT = {"lidar": 0.2, "image": 0.05}
+# As in gsplat's trainer: a small pull towards fewer, smaller Gaussians.
+OPACITY_REG = 0.01
+SCALE_REG = 0.01
+# Needle-shaped Gaussians fit one view and streak from the next: penalise a longest
+# side more than this many times the shortest.
+MAX_ANISOTROPY = 10.0
+ANISOTROPY_REG = 0.01
 # gsplat compiles its CUDA kernels on first use. They are cached on the volume and
 # copied to local disk, since an open file on the volume blocks volume commits.
 KERNELS_ON_VOLUME = Path("/vol/torch_extensions")
@@ -154,9 +171,18 @@ def optimise(
     checkpoint=None,
     resume=None,
     interrupt_at=None,
+    depths=None,
+    depth_weight=0.0,
+    regularise=False,
+    clean=None,
 ):
     """Train Gaussians. With `cams` (from new_camera_params), also refine each
     camera's pose and a per-image colour gain and bias (exposure).
+
+    `depths` (N, H, W, metres, 0 where unknown) with `depth_weight` pulls the
+    rendered depth to the sensor's. `regularise` adds the opacity, scale and
+    anisotropy penalties. `clean(params, opts, state, viewmats)` removes
+    Gaussians when densification stops and again at the end.
 
     `checkpoint(step, state)` is called every CHECKPOINT_EVERY steps with
     everything needed to continue; `resume` is such a state, and training picks
@@ -216,9 +242,11 @@ def optimise(
         use_cams = cams is not None and step >= 500
         if use_cams:
             vm = adjusted_viewmats(vm, cams["delta"][i : i + 1])
-        rc, _, info = render(params, vm, ks[i : i + 1], w, h, sh_degree=sh_deg)
+        with_depth = depths is not None and depth_weight > 0
+        mode = "RGB+ED" if with_depth else "RGB"
+        rc, _, info = render(params, vm, ks[i : i + 1], w, h, sh_degree=sh_deg, mode=mode)
         strategy.step_pre_backward(params, opts, state, step, info)
-        pred = rc[0]
+        pred = rc[0, ..., :3]
         if use_cams:
             pred = apply_color(pred, cams["color"][i])
         pred = pred.clamp(0, 1)
@@ -230,6 +258,19 @@ def optimise(
             size_average=True,
         )
         loss = 0.8 * l1 + 0.2 * (1.0 - s)
+        if with_depth:
+            known = depths[i] > 0.05
+            if known.any():
+                loss = loss + depth_weight * (rc[0, ..., 3] - depths[i]).abs()[known].mean()
+        if regularise:
+            sizes = torch.exp(params["scales"])
+            stretch = sizes.max(1).values / sizes.min(1).values
+            loss = (
+                loss
+                + OPACITY_REG * torch.sigmoid(params["opacities"]).mean()
+                + SCALE_REG * sizes.mean()
+                + ANISOTROPY_REG * torch.relu(stretch - MAX_ANISOTROPY).mean()
+            )
         loss.backward()
         for o in opts.values():
             o.step()
@@ -240,13 +281,83 @@ def optimise(
             cam_opt.zero_grad(set_to_none=True)
             cam_sched.step()
         strategy.step_post_backward(params, opts, state, step, info, packed=False)
+        if clean is not None and step == refine_stop:
+            clean(params, opts, state, _train_viewmats(viewmats, cams))
         if step % 2000 == 0:
             print(
                 f"{log} step {step} loss {loss.item():.4f} "
                 f"n={len(params['means'])} {time.time() - t0:.0f}s",
                 flush=True,
             )
+    if clean is not None:
+        clean(params, opts, state, _train_viewmats(viewmats, cams))
     return params
+
+
+def _train_viewmats(viewmats, cams):
+    import torch
+
+    with torch.no_grad():
+        return viewmats if cams is None else adjusted_viewmats(viewmats, cams["delta"])
+
+
+def cleaner(ks, depths, w, h, prune: bool, cull: bool, removed: dict):
+    """A `clean` for `optimise`: prune Gaussians too few cameras had in view and
+    cull floaters near the cameras (rules in sajao_workers.twin.splat_clean).
+    Counts of what was removed are added to `removed`."""
+    import torch
+    from gsplat.strategy.ops import remove
+
+    from sajao_workers.twin.splat_clean import FREE_MARGIN_M, FREE_MARGIN_SHARE, floaters, unseen
+
+    def clean(params, opts, state, viewmats) -> None:
+        n = len(params["means"])
+        views = torch.zeros(n, dtype=torch.int32, device="cuda")
+        free = torch.zeros(n, dtype=torch.int32, device="cuda")
+        surface = torch.zeros(n, dtype=torch.int32, device="cuda")
+        means = params["means"].detach()
+        homo = torch.cat([means, torch.ones(n, 1, device="cuda")], 1)
+        with torch.no_grad():
+            for j in range(len(viewmats)):
+                _, _, info = render(params, viewmats[j : j + 1], ks[j : j + 1], w, h)
+                radii = info["radii"][0]
+                seen = (radii > 0) if radii.ndim == 1 else (radii > 0).all(-1)
+                views += seen.int()
+                cam = homo @ viewmats[j].T
+                z = cam[:, 2]
+                u = (ks[j, 0, 0] * cam[:, 0] / z + ks[j, 0, 2]).long()
+                v = (ks[j, 1, 1] * cam[:, 1] / z + ks[j, 1, 2]).long()
+                ok = seen & (z > 0.05) & (u >= 0) & (u < w) & (v >= 0) & (v < h)
+                sensor = depths[j][v.clamp(0, h - 1), u.clamp(0, w - 1)]
+                known = ok & (sensor > 0.05)
+                margin = torch.clamp(FREE_MARGIN_SHARE * sensor, min=FREE_MARGIN_M)
+                free += (known & (z < sensor - margin)).int()
+                surface += (known & ((z - sensor).abs() <= margin)).int()
+            centres = torch.linalg.inv(viewmats)[:, :3, 3]
+            gap = torch.cat(
+                [
+                    torch.cdist(means[s : s + 65536], centres).min(1).values
+                    for s in range(0, n, 65536)
+                ]
+            )
+        drop = np.zeros(n, bool)
+        if prune:
+            few = unseen(views.cpu().numpy())
+            removed["gaussians_pruned_unseen"] = removed.get("gaussians_pruned_unseen", 0) + int(
+                few.sum()
+            )
+            drop |= few
+        if cull:
+            loose = floaters(gap.cpu().numpy(), free.cpu().numpy(), surface.cpu().numpy()) & ~drop
+            removed["gaussians_culled_floaters"] = removed.get(
+                "gaussians_culled_floaters", 0
+            ) + int(loose.sum())
+            drop |= loose
+        if drop.any():
+            remove(params=params, optimizers=opts, state=state, mask=torch.from_numpy(drop).cuda())
+        print(f"twin splat clean: removed {int(drop.sum())} of {n}", flush=True)
+
+    return clean
 
 
 def refine_test_cameras(params, imgs, viewmats, ks, steps: int = 300):
@@ -272,12 +383,26 @@ def refine_test_cameras(params, imgs, viewmats, ks, steps: int = 300):
     return cams
 
 
+_lpips = None
+
+
+def _perceptual():
+    """LPIPS with the AlexNet backbone (weights are baked into the image)."""
+    global _lpips
+    if _lpips is None:
+        import lpips
+
+        _lpips = lpips.LPIPS(net="alex", verbose=False).cuda().eval()
+    return _lpips
+
+
 def evaluate(params, imgs, viewmats, ks, cams=None):
+    """PSNR, SSIM and LPIPS of each view against its photo."""
     import torch
     from pytorch_msssim import ssim
 
     h, w = imgs.shape[1:3]
-    psnrs, ssims = [], []
+    views = []
     with torch.no_grad():
         for i in range(len(imgs)):
             vm = viewmats[i : i + 1]
@@ -285,14 +410,20 @@ def evaluate(params, imgs, viewmats, ks, cams=None):
                 vm = adjusted_viewmats(vm, cams["delta"][i : i + 1])
             rc, _, _ = render(params, vm, ks[i : i + 1], w, h)
             pred = rc[0] if cams is None else apply_color(rc[0], cams["color"][i])
-            pred = pred.clamp(0, 1)
-            gt = imgs[i].float() / 255.0
-            mse = ((pred - gt) ** 2).mean()
-            psnrs.append(float(-10 * torch.log10(mse)))
-            ssims.append(
-                float(ssim(pred.permute(2, 0, 1)[None], gt.permute(2, 0, 1)[None], data_range=1.0))
+            pred = pred.clamp(0, 1).permute(2, 0, 1)[None]
+            gt = (imgs[i].float() / 255.0).permute(2, 0, 1)[None]
+            views.append(
+                {
+                    "psnr": float(-10 * torch.log10(((pred - gt) ** 2).mean())),
+                    "ssim": float(ssim(pred, gt, data_range=1.0)),
+                    "lpips": float(_perceptual()(pred, gt, normalize=True)),
+                }
             )
-    return {"psnr": float(np.mean(psnrs)), "ssim": float(np.mean(ssims)), "views": len(imgs)}
+    return views
+
+
+def _mean(views, key: str) -> float:
+    return float(np.mean([v[key] for v in views]))
 
 
 # A checkpoint of a room is about 2 GB (Gaussians plus Adam state), so it is written
@@ -460,7 +591,13 @@ def train(
     import torch
 
     from sajao_workers.twin.objects import decode_depth_mm
-    from sajao_workers.twin.splat_inputs import held_out, initial_points
+    from sajao_workers.twin.splat_inputs import (
+        held_out,
+        held_out_split,
+        initial_points,
+        split_views,
+        summarise,
+    )
 
     for key in ("frames", "objects"):
         if not store.has_blob(payload[key]):
@@ -479,9 +616,15 @@ def train(
     ]
 
     torch.manual_seed(0)
-    test = set(held_out(len(frames)))
-    train_idx = [i for i in range(len(frames)) if i not in test]
-    test_idx = sorted(test)
+    quality = {**QUALITY, **(payload.get("quality") or {})}
+    if set(quality) != set(QUALITY):
+        raise InputError(f"unknown quality options {sorted(set(quality) - set(QUALITY))}")
+    holdout = payload.get("holdout", "spread")
+    if holdout not in ("spread", "split"):
+        raise InputError(f"unknown holdout {holdout}")
+    poses = np.asarray([f["c2w"] for f in frames], dtype=np.float64)
+    test_idx = held_out_split(poses) if holdout == "split" else held_out(len(frames))
+    train_idx = [i for i in range(len(frames)) if i not in set(test_idx)]
     ks_all = torch.tensor([f["intrinsics"] for f in frames], dtype=torch.float32, device="cuda")
     c2w_all = torch.tensor([f["c2w"] for f in frames], dtype=torch.float32, device="cuda")
     vms_all = torch.linalg.inv(c2w_all)
@@ -495,7 +638,9 @@ def train(
     saved = resume = None
     if checkpoints is not None:
         key = hashlib.sha256(
-            json.dumps([payload["frames"], payload["objects"], steps]).encode()
+            json.dumps(
+                [payload["frames"], payload["objects"], steps, holdout, sorted(quality.items())]
+            ).encode()
         ).hexdigest()
         saved = checkpoints / f"splat-{key}.pt"
         if saved.exists():
@@ -512,6 +657,11 @@ def train(
             persist()
         print(f"twin splat checkpoint at step {step}", flush=True)
 
+    sensor = torch.from_numpy(np.stack([depths[i] for i in train_idx])).float().cuda()
+    removed: dict[str, int] = {}
+    clean = None
+    if quality["prune"] or quality["cull"]:
+        clean = cleaner(ks_all[train_idx], sensor, w, h, quality["prune"], quality["cull"], removed)
     started = time.time()
     params = optimise(
         params,
@@ -526,6 +676,10 @@ def train(
         checkpoint=checkpoint if saved is not None else None,
         resume=resume,
         interrupt_at=interrupt_at,
+        depths=sensor,
+        depth_weight=DEPTH_WEIGHT[manifest["depth_source"]] if quality["depth"] else 0.0,
+        regularise=quality["regularise"],
+        clean=clean,
     )
     torch.cuda.synchronize()
     train_seconds = time.time() - started
@@ -534,15 +688,28 @@ def train(
         "gaussians": len(params["means"]),
         "train_seconds": round(train_seconds, 1),
         "gpu": torch.cuda.get_device_name(),
+        "quality": quality,
+        **removed,
     }
     with torch.no_grad():
         refined = vms_all.clone()
         refined[train_idx] = adjusted_viewmats(vms_all[train_idx], cams["delta"])
     if test_idx:
         timgs, tvms, tks = imgs[test_idx], vms_all[test_idx], ks_all[test_idx]
-        result["psnr_heldout_raw"] = round(evaluate(params, timgs, tvms, tks)["psnr"], 2)
+        result["psnr_heldout_raw"] = round(_mean(evaluate(params, timgs, tvms, tks), "psnr"), 2)
         tcams = refine_test_cameras(params, timgs, tvms, tks)
-        result["psnr_heldout"] = round(evaluate(params, timgs, tvms, tks, tcams)["psnr"], 2)
+        views = [
+            {"keyframe_id": frames[v["index"]]["keyframe_id"], **v, **scores}
+            for v, scores in zip(
+                split_views(poses, test_idx, train_idx),
+                evaluate(params, timgs, tvms, tks, tcams),
+                strict=True,
+            )
+        ]
+        result["heldout"] = {**summarise(views), "per_view": views}
+        # The gate is on the views people are shown: those near the capture path.
+        gate = "near" if result["heldout"]["near"]["views"] else "all"
+        result["psnr_heldout"] = result["heldout"][gate]["psnr"]
         with torch.no_grad():
             refined[test_idx] = adjusted_viewmats(tvms, tcams["delta"])
 

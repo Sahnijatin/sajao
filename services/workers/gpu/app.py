@@ -141,7 +141,12 @@ splat_base = (
     )
 )
 splat_image = (
-    splat_base.add_local_dir(SRC, "/root/sajao_workers")
+    # LPIPS scores held-out views. Its AlexNet weights are fetched at build time,
+    # so a run never downloads them.
+    splat_base.pip_install("lpips==0.1.4")
+    .env({"TORCH_HOME": "/opt/torch_home"})
+    .run_commands("python -c 'import lpips; lpips.LPIPS(net=\"alex\")'")
+    .add_local_dir(SRC, "/root/sajao_workers")
     .add_local_file(HERE / "splat_gpu.py", "/root/splat_gpu.py")
     .add_local_file(HERE / "removal_gpu.py", "/root/removal_gpu.py")
     .add_local_file(HERE / "review_gpu.py", "/root/review_gpu.py")
@@ -497,6 +502,10 @@ def run_splat(model: str, task: str, payload: dict[str, Any]) -> dict[str, Any]:
             import review_gpu
 
             output = review_gpu.review(payload, _store())
+        elif task == "twin_compare" and model.startswith("gsplat@"):
+            import review_gpu
+
+            output = review_gpu.compare(payload, _store())
         else:
             return {"error": f"unknown splat task {task} for {model}"}
     except splat_gpu.InputError as error:
@@ -1184,9 +1193,16 @@ async def _compress(payload: Any) -> Any:
 
 
 async def _build_twin(
-    store: Any, runner: Any, ledger: Any, capture: dict[str, Any], manifest: dict[str, Any]
+    store: Any,
+    runner: Any,
+    ledger: Any,
+    capture: dict[str, Any],
+    manifest: dict[str, Any],
+    holdout: str = "spread",
 ) -> dict[str, Any]:
-    """Objects, splat, phone splats and the twin, each a durable step (stored results reused)."""
+    """Objects, splat, phone splats and the twin, each a durable step (stored results reused).
+
+    `holdout` is "split" for golden rooms, which also score views far from the path."""
     import json
     import uuid
 
@@ -1211,7 +1227,7 @@ async def _build_twin(
             ModelGateway(splat_chain(volume_invoke("twin_splat", run_splat)), ledger=ledger)
         ),
         {"frames": frames, "objects": objects.outputs["objects"]},
-        {},
+        {"holdout": holdout},
     )
     phone = await runner.run(phone_splat_step(_compress), {"splat": splat.outputs["splat"]}, {})
     twin = await runner.run(
@@ -1433,9 +1449,9 @@ def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
             )
             manifest = json.loads(store.read_blob(estimated.outputs["frames"]))
             depth_meta = dict(estimated.meta)
-        built = await _build_twin(store, runner, ledger, capture, manifest)
+        built = await _build_twin(store, runner, ledger, capture, manifest, holdout="split")
         twin = json.loads(store.read_blob(built["twin"].outputs["twin"]))
-        report = accuracy_report(twin, read_sheet(sheet))
+        report = accuracy_report(twin, read_sheet(sheet), built["splat"].meta.get("heldout"))
         charged = sum(built[k].cost_micro_inr for k in ("objects", "splat", "phone"))
         return {
             "twin": twin,
@@ -1845,3 +1861,182 @@ def review_pack(
     for name, data in result["files"].items():
         (target / name).write_bytes(data)
     print(result["files"]["summary.json"].decode())
+
+
+# Trainer variants for the quality benchmark, each adding to the one before.
+QUALITY_VARIANTS = {
+    "baseline": {"depth": False, "regularise": False, "prune": False, "cull": False},
+    "depth": {"depth": True, "regularise": False, "prune": False, "cull": False},
+    "depth_reg": {"depth": True, "regularise": True, "prune": False, "cull": False},
+    "all": {"depth": True, "regularise": True, "prune": True, "cull": True},
+}
+
+
+def _quality_table(rows: dict[str, Any]) -> str:
+    lines = [
+        "| Trainer | Near PSNR | Near SSIM | Near LPIPS | Far PSNR | Far SSIM | Far LPIPS "
+        "| Gaussians | Train s |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    ]
+    for name, meta in rows.items():
+        cells = []
+        for side in ("near", "far"):
+            row = meta["heldout"][side]
+            cells += (
+                [f"{row['psnr']:.2f}", f"{row['ssim']:.3f}", f"{row['lpips']:.3f}"]
+                if row["views"]
+                else ["", "", ""]
+            )
+        cells += [f"{meta['gaussians']:,}", f"{meta['train_seconds']:.0f}"]
+        lines.append(f"| {name} | {' | '.join(cells)} |")
+    return "\n".join(lines) + "\n"
+
+
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=8, memory=16384, timeout=14400
+)
+def quality_bench_cpu(
+    scene: str, keyframes: int, variants: list[str], steps: int
+) -> dict[str, Any]:
+    """Splat quality before and after on one ARKitScenes room: each trainer variant is
+    trained on the same keyframes with the same held-out views (near and far from the
+    path), then the first and last are rendered from the same viewpoints.
+
+    One splat trains at a time (the splat function's GPU); stored results are reused."""
+    import asyncio
+    import io
+    import json
+
+    import imageio.v2 as imageio
+    import numpy as np
+    from PIL import Image
+
+    from sajao_gateway import ModelGateway
+    from sajao_workers.models import GSPLAT, detect_chain, segment_chain, splat_chain
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.assemble_step import _hero_views
+    from sajao_workers.twin.objects_step import objects_step
+    from sajao_workers.twin.splat_step import splat_step
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    manifest = _arkit_manifest(store, scene, keyframes, y_up=True)
+    frames = store.put_blob(json.dumps(manifest).encode())
+    ledger = _ledger()
+    runner = StepRunner(store, max_attempts=1)
+
+    async def run() -> dict[str, Any]:
+        objects = await runner.run(
+            objects_step(
+                ModelGateway(detect_chain(volume_invoke("twin_detect")), ledger=ledger),
+                ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger),
+            ),
+            {"frames": frames},
+            {},
+        )
+        results = {}
+        for name in variants:
+            results[name] = await runner.run(
+                splat_step(
+                    ModelGateway(splat_chain(volume_invoke("twin_splat", run_splat)), ledger=ledger)
+                ),
+                {"frames": frames, "objects": objects.outputs["objects"]},
+                {"holdout": "split", "quality": QUALITY_VARIANTS[name], "steps": steps},
+            )
+        vol.commit()
+        return results
+
+    results = asyncio.run(run())
+    hero, _ = _hero_views(store, manifest)
+    shown = [variants[0], variants[-1]] if len(variants) > 1 else variants
+    vol.commit()
+    reply = run_splat.remote(
+        GSPLAT,
+        "twin_compare",
+        {
+            "frames": frames,
+            "cameras": results[shown[0]].outputs["cameras"],
+            "splats": [{"name": n, "splat": results[n].outputs["splat"]} for n in shown],
+            "hero": [v["keyframe_id"] for v in hero],
+        },
+    )
+    if "error" in reply:
+        return {"scene": scene, "error": reply["error"]}
+    vol.reload()
+    out = reply["output"]
+
+    def image(digest: str) -> Any:
+        return Image.open(io.BytesIO(store.read_blob(digest)))
+
+    def side_by_side(digests: list[str]) -> bytes:
+        tiles = [image(d) for d in digests]
+        sheet = Image.new(
+            "RGB", (sum(t.width for t in tiles) + 8 * (len(tiles) - 1), tiles[0].height), "white"
+        )
+        x = 0
+        for tile in tiles:
+            sheet.paste(tile, (x, 0))
+            x += tile.width + 8
+        buf = io.BytesIO()
+        sheet.save(buf, format="JPEG", quality=92)
+        return buf.getvalue()
+
+    files: dict[str, bytes] = {}
+    stills: dict[str, Any] = {}
+    for index in range(6):
+        per = [out["splats"][n]["stills"][index] for n in shown]
+        name = per[0]["name"]
+        files[f"{name}_{'_vs_'.join(shown)}.jpg"] = side_by_side([s["image"] for s in per])
+        stills[name] = {
+            n: {k: s[k] for k in ("coverage", "sharpness", "score", "nearest_m", "nearest_deg")}
+            for n, s in zip(shown, per, strict=True)
+        }
+    for n in shown:
+        video = io.BytesIO()
+        with imageio.get_writer(
+            video, format="mp4", fps=out["fps"], codec="libx264", quality=8, macro_block_size=8
+        ) as writer:
+            for digest in out["splats"][n]["video_frames"]:
+                writer.append_data(np.asarray(image(digest)))
+        files[f"flythrough_{n}.mp4"] = video.getvalue()
+    for rank, view in enumerate(out["hero"], start=1):
+        files[f"hero_{rank}_{view['keyframe_id']}_photo_{'_'.join(shown)}.jpg"] = side_by_side(
+            [view["photo"], *[view["renders"][n] for n in shown]]
+        )
+    meta = {n: dict(r.meta) for n, r in results.items()}
+    summary = {
+        "scene": scene,
+        "keyframes": keyframes,
+        "steps": steps,
+        "variants": {n: {**QUALITY_VARIANTS[n], **meta[n]} for n in variants},
+        "table": _quality_table(meta),
+        "stills": stills,
+        "hero_views": hero,
+        "shown": shown,
+        "charged_micro_inr": {n: r.cost_micro_inr for n, r in results.items()},
+        "cached": {n: r.cached for n, r in results.items()},
+        "compare_gpu_seconds": reply["gpu_seconds"],
+    }
+    files["summary.json"] = (json.dumps(summary, indent=1) + "\n").encode()
+    files["table.md"] = summary["table"].encode()
+    return {"files": files, "summary": summary}
+
+
+@app.local_entrypoint()
+def quality_bench(
+    scene: str = "arkit_living_47331265",
+    keyframes: int = 120,
+    variants: str = "baseline,depth,depth_reg,all",
+    steps: int = 15000,
+    out: str = "quality-bench",
+) -> None:
+    """Before and after numbers and renders for the splat trainer's quality steps."""
+    result = quality_bench_cpu.remote(scene, keyframes, variants.split(","), steps)
+    if "files" not in result:
+        print(result)
+        return
+    target = Path(out)
+    target.mkdir(parents=True, exist_ok=True)
+    for name, data in result["files"].items():
+        (target / name).write_bytes(data)
+    print(result["summary"]["table"])
+    print(f"Written to {target}")

@@ -92,12 +92,52 @@ async def test_the_step_records_the_gpu_blobs_and_reports_quality(tmp_path: Path
 
     result = await StepRunner(store, max_attempts=1).run(splat_step(gateway), inputs, {})
 
-    assert seen[0] == {**inputs, "steps": 15000}
+    assert seen[0] == {**inputs, "steps": 15000, "holdout": "spread"}
     assert set(result.outputs) == {"splat", "labels", "cameras"}
     assert store.read_blob(result.outputs["splat"]) == b"ply bytes"
     assert result.meta["psnr_heldout"] == 25.5
     assert result.cost_micro_inr == gpu_cost_micro_inr("A100-40GB", 420.0)
     assert json.loads(store.read_blob(result.outputs["cameras"])) == []
+
+
+async def test_golden_rooms_ask_for_the_near_and_far_split(tmp_path: Path) -> None:
+    store = LocalArtifactStore(tmp_path)
+    seen: list[Mapping[str, Any]] = []
+    heldout = {"near": {"views": 6, "psnr": 25.5}, "far": {"views": 6, "psnr": 19.0}}
+
+    async def invoke(model: str, payload: Mapping[str, Any]) -> Mapping[str, Any]:
+        seen.append(payload)
+        return {"output": {**good_output(store), "heldout": heldout}, "gpu_seconds": 420.0}
+
+    gateway = ModelGateway(splat_chain(invoke), ledger=InMemorySpendLedger(ROOMY))
+    inputs = {"frames": store.put_blob(b"{}"), "objects": store.put_blob(b"[]")}
+
+    result = await StepRunner(store, max_attempts=1).run(
+        splat_step(gateway), inputs, {"holdout": "split"}
+    )
+
+    assert seen[0]["holdout"] == "split"
+    assert result.meta["heldout"] == heldout
+
+
+async def test_a_benchmark_can_switch_quality_steps_off(tmp_path: Path) -> None:
+    store = LocalArtifactStore(tmp_path)
+    seen: list[Mapping[str, Any]] = []
+
+    async def invoke(model: str, payload: Mapping[str, Any]) -> Mapping[str, Any]:
+        seen.append(payload)
+        return {"output": good_output(store), "gpu_seconds": 420.0}
+
+    gateway = ModelGateway(splat_chain(invoke), ledger=InMemorySpendLedger(ROOMY))
+    inputs = {"frames": store.put_blob(b"{}"), "objects": store.put_blob(b"[]")}
+    runner = StepRunner(store, max_attempts=1)
+
+    plain = await runner.run(splat_step(gateway), inputs, {})
+    off = await runner.run(splat_step(gateway), inputs, {"quality": {"depth": False}})
+
+    assert "quality" not in seen[0]  # the trainer's defaults: everything on
+    assert seen[1]["quality"] == {"depth": False}
+    assert not off.cached and plain.outputs["splat"] == off.outputs["splat"]
 
 
 async def test_a_splat_below_the_quality_bar_fails_the_step(tmp_path: Path) -> None:
