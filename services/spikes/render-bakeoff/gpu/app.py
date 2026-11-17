@@ -603,12 +603,16 @@ def check(room: str, design_id: str, arms: list[str], planted: str = "") -> dict
 
 
 @app.function(image=gen_image, volumes=VOLS, timeout=300, secrets=[gcp_secret])
-def gemini_probe(models: list[str]) -> list[str]:
+def gemini_probe(models: list[str], location: str = "") -> list[str]:
     """One tiny edit per model through the provider, errors redacted (no keys, no ids)."""
     import asyncio
     import io
     import re
 
+    import os
+
+    if location:
+        os.environ["GCP_LOCATION"] = location
     from bk import gemini as g
     from PIL import Image
 

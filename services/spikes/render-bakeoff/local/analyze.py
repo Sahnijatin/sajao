@@ -309,6 +309,72 @@ def verifiability_by_retailer() -> dict:
     }
 
 
+VOTE_ROOMS = [
+    "arkit_living_41159566",
+    "frl_apartment_0",
+    "arkit_living_41159541",
+    "arkit_living_47331265",
+]
+
+
+def room_arm_costs(big_gpu: str = "H100") -> dict:
+    """Marginal cost per room (three designs) for each arm. Each step is the median warm
+    time across the twelve voted designs (cold starts are a fixed cost, reported in
+    Spends), times Modal's rate; the C3 removal is measured per room. Shared steps count
+    for every arm that uses them: the Blender composite (A for A, C1, C2; the C3 base for
+    C3 and C3L, and as B's layout guide) and the per-room C3 removal."""
+    import statistics as st
+
+    from bakeoff.cost import USD_TO_INR, gpu_usd
+
+    comp = [x for x in json.loads((R / "compose.json").read_text()) if "A" in x]
+    gen = [x for x in json.loads((R / "generate_qwen.json").read_text()) if "error" not in x]
+    gem_f = R / "generate_gemini.json"
+    gem = [x for x in json.loads(gem_f.read_text()) if "error" not in x] if gem_f.exists() else []
+    c3 = {}
+    for f in R.glob("c3_*.json"):
+        for x in json.loads(f.read_text()):
+            if "inpaint" in x and "error" not in x:
+                c3[x["room"]] = x
+    med = {
+        "A": st.median(x["A"]["total_seconds"] for x in comp),
+        "C3base": st.median(x["C3base"]["total_seconds"] for x in comp),
+        "light": st.median(x["C1_seconds"] for x in gen if x["C1_seconds"] < 60),
+        "B_qwen": st.median(x["B_seconds"] for x in gen),
+        "B_gemini": st.median(x["B_seconds"] for x in gem) if gem else 0.0,
+        "gemini_inr": st.median(x.get("api_inr", 0) for x in gem) if gem else 0.0,
+    }
+    per = {
+        "A": gpu_usd("L40S", med["A"]),
+        "base": gpu_usd("L40S", med["C3base"]),
+        "light": gpu_usd(big_gpu, med["light"]),
+        "B_qwen": gpu_usd(big_gpu, med["B_qwen"]),
+        "B_gemini": gpu_usd("L4", med["B_gemini"]) + med["gemini_inr"] / USD_TO_INR,
+    }
+    out = {"median_seconds": med, "rooms": {}}
+    for room in VOTE_ROOMS:
+        x = c3.get(room, {})
+        removal = gpu_usd("L4", x.get("prep_wall_s", 0)) + gpu_usd(
+            big_gpu, x.get("inpaint", {}).get("model_seconds", 0)
+        )
+        usd = {
+            "A": 3 * per["A"],
+            "C1": 3 * (per["A"] + per["light"]),
+            "C2": 3 * (per["A"] + per["light"]),
+            "C3": removal + 3 * (per["base"] + per["light"]),
+            "C3L": removal + 3 * (per["base"] + per["light"]),
+            "B_qwen": 3 * (per["base"] + per["B_qwen"]),
+            "B_gemini": 3 * (per["base"] + per["B_gemini"]),
+        }
+        out["rooms"][room] = {k: round(v * USD_TO_INR, 1) for k, v in usd.items()}
+        out["rooms"][room]["c3_removal_inr"] = round(removal * USD_TO_INR, 1)
+    out["note"] = (
+        "INR per room of three designs, marginal GPU time plus API calls. The twin capture "
+        "and training that arms A, C1 and C2 need are not included."
+    )
+    return out
+
+
 def main() -> None:
     summary = {
         "gate": {m: gate_table(m) for m in ("triposg", "trellis2", "sam3d", "parametric")},
@@ -316,6 +382,7 @@ def main() -> None:
         "verifiability": verifiability_by_retailer(),
         "checks": {g: checks_table(g) for g in ("qwen", "flux2k", "gemini")},
         "planted": planted_table(),
+        "room_arm_costs": room_arm_costs(),
     }
     key_f = REPO / "eval" / "render-bakeoff" / "voting" / "key.json"
     if len(sys.argv) > 1 and key_f.exists():
