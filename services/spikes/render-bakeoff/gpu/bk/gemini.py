@@ -88,6 +88,18 @@ class GeminiImageProvider:
         )
 
 
+_LOOP: asyncio.AbstractEventLoop | None = None
+
+
+def _run(coro):
+    """One event loop per container: the gateway's per-provider semaphores bind to the
+    loop they first run on, so a fresh asyncio.run() per call breaks every later call."""
+    global _LOOP
+    if _LOOP is None:
+        _LOOP = asyncio.new_event_loop()
+    return _LOOP.run_until_complete(coro)
+
+
 SPEND = {"calls": 0, "micro_inr": 0}  # per container, read by run.py for per-design cost
 
 
@@ -137,7 +149,20 @@ def gemini_edit(pils, prompt: str, seed: int):
         payload={"prompt": prompt, "seed": seed},
         blobs=tuple(blobs),
     )
-    resp = asyncio.run(gateway().call(req, validate=_validate))
+    from sajao_gateway.errors import AllProvidersFailedError
+
+    try:
+        resp = _run(gateway().call(req, validate=_validate))
+    except AllProvidersFailedError:
+        # Surface the provider's reason (redacted) instead of the gateway's summary.
+        import re
+
+        try:
+            r = _run(GeminiImageProvider().call(req))
+            reason = f"direct call ok but output rejected: {r.output}"
+        except Exception as e:
+            reason = re.sub(r"[A-Za-z0-9_\-]{28,}", "<redacted>", f"{type(e).__name__}: {e}")[:600]
+        raise RuntimeError(f"Gemini arm B call failed: {reason}") from None
     SPEND["calls"] += 1
     SPEND["micro_inr"] += int(resp.cost_micro_inr)
     return Image.open(io.BytesIO(resp.blobs[0])).convert("RGB")

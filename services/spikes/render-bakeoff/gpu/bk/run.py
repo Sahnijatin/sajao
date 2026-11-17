@@ -89,6 +89,17 @@ def generate_arms(room: str, design_id: str, model: str, arms: list[str]) -> dic
             lock(c3b, p3, union),
             {"arm": "C3", "model": model, "model_seconds": dt},
         )
+    if "C3L" in arms:
+        # Light only: the C3 pass contributes smooth shading everywhere, never structure,
+        # so it cannot add or move a window, a wall or furniture. No model call.
+        c3b = _read(base / "C3base" / "image.png")
+        p3 = _read(base / f"C3pass_{model}" / "image.png")
+        whole = np.ones(c3b.shape[:2], bool)
+        _write(
+            base / f"C3L_{model}",
+            lock(c3b, p3, whole, sigma=12.0, ratio_range=(0.6, 1.6), feather=0.0),
+            {"arm": "C3L", "model": model, "model_seconds": 0.0},
+        )
     if "B" in arms:
         d = load_render_design(room, design_id)
         c3b = _read(base / "C3base" / "image.png")
@@ -136,7 +147,7 @@ def generate_arms(room: str, design_id: str, model: str, arms: list[str]) -> dic
     return out
 
 
-REFERENCE = {"A": "A", "C1": "A", "C2": "A", "C3": "C3base", "B": "C3base"}
+REFERENCE = {"A": "A", "C1": "A", "C2": "A", "C3": "C3base", "C3L": "C3base", "B": "C3base"}
 
 
 def check_arms(room: str, design_id: str, arms: list[str], planted: str = "") -> dict:
