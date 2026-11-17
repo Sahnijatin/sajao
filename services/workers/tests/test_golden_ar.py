@@ -132,3 +132,58 @@ def test_a_capture_without_a_planes_file_still_reports(tmp_path: Path) -> None:
     tape = tmp_path / "sheet.json"
     tape.write_text(json.dumps(sheet()))
     assert "Planes in the capture: 0" in run(folder, tape)
+
+
+def keyframe_opening(kind: str, wall_id: str, **metres: float) -> dict[str, Any]:
+    opening: dict[str, Any] = {"id": f"{kind[0]}1", "kind": kind, "wall_id": wall_id}
+    opening["source"] = "keyframes"
+    for key, value in metres.items():
+        opening[key] = {"value_m": value, "source": "estimated", "error_band_m": 0.05}
+    return opening
+
+
+def test_doors_and_windows_from_keyframes_are_the_ones_scored_when_that_pass_ran() -> None:
+    measurements = measure(scan())
+    planes = {o["kind"]: o for o in measurements["openings"]}
+    measurements["keyframe_openings"] = [
+        keyframe_opening("door", planes["door"]["wall_id"], width=0.86, height=2.1, offset=0.3),
+        keyframe_opening(
+            "window", planes["window"]["wall_id"], width=1.25, height=1.2, sill_height=0.9,
+            offset=1.4,
+        ),
+    ]  # fmt: skip
+    report = ar_report(measurements, read_sheet(sheet()))
+
+    assert report["openings_source"] == "keyframes"
+    door, window = report["openings"]
+    assert door["width_error_m"] == pytest.approx(-0.02)  # 86 cm against the tape's 88
+    assert window["width_error_m"] == pytest.approx(0.07)
+    # The iPhone's own planes are still scored, and compared with the keyframes.
+    assert [o["width_error_m"] for o in report["classed_openings"]] == pytest.approx([0.02, 0.02])
+    check = {c["kind"]: c for c in report["cross_check"]}
+    assert check["door"]["width_difference_m"] == pytest.approx(-0.04)  # keyframes minus plane
+    assert check["window"]["width_difference_m"] == pytest.approx(0.05)
+    text = ar_markdown(report)
+    assert "found in the keyframes and measured on the wall planes" in text
+    assert "Cross-check: keyframes minus the phone's own planes" in text
+
+
+def test_an_android_scan_gets_its_doors_and_windows_from_keyframes() -> None:
+    ceiling = horizontal((2, 1.5), (2, 2), FLOOR_Y + HEIGHT, kind="horizontal_down")
+    measurements = measure(room(ceiling, classed=False))
+    short_wall = next(w["id"] for w in measurements["walls"] if w["length"]["value_m"] < 4)
+    measurements["keyframe_openings"] = [
+        keyframe_opening("door", short_wall, width=0.9, height=2.05, offset=0.3)
+    ]
+    report = ar_report(measurements, read_sheet(sheet()))
+    assert report["summary"]["openings_found"] == "1 of 2"
+    assert report["openings"][0]["found"] is True
+    assert report["classed_openings"] == []
+    assert [c["matched"] for c in report["cross_check"]] == [False]
+
+
+def test_without_a_keyframe_pass_the_report_says_where_doors_and_windows_came_from() -> None:
+    report = ar_report(measure(scan()), read_sheet(sheet()))
+    assert report["openings_source"] == "planes"
+    assert report["cross_check"] == []
+    assert "no keyframe pass ran" in ar_markdown(report)

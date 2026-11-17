@@ -1492,12 +1492,15 @@ def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
     from sajao_gateway import ModelGateway
     from sajao_schemas.generated.v1 import Capture
     from sajao_workers.ar_measurements import measure
+    from sajao_workers.ar_openings import openings_from_keyframes
     from sajao_workers.golden import accuracy_report, markdown, read_sheet
     from sajao_workers.golden_ar import ar_markdown, ar_report
     from sajao_workers.models import depth_chain
     from sajao_workers.steps import LocalArtifactStore, StepRunner
     from sajao_workers.twin.capture_frames import frames_manifest
     from sajao_workers.twin.depth_step import depth_step
+    from sajao_workers.twin.objects import decode_mask
+    from sajao_workers.twin.shell import frame_of
 
     vol.reload()
     root = Path("/work/golden") / folder
@@ -1515,7 +1518,6 @@ def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
     # The phone's own AR measurements against the same tape: no GPU, no twin.
     planes = json.loads(_capture_file(root, package["planes"])) if package.get("planes") else {}
     ar_measurements = measure(planes)
-    ar = ar_report(ar_measurements, read_sheet(sheet))
 
     async def run() -> dict[str, Any]:
         nonlocal manifest
@@ -1536,6 +1538,16 @@ def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
 
             truth = json.loads((root / "ground_truth.json").read_text())
             to_space = space_transform(twin["keyframes"], manifest["frames"])
+        # Doors and windows for the AR measurements: the same masks the twin
+        # uses, cast from each keyframe's pose onto the walls the phone measured.
+        frames = {f["keyframe_id"]: f for f in manifest["frames"]}
+        masks = [
+            (o["kind"], decode_mask(store.read_blob(o["mask"])), frame_of(frames[o["keyframe_id"]]))
+            for o in json.loads(store.read_blob(built["objects"].outputs["openings"]))
+            if o["keyframe_id"] in frames
+        ]
+        ar_measurements["keyframe_openings"] = openings_from_keyframes(ar_measurements, masks)
+        ar = ar_report(ar_measurements, read_sheet(sheet))
         report = accuracy_report(twin, read_sheet(sheet), truth=truth, to_space=to_space)
         charged = sum(built[k].cost_micro_inr for k in ("inventory", "objects", "splat", "phone"))
         return {
