@@ -67,6 +67,8 @@ Items engineering flags for the legal team to read before any shipped use. Each 
 | expo-font 58.0.12 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
 | expo-haptics 58.0.8 | Library (npm) | App and service code in apps/mobile, packages/ui | https://github.com/expo/expo | MIT | No | Existing |
 | expo-image-manipulator 58.0.16 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
+| expo-image-picker 58.0.10 | Library (npm) | Gallery import in apps/mobile: the system photo and video picker | https://github.com/expo/expo | MIT | No | Added for SJ-34 |
+| expo-video-thumbnails 58.0.3 | Library (npm) | Gallery import in apps/mobile: frames taken from a picked video on the phone | https://github.com/expo/expo | MIT | No | Added for SJ-34 |
 | expo-linking 58.0.17 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
 | expo-localization 58.0.5 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
 | expo-router 58.0.31 | Library (npm) | App and service code in apps/mobile | https://github.com/expo/expo | MIT | No | Existing |
