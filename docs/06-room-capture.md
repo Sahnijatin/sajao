@@ -6,9 +6,11 @@ You share 3 to 8 photos or a 10 to 30 second video; the server builds a Space Pr
 
 You scan whatever you want redone: a whole room, a corner, a balcony or any area. There is no room-type picker.
 
+**Scan screen.** The person scanning sees the camera, one thin progress ring and one plain instruction at a time; the pieces below are how it works underneath. The mesh, guardrail chips, compass map and live labels are diagnostics behind the debug flag (three taps on the camera in a development or preview build). On AR phones the native view draws the camera image only (`overlay` off) unless the flag is on.
+
 **Live scan mesh.** While you pan, a frame processor finds real feature points in the camera frames on the phone (no AI, no server cost). They are triangulated and drawn with Skia as a glowing mesh that spreads over what has been mapped. Phones with ARKit or ARCore also use their detected planes. Low-tier phones draw dots and edges instead. The mesh is feedback only: nothing from it is stored or used for dimensions.
 
-**Guardrails.** Live chips watch light, speed and shake, phone level, and mirrors and glare. When one fails the scan pauses softly with a fix ("A little more light") and keeps everything mapped so far; you can also scan anyway. Never a hard error.
+**Guardrails.** Light, speed and shake, phone level, and mirrors and glare are watched all the time. When one fails the scan pauses softly with a plain nudge ("It's a bit dark. Switch on a light") and keeps everything mapped so far; you can also keep going anyway. Never a hard error.
 
 **Two scan modes, one package.** The full scan counts coverage on walls and floor from AR planes and offers hints from live labels. The simple scan asks nothing of planes or the detector: it shows one clean progress ring and counts coverage from how the camera turned and moved (heading sectors covered while turning slowly with a sharp picture, plus metres walked from AR poses, or steady time when AR never tracks). Its hints come from motion alone: slow down, step back, walk around, Done. Android starts in the simple scan. Any phone turns simple when no plane is found or the detector has not loaded ten seconds into the scan, and it never switches back, so progress never jumps. The live mesh and labels still draw wherever the phone finds them (LiDAR, or once planes appear); they are a preview, and the complete inventory comes from the server. Both modes record the same capture package.
 
