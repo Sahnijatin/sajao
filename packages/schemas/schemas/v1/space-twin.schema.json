@@ -100,6 +100,14 @@
     "confidence": {
       "$ref": "#/$defs/MeasurementConfidence",
       "description": "How far the room's measurements can be trusted. Fit claims only at taped or ar_measured."
+    },
+    "areas": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Area"
+      },
+      "minItems": 1,
+      "description": "The spaces the capture passed through, split where the floor narrows to a doorway. One area when the capture is one space (an open-plan L included). The app shows each area's photo and asks which to redesign."
     }
   },
   "$defs": {
@@ -1045,6 +1053,49 @@
           "type": "integer",
           "minimum": 0,
           "description": "Tape values the person entered for this room."
+        }
+      }
+    },
+    "Area": {
+      "description": "One space of a capture: its floor, what is in it and a photo that shows it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "floor_polygon", "floor_area_m2", "object_ids", "keyframe_ids"],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/LocalId"
+        },
+        "space_type": {
+          "$ref": "common.schema.json#/$defs/SpaceType"
+        },
+        "floor_polygon": {
+          "$ref": "common.schema.json#/$defs/Polygon",
+          "description": "In the space frame, seen from above."
+        },
+        "floor_area_m2": {
+          "type": "number",
+          "minimum": 0
+        },
+        "object_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/LocalId"
+          },
+          "description": "Objects and built-ins whose footprint centre is in this area."
+        },
+        "keyframe_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/LocalId"
+          },
+          "description": "Keyframes taken standing in this area."
+        },
+        "photo_keyframe_id": {
+          "$ref": "common.schema.json#/$defs/LocalId",
+          "description": "The keyframe that shows the most of this area's floor, for the app to show when asking which area to redesign."
+        },
+        "confidence": {
+          "$ref": "#/$defs/MeasurementConfidence"
         }
       }
     }
