@@ -30,6 +30,7 @@ On mobile the tokens live in one theme package. Springs use Reanimated with the 
 | Corner captured | Light tick | Short tick |
 | Level reached (line turns green) | Selection tick | Short tick |
 | Room verified | Success pattern | Double tick |
+| A new room lands on My home | Soft impact | Short tick |
 | Furniture snaps to a wall | Medium impact | Short tick |
 | Collision | Rigid bump | Single strong tick |
 | Swap lands | Soft impact | Short tick |

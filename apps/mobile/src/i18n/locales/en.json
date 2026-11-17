@@ -1,15 +1,18 @@
 {
   "tabs": {
     "home": "Home",
-    "rooms": "My rooms",
     "vastu": "Vastu",
     "profile": "Profile"
   },
   "home": {
-    "headline": "Any corner, redone.",
-    "intro": "Scan a whole room, a corner or a balcony. See three ways it could look, built from real products that fit.",
-    "start": "Start scanning",
-    "worksWith": "Works with whole rooms, corners and balconies",
+    "title": "My home",
+    "addRoom": "Add a room",
+    "empty": {
+      "line": "See your room redone with furniture you can buy.",
+      "before": "Before",
+      "after": "After",
+      "picture": "A room before and after a redesign"
+    },
     "upload": {
       "waiting": "Your scan is saved on this phone",
       "uploading": "Uploading your scan, {{finished}} of {{total}}",
@@ -286,9 +289,19 @@
     "finish": "Done"
   },
   "rooms": {
-    "title": "My rooms",
-    "emptyTitle": "No rooms yet",
-    "emptyBody": "Rooms you scan and designs you save will appear here."
+    "defaultName": "Room {{number}}",
+    "updated": {
+      "today": "Updated today",
+      "yesterday": "Updated yesterday",
+      "daysAgo": "Updated {{count}} days ago",
+      "lastMonth": "Updated last month",
+      "monthsAgo": "Updated {{count}} months ago"
+    },
+    "designs": {
+      "none": "No designs yet",
+      "count_one": "{{count}} design",
+      "count_other": "{{count}} designs"
+    }
   },
   "vastu": {
     "title": "Vastu",
