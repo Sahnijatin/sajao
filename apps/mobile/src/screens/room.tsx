@@ -8,6 +8,7 @@ import type { Dimension } from "@sajao/schemas";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Linking, Pressable, ScrollView, Switch, useWindowDimensions, View } from "react-native";
+import { DesignPlanView } from "@/components/design-plan-view";
 import { Segmented } from "@/components/segmented";
 import { twinViewerEnabled } from "@/features";
 import { isApprox, leastCertain, wallName } from "@/rooms/measures";
@@ -26,6 +27,8 @@ import { formatArea, formatLength, type LengthUnits } from "@/utils/format-lengt
 export const ROOM_TABS = ["room", "designs", "shopping"] as const;
 export type RoomTab = (typeof ROOM_TABS)[number];
 
+/** The plan's box: a little wider than tall, like most rooms. */
+const PLAN_ASPECT = 0.85;
 /** Stills are portrait: three wide by four tall. */
 const STILL_ASPECT = 3 / 4;
 
@@ -110,16 +113,21 @@ function RoomTabBody({
   content,
   units,
   show3d,
+  look,
 }: {
   content: RoomContent;
   units: LengthUnits;
   show3d: boolean;
+  /** The look whose furniture the plan shows; none draws the room alone. */
+  look: RoomLook | undefined;
 }) {
   const { t } = useTranslation();
   const { tokens, tier } = useTheme();
   const { spacing, radius } = tokens;
   const { width } = useWindowDimensions();
   const cardWidth = Math.round((width - spacing.gutter * 2) * 0.86);
+  // The plan fills its card: the screen less the page and card padding.
+  const planWidth = width - spacing.gutter * 4;
   const measures = content.measures;
   // The source and error band of a value. Several dimensions of one thing
   // (a door's width and height) share a line: the least certain one speaks.
@@ -254,13 +262,30 @@ function RoomTabBody({
         </Card>
       ) : null}
 
-      {/* The furnished floor plan goes here when it is built. */}
-      <Card testID="room-plan-slot" style={{ gap: spacing.xs }}>
-        <Text variant="captionStrong" tone="tertiary">
-          {t("room.plan.title")}
-        </Text>
-        <Text tone="secondary">{t("room.plan.body")}</Text>
-      </Card>
+      {/* The plan: the room to scale with the chosen look's furniture in place. */}
+      {content.shell ? (
+        <Card testID="room-plan-slot" style={{ gap: spacing.md }}>
+          <Text variant="captionStrong" tone="tertiary">
+            {look
+              ? t("room.plan.titleFor", { look: t(`design.slot.${look.design.slot}`) })
+              : t("room.plan.title")}
+          </Text>
+          <View style={{ alignItems: "center" }}>
+            <DesignPlanView
+              design={look?.design ?? null}
+              shell={content.shell}
+              units={units}
+              width={planWidth}
+              height={Math.round(planWidth * PLAN_ASPECT)}
+            />
+          </View>
+          {content.shell.walls.some((wall) => wall.length.source !== "measured") ? (
+            <Text variant="caption" tone="tertiary">
+              {t("room.plan.softEdge")}
+            </Text>
+          ) : null}
+        </Card>
+      ) : null}
 
       {content.sample ? <Sample text={t("room.sample")} /> : null}
     </>
@@ -506,7 +531,9 @@ export function RoomScreen({
         selected={tab}
         onSelect={setTab}
       />
-      {tab === "room" ? <RoomTabBody content={content} units={units} show3d={show3d} /> : null}
+      {tab === "room" ? (
+        <RoomTabBody content={content} units={units} show3d={show3d} look={look} />
+      ) : null}
       {tab !== "room" && !offered ? (
         // Any space can be scanned; designs are made for living rooms and bedrooms for now.
         <Card testID="designs-coming">

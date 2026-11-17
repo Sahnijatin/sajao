@@ -7,6 +7,8 @@ import { type RoomContent, roomContent } from "@/rooms/room-content";
 import { RoomScreen, RoomWaiting } from "@/screens/room";
 import { useSettings } from "@/state/settings";
 
+// Skia ships ESM that Jest does not load; the plan's numbers are plain text over it.
+jest.mock("@/components/plan-canvas", () => ({ PlanCanvas: () => null }));
 const mockHaptic = jest.fn();
 jest.mock("@sajao/ui", () => ({
   ...jest.requireActual("@sajao/ui"),
@@ -360,5 +362,63 @@ describe("a room with nothing ready yet", () => {
     ).toBeTruthy();
     expect(screen.queryAllByRole("tab")).toHaveLength(0);
     expect(screen.queryByText(/sample|₹/i)).toBeNull();
+  });
+});
+
+describe("the plan on the Room tab", () => {
+  it("draws the room with the chosen look's furniture, with wall lengths and the tightest gaps", async () => {
+    await show();
+    expect(screen.getByText("Floor plan, Best match")).toBeTruthy();
+    const plan = within(screen.getByTestId("room-plan"));
+    expect(screen.getByLabelText("Plan of your room with 4 items")).toBeTruthy();
+    expect(plan.getAllByText("420 cm")).toHaveLength(2);
+    expect(plan.getAllByText("340 cm")).toHaveLength(2);
+    // The sofa stands 12.5 cm off the far wall.
+    expect(plan.getByText("13 cm")).toBeTruthy();
+    expect(
+      screen.getByText("Walls not yet checked with a tape are drawn with a soft edge."),
+    ).toBeTruthy();
+  });
+
+  it("follows the look chosen on Designs", async () => {
+    await show();
+    await openTab("Designs");
+    await fireEvent.press(screen.getByText("Bold"));
+    await openTab("Room");
+    expect(screen.getByText("Floor plan, Bold")).toBeTruthy();
+    expect(screen.getByLabelText("Plan of your room with 5 items")).toBeTruthy();
+  });
+
+  it("shows lengths in feet and inches when that is the setting", async () => {
+    await act(async () => {
+      useSettings.setState({ units: "ft_in" });
+    });
+    await show();
+    expect(within(screen.getByTestId("room-plan")).getAllByText("13 ft 9 in")).toHaveLength(2);
+  });
+
+  it("draws the room alone for a space with no designs", async () => {
+    await show({ ...real, spaceType: "balcony" });
+    expect(screen.getByText("Floor plan")).toBeTruthy();
+    expect(screen.getByLabelText("Plan of your room with 0 items")).toBeTruthy();
+  });
+
+  it("drops the soft-edge note once every wall is tape-measured, and the plan when there is no outline", async () => {
+    const shell = sample.shell!;
+    const measured = {
+      ...shell,
+      walls: shell.walls.map((wall) => ({
+        ...wall,
+        length: { ...wall.length, source: "measured" as const },
+      })),
+    } as typeof shell;
+    const view = await show({ ...real, shell: measured });
+    expect(screen.queryByText(/soft edge/)).toBeNull();
+    await view.rerender(
+      <ThemeProvider tier="standard" reducedMotion>
+        <RoomScreen content={{ ...real, shell: null }} />
+      </ThemeProvider>,
+    );
+    expect(screen.queryByTestId("room-plan-slot")).toBeNull();
   });
 });

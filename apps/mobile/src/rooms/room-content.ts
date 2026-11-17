@@ -6,6 +6,7 @@
 // content exists, and the screens say the room is being prepared.
 import type { Design, SpaceDirection, SpaceTwin, SpaceType } from "@sajao/schemas";
 import sampleTwin from "../../../../packages/schemas/fixtures/v1/valid/space-twin.json";
+import type { PlanShell } from "./design-plan";
 import { measuresFromTwin, type RoomMeasures } from "./measures";
 import type { RoomStill } from "./rooms";
 import { SAMPLE_DESIGNS } from "./sample-designs";
@@ -37,6 +38,8 @@ export interface RoomContent {
    * the twin exists.
    */
   measures: RoomMeasures | null;
+  /** The room's measured outline, walls and openings, for the plan; null until the twin exists. */
+  shell: PlanShell | null;
   /** Which way the room faces; null until the scan has a compass reading. */
   direction: SpaceDirection | null;
 }
@@ -63,6 +66,7 @@ const SAMPLE: RoomContent = {
   sample: true,
   spaceType: twin.space_type,
   measures: measuresFromTwin(twin),
+  shell: twin.shell,
   // No compass reading in the sample, so the Vastu view stays off.
   direction: null,
   heroViews: ([0, 1, 2] as const).map((view) => ({
