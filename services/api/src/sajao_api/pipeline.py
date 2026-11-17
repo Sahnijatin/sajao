@@ -16,6 +16,8 @@ class PipelineLauncher(Protocol):
 
     async def start_designs(self, room_id: str, request_id: str) -> None: ...
 
+    async def start_account_deletion(self, user_id: str) -> None: ...
+
 
 class RecordingLauncher:
     """Starts nothing and remembers what was asked: for development and tests."""
@@ -23,12 +25,16 @@ class RecordingLauncher:
     def __init__(self) -> None:
         self.rooms: list[str] = []
         self.designs: list[tuple[str, str]] = []
+        self.deletions: list[str] = []
 
     async def start_room(self, room_id: str) -> None:
         self.rooms.append(room_id)
 
     async def start_designs(self, room_id: str, request_id: str) -> None:
         self.designs.append((room_id, request_id))
+
+    async def start_account_deletion(self, user_id: str) -> None:
+        self.deletions.append(user_id)
 
 
 class ModalLauncher:
@@ -48,3 +54,6 @@ class ModalLauncher:
 
     async def start_designs(self, room_id: str, request_id: str) -> None:
         await self._spawn("run_designs", room_id, request_id)
+
+    async def start_account_deletion(self, user_id: str) -> None:
+        await self._spawn("delete_account", user_id)
