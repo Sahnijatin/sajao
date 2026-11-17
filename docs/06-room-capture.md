@@ -60,6 +60,13 @@ The Space Profile card shows what we found (the space type and size, with a Chan
 
 On Done the phone uploads every file of the package with the resumable uploader (small files first, the video last), then registers the capture with the API (`POST /v1/captures`). The API validates the Capture object, checks that every storage key belongs to the caller, and stores it for the twin worker. The capture id is chosen on the phone when the scan starts, so both steps are safe to repeat after a lost connection or an app restart: finished files are skipped and registering again returns the stored capture.
 
+The upload does not need the app to stay open. Several files go up at once. The scan is remembered on the phone until its upload is done, and an upload that stopped starts again by itself when the app opens or comes back to the front; no tap is needed. While the person is in another app:
+
+- iPhone: each file that fits in one part is handed to the system's background transfer service, which carries on after the app is suspended. The files not yet handed over, and the registration, follow when the app next runs.
+- Android: a foreground service with a quiet notification ("Uploading your scan") holds the app's process, so the upload runs to the end.
+
+Force-closing the app stops the upload on both platforms; it resumes on the next open.
+
 ## Upload safety and privacy
 
 Non-room or explicit images are rejected by a classifier. Faces and personal photos are blurred before storage. Raw video is deleted after processing.
