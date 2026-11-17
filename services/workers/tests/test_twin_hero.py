@@ -37,11 +37,13 @@ def view(
     depth_m: float = 3.0,
     yaw_deg: float = 0.0,
     pitch_deg: float = 0.0,
+    height_m: float = 1.0,
 ) -> FrameView:
     pose = camera(yaw_deg)
     return FrameView(
         keyframe_id=name,
         voxels=np.array(sorted(cells), dtype=np.int64),
+        heights=np.full(len(cells), height_m),
         sharpness=sharp,
         median_depth_m=depth_m,
         position=pose[:3, 3],
@@ -72,6 +74,8 @@ def test_a_frame_view_measures_what_the_keyframe_sees() -> None:
     assert seen.median_depth_m == pytest.approx(2.5)
     assert seen.pitch_deg == pytest.approx(0.0)
     assert seen.forward == pytest.approx([1.0, 0.0, 0.0])
+    assert len(seen.heights) == len(seen.voxels)
+    assert seen.heights.min() < 0 < seen.heights.max()  # cells above and below the camera
     assert len(seen.voxels) > 20
     assert not set(seen.voxels) & set(turned.voxels)  # opposite walls share no cell
 
@@ -80,9 +84,23 @@ def test_a_level_view_across_the_room_is_framed_better_than_a_close_up_or_a_floo
     across = view("a", range(10))
     close = view("b", range(10), depth_m=0.6)
     floor = view("c", range(10), pitch_deg=-60.0)
+    down_a_little = view("d", range(10), pitch_deg=-15.0)
+    up_a_little = view("e", range(10), pitch_deg=15.0)
 
     assert framing(across) == pytest.approx(1.0)
     assert framing(close) < 0.5 and framing(floor) < 0.5
+    assert framing(down_a_little) == pytest.approx(1.0)  # shows the floor and furniture
+    assert framing(up_a_little) < 1.0  # shows ceiling
+
+
+def test_ceiling_earns_a_view_nothing() -> None:
+    views = [view(f"k{i}", range(i * 30, i * 30 + 30), yaw_deg=i * 40) for i in range(8)]
+    # Sees more cells than any other view, all of them 2.6 m above the floor.
+    views.append(view("ceiling", range(1000, 1400), yaw_deg=200, height_m=3.6))
+
+    ids = [p["keyframe_id"] for p in pick_hero_views(views)]
+
+    assert "ceiling" not in ids and len(ids) >= 6
 
 
 def test_hero_views_cover_the_room_in_as_few_views_as_possible() -> None:

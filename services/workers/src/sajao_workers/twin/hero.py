@@ -12,7 +12,7 @@ the image says how sharp it is, the poses say where the phone stood.
 """
 
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import numpy as np
 
@@ -30,6 +30,11 @@ MIN_APART_M, MIN_APART_DEG = 0.4, 25.0
 # Framing: a view this far from what it looks at shows the room, not one object.
 ROOM_VIEW_DEPTH_M = 2.0
 LEVEL_PITCH_DEG = 20.0
+# Looking up shows ceiling, so a view may tilt up far less than down.
+LEVEL_PITCH_UP_DEG = 5.0
+# Only the part of the room people live in counts as shown: from the floor to
+# this height. Ceiling and the top of the walls earn a view nothing.
+LIVING_HEIGHT_M = 1.8
 # The blurriest keyframes are never hero views.
 BLURRY_SHARE = 0.3
 
@@ -40,6 +45,7 @@ class FrameView:
 
     keyframe_id: str
     voxels: np.ndarray  # sorted unique keys of the 10 cm cells its depth lands in
+    heights: np.ndarray  # each cell's height along the up axis, metres (world)
     sharpness: float
     median_depth_m: float
     position: np.ndarray  # world, metres
@@ -85,9 +91,11 @@ def frame_view(
     # One key per cell: rooms are far smaller than 2^20 cells of 10 cm on a side.
     keys = ((cells[:, 0] + 2**20) << 42) | ((cells[:, 1] + 2**20) << 21) | (cells[:, 2] + 2**20)
     forward = pose[:3, 2] / np.linalg.norm(pose[:3, 2])
+    voxels, first = np.unique(keys, return_index=True)
     return FrameView(
         keyframe_id=keyframe_id,
-        voxels=np.unique(keys),
+        voxels=voxels,
+        heights=cells[first, up_axis] * VOXEL_M,
         sharpness=sharpness(grey),
         median_depth_m=float(np.median(z)) if len(z) else 0.0,
         position=pose[:3, 3].copy(),
@@ -99,7 +107,8 @@ def frame_view(
 def framing(view: FrameView) -> float:
     """1 for a level view across the room, less for close-ups and steep tilts."""
     depth = float(np.clip(view.median_depth_m / ROOM_VIEW_DEPTH_M, 0.25, 1.0))
-    tilt = max(0.0, abs(view.pitch_deg) - LEVEL_PITCH_DEG)
+    level = LEVEL_PITCH_UP_DEG if view.pitch_deg > 0 else LEVEL_PITCH_DEG
+    tilt = max(0.0, abs(view.pitch_deg) - level)
     return depth * max(0.25, 1.0 - tilt / 40.0)
 
 
@@ -111,10 +120,17 @@ def _apart(a: FrameView, b: FrameView) -> bool:
 
 def pick_hero_views(views: Sequence[FrameView]) -> list[dict[str, float | str]]:
     """Up to HERO_MAX keyframes, best first: each adds the most room not yet
-    shown, weighted by framing, among the sharp keyframes."""
-    usable = [v for v in views if len(v.voxels)]
-    if not usable:
+    shown, weighted by framing, among the sharp keyframes. Room means the
+    living zone, floor to LIVING_HEIGHT_M; coverage is a share of that."""
+    if not any(len(v.voxels) for v in views):
         return []
+    # The floor is the low end of everything seen (not the minimum: depth has outliers).
+    floor = float(np.quantile(np.concatenate([v.heights for v in views]), 0.02))
+    usable = []
+    for v in views:
+        living = v.heights <= floor + LIVING_HEIGHT_M
+        if living.any():
+            usable.append(replace(v, voxels=v.voxels[living], heights=v.heights[living]))
     room = np.unique(np.concatenate([v.voxels for v in usable]))
     cut = float(np.quantile([v.sharpness for v in usable], BLURRY_SHARE))
     sharp = [v for v in usable if v.sharpness >= cut]
