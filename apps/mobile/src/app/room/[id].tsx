@@ -1,9 +1,10 @@
-import { Redirect, Stack, useLocalSearchParams } from "expo-router";
+import { Redirect, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { roomName } from "@/rooms/room-card";
 import { useEffect } from "react";
 import { useRoomContent } from "@/rooms/room-content";
 import { loadRoomContent } from "@/rooms/room-source";
+import { roomSpaceProfile } from "@/rooms/room-space";
 import { RoomScreen, RoomWaiting } from "@/screens/room";
 import { useRooms, useRoomsLoaded } from "@/state/rooms";
 
@@ -11,6 +12,7 @@ export { RouteErrorBoundary as ErrorBoundary } from "@/components/route-error-bo
 
 export default function RoomRoute() {
   const { t } = useTranslation();
+  const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const loaded = useRoomsLoaded();
   const room = useRooms((state) => state.rooms.find((each) => each.id === id));
@@ -25,7 +27,21 @@ export default function RoomRoute() {
   return (
     <>
       <Stack.Screen options={{ title: roomName(room, t) }} />
-      {content ? <RoomScreen content={content} /> : <RoomWaiting />}
+      {content ? (
+        <RoomScreen
+          content={content}
+          redesignAreaId={room.redesignAreaId ?? null}
+          onChooseArea={() => router.push({ pathname: "/areas", params: { room: id } })}
+          // Measuring with a tape happens on the space profile, where there is one.
+          onMeasure={
+            roomSpaceProfile(id)
+              ? () => router.push({ pathname: "/space", params: { room: id } })
+              : undefined
+          }
+        />
+      ) : (
+        <RoomWaiting />
+      )}
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo } from "react";
-import { designsOffered, sampleContent } from "@/rooms/room-content";
+import { afterMeasured } from "@/rooms/flow";
+import { designsOffered, roomContent, sampleContent } from "@/rooms/room-content";
 import { roomGeneration } from "@/rooms/room-source";
 import { GeneratingScreen } from "@/screens/generating";
 import { useRooms } from "@/state/rooms";
@@ -15,13 +16,25 @@ export default function GeneratingRoute() {
   const real = useMemo(() => roomGeneration(), []);
   if (!room) return <Redirect href="/" />;
   const toRoom = { pathname: "/room/[id]", params: { id: room } } as const;
+  // A scan of several areas stops once to ask which one to redesign.
+  const askArea = () => {
+    const areas = roomContent(room)?.areas.length ?? 0;
+    const chosen = Boolean(
+      useRooms.getState().rooms.find((each) => each.id === room)?.redesignAreaId,
+    );
+    return afterMeasured({ areas, chosen }) === "areas";
+  };
   if (real) {
     return (
       <GeneratingScreen
         roomId={room}
         source={real}
         designs={false}
-        onDone={() => router.replace(toRoom)}
+        onDone={() =>
+          router.replace(
+            askArea() ? { pathname: "/areas", params: { room, next: "room" } } : toRoom,
+          )
+        }
         onLeave={() => router.dismissTo("/")}
       />
     );
@@ -42,7 +55,11 @@ export default function GeneratingRoute() {
           const still = content.looks[1]?.still ?? content.looks[0]?.still;
           if (still) useRooms.getState().setRoomDesigns(room, content.looks.length, still);
         }
-        router.replace({ pathname: "/reveal", params: { room } });
+        router.replace(
+          askArea()
+            ? { pathname: "/areas", params: { room, next: "reveal" } }
+            : { pathname: "/reveal", params: { room } },
+        );
       }}
     />
   );

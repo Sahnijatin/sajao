@@ -1,12 +1,12 @@
 import { useRouter } from "expo-router";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Platform } from "react-native";
+import { Alert } from "react-native";
 import { startCaptureUpload } from "@/capture/package/start-upload";
 import { afterReview } from "@/rooms/flow";
+import { importFromGallery } from "@/rooms/media-import";
 import { roomSpaceProfile } from "@/rooms/room-space";
 import { CaptureScreen } from "@/screens/capture";
-import { useCaptureStore } from "@/state/capture";
 import { useRooms } from "@/state/rooms";
 import { useTaste } from "@/state/taste";
 
@@ -20,25 +20,11 @@ export default function CaptureRoute() {
 
   // Photos or a video the person already has: picked, then uploaded like a scan.
   const usePhotos = async () => {
-    try {
-      const { pickFromGallery } = await import("@/import/pick");
-      const picked = await pickFromGallery();
-      if (picked.state === "cancelled") return;
-      if (picked.state === "problem") {
-        Alert.alert(t("import.problemTitle"), t(`import.problems.${picked.problem}`));
-        return;
-      }
-      useCaptureStore.getState().setLast(picked.capture);
-      // Imported photos or a video become a room on My home, like a scan.
-      useRooms.getState().addRoomForCapture(picked.capture.captureId);
-      void startCaptureUpload(picked.capture, {
-        platform: Platform.OS === "ios" ? "ios" : "android",
-        tier: "standard",
-        has_ar: false,
-      });
+    const result = await importFromGallery();
+    if (result.status === "problem") {
+      Alert.alert(t("import.problemTitle"), t(`import.problems.${result.problem}`));
+    } else if (result.status === "imported") {
       router.back();
-    } catch {
-      Alert.alert(t("import.problemTitle"), t("import.problems.failed"));
     }
   };
 

@@ -10,6 +10,7 @@ import Animated, { Easing, FadeIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BeforeAfter } from "@/components/before-after";
 import { UploadStatus } from "@/components/upload-status";
+import { importOffered } from "@/rooms/media-import";
 import { RoomCard } from "@/rooms/room-card";
 import { sortRooms } from "@/rooms/rooms";
 import { samplesAllowed } from "@/rooms/samples";
@@ -27,6 +28,15 @@ export function HomeScreen() {
   const saved = useRooms((state) => state.rooms);
   const rooms = useMemo(() => sortRooms(saved), [saved]);
   const addRoom = () => router.push("/capture");
+  // The second way in: photos or a video already on the phone.
+  const usePhotos = importOffered() ? (
+    <Button
+      label={t("home.usePhotos")}
+      variant="ghost"
+      size="small"
+      onPress={() => router.push("/import")}
+    />
+  ) : null;
 
   // A soft tick as a new room's card lands, when you come back from adding it.
   const seen = useRef<number | null>(null);
@@ -82,7 +92,10 @@ export function HomeScreen() {
             <Text variant="title" accessibilityRole="header">
               {t("home.empty.line")}
             </Text>
-            <Button label={t("home.addRoom")} onPress={addRoom} />
+            <View style={{ gap: spacing.lg }}>
+              <Button label={t("home.addRoom")} onPress={addRoom} />
+              {usePhotos}
+            </View>
           </Animated.View>
           <UploadStatus />
         </ScrollView>
@@ -114,7 +127,10 @@ export function HomeScreen() {
             />
           </Animated.View>
         ))}
-        <Button label={t("home.addRoom")} variant="outline" onPress={addRoom} />
+        <View style={{ gap: spacing.lg }}>
+          <Button label={t("home.addRoom")} variant="outline" onPress={addRoom} />
+          {usePhotos}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

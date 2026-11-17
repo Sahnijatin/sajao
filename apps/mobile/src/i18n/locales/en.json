@@ -33,7 +33,8 @@
         "other": "We could not measure this room. Please scan again",
         "no_ar_data": "Your pictures are uploaded. Rooms from photos and videos are not ready yet"
       }
-    }
+    },
+    "usePhotos": "Use photos or a video"
   },
   "capture": {
     "close": "Close",
@@ -197,7 +198,8 @@
       "no_walls": "We couldn't find the walls. Scan the room again, keeping the walls in view as you go.",
       "upload": "Your scan didn't upload. Check your connection, then try again from My home. Nothing is lost.",
       "unknown": "Something went wrong on our side. Your scan is saved, and you can try again from My home.",
-      "back": "Back to My home"
+      "back": "Back to My home",
+      "no_ar_data": "Your pictures are uploaded. Rooms from photos and videos are not ready yet"
     }
   },
   "reveal": {
@@ -258,7 +260,8 @@
       "titleFor": "Floor plan, {{look}}",
       "picture_one": "Plan of your room with {{count}} item",
       "picture_other": "Plan of your room with {{count}} items",
-      "softEdge": "Walls not yet checked with a tape are drawn with a soft edge."
+      "softEdge": "Walls not yet checked with a tape are drawn with a soft edge.",
+      "openEdge": "A dashed line is an open side: the room carries on there, with no wall."
     },
     "sample": "These are sample views and measurements. Yours appear here when they are ready.",
     "approx": "approx.",
@@ -266,6 +269,21 @@
     "waiting": {
       "title": "Getting your room ready",
       "body": "Your photos, measurements and designs appear here when they are ready."
+    },
+    "confidence": {
+      "taped": {
+        "title": "Checked with a tape",
+        "body": "These sizes were checked with a tape measure."
+      },
+      "measured": {
+        "title": "Measured by your scan",
+        "body": "These sizes come from scanning the room."
+      },
+      "estimated": {
+        "title": "Estimated",
+        "body": "These sizes are worked out from photos. Measure to confirm before you buy."
+      },
+      "measure": "Measure to confirm"
     }
   },
   "designs": {
@@ -288,7 +306,8 @@
       "check": "Needs a fit check",
       "tight": "A tight fit",
       "does_not_fit": "Does not fit here",
-      "fitsWith": "Fits with {{spare}} to spare"
+      "fitsWith": "Fits with {{spare}} to spare",
+      "confirm": "Measure your room to confirm the fit"
     },
     "sample": "These are sample products. Links open when your own designs are ready."
   },
@@ -478,9 +497,33 @@
     "reveal": "Your room",
     "room": "Room",
     "space": "Your space",
-    "taste": "Your taste"
+    "taste": "Your taste",
+    "areas": "Choose an area",
+    "import": "Photos or a video"
+  },
+  "areas": {
+    "title": "Which one should we redesign?",
+    "body_one": "Your scan covers {{count}} area.",
+    "body_other": "Your scan covers {{count}} areas. Pick the one to redesign.",
+    "others": "The others stay in this room with their photos and measurements.",
+    "choose": "Redesign this one",
+    "notYet": "Designs for this kind of space are coming",
+    "unnamed": "Area {{number}}",
+    "chooseFirst_one": "Your scan covers {{count}} area.",
+    "chooseFirst_other": "Your scan covers {{count}} areas. Choose one to see its designs.",
+    "chooseOne": "Choose an area",
+    "designsFor": "Designs for: {{area}}",
+    "change": "Change"
   },
   "import": {
+    "title": "Use photos or a video",
+    "body": "Already have photos or a video of the room? Use them to get a redesign and a shopping list.",
+    "tipsTitle": "For the best result",
+    "tipWalls": "Show every wall, from the floor up.",
+    "tipLight": "Use pictures taken in good light.",
+    "estimated": "Sizes from photos are estimates. Scan the room, or measure it, to confirm what fits.",
+    "choose": "Choose photos or a video",
+    "scanInstead": "Scan the room instead",
     "problemTitle": "We could not use that",
     "problems": {
       "nothing": "Nothing was chosen. Pick some photos of the room, or one video.",
@@ -490,6 +533,7 @@
       "videoTooShort": "That video is very short. Choose one of 5 seconds or more.",
       "videoTooLong": "That video is long. Choose one of 2 minutes or less.",
       "failed": "Something went wrong opening your photos. Please try again."
-    }
+    },
+    "tipCount": "Choose up to 20 photos, or one video of 5 seconds to 2 minutes."
   }
 }

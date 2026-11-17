@@ -53,11 +53,13 @@ beforeEach(async () => {
 });
 
 describe("My home", () => {
-  it("before the first room: one before and after, one line, one button", async () => {
+  it("before the first room: one before and after, one line, and the two ways in", async () => {
     await show(<HomeScreen />);
     expect(screen.getByLabelText("A room before and after a redesign")).toBeTruthy();
     expect(screen.getByText("See your room redone with furniture you can buy.")).toBeTruthy();
-    expect(screen.getAllByRole("button")).toHaveLength(1);
+    expect(screen.getAllByRole("button")).toHaveLength(2);
+    expect(screen.getByRole("button", { name: "Add a room" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Use photos or a video" })).toBeTruthy();
     expect(screen.queryByText(/sign in/i)).toBeNull();
     expect(screen.queryByText(/living room|bedroom/i)).toBeNull();
     expect(screen.queryByText(/scan/i)).toBeNull();
@@ -69,6 +71,14 @@ describe("My home", () => {
     expect(screen.queryByLabelText("A room before and after a redesign")).toBeNull();
     expect(screen.getByText("See your room redone with furniture you can buy.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Add a room" })).toBeTruthy();
+    // Photos and videos are not offered until something can take them.
+    expect(screen.queryByRole("button", { name: "Use photos or a video" })).toBeNull();
+  });
+
+  it("Use photos or a video opens the import screen", async () => {
+    await show(<HomeScreen />);
+    await fireEvent.press(screen.getByRole("button", { name: "Use photos or a video" }));
+    expect(mockPush).toHaveBeenCalledWith("/import");
   });
 
   it("Add a room is the only way to the scan", async () => {

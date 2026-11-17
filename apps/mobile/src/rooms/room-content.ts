@@ -8,6 +8,7 @@ import type { Design, SpaceDirection, SpaceTwin, SpaceType } from "@sajao/schema
 import sampleTwin from "../../../../packages/schemas/fixtures/v1/valid/space-twin.json";
 import type { PlanShell } from "./design-plan";
 import { measuresFromTwin, type RoomMeasures } from "./measures";
+import type { ConfidenceLevel } from "./room-shape";
 import type { RoomStill } from "./rooms";
 import { SAMPLE_DESIGNS } from "./sample-designs";
 import { samplesAllowed } from "./samples";
@@ -22,6 +23,22 @@ export interface RoomLook {
   /** The design this look renders. Price, items and fit all come from it. */
   design: Design;
   still: RoomStill;
+}
+
+/**
+ * One area of a scan that went through more than one space (a living room
+ * and the dining area beyond a doorway). The server splits a scan into areas
+ * at doorway-width gaps; an open-plan room stays one area.
+ */
+export interface RoomArea {
+  id: string;
+  spaceType: SpaceType | null;
+  /** A photo of this area to recognise it by; null until the server sends one. */
+  photo: RoomStill | null;
+  heroViews: readonly HeroView[];
+  measures: RoomMeasures | null;
+  shell: PlanShell | null;
+  confidence: ConfidenceLevel | null;
 }
 
 export interface RoomContent {
@@ -43,6 +60,46 @@ export interface RoomContent {
   shell: PlanShell | null;
   /** Which way the room faces; null until the scan has a compass reading. */
   direction: SpaceDirection | null;
+  /** How the room's numbers were got: taped, measured by the scan, or estimated. null until known. */
+  confidence: ConfidenceLevel | null;
+  /**
+   * The areas of a scan that covers more than one. Empty for a scan of one
+   * area, which is most scans. One area is redesigned; the others keep
+   * their photos and measurements.
+   */
+  areas: readonly RoomArea[];
+}
+
+/** True when the scan covers more than one area, so one must be chosen to redesign. */
+export function hasAreas(content: RoomContent): boolean {
+  return content.areas.length > 1;
+}
+
+/** The area to redesign: the one chosen, if it is still there. */
+export function redesignArea(content: RoomContent, chosenId: string | null): RoomArea | null {
+  if (!hasAreas(content)) return null;
+  return content.areas.find((area) => area.id === chosenId) ?? null;
+}
+
+/**
+ * The room as one of its areas: that area's photos, measurements, outline
+ * and kind of space. The looks belong to the area being redesigned, so any
+ * other area has none.
+ */
+export function contentForArea(
+  content: RoomContent,
+  area: RoomArea,
+  redesigned: boolean,
+): RoomContent {
+  return {
+    ...content,
+    spaceType: area.spaceType,
+    heroViews: area.heroViews,
+    measures: area.measures,
+    shell: area.shell,
+    confidence: area.confidence,
+    looks: redesigned ? content.looks : [],
+  };
 }
 
 /** Vastu needs to know which way the room faces, from a calibrated compass. */
@@ -70,6 +127,8 @@ const SAMPLE: RoomContent = {
   shell: twin.shell,
   // No compass reading in the sample, so the Vastu view stays off.
   direction: null,
+  confidence: "measured",
+  areas: [],
   heroViews: ([0, 1, 2] as const).map((view) => ({
     id: `view-${view}`,
     still: { kind: "placeholder", look: "before", view },

@@ -20,3 +20,11 @@ export function afterReview(facts: FlowFacts): FlowStep {
 export function afterSpace(facts: Pick<FlowFacts, "hasTaste">): FlowStep {
   return facts.hasTaste ? "generating" : "taste";
 }
+
+/**
+ * Where to go once the room is measured. A scan of several areas stops to
+ * ask which one to redesign, once; everything else goes straight on.
+ */
+export function afterMeasured(facts: { areas: number; chosen: boolean }): "areas" | "on" {
+  return facts.areas > 1 && !facts.chosen ? "areas" : "on";
+}

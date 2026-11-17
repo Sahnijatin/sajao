@@ -13,6 +13,8 @@ interface RoomsState {
   addRoomForCapture(captureId: string, atMs?: number): Room;
   /** The room's designs are ready: its card shows how many, and its hero still. */
   setRoomDesigns(roomId: string, designCount: number, still: RoomStill, atMs?: number): void;
+  /** For a scan of several areas: which one to redesign. */
+  setRedesignArea(roomId: string, areaId: string): void;
 }
 
 export const useRooms = create<RoomsState>()(
@@ -30,6 +32,13 @@ export const useRooms = create<RoomsState>()(
         set({
           rooms: get().rooms.map((room) =>
             room.id === roomId ? { ...room, designCount, still, updatedAtMs: atMs } : room,
+          ),
+        });
+      },
+      setRedesignArea(roomId, areaId) {
+        set({
+          rooms: get().rooms.map((room) =>
+            room.id === roomId ? { ...room, redesignAreaId: areaId } : room,
           ),
         });
       },

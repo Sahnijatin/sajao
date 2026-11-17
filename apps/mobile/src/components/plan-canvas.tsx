@@ -1,8 +1,8 @@
-// The drawn part of the room plan: the outline with its soft error-band
-// edge, doors and windows, the design's items to scale, and the clearance
+// The drawn part of the room plan: the floor outline with its soft error-band
+// edge, walls solid and open sides dashed, doors and windows, the design's items to scale, and the clearance
 // lines. Skia only; the numbers on the plan are text laid over it.
 import { useTheme } from "@sajao/ui";
-import { Canvas, Line, Path, Skia, vec } from "@shopify/react-native-skia";
+import { Canvas, DashPathEffect, Line, Path, Skia, vec } from "@shopify/react-native-skia";
 import { useMemo } from "react";
 import type { DesignPlan, Px } from "@/rooms/design-plan";
 
@@ -39,7 +39,29 @@ export function PlanCanvas({
         />
       ) : null}
       <Path path={outline} color={colors.surface} />
-      <Path path={outline} color={colors.ink} style="stroke" strokeWidth={2.5} strokeJoin="round" />
+      {/* Walls are solid. An open side, where the room runs on with no wall, is a light dashed line. */}
+      {plan.edges.map((edge, index) =>
+        edge.kind === "wall" ? (
+          <Line
+            key={`edge-${index}`}
+            p1={vec(edge.from.x, edge.from.y)}
+            p2={vec(edge.to.x, edge.to.y)}
+            color={colors.ink}
+            strokeWidth={2.5}
+            strokeCap="round"
+          />
+        ) : (
+          <Line
+            key={`edge-${index}`}
+            p1={vec(edge.from.x, edge.from.y)}
+            p2={vec(edge.to.x, edge.to.y)}
+            color={colors.inkTertiary}
+            strokeWidth={1.5}
+          >
+            <DashPathEffect intervals={[6, 6]} />
+          </Line>
+        ),
+      )}
       {plan.openings.map((opening) => (
         <Line
           key={opening.id}
