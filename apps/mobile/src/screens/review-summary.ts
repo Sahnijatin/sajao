@@ -4,13 +4,26 @@
 // Nothing here is stored or sent: the server measures the room properly.
 import { floorProgress, type Wall, wallProgress } from "@/capture/ar/surface-coverage";
 import { mappedSectors, SECTOR_COUNT, SECTOR_DEGREES } from "@/capture/coverage";
+import { type MeterMissing, meterMissing } from "@/capture/coverage-meter";
 import { moveShare } from "@/capture/motion-coverage";
-import { isSimple, mappedShare, type ScanState } from "@/capture/scan-session";
+import { isMeter, isSimple, mappedShare, type ScanState } from "@/capture/scan-session";
 
 /** A side of the room, relative to the way you are facing now. */
 export type Side = "ahead" | "left" | "behind" | "right";
 
-export type MissingArea = "floor" | "walls" | "walk" | Side;
+export type MissingArea = "floor" | "walls" | "walk" | "middle" | Side;
+
+/**
+ * What the coverage meter still wanted, in the review's words: the walk
+ * along the walls, the turn in the middle of the room, a look at the floor.
+ */
+export function missingFromMeter(missing: MeterMissing): MissingArea[] {
+  const areas: MissingArea[] = [];
+  if (missing.loopBearings.length > 0 || missing.loopPathM > 0) areas.push("walk");
+  if (missing.sweepsNeeded > 0) areas.push("middle");
+  if (missing.floorLook) areas.push("floor");
+  return areas;
+}
 
 export interface RoughSize {
   /** The longer side first, in metres, rounded to 10 cm. */
@@ -107,7 +120,10 @@ export function scanSummary(state: ScanState): ScanSummary {
   const share = Math.min(1, Math.max(0, mappedShare(state)));
   const size = roughSize(state.surfaces.walls);
   let missing: MissingArea[];
-  if (isSimple(state)) {
+  if (isMeter(state)) {
+    // Where the meter runs it decides Done, so it also says what is missing.
+    missing = missingFromMeter(meterMissing(state.meter));
+  } else if (isSimple(state)) {
     missing = missingSides(mappedSectors(state.motionCoverage.headings), state.pose.yaw);
     if (moveShare(state.motionCoverage) < SIDE_SEEN_SHARE) missing.push("walk");
   } else if (state.surfacesSeen) {
