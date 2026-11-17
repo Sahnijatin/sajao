@@ -14,6 +14,14 @@ We ingest widely and show narrowly: thousands of products come in from feeds, an
 
 Each source is a row in the Notion "Catalog sources" database with its route, app traffic rule, image permission and status.
 
+## Development catalog
+
+Until affiliate programs approve us, the design engine and the render are built on about 50 hand-curated real products for living rooms and bedrooms. Each has dimensions from its listing, several clean photos from different angles, a price, a product link and its retailer, and is loaded through the same `Product` schema and ingest command the feeds will use. It is development data only: the photos stay on a private volume, are never shipped, and are listed in the third-party register. Products shown to people in a store build still need a permitted affiliate or rental route and image permission.
+
+## Admission by fidelity
+
+Curation scores how good a product looks; the fidelity gate decides whether we can show it honestly. Every candidate is rendered by the launch approach and checked against its own listing photos, and the result (pass, fail or unverifiable) is stored on the product. Only products that pass appear in designs. The share of checkable listings per source is recorded in the Notion "Catalog sources" database and decides which sources are onboarded first.
+
 ## AI curation pipeline (offline, batch)
 
 1. **Extract.** A small language model reads titles and specs into dimensions, material, colour and finish; range rules reject impossible numbers.
