@@ -47,7 +47,7 @@ The capture never changes. A design is a twin version plus an ordered list of ed
 
 The splat is sharp where the phone stood and falls apart away from it: views from the middle of a room the phone only walked around are not usable, and streaks appear a short step off the path. So every twin carries its own viewing limits (`viewing` in the `SpaceTwin` schema), and the viewer and the reveal use nothing else.
 
-- **Hero views:** six to ten real keyframe poses, best first. Code picks them: each adds the most of the room not yet shown (10 cm cells from depth, counted from the floor to 1.8 m, so ceiling earns nothing), weighted towards level views across the room, among the sharp keyframes, and no two are near duplicates. A hero view is always a real keyframe, so its photo and its pose are exact. Hero views do not depend on the splat: a twin without one still names them.
+- **Hero views:** six to ten real keyframe poses, best first. Code picks them: each adds the most of the room not yet shown (10 cm cells from depth, counted from the floor to 1.8 m, so ceiling earns nothing), weighted towards level views across the room, among the sharp keyframes, and no two are near duplicates. A photo whose horizon is more than 10 degrees off level is not picked while enough level ones exist. A hero view is always a real keyframe, so its photo and its pose are exact. Hero views do not depend on the splat: a twin without one still names them.
 - **Orbit:** around a hero view the camera may move up to 30 cm and turn up to 15 degrees.
 - **Safe region:** the camera may stand within 30 cm of a keyframe position. `insideSafeRegion` and `clampToSafeRegion` in `@sajao/schemas/twin` are the check the viewer uses.
 

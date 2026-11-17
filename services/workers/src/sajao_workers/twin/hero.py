@@ -32,6 +32,11 @@ ROOM_VIEW_DEPTH_M = 2.0
 LEVEL_PITCH_DEG = 20.0
 # Looking up shows ceiling, so a view may tilt up far less than down.
 LEVEL_PITCH_UP_DEG = 5.0
+# Roll: how far the horizon is off level in the photo. Up to LEVEL_ROLL_DEG costs
+# nothing; a view rolled more than MAX_ROLL_DEG is never picked while enough level
+# views exist.
+LEVEL_ROLL_DEG = 4.0
+MAX_ROLL_DEG = 10.0
 # Only the part of the room people live in counts as shown: from the floor to
 # this height. Ceiling and the top of the walls earn a view nothing.
 LIVING_HEIGHT_M = 1.8
@@ -51,6 +56,7 @@ class FrameView:
     position: np.ndarray  # world, metres
     forward: np.ndarray  # world, unit
     pitch_deg: float  # up is positive
+    roll_deg: float = 0.0  # horizon off level in the photo, 0 to 45
 
 
 def sharpness(grey: np.ndarray) -> float:
@@ -101,15 +107,28 @@ def frame_view(
         position=pose[:3, 3].copy(),
         forward=forward,
         pitch_deg=float(np.degrees(np.arcsin(np.clip(forward[up_axis], -1.0, 1.0)))),
+        roll_deg=roll_degrees(pose, up_axis),
     )
 
 
+def roll_degrees(c2w: np.ndarray, up_axis: int) -> float:
+    """How far the horizon is off level in a keyframe's photo, 0 to 45 degrees.
+
+    Photos are stored in sensor orientation, so a phone held upright and one held
+    on its side are both level: roll is measured from the nearest quarter turn."""
+    right_up, down_up = float(c2w[up_axis, 0]), float(c2w[up_axis, 1])
+    turn = float(np.degrees(np.arctan2(right_up, -down_up)))
+    return abs((turn + 45.0) % 90.0 - 45.0)
+
+
 def framing(view: FrameView) -> float:
-    """1 for a level view across the room, less for close-ups and steep tilts."""
+    """1 for a level view across the room, less for close-ups, steep tilts and a
+    horizon that is off level."""
     depth = float(np.clip(view.median_depth_m / ROOM_VIEW_DEPTH_M, 0.25, 1.0))
     level = LEVEL_PITCH_UP_DEG if view.pitch_deg > 0 else LEVEL_PITCH_DEG
     tilt = max(0.0, abs(view.pitch_deg) - level)
-    return depth * max(0.25, 1.0 - tilt / 40.0)
+    rolled = max(0.0, view.roll_deg - LEVEL_ROLL_DEG)
+    return depth * max(0.25, 1.0 - tilt / 40.0) * max(0.25, 1.0 - rolled / 12.0)
 
 
 def _apart(a: FrameView, b: FrameView) -> bool:
@@ -134,6 +153,9 @@ def pick_hero_views(views: Sequence[FrameView]) -> list[dict[str, float | str]]:
     room = np.unique(np.concatenate([v.voxels for v in usable]))
     cut = float(np.quantile([v.sharpness for v in usable], BLURRY_SHARE))
     sharp = [v for v in usable if v.sharpness >= cut]
+    level = [v for v in sharp if v.roll_deg <= MAX_ROLL_DEG]
+    if len(level) >= HERO_MIN:  # a capture filmed all askew still gets hero views
+        sharp = level
     shown = np.zeros(0, dtype=np.int64)
     picked: list[FrameView] = []
     while len(picked) < HERO_MAX:
