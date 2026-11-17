@@ -249,7 +249,10 @@
     },
     "plan": {
       "title": "Floor plan",
-      "body": "A plan of your room with the furniture in place will appear here."
+      "titleFor": "Floor plan, {{look}}",
+      "picture_one": "Plan of your room with {{count}} item",
+      "picture_other": "Plan of your room with {{count}} items",
+      "softEdge": "Walls not yet checked with a tape are drawn with a soft edge."
     },
     "sample": "These are sample views and measurements. Yours appear here when they are ready.",
     "approx": "approx.",
