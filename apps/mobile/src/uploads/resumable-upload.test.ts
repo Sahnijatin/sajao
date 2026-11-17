@@ -214,6 +214,37 @@ describe("resumable upload", () => {
     expect(sliced).toEqual([[0, 4]]);
   });
 
+  it("hands a file that fits in one part to the phone's transfer service", async () => {
+    const { server, sliced, options } = setup(4);
+    const handed: string[] = [];
+    const result = await uploadResumable({
+      ...options,
+      source: { ...options.source, uri: "file:///kf-0001.jpg" },
+      putFile: async (url, uri) => {
+        handed.push(uri);
+        return server.accept(url, new ArrayBuffer(4));
+      },
+    });
+    expect(handed).toEqual(["file:///kf-0001.jpg"]);
+    expect(sliced).toEqual([]); // never read into memory
+    expect(result.key).toBe("user/file-1.mp4");
+  });
+
+  it("still sends a larger file in parts", async () => {
+    const { sliced, options } = setup(25);
+    const handed: string[] = [];
+    await uploadResumable({
+      ...options,
+      source: { ...options.source, uri: "file:///scan.mp4" },
+      putFile: async (_url, uri) => {
+        handed.push(uri);
+        return "etag";
+      },
+    });
+    expect(handed).toEqual([]);
+    expect(sliced.length).toBeGreaterThan(1);
+  });
+
   it("backs off 0.5 s, 1 s, 2 s and never more than 8 s", () => {
     expect([1, 2, 3, 4, 5, 9].map(retryDelayMs)).toEqual([500, 1000, 2000, 4000, 8000, 8000]);
   });
