@@ -12,3 +12,4 @@ docs
 services/api/openapi.json
 supabase/types
 eval/*/results
+services/catalog/data
