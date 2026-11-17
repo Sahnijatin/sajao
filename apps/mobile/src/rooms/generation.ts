@@ -6,6 +6,11 @@ import { useEffect, useState } from "react";
 export const GENERATION_STAGES = ["walls", "furniture", "looks"] as const;
 export type GenerationStage = (typeof GENERATION_STAGES)[number];
 
+/** The stages for a room: a space that gets no designs stops after its furniture is found. */
+export function stagesFor(designs: boolean): readonly GenerationStage[] {
+  return designs ? GENERATION_STAGES : GENERATION_STAGES.slice(0, 2);
+}
+
 export interface GenerationSource {
   /**
    * Calls back with the number of stages finished, 0 to 3, each time it
@@ -17,14 +22,17 @@ export interface GenerationSource {
 /** How long the stand-in spends on each stage. */
 export const SAMPLE_STAGE_MS = 2600;
 
-export function timedGeneration(stageMs: number = SAMPLE_STAGE_MS): GenerationSource {
+export function timedGeneration(
+  stageMs: number = SAMPLE_STAGE_MS,
+  stages: number = GENERATION_STAGES.length,
+): GenerationSource {
   return {
     watch(_roomId, onFinished) {
       let finished = 0;
       const timer = setInterval(() => {
         finished += 1;
         onFinished(finished);
-        if (finished >= GENERATION_STAGES.length) clearInterval(timer);
+        if (finished >= stages) clearInterval(timer);
       }, stageMs);
       return () => clearInterval(timer);
     },
@@ -41,18 +49,18 @@ export interface GenerationProgress {
   done: boolean;
 }
 
-export function progressOf(finished: number): GenerationProgress {
-  const count = Math.min(GENERATION_STAGES.length, Math.max(0, Math.floor(finished)));
-  return {
-    finished: count,
-    current: GENERATION_STAGES[count] ?? null,
-    done: count >= GENERATION_STAGES.length,
-  };
+export function progressOf(
+  finished: number,
+  stages: readonly GenerationStage[] = GENERATION_STAGES,
+): GenerationProgress {
+  const count = Math.min(stages.length, Math.max(0, Math.floor(finished)));
+  return { finished: count, current: stages[count] ?? null, done: count >= stages.length };
 }
 
 export function useGeneration(
   roomId: string,
   source: GenerationSource = SAMPLE_SOURCE,
+  stages: readonly GenerationStage[] = GENERATION_STAGES,
 ): GenerationProgress {
   const [finished, setFinished] = useState(0);
   useEffect(() => {
@@ -60,5 +68,5 @@ export function useGeneration(
     // Progress only ever moves forward, whatever order reports arrive in.
     return source.watch(roomId, (count) => setFinished((before) => Math.max(before, count)));
   }, [roomId, source]);
-  return progressOf(finished);
+  return progressOf(finished, stages);
 }

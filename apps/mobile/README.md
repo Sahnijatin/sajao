@@ -18,6 +18,10 @@ The Sajao app: Expo with Expo Router, two native tabs, English and Hindi, and a 
 | `src/uploads` | Photo resizing and resumable uploads through signed URLs. |
 | `src/utils` | Length and INR formatting. |
 
+## Samples
+
+Stand-in content (the sample room, designs, space profile, and the drawn stills) shows only where `samplesAllowed()` in `src/rooms/samples.ts` says so: development and preview builds. A store or closed-test build shows none of it; where real data is missing a screen is skipped or says the room is being prepared.
+
 ## Flags
 
 `src/features.ts` holds features that are built towards but switched off. `EXPO_PUBLIC_TWIN_VIEWER=1` on an EAS environment shows the place kept for the 3D view on the Room tab; without it the tab is hero photos and measurements only.

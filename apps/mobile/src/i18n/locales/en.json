@@ -162,7 +162,8 @@
       "walls": "Measuring your walls",
       "furniture": "Finding your furniture",
       "looks": "Designing three looks"
-    }
+    },
+    "titleRoomOnly": "Getting your room ready"
   },
   "reveal": {
     "roomTitle": "Here's your room",
@@ -223,7 +224,11 @@
     },
     "sample": "These are sample views and measurements. Yours appear here when they are ready.",
     "approx": "approx.",
-    "measureHint": "Shows where this measurement came from"
+    "measureHint": "Shows where this measurement came from",
+    "waiting": {
+      "title": "Getting your room ready",
+      "body": "Your photos, measurements and designs appear here when they are ready."
+    }
   },
   "designs": {
     "why": "Why this works",
@@ -231,7 +236,8 @@
     "check": "Some pieces need a fit check",
     "vastu": "Vastu view",
     "vastuNeedsCompass": "Needs a compass reading from your scan",
-    "vastuPoints": "Vastu points for this look appear here."
+    "vastuPoints": "Vastu points for this look appear here.",
+    "comingForSpace": "Designs for this kind of space are coming. Your photos and measurements are on the Room tab."
   },
   "shopping": {
     "total": "Total",

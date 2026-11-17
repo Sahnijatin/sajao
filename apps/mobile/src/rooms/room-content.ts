@@ -1,12 +1,15 @@
 // What a room holds once it has been through the pipeline: hero views of the
 // room as it is, and three looks, each a view of one `Design`. This is the
-// interface the twin and the design engine fill. Until they do, every room
-// gets the same sample content, marked as a sample wherever it shows.
-import type { Design, SpaceDirection, SpaceTwin } from "@sajao/schemas";
+// interface the room and design API fills. Until it does, a room gets sample
+// content, marked as a sample wherever it shows, in development and preview
+// builds only. A store or closed-test build gets nothing until the real
+// content exists, and the screens say the room is being prepared.
+import type { Design, SpaceDirection, SpaceTwin, SpaceType } from "@sajao/schemas";
 import sampleTwin from "../../../../packages/schemas/fixtures/v1/valid/space-twin.json";
 import { measuresFromTwin, type RoomMeasures } from "./measures";
 import type { RoomStill } from "./rooms";
 import { SAMPLE_DESIGNS } from "./sample-designs";
+import { samplesAllowed } from "./samples";
 
 export interface HeroView {
   id: string;
@@ -22,6 +25,8 @@ export interface RoomLook {
 export interface RoomContent {
   /** True while this is stand-in content, not made from this room's scan. */
   sample: boolean;
+  /** What kind of space this is, as detected or corrected; null until known. */
+  spaceType: SpaceType | null;
   /** The room as scanned, best view first. */
   heroViews: readonly HeroView[];
   /** Best value, best match, bold. */
@@ -41,9 +46,23 @@ export function compassCalibrated(content: RoomContent): boolean {
   return content.direction !== null && content.direction.sources.includes("compass");
 }
 
+/** At launch, designs are made for living rooms and bedrooms. Any space can be scanned. */
+export const DESIGNED_SPACES: readonly SpaceType[] = ["living_room", "bedroom"];
+
+/**
+ * Whether this kind of space gets designs. A space whose kind is not known
+ * yet is not ruled out: only a known other kind is.
+ */
+export function designsOffered(spaceType: SpaceType | null): boolean {
+  return spaceType === null || DESIGNED_SPACES.includes(spaceType);
+}
+
+const twin = sampleTwin as unknown as SpaceTwin;
+
 const SAMPLE: RoomContent = {
   sample: true,
-  measures: measuresFromTwin(sampleTwin as unknown as SpaceTwin),
+  spaceType: twin.space_type,
+  measures: measuresFromTwin(twin),
   // No compass reading in the sample, so the Vastu view stays off.
   direction: null,
   heroViews: ([0, 1, 2] as const).map((view) => ({
@@ -56,7 +75,10 @@ const SAMPLE: RoomContent = {
   })),
 };
 
-/** The content for a room. Today: the sample, for every room. */
-export function roomContent(_roomId: string): RoomContent {
-  return SAMPLE;
+/**
+ * The content for a room, or null while there is none to show. Today: the
+ * sample where samples are allowed, and nothing anywhere else.
+ */
+export function roomContent(_roomId: string): RoomContent | null {
+  return samplesAllowed() ? SAMPLE : null;
 }

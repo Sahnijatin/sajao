@@ -8,9 +8,9 @@ import { View } from "react-native";
 import Animated, { cubicBezier } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
-  GENERATION_STAGES,
   type GenerationSource,
   type GenerationStage,
+  stagesFor,
   useGeneration,
 } from "@/rooms/generation";
 
@@ -73,8 +73,11 @@ export function GeneratingScreen({
   roomId,
   onDone,
   source,
+  designs = true,
 }: {
   roomId: string;
+  /** False for a kind of space that gets no designs yet: the designing stage is left out. */
+  designs?: boolean;
   /** Every stage is finished: go to the reveal. */
   onDone: () => void;
   source?: GenerationSource;
@@ -82,7 +85,8 @@ export function GeneratingScreen({
   const { t } = useTranslation();
   const { tokens } = useTheme();
   const { colors, spacing } = tokens;
-  const progress = useGeneration(roomId, source);
+  const stages = stagesFor(designs);
+  const progress = useGeneration(roomId, source, stages);
 
   // A light tick as each stage finishes.
   const ticked = useRef(0);
@@ -110,10 +114,10 @@ export function GeneratingScreen({
         }}
       >
         <Text variant="title" accessibilityRole="header">
-          {t("generating.title")}
+          {t(designs ? "generating.title" : "generating.titleRoomOnly")}
         </Text>
         <View accessibilityLiveRegion="polite" style={{ gap: spacing.sheetBottom }}>
-          {GENERATION_STAGES.map((stage, index) => (
+          {stages.map((stage, index) => (
             <StageRow
               key={stage}
               stage={stage}
