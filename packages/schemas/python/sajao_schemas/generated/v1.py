@@ -157,6 +157,24 @@ class LocalId(RootModel[str]):
     ]
 
 
+class MeasurementConfidence(BaseModel):
+    """
+    How a room's lengths were measured. taped: a tape value the person entered checked or set them. ar_measured: the phone's AR (planes or LiDAR) measured them. estimated: a depth model guessed them from pictures, as for imported photos and videos; the app shows sizes with measure to confirm and makes no fit claim.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    level: Literal["taped", "ar_measured", "estimated"]
+    basis: Annotated[
+        Literal["tape", "ar_planes", "lidar", "depth_model"],
+        Field(description="Where the room's lengths came from."),
+    ]
+    tape_values: Annotated[
+        int | None, Field(description="Tape values the person entered for this room.", ge=0)
+    ] = None
+
+
 class Money(BaseModel):
     """
     A price. Set only from retailer data, never by a generative model.
@@ -1640,6 +1658,12 @@ class Wall(BaseModel):
     start: Point2
     end: Point2
     length: Dimension
+    kind: Annotated[
+        Literal["wall", "open"] | None,
+        Field(
+            description="What this edge of the floor polygon is. wall (the default when absent): a wall was seen here, from near the floor to near the ceiling. open: no wall was seen between the walls on either side: a doorway, the way into the next area, or a stretch that was not scanned. Open edges are passable, never a surface to place things against."
+        ),
+    ] = None
 
 
 class AddEdit(BaseModel):
@@ -2090,3 +2114,9 @@ class SpaceTwin(BaseModel):
     viewing: Viewing | None = None
     inventory: Inventory | None = None
     free_floor: FreeFloor | None = None
+    confidence: Annotated[
+        MeasurementConfidence | None,
+        Field(
+            description="How far the room's measurements can be trusted. Fit claims only at taped or ar_measured."
+        ),
+    ] = None

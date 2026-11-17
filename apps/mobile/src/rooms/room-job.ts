@@ -59,7 +59,7 @@ export async function followRoom(
 }
 
 // Reasons the app has its own words for; anything else gets the general text.
-const KNOWN_REASONS = new Set(["no_walls"]);
+const KNOWN_REASONS = new Set(["no_walls", "no_ar_data"]);
 
 /** The message key for a room's job. */
 export function roomMessage(room: RoomJob): string {

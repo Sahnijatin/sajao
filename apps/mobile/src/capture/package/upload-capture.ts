@@ -45,7 +45,7 @@ export interface RegisterCaptureBody {
   media: {
     id: string;
     kind: "photo";
-    origin: "camera";
+    origin: "camera" | "gallery";
     storage_key: string;
     width_px: number;
     height_px: number;
@@ -66,7 +66,7 @@ export function registerBody(
 ): RegisterCaptureBody {
   const first = uploaded.keyframes[0];
   // Keyframes are stored in sensor orientation; without intrinsics the size is the camera's usual one.
-  const size = first.intrinsics ?? { width_px: 1920, height_px: 1440 };
+  const size = first.intrinsics ?? local.firstPictureSize ?? { width_px: 1920, height_px: 1440 };
   return {
     id: local.captureId,
     device,
@@ -74,7 +74,7 @@ export function registerBody(
       {
         id: mediaId,
         kind: "photo",
-        origin: "camera",
+        origin: local.origin ?? "camera",
         storage_key: first.image,
         width_px: size.width_px,
         height_px: size.height_px,

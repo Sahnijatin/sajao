@@ -215,3 +215,11 @@ async def test_a_room_stores_the_space_twin_its_last_stage_produced(tmp_path: Pa
 
     assert run.outcome == "done"
     assert board.twin == {"walls": 4}
+
+
+async def test_imported_pictures_have_nothing_measured_and_say_so(tmp_path: Path) -> None:
+    steps, board = runner(tmp_path), Board()
+    imported = {"id": "capture-2", "package": {"ar": {"tracking": "none"}}}
+    run = await run_room(steps, board, Files({}), ROOM, imported)
+    assert run.outcome == "failed"
+    assert board.moves == [("measure", "failed", "no_ar_data", None)]
