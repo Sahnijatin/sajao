@@ -52,7 +52,9 @@ class CaptureRecorder(
    */
   fun offer(image: YuvCopy, sharpness: Double, frame: FrameSnapshot, depth: RawDepth?) {
     val elapsedMs = SystemClock.elapsedRealtime() - startedAt
-    val cell = KeyframeGate.cellFor(frame.yaw, frame.pitch, elapsedMs)
+    val cell = KeyframeGate.cellFor(
+      frame.yaw, frame.pitch, elapsedMs, frame.position?.get(0), frame.position?.get(2),
+    )
     if (!gate.shouldSave(cell, sharpness) || !busy.compareAndSet(false, true)) return
     count += 1
     val name = "kf-%04d".format(count)
@@ -204,7 +206,9 @@ class CaptureRecorder(
   }
 
   companion object {
-    const val JPEG_QUALITY = 92
+    // Up to 200 keyframes are uploaded: at 80 a full-resolution frame is
+    // about half the size it was at 92, with no visible loss for the server.
+    const val JPEG_QUALITY = 80
 
     /** Session folder for a capture, under the app's cache. */
     fun folder(cacheDir: File, captureId: String) = File(cacheDir, "sajao-capture/$captureId")

@@ -15,6 +15,11 @@ export type InstructionId =
   | "doorway"
   | "almost"
   | "complete"
+  | "walkWalls"
+  | "keepGoing"
+  | "standMiddle"
+  | "tiltDown"
+  | "oneMoreSpot"
   | "dark"
   | "fast"
   | "glare";
@@ -47,6 +52,13 @@ const HINTS: Record<NonNullable<Hint>["id"], { id: InstructionId; tone: Instruct
   walk: { id: "walk", tone: "nudge" },
   coverMore: { id: "almost", tone: "guide" },
   complete: { id: "complete", tone: "guide" },
+  // The coverage meter's next step: these are the scan's steady instructions.
+  walkWalls: { id: "walkWalls", tone: "guide" },
+  keepGoing: { id: "keepGoing", tone: "guide" },
+  standMiddle: { id: "standMiddle", tone: "guide" },
+  tiltDown: { id: "tiltDown", tone: "nudge" },
+  oneMoreSpot: { id: "oneMoreSpot", tone: "guide" },
+  meterDone: { id: "complete", tone: "guide" },
 };
 
 /**

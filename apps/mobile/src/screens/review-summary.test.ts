@@ -2,7 +2,13 @@ import { EMPTY_SURFACE_COVERAGE, type Wall } from "@/capture/ar/surface-coverage
 import { EMPTY_COVERAGE, HITS_TO_MAP, SECTOR_COUNT, sectorOf } from "@/capture/coverage";
 import { EMPTY_MOTION_COVERAGE, MOVE_TARGET_M } from "@/capture/motion-coverage";
 import { INITIAL_SCAN, type ScanState } from "@/capture/scan-session";
-import { missingSides, roughSize, scanSummary, SIDE_DEGREES } from "./review-summary";
+import {
+  missingFromMeter,
+  missingSides,
+  roughSize,
+  scanSummary,
+  SIDE_DEGREES,
+} from "./review-summary";
 
 /** Directions mapped from `from` to `to` degrees (positive is a turn to the left). */
 function mapped(...ranges: [number, number][]): boolean[] {
@@ -150,5 +156,23 @@ describe("scan summary", () => {
 
   it("with no gyroscope there are no directions, so nothing is called out", () => {
     expect(scanSummary({ ...INITIAL_SCAN, hasGyro: false }).missing).toEqual([]);
+  });
+});
+
+describe("what the coverage meter still wanted", () => {
+  const nothing = { loopBearings: [], loopPathM: 0, sweepsNeeded: 0, floorLook: false };
+
+  it("a complete scan misses nothing", () => {
+    expect(missingFromMeter(nothing)).toEqual([]);
+  });
+
+  it("names the walk, the turn in the middle and the floor, in the order to do them", () => {
+    expect(missingFromMeter({ ...nothing, loopBearings: [45, 75] })).toEqual(["walk"]);
+    expect(missingFromMeter({ ...nothing, loopPathM: 2 })).toEqual(["walk"]);
+    expect(missingFromMeter({ ...nothing, sweepsNeeded: 1 })).toEqual(["middle"]);
+    expect(missingFromMeter({ ...nothing, floorLook: true })).toEqual(["floor"]);
+    expect(
+      missingFromMeter({ loopBearings: [15], loopPathM: 1, sweepsNeeded: 2, floorLook: true }),
+    ).toEqual(["walk", "middle", "floor"]);
   });
 });

@@ -24,9 +24,20 @@ struct KeyframeGate {
   static let timeCellMs = 1500.0
 
   /// By direction when tracking gives a pose, by time otherwise: frames are kept whatever tracking says.
-  static func cellFor(yaw: Double?, pitch: Double?, elapsedMs: Double) -> String {
-    if let yaw, let pitch { return cellOf(yaw: yaw, pitch: pitch) }
-    return "t\(Int(elapsedMs / timeCellMs))"
+  static func cellFor(yaw: Double?, pitch: Double?, elapsedMs: Double, x: Float? = nil, z: Float? = nil) -> String {
+    guard let yaw, let pitch else { return "t\(Int(elapsedMs / timeCellMs))" }
+    guard let x, let z else { return cellOf(yaw: yaw, pitch: pitch) }
+    return "\(placeOf(x: x, z: z))-\(cellOf(yaw: yaw, pitch: pitch))"
+  }
+
+  /// Side of a square of floor that counts as one place to stand, as `PLACE_CELL_M` in keyframes.ts.
+  static let placeCellM: Float = 0.5
+
+  /// "p<column>_<row>": where the camera stood. A keyframe is a new viewpoint
+  /// when it is taken from a new place or looks a new way, so walking the
+  /// room keeps adding keyframes that turning on one spot cannot.
+  static func placeOf(x: Float, z: Float) -> String {
+    "p\(Int((x / placeCellM).rounded(.down)))_\(Int((z / placeCellM).rounded(.down)))"
   }
 
   func shouldSave(cell: String, sharpness: Double) -> Bool {
@@ -82,7 +93,9 @@ enum DepthContainer {
 /// aligned, y up): +X right, +Y up, -Z forward relative to the stored
 /// image. Nothing here sets a dimension; the twin measures on the server.
 final class CaptureRecorder {
-  static let jpegQuality = 0.92
+  /// Up to 200 keyframes are uploaded: at 0.8 a full-resolution frame is about
+  /// half the size it was at 0.92, with no visible loss for the server.
+  static let jpegQuality = 0.8
 
   private let dir: URL
   private let emit: ([String: Any]) -> Void
@@ -114,9 +127,11 @@ final class CaptureRecorder {
       if case .normal = frame.camera.trackingState { return true }
       return false
     }()
+    let place = frame.camera.transform.columns.3
     let cell = KeyframeGate.cellFor(
       yaw: tracking ? yaw : nil, pitch: tracking ? pitch : nil,
-      elapsedMs: (CACurrentMediaTime() - startedAt) * 1000)
+      elapsedMs: (CACurrentMediaTime() - startedAt) * 1000,
+      x: tracking ? place.x : nil, z: tracking ? place.z : nil)
     guard !busy, gate.shouldSave(cell: cell, sharpness: sharpness) else { return }
     busy = true
     count += 1
