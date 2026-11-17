@@ -312,8 +312,9 @@ export function CaptureScreen({ onClose, onDone, onUsePhotos, onCaptured }: Capt
           torch={torch}
           lite={tier === "low"}
           reducedMotion={reducedMotion}
-          // Live labels are diagnostics. The mesh is drawn by the native view
-          // and stays until it takes a prop to hide it.
+          // The mesh, planes and live labels are diagnostics: the scan shows
+          // the camera image only, unless the debug flag is on.
+          overlay={showDebug}
           labels={showDebug ? labelProps : NO_LABELS}
           onArStatus={({ nativeEvent }) => {
             // A session that cannot start falls back to the 2D scan.

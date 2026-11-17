@@ -6,7 +6,7 @@ You share 3 to 8 photos or a 10 to 30 second video; the server builds a Space Pr
 
 You scan whatever you want redone: a whole room, a corner, a balcony or any area. There is no room-type picker.
 
-**Scan screen.** The person scanning sees the camera, one thin progress ring and one plain instruction at a time; the pieces below are how it works underneath. The mesh, guardrail chips, compass map and live labels are diagnostics behind the debug flag (three taps on the camera in a development or preview build). On AR phones the native view still draws its mesh until it takes a prop to hide it.
+**Scan screen.** The person scanning sees the camera, one thin progress ring and one plain instruction at a time; the pieces below are how it works underneath. The mesh, guardrail chips, compass map and live labels are diagnostics behind the debug flag (three taps on the camera in a development or preview build). On AR phones the native view draws the camera image only (`overlay` off) unless the flag is on.
 
 **Live scan mesh.** While you pan, a frame processor finds real feature points in the camera frames on the phone (no AI, no server cost). They are triangulated and drawn with Skia as a glowing mesh that spreads over what has been mapped. Phones with ARKit or ARCore also use their detected planes. Low-tier phones draw dots and edges instead. The mesh is feedback only: nothing from it is stored or used for dimensions.
 
