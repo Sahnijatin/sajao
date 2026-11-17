@@ -17,6 +17,7 @@ jest.mock("@sajao/ui/effects", () => ({ MeshEffect: () => null }));
 jest.mock("@sajao/ui/icons", () => ({ Icon: () => null }));
 jest.mock("@/capture/mini-map", () => ({ MiniMap: () => null }));
 jest.mock("@/capture/progress-ring", () => ({ ProgressRing: () => null }));
+jest.mock("@/capture/meter-map", () => ({ MeterMap: () => null }));
 jest.mock(
   "react-native-safe-area-context",
   () => jest.requireActual("react-native-safe-area-context/jest/mock").default,

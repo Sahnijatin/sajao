@@ -44,6 +44,8 @@ export function addNativeKeyframe(
       sharpness: keyframe.sharpness,
       yaw: keyframe.pose ? (keyframe.yaw ?? null) : null,
       pitch: keyframe.pose ? (keyframe.pitch ?? null) : null,
+      x: keyframe.pose?.position.x_m ?? null,
+      z: keyframe.pose?.position.z_m ?? null,
       pose: keyframe.pose ?? null,
       intrinsics: keyframe.intrinsics,
     },

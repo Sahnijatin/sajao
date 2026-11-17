@@ -17,7 +17,9 @@
       "done": "Scan uploaded",
       "doneNoVideo": "Scan uploaded without its video (the video was too large)",
       "failed": "Upload paused. Nothing is lost",
-      "retry": "Try again"
+      "retry": "Try again",
+      "doneSize": "Scan uploaded ({{megabytes}} MB)",
+      "doneNoVideoSize": "Scan uploaded without its video, which was too large ({{megabytes}} MB)"
     }
   },
   "capture": {
@@ -116,7 +118,8 @@
       "mode": "Scan mode",
       "heading": "Heading covered",
       "moved": "Walked",
-      "motionSamples": "Motion samples"
+      "motionSamples": "Motion samples",
+      "meter": "Coverage meter"
     },
     "labels": {
       "fridge": "Fridge",
@@ -134,8 +137,15 @@
       "coverMore": "Done is ready. Cover a bit more for the best result",
       "slowDown": "Slow down a little",
       "walk": "Walk around the space as you scan",
-      "complete": "All covered. Tap Done"
-    }
+      "complete": "All covered. Tap Done",
+      "walkWalls": "Walk along the walls",
+      "keepGoing": "Keep going round",
+      "standMiddle": "Now stand in the middle and turn slowly",
+      "tiltDown": "Tilt down a little",
+      "oneMoreSpot": "One more spot, over there",
+      "meterDone": "Done"
+    },
+    "finishAnyway": "Finish anyway"
   },
   "space": {
     "found": "We found",
