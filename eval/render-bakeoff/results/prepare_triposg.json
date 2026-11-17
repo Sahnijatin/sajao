@@ -355,5 +355,379 @@
   ],
   "input_iou": 0.9256146903205726,
   "textured_by_model": false
+ },
+ {
+  "id": "ikea_10615526",
+  "model": "triposg",
+  "size_m": [
+   2.01,
+   0.82,
+   0.91
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   32.5,
+   2.5,
+   45.0
+  ],
+  "input_iou": 0.9283343391671696,
+  "textured_by_model": false
+ },
+ {
+  "id": "ws_denzel-bedside-table-walnut-finish",
+  "model": "triposg",
+  "size_m": [
+   0.457,
+   0.457,
+   0.406
+  ],
+  "front_az_deg": 180.0,
+  "input_pose_az_el_fov": [
+   152.5,
+   17.5,
+   20.0
+  ],
+  "input_iou": 0.9506606930187717,
+  "textured_by_model": false
+ },
+ {
+  "id": "ws_dome-round-end-table-honey-finish",
+  "model": "triposg",
+  "size_m": [
+   0.66,
+   0.635,
+   0.66
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   0.0,
+   10.0,
+   20.0
+  ],
+  "input_iou": 0.9174522878822717,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_s49482832",
+  "model": "triposg",
+  "size_m": [
+   2.28,
+   0.83,
+   0.95
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   27.5,
+   10.0,
+   20.0
+  ],
+  "input_iou": 0.9751544629946103,
+  "textured_by_model": false
+ },
+ {
+  "id": "ws_crisper-lounge-chair-cotton-grey-robins",
+  "model": "triposg",
+  "size_m": [
+   0.61,
+   0.787,
+   0.762
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   330.0,
+   7.5,
+   20.0
+  ],
+  "input_iou": 0.8540193524376628,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_30575812",
+  "model": "triposg",
+  "size_m": [
+   0.79,
+   0.71,
+   0.81
+  ],
+  "front_az_deg": 90.0,
+  "input_pose_az_el_fov": [
+   107.5,
+   20.0,
+   20.0
+  ],
+  "input_iou": 0.9052338438856581,
+  "textured_by_model": false
+ },
+ {
+  "id": "ws_swirl-bedside-table",
+  "model": "triposg",
+  "size_m": [
+   0.406,
+   0.457,
+   0.457
+  ],
+  "front_az_deg": 270.0,
+  "input_pose_az_el_fov": [
+   255.0,
+   20.0,
+   20.0
+  ],
+  "input_iou": 0.9239900978958029,
+  "textured_by_model": false
+ },
+ {
+  "id": "ws_adire-lounge-chair-cream-robins",
+  "model": "triposg",
+  "size_m": [
+   0.762,
+   1.067,
+   0.737
+  ],
+  "front_az_deg": 180.0,
+  "input_pose_az_el_fov": [
+   202.5,
+   25.0,
+   20.0
+  ],
+  "input_iou": 0.75,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_80363426",
+  "model": "triposg",
+  "size_m": [
+   0.42,
+   0.9,
+   0.49
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   25.0,
+   22.5,
+   20.0
+  ],
+  "input_iou": 0.8343877089923181,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_20500407",
+  "model": "triposg",
+  "size_m": [
+   0.8,
+   0.45,
+   0.5
+  ],
+  "front_az_deg": 180.0,
+  "input_pose_az_el_fov": [
+   205.0,
+   15.0,
+   20.0
+  ],
+  "input_iou": 0.9375487900078064,
+  "textured_by_model": false
+ },
+ {
+  "id": "ws_orwell-round-coffee-table-honey-finish",
+  "model": "triposg",
+  "size_m": [
+   0.762,
+   0.43200000000000005,
+   0.762
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   2.5,
+   30.0,
+   45.0
+  ],
+  "input_iou": 0.9821701477330617,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_70535895",
+  "model": "triposg",
+  "size_m": [
+   0.662,
+   0.996,
+   0.723
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   27.5,
+   10.0,
+   20.0
+  ],
+  "input_iou": 0.9254817987152034,
+  "textured_by_model": false
+ },
+ {
+  "id": "ws_crisper-lounge-chair-bubble-robins",
+  "model": "triposg",
+  "size_m": [
+   0.762,
+   0.787,
+   0.61
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   322.5,
+   7.5,
+   45.0
+  ],
+  "input_iou": 0.8719572531169603,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_00598216",
+  "model": "triposg",
+  "size_m": [
+   0.72,
+   0.71,
+   0.66
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   17.5,
+   15.0,
+   20.0
+  ],
+  "input_iou": 0.8479194630872483,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_50541595",
+  "model": "triposg",
+  "size_m": [
+   2.36,
+   0.9,
+   1.53
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   30.0,
+   10.0,
+   20.0
+  ],
+  "input_iou": 0.9323927922894258,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_70533491",
+  "model": "triposg",
+  "size_m": [
+   0.64,
+   0.76,
+   0.78
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   30.0,
+   10.0,
+   20.0
+  ],
+  "input_iou": 0.9347845481309662,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_s99628653",
+  "model": "triposg",
+  "size_m": [
+   1.04,
+   0.88,
+   0.88
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   22.5,
+   12.5,
+   20.0
+  ],
+  "input_iou": 0.9544778339779827,
+  "textured_by_model": false
+ },
+ {
+  "id": "ws_ferguson-bedside-table-walnut-finish",
+  "model": "triposg",
+  "size_m": [
+   0.457,
+   0.406,
+   0.35600000000000004
+  ],
+  "front_az_deg": 90.0,
+  "input_pose_az_el_fov": [
+   60.0,
+   7.5,
+   45.0
+  ],
+  "input_iou": 0.9015556635877492,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_s19625328",
+  "model": "triposg",
+  "size_m": [
+   0.68,
+   1.0,
+   0.82
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   27.5,
+   7.5,
+   20.0
+  ],
+  "input_iou": 0.8328606356968216,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_s79443368",
+  "model": "triposg",
+  "size_m": [
+   2.24,
+   0.74,
+   0.9
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   30.0,
+   12.5,
+   20.0
+  ],
+  "input_iou": 0.960028551034975,
+  "textured_by_model": false
+ },
+ {
+  "id": "ws_caramel-side-end-table-honey-finish",
+  "model": "triposg",
+  "size_m": [
+   0.508,
+   0.61,
+   0.508
+  ],
+  "front_az_deg": 90.0,
+  "input_pose_az_el_fov": [
+   122.5,
+   0.0,
+   20.0
+  ],
+  "input_iou": 0.9143914335370298,
+  "textured_by_model": false
+ },
+ {
+  "id": "ikea_30594033",
+  "model": "triposg",
+  "size_m": [
+   0.42,
+   0.88,
+   0.48
+  ],
+  "front_az_deg": 0.0,
+  "input_pose_az_el_fov": [
+   22.5,
+   20.0,
+   20.0
+  ],
+  "input_iou": 0.8375451263537906,
+  "textured_by_model": false
  }
 ]

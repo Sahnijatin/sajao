@@ -4,9 +4,9 @@
  "hero_why": {
   "chosen_by_hand": true,
   "auto_choice": 121,
-  "weighted_inside": 0.918,
+  "weighted_inside": 0.916,
   "behind": 0,
-  "screen_area": 0.932
+  "screen_area": 0.751
  },
  "clear": {
   "zone": [
@@ -43,17 +43,6 @@
      "z": 0.0
     },
     {
-     "id": "floor_lamp",
-     "listing": "ikea_10478124",
-     "tier": "mesh",
-     "position": [
-      -1.4,
-      0.05
-     ],
-     "rotation_deg": 90.0,
-     "z": 0.0
-    },
-    {
      "id": "wall_art",
      "listing": "ikea_10623357",
      "tier": "art",
@@ -73,10 +62,10 @@
    "items": [
     {
      "id": "sofa",
-     "listing": "ikea_s39270312",
+     "listing": "ikea_10615526",
      "tier": "mesh",
      "position": [
-      -1.225,
+      -1.215,
       1.5
      ],
      "rotation_deg": 90.0,
@@ -84,10 +73,10 @@
     },
     {
      "id": "coffee_table",
-     "listing": "ikea_10500356",
+     "listing": "ws_orwell-round-coffee-table-honey-finish",
      "tier": "mesh",
      "position": [
-      -0.01,
+      0.041,
       1.5
      ],
      "rotation_deg": 90.0,
@@ -95,11 +84,11 @@
     },
     {
      "id": "armchair",
-     "listing": "ikea_00582036",
+     "listing": "ikea_70535895",
      "tier": "mesh",
      "position": [
-      -0.01,
-      2.97
+      0.01,
+      2.981
      ],
      "rotation_deg": 0.0,
      "z": 0.0
@@ -109,21 +98,10 @@
      "listing": "ikea_20623074",
      "tier": "rug",
      "position": [
-      -0.11,
+      -0.09,
       1.5
      ],
      "rotation_deg": 90,
-     "z": 0.0
-    },
-    {
-     "id": "floor_lamp",
-     "listing": "ikea_10478124",
-     "tier": "mesh",
-     "position": [
-      -1.4,
-      0.18
-     ],
-     "rotation_deg": 90.0,
      "z": 0.0
     },
     {
@@ -135,7 +113,7 @@
       1.5
      ],
      "rotation_deg": 90.0,
-     "z": 1.08
+     "z": 1.12
     }
    ]
   },
@@ -157,10 +135,10 @@
     },
     {
      "id": "coffee_table",
-     "listing": "ikea_30651392",
+     "listing": "ikea_20500407",
      "tier": "mesh",
      "position": [
-      0.064,
+      -0.136,
       1.5
      ],
      "rotation_deg": 90.0,
@@ -189,17 +167,6 @@
      "z": 0.0
     },
     {
-     "id": "floor_lamp",
-     "listing": "ikea_10478124",
-     "tier": "mesh",
-     "position": [
-      -1.4,
-      0.438
-     ],
-     "rotation_deg": 90.0,
-     "z": 0.0
-    },
-    {
      "id": "wall_art",
      "listing": "ikea_10623357",
      "tier": "art",
@@ -214,13 +181,12 @@
   }
  ],
  "similar": {
-  "ikea_10478124": "ikea_00594614",
-  "ikea_s39270312": "ikea_s39620339",
-  "ikea_10500356": "ikea_00411997",
-  "ikea_00582036": "ikea_30492317",
-  "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s": "ws_henry-l-shape-right-arm-corner-sofa-indigo-blue",
-  "ikea_30651392": "ws_adolph-bedside-table-honey-finish",
-  "ikea_90581914": "ikea_80581919"
+  "ikea_10615526": "ikea_s49482832",
+  "ws_orwell-round-coffee-table-honey-finish": "ws_swirl-bedside-table",
+  "ikea_70535895": "ikea_00598216",
+  "ws_kairav-modern-2-seater-wooden-sofa-with-premium-upholstery-s": "ikea_s49482832",
+  "ikea_20500407": "ws_ferguson-bedside-table-walnut-finish",
+  "ikea_90581914": "ikea_s19625328"
  },
  "planted_plant": {
   "listing": "ikea_90630330",
