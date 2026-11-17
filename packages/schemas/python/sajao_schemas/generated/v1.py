@@ -230,6 +230,18 @@ class ProductRoute(BaseModel):
     coupon_code: Annotated[str | None, Field(min_length=1)] = None
 
 
+class Redesign(BaseModel):
+    """
+    Whether a redesign keeps this thing or may replace it. The rule keeps fixtures (fans, lights, AC units, switchboards, geysers) and lets everything else be replaced; the person can change it.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    state: Literal["keep", "replace"]
+    source: Literal["rule", "user"]
+
+
 class RedoArea(BaseModel):
     """
     What the user wants redone: all of the scanned space, or just a part they drew around.
@@ -771,6 +783,87 @@ class Fixture(BaseModel):
     offset: Dimension
     mount_height: Dimension
     width: Dimension | None = None
+
+
+class Footprint(BaseModel):
+    """
+    Where a thing stands on the floor plan: its box seen from above, in the space frame. From the fused geometry, never from a model.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    polygon: Annotated[
+        list[Point2],
+        Field(description="Closed floor polygon; the last point joins the first.", min_length=3),
+    ]
+    width: Annotated[
+        Dimension,
+        Field(
+            description="The longer side, with its error band: each edge may be off by up to that band."
+        ),
+    ]
+    depth: Annotated[Dimension, Field(description="The shorter side, with its error band.")]
+    on_floor: Annotated[
+        bool,
+        Field(
+            description="Whether it takes up floor: false for things on a wall or hanging from the ceiling, whose box does not reach down to the floor."
+        ),
+    ]
+
+
+class FreeFloor(BaseModel):
+    """
+    Floor a redesign can use: the floor polygon minus the footprints of everything kept that stands on the floor (objects marked keep, and built-ins).
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    area_m2: Annotated[float, Field(ge=0.0)]
+    error_band_m2: Annotated[
+        float,
+        Field(description="From the walls' and footprints' error bands along their edges.", ge=0.0),
+    ]
+    floor_area_m2: Annotated[float, Field(ge=0.0)]
+    kept_ids: Annotated[
+        list[LocalId], Field(description="Objects and built-ins whose footprints were taken out.")
+    ]
+
+
+class HeroMask(BaseModel):
+    """
+    Where a thing is in one hero photo, for taking it out of that photo.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    hero_view_id: Annotated[
+        str, Field(description="A hero view in viewing.hero_views.", pattern="^[a-z0-9_-]{1,40}$")
+    ]
+    mask: Annotated[
+        str,
+        Field(
+            description="PNG, white where the thing is, at the keyframe's resolution. Not dilated.",
+            max_length=512,
+            min_length=1,
+        ),
+    ]
+    visible_share: Annotated[
+        float,
+        Field(
+            description="Share of the thing's box that is in frame and not hidden behind something nearer.",
+            ge=0.0,
+            le=1.0,
+        ),
+    ]
+    source: Annotated[
+        Literal["detected", "prompted"],
+        Field(
+            description="detected: the detector's own mask in this keyframe. prompted: segmented from the thing's box projected into the photo."
+        ),
+    ]
 
 
 class HeroView(BaseModel):
@@ -1507,6 +1600,11 @@ class TwinObject(BaseModel):
             description="What kind of thing it is. Built-ins are not objects: they are in the shell's built_ins."
         ),
     ] = None
+    footprint: Footprint | None = None
+    redesign: Redesign | None = None
+    hero_masks: Annotated[
+        list[HeroMask] | None, Field(description="One per hero view this thing is visible in.")
+    ] = None
 
 
 class Viewing(BaseModel):
@@ -1589,6 +1687,7 @@ class BuiltIn(BaseModel):
     label: Annotated[str, Field(max_length=80, min_length=1)]
     box: OrientedBox
     detection: Detection
+    footprint: Footprint | None = None
 
 
 class CapturePackage(BaseModel):
@@ -1990,3 +2089,4 @@ class SpaceTwin(BaseModel):
     ] = None
     viewing: Viewing | None = None
     inventory: Inventory | None = None
+    free_floor: FreeFloor | None = None

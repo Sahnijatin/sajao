@@ -9,9 +9,17 @@ import { View } from "react-native";
 import { mappedSectors } from "@/capture/coverage";
 import { DebugOverlay } from "@/capture/debug-overlay";
 import type { GuardrailId, GuardrailStatus } from "@/capture/guardrails";
+import { meterParts } from "@/capture/coverage-meter";
+import { MeterMap } from "@/capture/meter-map";
 import { MiniMap } from "@/capture/mini-map";
 import { ProgressRing } from "@/capture/progress-ring";
-import { canFinish, mappedShare, type ScanState, shouldShowSlowDown } from "@/capture/scan-session";
+import {
+  canFinish,
+  isMeter,
+  mappedShare,
+  type ScanState,
+  shouldShowSlowDown,
+} from "@/capture/scan-session";
 import type { ScanDebug } from "@/capture/use-scan-session";
 
 const CHIPS: readonly GuardrailId[] = ["light", "motion", "level"];
@@ -98,7 +106,17 @@ export function CaptureDebugLayer({
         <View style={{ flex: 1 }}>
           <DebugOverlay debug={debug} state={state} arStartError={arStartError} />
         </View>
-        {simple ? (
+        {isMeter(state) ? (
+          // The coverage meter: its two-part ring and its map of where has been walked.
+          <View style={{ alignItems: "center", gap: spacing.sm }}>
+            <ProgressRing
+              progress={share}
+              ready={canFinish(state)}
+              parts={meterParts(state.meter)}
+            />
+            <MeterMap meter={state.meter} position={state.position} yaw={state.pose.yaw} />
+          </View>
+        ) : simple ? (
           <ProgressRing progress={share} ready={canFinish(state)} />
         ) : (
           <MiniMap mapped={mapped} yaw={state.pose.yaw} />

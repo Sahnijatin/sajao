@@ -2101,3 +2101,180 @@ def review_pack(
     for name, data in result["files"].items():
         (target / name).write_bytes(data)
     print(result["files"]["summary.json"].decode())
+
+
+@app.function(
+    image=cpu_image,
+    volumes={"/work": vol, "/vol": spike_vol},
+    cpu=8,
+    memory=16384,
+    timeout=7200,
+    secrets=VISION_SECRETS,
+)
+def understanding_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
+    """One ARKitScenes room without the splat: inventory, objects, the twin, then room
+    understanding for design. Draws the hero masks and the floor plan to look at."""
+    import asyncio
+    import io
+    import json
+
+    import numpy as np
+    from PIL import Image, ImageDraw
+
+    from sajao_gateway import ModelGateway
+    from sajao_workers.models import segment_chain
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.assemble_step import assemble_step
+    from sajao_workers.twin.understanding_step import understanding_step
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    manifest = _arkit_manifest(store, scene, keyframes, y_up=True)
+    runner = StepRunner(store, max_attempts=1)
+    ledger = _ledger()
+
+    async def run() -> dict[str, Any]:
+        frames = store.put_blob(json.dumps(manifest).encode())
+        inventory, objects = await _objects(runner, ledger, frames)
+        twin = await runner.run(
+            assemble_step(),
+            {
+                "capture": store.put_blob(json.dumps(_arkit_capture(scene, manifest)).encode()),
+                "frames": frames,
+                "objects": objects.outputs["objects"],
+                "openings": objects.outputs["openings"],
+                "built_ins": objects.outputs["built_ins"],
+                "inventory": objects.outputs["inventory"],
+                "phone": store.put_blob(json.dumps({"variants": {}}).encode()),
+            },
+            {
+                "twin_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"twin/{scene}/nosplat")),
+                "version": 1,
+                "created_at": "2026-11-17T00:00:00Z",
+            },
+        )
+        understood = await runner.run(
+            understanding_step(
+                ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger)
+            ),
+            {
+                "twin": twin.outputs["twin"],
+                "objects": objects.outputs["objects"],
+                "frames": frames,
+            },
+            {},
+        )
+        vol.commit()
+        return {
+            "inventory": inventory,
+            "objects": objects,
+            "twin": twin,
+            "understood": understood,
+        }
+
+    import uuid
+
+    built = asyncio.run(run())
+    doc = json.loads(store.read_blob(built["understood"].outputs["twin"]))
+    by_kf = {f["keyframe_id"]: f for f in manifest["frames"]}
+
+    def blob(key: str) -> bytes:
+        return store.read_blob(key.rsplit("/", 1)[-1])
+
+    files: dict[str, bytes] = {}
+    colours = {"detected": (40, 120, 255), "prompted": (255, 140, 0)}
+    for hero in doc["viewing"]["hero_views"]:
+        frame = by_kf[hero["keyframe_id"]]
+        photo = np.asarray(Image.open(io.BytesIO(store.read_blob(frame["image"]))).convert("RGB"))
+        canvas = photo.astype(np.float32)
+        labels = []
+        for obj in doc["objects"]:
+            for m in obj.get("hero_masks", []):
+                if m["hero_view_id"] != hero["id"]:
+                    continue
+                mask = np.asarray(Image.open(io.BytesIO(blob(m["mask"]))).convert("L")) > 127
+                if mask.shape != photo.shape[:2]:
+                    mask = (
+                        np.asarray(
+                            Image.fromarray(mask.astype(np.uint8) * 255).resize(photo.shape[1::-1])
+                        )
+                        > 127
+                    )
+                canvas[mask] = 0.45 * canvas[mask] + 0.55 * np.array(colours[m["source"]])
+                ys, xs = np.nonzero(mask)
+                if len(xs):
+                    labels.append(
+                        (int(xs.mean()), int(ys.mean()), obj["category"], obj["redesign"]["state"])
+                    )
+        image = Image.fromarray(canvas.clip(0, 255).astype(np.uint8))
+        draw = ImageDraw.Draw(image)
+        for x, y, name, state in labels:
+            draw.text((x, y), f"{name} ({state})", fill=(255, 255, 255))
+        buf = io.BytesIO()
+        image.save(buf, format="JPEG", quality=88)
+        files[f"hero_{hero['id']}_masks.jpg"] = buf.getvalue()
+
+    floor = doc["shell"]["floor_polygon"]
+    xs = [p["x_m"] for p in floor]
+    ys = [p["y_m"] for p in floor]
+    scale = 120.0
+    size = (int((max(xs) - min(xs)) * scale) + 40, int((max(ys) - min(ys)) * scale) + 40)
+
+    def to_px(p: dict[str, float]) -> tuple[float, float]:
+        return (20 + (p["x_m"] - min(xs)) * scale, size[1] - 20 - (p["y_m"] - min(ys)) * scale)
+
+    plan = Image.new("RGB", size, (250, 247, 240))
+    draw = ImageDraw.Draw(plan)
+    draw.polygon([to_px(p) for p in floor], outline=(40, 40, 40), fill=(235, 245, 235))
+    for thing in [*doc["objects"], *doc["shell"].get("built_ins", [])]:
+        fp = thing.get("footprint")
+        if not fp or not fp["on_floor"]:
+            continue
+        kept = thing.get("redesign", {"state": "keep"})["state"] == "keep"
+        draw.polygon(
+            [to_px(p) for p in fp["polygon"]],
+            outline=(173, 79, 39) if not kept else (60, 60, 60),
+            fill=(150, 150, 150) if kept else None,
+        )
+        c = thing["box"]["center"]
+        draw.text(to_px({"x_m": c["x_m"], "y_m": c["y_m"]}), thing["category"], fill=(0, 0, 0))
+    ff = doc["free_floor"]
+    draw.text(
+        (24, 4),
+        f"free floor {ff['area_m2']:.1f} of {ff['floor_area_m2']:.1f} m2"
+        f" (+/- {ff['error_band_m2']:.1f})",
+        fill=(0, 0, 0),
+    )
+    buf = io.BytesIO()
+    plan.save(buf, format="PNG")
+    files["floor_plan.png"] = buf.getvalue()
+    files["twin.json"] = json.dumps(doc, indent=1).encode()
+    steps = built
+    summary = {
+        "scene": scene,
+        "objects": len(doc["objects"]),
+        "built_ins": len(doc["shell"].get("built_ins", [])),
+        "hero_views": len(doc["viewing"]["hero_views"]),
+        "hero_masks": dict(steps["understood"].meta["hero_masks"]),
+        "free_floor": doc["free_floor"],
+        "redesign": {
+            s: sum(o["redesign"]["state"] == s for o in doc["objects"]) for s in ("keep", "replace")
+        },
+        "on_floor": sum(o["footprint"]["on_floor"] for o in doc["objects"]),
+        "charged_micro_inr": sum(steps[k].cost_micro_inr for k in steps),
+    }
+    files["summary.json"] = (json.dumps(summary, indent=1) + "\n").encode()
+    return {"files": files, "summary": summary}
+
+
+@app.local_entrypoint()
+def understanding_smoke(
+    scene: str = "arkit_living_47331265", keyframes: int = 120, out: str = "understanding"
+) -> None:
+    import json
+
+    result = understanding_smoke_cpu.remote(scene, keyframes)
+    target = Path(out)
+    target.mkdir(parents=True, exist_ok=True)
+    for name, data in result["files"].items():
+        (target / name).write_bytes(data)
+    print(json.dumps(result["summary"], indent=1))

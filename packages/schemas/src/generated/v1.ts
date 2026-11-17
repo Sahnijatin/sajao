@@ -48,6 +48,15 @@ export type Timestamp = string
  */
 export type UnitScore = number
 /**
+ * Closed floor polygon; the last point joins the first.
+ * 
+ * @minItems 3
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "Polygon".
+ */
+export type Polygon = [Point2, Point2, Point2, ...(Point2)[]]
+/**
  * Object key in the media store. Never a public URL; clients receive signed URLs.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -99,15 +108,6 @@ export type DetectionSource = ("detected" | "user")
  * via the `definition` "ObjectType".
  */
 export type ObjectType = ("furniture" | "fixture" | "wall_item" | "textile" | "decor")
-/**
- * Closed floor polygon; the last point joins the first.
- * 
- * @minItems 3
- * 
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "Polygon".
- */
-export type Polygon = [Point2, Point2, Point2, ...(Point2)[]]
 /**
  * What the scanned space is. Detected from the scan, never picked up front; the user can change it.
  * 
@@ -264,6 +264,7 @@ detection: {
 source: ("live_scan" | "server_segmentation" | "user")
 confidence: UnitScore
 }
+footprint?: Footprint
 }
 /**
  * An object's measured box: centre, turn about the vertical axis and size. Sizes are dimensions with a source and an error band.
@@ -277,6 +278,31 @@ yaw_deg: AngleDeg
 width: Dimension
 depth: Dimension
 height: Dimension
+}
+/**
+ * Where a thing stands on the floor plan: its box seen from above, in the space frame. From the fused geometry, never from a model.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "Footprint".
+ */
+export interface Footprint {
+polygon: Polygon
+width: Dimension
+depth: Dimension
+/**
+ * Whether it takes up floor: false for things on a wall or hanging from the ceiling, whose box does not reach down to the floor.
+ */
+on_floor: boolean
+}
+/**
+ * A point on the floor in the space frame, in metres.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "Point2".
+ */
+export interface Point2 {
+x_m: number
+y_m: number
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -615,16 +641,6 @@ url: HttpsUrl
 price: Money
 coupon_code?: string
 }
-/**
- * A point on the floor in the space frame, in metres.
- * 
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "Point2".
- */
-export interface Point2 {
-x_m: number
-y_m: number
-}
 export interface DesignMaterials {
 wall_paint?: Material
 flooring?: Material
@@ -815,6 +831,39 @@ mount_height: Dimension
 width?: Dimension
 }
 /**
+ * Floor a redesign can use: the floor polygon minus the footprints of everything kept that stands on the floor (objects marked keep, and built-ins).
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "FreeFloor".
+ */
+export interface FreeFloor {
+area_m2: number
+/**
+ * From the walls' and footprints' error bands along their edges.
+ */
+error_band_m2: number
+floor_area_m2: number
+/**
+ * Objects and built-ins whose footprints were taken out.
+ */
+kept_ids: LocalId[]
+}
+/**
+ * Where a thing is in one hero photo, for taking it out of that photo.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "HeroMask".
+ */
+export interface HeroMask {
+hero_view_id: LocalId
+mask: StorageKey
+visible_share: UnitScore
+/**
+ * detected: the detector's own mask in this keyframe. prompted: segmented from the thing's box projected into the photo.
+ */
+source: ("detected" | "prompted")
+}
+/**
  * A view the twin is shown from: the pose of a real keyframe, chosen by code for how much of the room it shows, its sharpness and its framing. Never a pose a model made up.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -997,6 +1046,16 @@ minimum_m: number
  * True only when the distance minus its error band meets the minimum.
  */
 ok: boolean
+}
+/**
+ * Whether a redesign keeps this thing or may replace it. The rule keeps fixtures (fans, lights, AC units, switchboards, geysers) and lets everything else be replaced; the person can change it.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "Redesign".
+ */
+export interface Redesign {
+state: ("keep" | "replace")
+source: ("rule" | "user")
 }
 /**
  * What the user wants redone: all of the scanned space, or just a part they drew around.
@@ -1283,6 +1342,7 @@ splat?: SplatRef
 phone_splats?: []|[PhoneSplat]|[PhoneSplat, PhoneSplat]|[PhoneSplat, PhoneSplat, PhoneSplat]|[PhoneSplat, PhoneSplat, PhoneSplat, PhoneSplat]
 viewing?: Viewing
 inventory?: Inventory
+free_floor?: FreeFloor
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -1315,6 +1375,12 @@ catalog_matches: CatalogMatch[]
  */
 state: ("keep" | "move" | "remove" | "replace")
 object_type?: ObjectType
+footprint?: Footprint
+redesign?: Redesign
+/**
+ * One per hero view this thing is visible in.
+ */
+hero_masks?: HeroMask[]
 }
 /**
  * The photoreal room splat trained on the keyframes.
