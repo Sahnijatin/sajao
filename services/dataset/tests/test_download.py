@@ -8,7 +8,9 @@ from pydantic import HttpUrl, ValidationError
 
 from sajao_dataset.download import (
     BudgetExceededError,
+    ClipRecord,
     Segment,
+    batch_rates,
     check_clip,
     clip_relpath,
     download_all,
@@ -385,3 +387,37 @@ def test_is_blocked_spots_the_bot_check_and_rate_limits() -> None:
     assert is_blocked("HTTP Error 429: Too Many Requests")
     assert is_blocked("Unable to connect to proxy: Tunnel connection failed: 502 Bad Gateway")
     assert not is_blocked("ERROR: ffmpeg exited with code 187")
+
+
+def clip(status: str, error: str | None = None) -> ClipRecord:
+    return ClipRecord(
+        video_id="aaaaaaaaaaa",
+        start_s=0,
+        end_s=10,
+        room_type=None,
+        origin="screening",
+        status=status,
+        path=None,
+        sha256=None,
+        bytes=None,
+        max_height=720,
+        error=error,
+        at=NOW,
+    )
+
+
+def test_batch_rates_ignore_skips_and_apply_the_stop_rules() -> None:
+    rows = (
+        [clip("ok")] * 6
+        + [clip("failed", "stopped after 9 MB")]
+        + [clip("failed", "ERROR: ffmpeg")]
+        + [clip("failed", "skipped: this video went over its budget twice")] * 10
+    )
+    rates = batch_rates(rows)
+    assert (rates["attempted"], rates["clean"], rates["skipped"]) == (8, 6, 10)
+    assert rates["clean_rate"] == 0.75 and rates["cap_kill_rate"] == 0.125
+    assert rates["continue"]
+    many_kills = [clip("ok")] * 5 + [clip("failed", "stopped after 9 MB")] * 2
+    assert not batch_rates(many_kills)["continue"]  # 2 of 7 = 29 percent kills
+    assert not batch_rates([clip("ok"), clip("failed", "x"), clip("failed", "y")])["continue"]
+    assert not batch_rates([])["continue"]

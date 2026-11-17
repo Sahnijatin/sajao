@@ -325,7 +325,10 @@ def download_and_sample(
     volume.commit()
 
     rows = [r for r in read_ledger(DATA / "downloads.jsonl") if r.at >= run_started]
+    from sajao_dataset.download import batch_rates
+
     return {
+        "batch": batch_rates(rows),
         "sessions": sessions.log,
         "proxy_bytes_received": proxy_bytes,
         "clip_bytes": summary.bytes,
@@ -363,6 +366,7 @@ def main(
     data: str = "services/dataset/data",
     pause_s: float = 5.0,
     dry_run: bool = False,
+    exclude: str = "",
 ) -> None:
     from sajao_dataset.download import Segment, plan_screened_segments
     from sajao_dataset.licenses import apply_licenses, read_licenses
@@ -374,6 +378,8 @@ def main(
     )
     with (root / "segments.jsonl").open(encoding="utf-8") as f:
         screened = [Segment.model_validate_json(line) for line in f if line.strip()]
+    dropped = {v.strip() for v in exclude.split(",") if v.strip()}
+    screened = [s for s in screened if s.video_id not in dropped]
     plan = plan_screened_segments(
         screened,
         sources,

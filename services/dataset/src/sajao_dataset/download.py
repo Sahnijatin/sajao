@@ -130,6 +130,30 @@ def plan_screened_segments(
     return plan
 
 
+def batch_rates(
+    rows: Iterable[ClipRecord], *, min_clean: float = 0.5, max_kills: float = 0.15
+) -> dict[str, Any]:
+    """Clean-clip and cap-kill rates over attempted downloads (skips do not count),
+    and whether the batch passes the pilot's stop rules."""
+    rows = list(rows)
+    skipped = [r for r in rows if (r.error or "").startswith("skipped:")]
+    attempted = [r for r in rows if r not in skipped]
+    clean = sum(r.status == "ok" for r in attempted)
+    kills = sum((r.error or "").startswith("stopped after") for r in attempted)
+    n = len(attempted)
+    clean_rate = clean / n if n else 0.0
+    kill_rate = kills / n if n else 0.0
+    return {
+        "attempted": n,
+        "clean": clean,
+        "cap_kills": kills,
+        "skipped": len(skipped),
+        "clean_rate": round(clean_rate, 3),
+        "cap_kill_rate": round(kill_rate, 3),
+        "continue": n > 0 and clean_rate >= min_clean and kill_rate <= max_kills,
+    }
+
+
 def clip_relpath(segment: Segment) -> str:
     _, start, end = segment.key
     return f"{segment.video_id}/{start:05d}-{end:05d}.mp4"
