@@ -4,7 +4,12 @@
 //
 // - a loop: one walk around the space near the walls;
 // - sweeps: a slow full turn from the middle, and from one more spot at
-//   least a metre away (one sweep is enough in a small space).
+//   least a metre away (one sweep is enough in a small space);
+// - wall tilts: one slow tilt up to the ceiling and down to the floor on
+//   each wall. A phone cannot hold floor and ceiling in one picture, and a
+//   wall only counts as a wall when it was seen from bottom to top. The
+//   tilt up and the tilt down need not be in the same picture: each quarter
+//   turn of the room needs both at some point in the scan.
 //
 // It reads positions and headings only. No model, nothing sent anywhere, and
 // it never sets a dimension. Pure: samples in, state out, so every rule is
@@ -28,10 +33,12 @@ export const SWEEP_SPACING_M = 1;
 export const INSIDE_LOOP_M = 0.8;
 /** A space narrower than this needs one sweep, and its sweep need not be far inside the loop. */
 export const SMALL_SPACE_M = 2.5;
-/** Share of a sweep's samples that must look down at the floor and low furniture. */
-export const FLOOR_LOOK_SHARE = 0.25;
-/** Looking down means pitched between these, degrees below level. */
-export const FLOOR_LOOK_DEGREES = { from: 15, to: 45 };
+/** A tilt up or down is at least this far from level, degrees. */
+export const TILT_DEGREES = 20;
+/** The room is four quarter turns; each needs a tilt up and a tilt down. */
+export const QUARTERS = 4;
+/** How much of the second half of the ring the wall tilts are. */
+const TILT_SHARE = 0.4;
 /** Accepted samples the scan needs before Done (about 5 s). */
 export const MIN_SAMPLES = 50;
 /** "Finish anyway" is offered after this long without progress. */
@@ -57,7 +64,6 @@ interface Spot {
   /** Samples per heading sector. */
   headings: readonly number[];
   samples: number;
-  floorLooks: number;
 }
 
 export interface MeterState {
@@ -66,6 +72,8 @@ export interface MeterState {
   pathM: number;
   lastPosition: Point2 | null;
   spots: readonly Spot[];
+  /** Per heading sector: whether the phone has looked up and down that way. */
+  looks: readonly { up: boolean; down: boolean }[];
   samples: number;
   lastSampleMs: number | null;
   /** The ring never goes backwards: the best each part has reached. */
@@ -80,6 +88,7 @@ export const EMPTY_METER: MeterState = {
   pathM: 0,
   lastPosition: null,
   spots: [],
+  looks: Array.from({ length: SECTORS }, () => ({ up: false, down: false })),
   samples: 0,
   lastSampleMs: null,
   bestLoop: 0,
@@ -149,9 +158,7 @@ export interface Sweep {
   centre: Point2;
   sectors: boolean[];
   count: number;
-  /** Share of its samples that looked down at the floor. */
-  floorShare: number;
-  /** All sectors turned through and enough of it looking down. */
+  /** Turned through enough of the circle. */
   complete: boolean;
   /** Complete, far enough inside the loop, and far enough from the other counted sweeps. */
   counted: boolean;
@@ -168,15 +175,25 @@ export interface Sweeps {
 function sweepOf(spot: Spot): Sweep {
   const sectors = spot.headings.map((hits) => hits > 0);
   const count = sectors.filter(Boolean).length;
-  const floorShare = spot.samples > 0 ? spot.floorLooks / spot.samples : 0;
-  return {
-    centre: spot.centre,
-    sectors,
-    count,
-    floorShare,
-    complete: count >= SECTORS_NEEDED && floorShare >= FLOOR_LOOK_SHARE,
-    counted: false,
-  };
+  return { centre: spot.centre, sectors, count, complete: count >= SECTORS_NEEDED, counted: false };
+}
+
+export interface WallTilts {
+  /** For each quarter turn: tilted up and tilted down somewhere in it. */
+  quarters: boolean[];
+  count: number;
+  complete: boolean;
+}
+
+/** Which quarter turns of the room have been tilted through, top and bottom. */
+export function tiltsOf(state: MeterState): WallTilts {
+  const perQuarter = SECTORS / QUARTERS;
+  const quarters = Array.from({ length: QUARTERS }, (_, quarter) => {
+    const looks = state.looks.slice(quarter * perQuarter, (quarter + 1) * perQuarter);
+    return looks.some((look) => look.up) && looks.some((look) => look.down);
+  });
+  const count = quarters.filter(Boolean).length;
+  return { quarters, count, complete: count >= QUARTERS };
 }
 
 export function sweepsOf(state: MeterState, loop: Loop = loopOf(state)): Sweeps {
@@ -218,8 +235,13 @@ function partsNow(state: MeterState): { loop: number; sweeps: number } {
     0,
     ...sweeps.all.filter((s) => !s.counted).map((s) => Math.min(0.95, s.count / SECTORS_NEEDED)),
   );
-  const sweepShare = sweeps.complete ? 1 : Math.min(1, (sweeps.counted + inHand) / sweeps.needed);
-  return { loop: Math.min(loopShare, loop.complete ? 1 : 0.99), sweeps: sweepShare };
+  const turnShare = sweeps.complete ? 1 : Math.min(1, (sweeps.counted + inHand) / sweeps.needed);
+  const tilts = tiltsOf(state);
+  const sweepShare = (1 - TILT_SHARE) * turnShare + TILT_SHARE * (tilts.count / QUARTERS);
+  return {
+    loop: Math.min(loopShare, loop.complete ? 1 : 0.99),
+    sweeps: sweeps.complete && tilts.complete ? 1 : Math.min(0.99, sweepShare),
+  };
 }
 
 /** Fold one accepted pose in. Pure: returns a new state. */
@@ -248,9 +270,15 @@ export function addMeterSample(state: MeterState, sample: MeterSample): MeterSta
   }
 
   const index = state.spots.findIndex((s) => distance(s.centre, sample.position) <= SPOT_RADIUS_M);
-  const down = -sample.pitch;
-  const looksDown = down >= FLOOR_LOOK_DEGREES.from && down <= FLOOR_LOOK_DEGREES.to;
   const heading = sectorOf(sample.yaw);
+  const up = sample.pitch >= TILT_DEGREES;
+  const down = sample.pitch <= -TILT_DEGREES;
+  const looks =
+    up || down
+      ? state.looks.map((look, i) =>
+          i === heading ? { up: look.up || up, down: look.down || down } : look,
+        )
+      : state.looks;
   const spot: Spot =
     index >= 0
       ? (state.spots[index] as Spot)
@@ -258,13 +286,11 @@ export function addMeterSample(state: MeterState, sample: MeterSample): MeterSta
           centre: sample.position,
           headings: Array.from({ length: SECTORS }, () => 0),
           samples: 0,
-          floorLooks: 0,
         };
   const updated: Spot = {
     centre: spot.centre,
     headings: spot.headings.map((hits, i) => (i === heading ? hits + 1 : hits)),
     samples: spot.samples + 1,
-    floorLooks: spot.floorLooks + (looksDown ? 1 : 0),
   };
   const spots =
     index >= 0 ? state.spots.map((s, i) => (i === index ? updated : s)) : [...state.spots, updated];
@@ -275,6 +301,7 @@ export function addMeterSample(state: MeterState, sample: MeterSample): MeterSta
     pathM,
     lastPosition,
     spots,
+    looks,
     samples: state.samples + 1,
     lastSampleMs: sample.atMs,
   };
@@ -303,7 +330,12 @@ export function meterFraction(state: MeterState): number {
 /** Every part is complete and the scan has its minimum of accepted samples. */
 export function meterDone(state: MeterState): boolean {
   const loop = loopOf(state);
-  return loop.complete && sweepsOf(state, loop).complete && state.samples >= MIN_SAMPLES;
+  return (
+    loop.complete &&
+    sweepsOf(state, loop).complete &&
+    tiltsOf(state).complete &&
+    state.samples >= MIN_SAMPLES
+  );
 }
 
 /** Nothing has moved forward for a minute: the person may finish with what there is. */
@@ -317,7 +349,7 @@ export function canFinishAnyway(state: MeterState, nowMs: number): boolean {
 }
 
 export type MeterHint =
-  "walkWalls" | "keepGoing" | "standMiddle" | "tiltDown" | "oneMoreSpot" | "meterDone";
+  "walkWalls" | "keepGoing" | "standMiddle" | "tiltWall" | "oneMoreSpot" | "meterDone";
 
 /** What to do next, one thing at a time. */
 export function meterHint(state: MeterState): MeterHint {
@@ -325,13 +357,9 @@ export function meterHint(state: MeterState): MeterHint {
   // Until part of the loop is walked, pacing or turning on one spot is not "keep going".
   if (!loop.complete) return loop.count < 2 ? "walkWalls" : "keepGoing";
   const sweeps = sweepsOf(state, loop);
-  if (sweeps.complete) return "meterDone";
-  // A sweep that has turned far enough but not looked down enough.
-  const turned = sweeps.all.some(
-    (s) => !s.complete && s.count >= SECTORS_NEEDED && s.floorShare < FLOOR_LOOK_SHARE,
-  );
-  if (turned) return "tiltDown";
-  return sweeps.counted === 0 ? "standMiddle" : "oneMoreSpot";
+  if (!sweeps.complete) return sweeps.counted === 0 ? "standMiddle" : "oneMoreSpot";
+  // Everything is turned through; what is left is a wall not seen top to bottom.
+  return tiltsOf(state).complete ? "meterDone" : "tiltWall";
 }
 
 /** What is still missing, for the review to name after "Finish anyway". */
@@ -341,8 +369,8 @@ export interface MeterMissing {
   /** Metres of walking the loop still needs. */
   loopPathM: number;
   sweepsNeeded: number;
-  /** A sweep turned far enough but saw too little of the floor. */
-  floorLook: boolean;
+  /** Quarter turns of the room not yet tilted through top and bottom. */
+  wallTilts: number;
 }
 
 export function meterMissing(state: MeterState): MeterMissing {
@@ -354,9 +382,7 @@ export function meterMissing(state: MeterState): MeterMissing {
       : loop.sectors.flatMap((walked, i) => (walked ? [] : [(i + 0.5) * SECTOR_DEGREES])),
     loopPathM: loop.complete ? 0 : Math.max(0, LOOP_PATH_M - state.pathM),
     sweepsNeeded: Math.max(0, sweeps.needed - sweeps.counted),
-    floorLook: sweeps.all.some(
-      (s) => !s.complete && s.count >= SECTORS_NEEDED && s.floorShare < FLOOR_LOOK_SHARE,
-    ),
+    wallTilts: QUARTERS - tiltsOf(state).count,
   };
 }
 
