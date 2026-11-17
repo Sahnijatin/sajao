@@ -21,6 +21,8 @@ from sajao_api.middleware.app_version import MinimumAppVersionMiddleware
 from sajao_api.middleware.auth import AuthMiddleware
 from sajao_api.middleware.idempotency import IdempotencyMiddleware
 from sajao_api.middleware.request_context import RequestContextMiddleware
+from sajao_api.pipeline import ModalLauncher, PipelineLauncher, RecordingLauncher
+from sajao_api.rooms import InMemoryRoomStore, PostgresRoomStore, RoomStore
 from sajao_api.settings import Settings
 from sajao_api.storage import ObjectStorage, S3ObjectStorage
 
@@ -37,6 +39,8 @@ def create_app(
     token_verifier: TokenVerifier | None = None,
     storage: ObjectStorage | None = None,
     capture_store: CaptureStore | None = None,
+    room_store: RoomStore | None = None,
+    pipeline: PipelineLauncher | None = None,
 ) -> FastAPI:
     settings = settings or Settings()
     configure_logging(settings.log_level)
@@ -46,7 +50,8 @@ def create_app(
 
     pool: AsyncConnectionPool | None = None
     store = idempotency_store
-    if (store is None or capture_store is None) and settings.database_url is not None:
+    stores = (store, capture_store, room_store)
+    if any(given is None for given in stores) and settings.database_url is not None:
         # prepare_threshold=None: safe behind a transaction-mode connection pooler.
         pool = AsyncConnectionPool(
             settings.database_url.get_secret_value(),
@@ -112,6 +117,16 @@ def create_app(
             storage = storage_for(None)
     app.state.storage = storage
     app.state.captures = capture_store
+    if room_store is None:
+        room_store = PostgresRoomStore(pool) if pool is not None else InMemoryRoomStore()
+    app.state.rooms = room_store
+    if pipeline is None:
+        pipeline = (
+            ModalLauncher(settings.pipeline_modal_app)
+            if settings.pipeline_modal_app
+            else RecordingLauncher()
+        )
+    app.state.pipeline = pipeline
     app.include_router(v1.router)
     app.add_exception_handler(ApiError, api_error_handler)
 
