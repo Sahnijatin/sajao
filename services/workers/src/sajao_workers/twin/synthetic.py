@@ -17,10 +17,26 @@ ROOM = {"x": (-2.0, 2.0), "y": (0.0, 2.8), "z": (-5.0, 1.0)}
 DOOR = {"x": (-0.6, 0.3), "y": (0.0, 2.05)}  # on the back wall, z = -5
 
 
+# A sofa against the left wall: x, y, z ranges in metres.
+SOFA = {"x": (-2.0, -1.1), "y": (0.0, 0.85), "z": (-3.8, -1.8)}
+
+
 def render_room(
     height: float, tilt_deg: float, yaw_deg: float = 0.0
 ) -> tuple[np.ndarray, np.ndarray]:
     """Z-depth (metres) and the door mask seen from a camera at (0, height, 0)."""
+    depth, masks = render_scene(height, tilt_deg, yaw_deg)
+    return depth, masks["door"]
+
+
+def render_scene(
+    height: float,
+    tilt_deg: float,
+    yaw_deg: float = 0.0,
+    boxes: dict[str, dict[str, tuple[float, float]]] | None = None,
+) -> tuple[np.ndarray, dict[str, np.ndarray]]:
+    """Z-depth (metres) and masks (the door, and each box by name) from a camera at
+    (0, height, 0)."""
     k = np.asarray(K)
     ys, xs = np.mgrid[0:H, 0:W]
     cam = np.stack(
@@ -57,4 +73,20 @@ def render_room(
                     & (hit[..., 1] <= DOOR["y"][1])
                 )
                 door = np.where(closer, on_door, door & ~closer)
-    return best, door  # z-depth: the rays have unit camera z
+    masks = {"door": door}
+    for name, box in (boxes or {}).items():
+        near = np.zeros((H, W))
+        far = np.full((H, W), np.inf)
+        for axis, key in enumerate(("x", "y", "z")):
+            lo, hi = box[key]
+            with np.errstate(divide="ignore", invalid="ignore"):
+                a = (lo - origin[axis]) / rays[..., axis]
+                b = (hi - origin[axis]) / rays[..., axis]
+            near = np.maximum(near, np.fmin(a, b))
+            far = np.minimum(far, np.fmax(a, b))
+        hit = (near <= far) & (near > 0) & (near < best)
+        best = np.where(hit, near, best)
+        for seen in masks:
+            masks[seen] &= ~hit
+        masks[name] = hit
+    return best, masks  # z-depth: the rays have unit camera z
