@@ -152,13 +152,11 @@ class CaptureRecorder(
    * candidate, and return the files' uris. Runs on the writer thread, after
    * any keyframe still being written.
    */
-  /** Where ARCore records the scan video (MP4 with AR data tracks). */
-  val videoFile: File get() = File(dir, "scan.mp4")
-
-  fun finish(planes: JSONArray, chosenUris: List<String>, video: String?, done: (Map<String, Any?>) -> Unit) {
+  fun finish(planes: JSONArray, chosenUris: List<String>, done: (Map<String, Any?>) -> Unit) {
     writer.execute {
       val result = HashMap<String, Any?>()
-      result["video"] = video
+      // No scan video is recorded for launch (SJ-SCOPE-30); the field stays for the app.
+      result["video"] = null
       try {
         val planesFile = File(dir, "planes.json")
         planesFile.writeText(JSONObject().put("format", "sajao-planes-1").put("planes", planes).toString())
