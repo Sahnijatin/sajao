@@ -1,10 +1,14 @@
 # Space understanding
 
-You share 3 to 8 photos or a 10 to 30 second video; the server builds a Space Profile with a confidence on every number. Tape values are optional and turn "Estimated" into "Verified".
+Photos are the main way in. You take one to three landscape photos (or pick photos or a video already on the phone); the server builds a Space Profile with a confidence on every number, at the estimated level. The AR scan, or two tape values, is the upgrade to a measured room, and only a measured room gets fit claims.
 
-## Capture on the phone
+## Take photos
 
-You scan whatever you want redone: a whole room, a corner, a balcony or any area. There is no room-type picker.
+"Add a room" opens Take photos. A short note comes first: step back so the floor shows, put away anything private, keep people out of the picture. The camera is landscape only. The app's screens stay upright, so the phone's own orientation decides: the shutter works only while the camera library reports the phone on its side, the hint turns to read upright, and each photo is checked once more after it is decoded upright and resized (about 1600 px on the long edge); one that is not wider than tall is not kept. Each photo is reviewed ("Happy with the view and lighting?", Retake or Continue, "Add another view" up to three). The photos go up as a capture package with no AR data (`ar.tracking` is `none`), marked as from the camera, through the same uploader and registration as a scan. No library permission is needed: the camera writes to the app's own files.
+
+## Measure: the AR scan
+
+"Measure this room for exact fit" opens the scan. You scan whatever you want redone: a whole room, a corner, a balcony or any area. There is no room-type picker.
 
 **Scan screen.** The person scanning sees the camera, one thin progress ring and one plain instruction at a time; the pieces below are how it works underneath. The mesh, guardrail chips, compass map and live labels are diagnostics behind the debug flag (three taps on the camera in a development or preview build). On AR phones the native view draws the camera image only (`overlay` off) unless the flag is on.
 
@@ -16,7 +20,7 @@ You scan whatever you want redone: a whole room, a corner, a balcony or any area
 
 **Two scan modes, one package.** The full scan counts coverage on walls and floor from AR planes and offers hints from live labels. The simple scan asks nothing of planes or the detector: it shows one clean progress ring and counts coverage from how the camera turned and moved (heading sectors covered while turning slowly with a sharp picture, plus metres walked from AR poses, or steady time when AR never tracks). Its hints come from motion alone: slow down, step back, walk around, Done. Android starts in the simple scan. Any phone turns simple when no plane is found or the detector has not loaded ten seconds into the scan, and it never switches back, so progress never jumps. The live mesh and labels still draw wherever the phone finds them (LiDAR, or once planes appear); they are a preview, and the complete inventory comes from the server. Both modes record the same capture package.
 
-Scanning needs a phone that runs ARKit or ARCore, because the measurements come from AR. Before anything else the app checks for it: a phone without AR, or one whose AR session will not start, sees a friendly note and goes to the Use photos flow, where the redesign and the shopping list still work. It is never an error screen, never a camera permission request, and never a scan that could not be measured. On phones that can scan: one instruction at a time, the coverage meter, and sharpness and blur checks running on the device without AI. Compass headings are averaged during capture for Vastu. Uploads are resumable.
+Scanning needs a phone that runs ARKit or ARCore, because the measurements come from AR. Before anything else the app checks for it: a phone without AR, or one whose AR session will not start, sees a friendly note and goes to photos, where the redesign and the shopping list still work at the estimated level. It is never an error screen, never a camera permission request, and never a scan that could not be measured. On phones that can scan: one instruction at a time, the coverage meter, and sharpness and blur checks running on the device without AI. Compass headings are averaged during capture for Vastu. Uploads are resumable.
 
 ## Coverage meter
 
@@ -74,7 +78,7 @@ Force-closing the app stops the upload on both platforms; it resumes on the next
 
 ## Import from the gallery
 
-Photos or one video the person already has go up through the same package and the same uploader, with no AR data (`ar.tracking` is `none`; no poses, planes or depth). "Use photos" on the note for phones without AR opens the phone's own picker, which hands the app only what was chosen, so no library permission is asked for.
+Photos or one video the person already has go up through the same package and the same uploader, with no AR data (`ar.tracking` is `none`; no poses, planes or depth). "Use photos or a video" beside Take photos, on My home and on the note for phones without AR opens the phone's own picker, which hands the app only what was chosen, so no library permission is asked for.
 
 - Up to 20 photos, resized like any other photo, or one video of 5 seconds to 2 minutes.
 - A video is not uploaded. Up to 20 frames are taken from it on the phone, evenly through its length and never at its first or last moment, at most two a second; those are the keyframes.

@@ -80,6 +80,11 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         {/* Every route has a title: it is also the back button label on the next screen. */}
         <Stack.Screen name="(tabs)" options={{ title: t("nav.app") }} />
+        {/* Add a room: one to three photos, the main way in. */}
+        <Stack.Screen
+          name="photos"
+          options={{ title: t("nav.photos"), presentation: "fullScreenModal" }}
+        />
         <Stack.Screen
           name="capture"
           options={{ title: t("nav.capture"), presentation: "fullScreenModal" }}

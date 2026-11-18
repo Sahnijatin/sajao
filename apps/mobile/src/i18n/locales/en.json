@@ -499,7 +499,8 @@
     "space": "Your space",
     "taste": "Your taste",
     "areas": "Choose an area",
-    "import": "Photos or a video"
+    "import": "Photos or a video",
+    "photos": "Take photos"
   },
   "areas": {
     "title": "Which one should we redesign?",
@@ -523,7 +524,7 @@
     "tipLight": "Use pictures taken in good light.",
     "estimated": "Sizes from photos are estimates. Scan the room, or measure it, to confirm what fits.",
     "choose": "Choose photos or a video",
-    "scanInstead": "Scan the room instead",
+    "photosInstead": "Take photos instead",
     "problemTitle": "We could not use that",
     "problems": {
       "nothing": "Nothing was chosen. Pick some photos of the room, or one video.",
@@ -535,5 +536,34 @@
       "failed": "Something went wrong opening your photos. Please try again."
     },
     "tipCount": "Choose up to 20 photos, or one video of 5 seconds to 2 minutes."
+  },
+  "photos": {
+    "note": {
+      "title": "Take photos of your room",
+      "body": "One to three photos, with your phone held sideways. We redo the room on your own photos.",
+      "floor": "Step back to a corner so the floor shows.",
+      "private": "Put away anything private.",
+      "people": "Keep people out of the picture.",
+      "start": "Open the camera"
+    },
+    "permissionTitle": "Allow the camera",
+    "permissionBody": "Sajao needs the camera to take photos of your room. Nothing is shared until you continue.",
+    "camera": {
+      "turn": "Turn your phone sideways",
+      "ready": "Fit the room in, floor included",
+      "count": "Photo {{number}} of up to {{most}}",
+      "shutter": "Take photo",
+      "problems": {
+        "notLandscape": "That one came out upright. Hold your phone sideways and try again",
+        "failed": "That photo did not save. Please try again"
+      }
+    },
+    "review": {
+      "picture": "Photo {{number}} of your room",
+      "question": "Happy with the view and lighting?",
+      "retake": "Retake",
+      "continue": "Continue",
+      "another": "Add another view ({{number}} of {{most}})"
+    }
   }
 }
