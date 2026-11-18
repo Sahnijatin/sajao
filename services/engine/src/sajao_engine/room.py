@@ -271,11 +271,13 @@ def _open_edges(floor: Poly, walls: Sequence[WallLine]) -> tuple[OpenEdge, ...]:
 
 
 def confidence_of(twin: SpaceTwin) -> Confidence:
-    """The level the contract can show today: taped when every wall and the ceiling are measured.
+    """The room's measurement level: the twin's own level when the pipeline set it.
 
-    The contract does not yet tell AR-measured rooms apart from estimated ones, so
-    anything short of taped reads as estimated until the pipeline passes the level.
+    Older twins carry no level; for those a room counts as taped only when every wall
+    and the ceiling are measured, and as estimated otherwise.
     """
+    if twin.confidence is not None:
+        return twin.confidence.level
     lengths = [w.length for w in twin.shell.walls] + [twin.shell.ceiling_height]
     return "taped" if all(d.source == "measured" for d in lengths) else "estimated"
 

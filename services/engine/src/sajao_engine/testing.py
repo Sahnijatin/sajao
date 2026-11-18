@@ -151,6 +151,12 @@ def twin_from_polygon(
     if measured:
         base["shell"]["ceiling_height"] = dim(base["shell"]["ceiling_height"]["value_m"], 0.01)
     base["objects"] = list(objects)
+    base["confidence"] = (
+        {"level": "taped", "basis": "tape"}
+        if measured
+        else {"level": "estimated", "basis": "depth_model"}
+    )
+    base.pop("areas", None)
     return SpaceTwin.model_validate(base)
 
 

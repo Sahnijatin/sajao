@@ -26,7 +26,7 @@ from sajao_engine.testing import (
     twin_from_polygon,
 )
 from sajao_engine.verifier import verify, wall_gap
-from sajao_schemas.generated.v1 import Product, SpaceTwin
+from sajao_schemas.generated.v1 import MeasurementConfidence, Product, SpaceTwin
 
 WHEN = datetime(2026, 1, 5, tzinfo=UTC)
 OPEN = open_plan_rooms()
@@ -221,3 +221,19 @@ def test_a_partial_scan_with_one_wall_is_still_a_room() -> None:
     result = place(request(twin, "lr_short_wall", living_kit()))
     assert result.design is not None, (result.unplaced_required, result.violations)
     no_back_on_an_open_edge(twin, result)
+
+
+@pytest.mark.parametrize("level", ["taped", "ar_measured", "estimated"])
+def test_room_reads_the_twins_own_confidence_level(level: str) -> None:
+    twin = twin_from_polygon(
+        "level",
+        rect(4.0, 3.5),
+        openings=[OpeningSpec("d1", "door", 0, 0.5, 0.9, "start", "inward")],
+    )
+    basis = {"taped": "tape", "ar_measured": "ar_planes", "estimated": "depth_model"}[level]
+    twin = twin.model_copy(
+        update={"confidence": MeasurementConfidence(level=level, basis=basis)}  # type: ignore[arg-type]
+    )
+    room = room_from_twin(twin)
+    assert room.confidence == level
+    assert room.fit_claims == (level != "estimated")
