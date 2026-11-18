@@ -20,6 +20,7 @@ from sajao_workers.steps import ArtifactStore, NonRetryableStepError, Step, Step
 from sajao_workers.twin.assemble import AssemblyError, assemble_twin, storage_key
 from sajao_workers.twin.hero import FrameView, frame_view, pick_hero_views
 from sajao_workers.twin.objects import decode_depth_mm, decode_mask
+from sajao_workers.twin.shell import MIN_FRAMES as OPENING_FRAMES
 from sajao_workers.twin.shell import (
     TextureBuilder,
     frame_of,
@@ -98,7 +99,9 @@ def _shell_from_frames(
         )
         if found is not None:
             sightings.append(found)
-    space.shell["openings"] = fuse_openings(sightings, manifest["depth_source"])
+    space.shell["openings"] = fuse_openings(
+        sightings, manifest["depth_source"], 1 if manifest.get("single_view") else OPENING_FRAMES
+    )
 
     if not textures:
         return {}
@@ -203,11 +206,16 @@ def assemble_step(points_for_shell: PointsForShell = shell_points) -> Step:
         capture = json.loads(context.read("capture"))
         manifest = json.loads(context.read("frames"))
         objects = json.loads(context.read("objects"))
-        phone = json.loads(context.read("phone"))
+        # A single photo has no splat, so no phone variants.
+        phone = _optional(context, "phone", {"variants": {}})
         points = points_for_shell(context.store, manifest)
         if len(points) < 1000:
             raise NonRetryableStepError("too little depth to fit the room shell")
-        space = fit_space(points, depth_source=manifest["depth_source"])
+        space = fit_space(
+            points,
+            depth_source=manifest["depth_source"],
+            unseen_open=bool(manifest.get("single_view")),
+        )
         openings = json.loads(context.read("openings")) if "openings" in context.inputs else []
         coverage = _shell_from_frames(context.store, manifest, objects, openings, space)
         crops = _crops(context.store, manifest, objects)
@@ -237,6 +245,7 @@ def assemble_step(points_for_shell: PointsForShell = shell_points) -> Step:
                 anchor_ids=anchor_ids,
                 built_ins=_optional(context, "built_ins", []),
                 inventory=_optional(context, "inventory", None),
+                scale=_optional(context, "scale", None),
             )
         except AssemblyError as error:
             raise NonRetryableStepError(str(error)) from error

@@ -16,17 +16,23 @@ import json
 import math
 from typing import Any
 
+import numpy as np
 from PIL import Image
 
 from sajao_gateway import ModelGateway, ModelRequest
 from sajao_workers.pipeline import StageError
 from sajao_workers.steps import Step, StepContext, StepOutput
-from sajao_workers.twin.objects import decode_depth_mm
+from sajao_workers.twin.objects import decode_depth_mm, decode_mask, depth_at
 from sajao_workers.twin.single_photo import (
+    camera_of,
     ceiling_height,
+    check_scale,
+    door_height,
     intrinsics_from_fov,
     level_camera,
     lift,
+    scale_evidence,
+    scale_object,
     to_world,
 )
 from sajao_workers.validate import check_depths
@@ -142,3 +148,81 @@ def single_photo_step(gateway: ModelGateway) -> Step:
         )
 
     return Step("twin_single_photo", VERSION, run)
+
+
+def _scaled_depth(png: bytes, factor: float) -> bytes:
+    metres = decode_depth_mm(png) * factor
+    buf = io.BytesIO()
+    Image.fromarray(np.clip(np.round(metres * 1000), 0, 65535).astype(np.uint16)).save(
+        buf, format="PNG"
+    )
+    return buf.getvalue()
+
+
+def single_photo_scale_step() -> Step:
+    """Inputs: `frames` and `scale` (the single-photo step's), and the objects step's
+    `objects`, `built_ins` and `openings`. Door heights come from the door masks; with
+    the ceiling cue they check the depth model's scale (`check_scale`). When the check
+    corrects it, depth, the camera, every box and built-in are scaled once, about the
+    floor under the camera. Every length carries the check's band. Output `scale` is
+    the check and the twin's ScaleEvidence."""
+
+    async def run(context: StepContext) -> StepOutput:
+        manifest: dict[str, Any] = json.loads(context.read("frames"))
+        cue = json.loads(context.read("scale"))
+        objects = json.loads(context.read("objects"))
+        built_ins = json.loads(context.read("built_ins")) if "built_ins" in context.inputs else []
+        openings = json.loads(context.read("openings")) if "openings" in context.inputs else []
+        (frame,) = manifest["frames"]
+        camera = camera_of(frame["c2w"])
+        depth_png = context.store.read_blob(frame["depth"])
+        depth = decode_depth_mm(depth_png)
+        doors = []
+        for o in openings:
+            if o["kind"] != "door" or o["keyframe_id"] != frame["keyframe_id"]:
+                continue
+            mask = decode_mask(context.store.read_blob(o["mask"]))
+            h = door_height(mask, depth_at(depth, mask.shape), frame["intrinsics"], camera)
+            if h is not None:
+                doors.append(h)
+        check = check_scale(cue.get("ceiling_m"), doors)
+        files: dict[str, bytes] = {}
+        refs: dict[str, str] = {}
+        if check.factor != 1.0:
+            pose = np.asarray(frame["c2w"], dtype=np.float64)
+            pose[:3, 3] *= check.factor
+            scaled = {
+                **frame,
+                "depth": context.store.put_blob(_scaled_depth(depth_png, check.factor)),
+                "c2w": [[round(float(v), 9) for v in row] for row in pose],
+            }
+            files["frames"] = json.dumps({**manifest, "frames": [scaled]}, sort_keys=True).encode()
+        else:
+            refs["frames"] = context.inputs["frames"]
+        files["objects"] = json.dumps(
+            [scale_object(o, check) for o in objects], sort_keys=True
+        ).encode()
+        files["built_ins"] = json.dumps(
+            [scale_object(b, check) for b in built_ins], sort_keys=True
+        ).encode()
+        record = {
+            "factor": check.factor,
+            "band_fraction": check.band_fraction,
+            "outcome": check.outcome,
+            "cues": check.cues,
+            "evidence": scale_evidence(check),
+        }
+        files["scale"] = json.dumps(record, sort_keys=True).encode()
+        return StepOutput(
+            files=files,
+            refs=refs,
+            meta={
+                "outcome": check.outcome,
+                "factor": round(check.factor, 4),
+                "band_fraction": check.band_fraction,
+                "doors_measured": len(doors),
+                **{f"{k}_m": v for k, v in check.cues.items()},
+            },
+        )
+
+    return Step("twin_single_photo_scale", VERSION, run)
