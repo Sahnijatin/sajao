@@ -98,6 +98,8 @@ GSPLAT = "gsplat@1.5.3"
 # as the fallback. Code revisions are pinned in gpu/app.py.
 MOGE3 = "Ruicheng/moge-3-vitl@184008f877d7ad1ad4c2cd2182a9bd1f63d0e5be"
 DA3_METRIC = "depth-anything/DA3METRIC-LARGE@4010e39f3634a45bc60553321fb49fb760bd594e"
+# Cameras for imported photos (no AR): the Apache 2.0 checkpoint, not the CC BY-NC one.
+MAPANYTHING_APACHE = "facebook/map-anything-apache@00f9c245bbcb60522d1ed7f9e9d88462c6e3f38a"
 # LaMa big-lama (Apache 2.0), the TorchScript export of simple-lama-inpainting v0.1.0,
 # pinned by the SHA-256 of the file (checked on load).
 LAMA = "big-lama@7ba7aa7ac37a4d41fdbbeba3a2af7ead18058552997e3a3cd1a3b2210c9e6b4c"
@@ -107,6 +109,7 @@ DETECT_SECONDS = 300.0
 SEGMENT_SECONDS = 600.0
 # MoGe-3 took 79 s and DA3 8 s per 270-frame room on an L40S in the benchmark.
 DEPTH_SECONDS = 600.0
+POSE_SECONDS = 600.0
 # Splat training took 4.5 to 10 minutes per room in the spike; the function stops at an hour.
 SPLAT_SECONDS = 3600.0
 # Removal: LaMa on up to 48 frames (seconds) plus a 5,000-step fine-tune (3.5 to 4.5 minutes).
@@ -248,3 +251,21 @@ Rules:
 - Leave out walls, floor, ceiling, doors, windows and people.
 - Do not give sizes, positions or prices.
 """
+
+
+def pose_chain(invoke: Invoke) -> list[GpuModelProvider]:
+    """A camera and a depth map for every imported photo, from the images alone.
+
+    MapAnything has no commercial-use fallback; when it fails, the room fails
+    with a reason the app shows, and nothing is guessed."""
+    return [
+        GpuModelProvider(
+            "mapanything-apache",
+            MAPANYTHING_APACHE,
+            "L40S",
+            POSE_SECONDS,
+            invoke,
+            # It runs in the splat function's image, so it shares the splat GPUs.
+            max_concurrency=SPLAT_GPUS,
+        )
+    ]

@@ -114,6 +114,7 @@ def mounted(image: modal.Image) -> modal.Image:
         .add_local_dir(SPIKE / "gpu" / "twin_gpu", "/root/twin_gpu")
         .add_local_file(SPIKES / "twin-depth" / "gpu" / "depth_eval.py", "/root/depth_eval.py")
         .add_local_file(HERE / "noar_eval.py", "/root/noar_eval.py")
+        .add_local_file(HERE / "photos_eval.py", "/root/photos_eval.py")
         .add_local_dir(WORKERS / "src" / "sajao_workers", "/root/sajao_workers")
         .add_local_file(WORKERS / "gpu" / "splat_gpu.py", "/root/splat_gpu.py")
     )
@@ -171,6 +172,45 @@ def splat(name: str, which: str, method: str) -> dict:
     out = noar_eval.splat_room(name, which, method=method)
     vol.commit()
     return out
+
+
+@app.function(
+    image=mounted(vggt_image),
+    volumes=V,
+    gpu="L40S",
+    timeout=1800,
+    max_containers=1,
+    secrets=[modal.Secret.from_name("huggingface-secret")],
+)
+def photos_poses(name: str, n: int = 15) -> dict:
+    import photos_eval
+
+    vol.reload()
+    out = photos_eval.predict(name, n)
+    vol.commit()
+    return out
+
+
+@app.function(image=mounted(cpu_image), volumes=V, cpu=8, memory=16384, timeout=1800)
+def photos_walls(name: str, n: int = 15, poses: str = "pred", fit: str = "percentile") -> dict:
+    import photos_eval
+
+    vol.reload()
+    return photos_eval.walls_room(name, n, poses, fit)
+
+
+@app.local_entrypoint()
+def photos(rooms: str = "", n: int = 15, poses: str = "pred", fit: str = "percentile") -> None:
+    """Photos path: poses for n photos per room (one GPU at a time), then wall errors.
+    poses "ar" scores MoGe-3 depth on the true AR poses, to tell depth from pose error."""
+    import json
+
+    names = rooms.split(",") if rooms else ROOMS
+    for name in names:
+        print(json.dumps(photos_poses.remote(name, n)))
+    args = [(name, n, poses, fit) for name in names]
+    for r in photos_walls.starmap(args, return_exceptions=True):
+        print(json.dumps(r if isinstance(r, dict) else {"failed": repr(r)[:600]}, default=str))
 
 
 @app.local_entrypoint()

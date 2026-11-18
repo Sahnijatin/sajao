@@ -14,7 +14,7 @@
 | 09 | [Render, plan and share](09-editor-and-ar.md) | Guided render, checks, 2D plan, 3D view, reel |
 | 10 | [Design language, motion and haptics](10-design-language-and-motion.md) | Look, feel, wow moments |
 | 11 | [AI models and evaluation](11-ai-models-and-evaluation.md) | Every model, the bake-off, the golden set |
-| 12 | [Vastu](12-vastu.md) | The Vastu tab and its stages |
+| 12 | [Vastu](12-vastu.md) | The Vastu view and its stages |
 | 13 | [Commerce and monetization](13-commerce.md) | Affiliate, rental, redirect service, subscription |
 | 14 | [Style profiles](14-style-profiles.md) | The six launch styles |
 | 15 | [Tech stack and cost](15-tech-stack-and-cost.md) | Stack choices and cost per room |

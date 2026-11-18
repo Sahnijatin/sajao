@@ -1,26 +1,39 @@
 # Mobile app
 
-The Sajao app shell: Expo with Expo Router, four native tabs, English and Hindi, and a units setting. It opens straight into the app as a guest; there is no sign-in gate and no paywall, lock or upgrade prompt anywhere.
+The Sajao app: Expo with Expo Router, two native tabs, English and Hindi, and a units setting. It opens on My home as a guest; there is no sign-in gate and no paywall, lock or upgrade prompt anywhere.
 
 ## Layout
 
 | Path | What lives there |
 | --- | --- |
-| `src/app` | Routes only. `(tabs)` holds Home, My rooms, Vastu and Profile; `gallery` is the dev-only component gallery. |
+| `src/app` | Routes only. `(tabs)` holds Home (My home) and Profile; `gallery` is the dev-only component gallery. |
 | `src/screens` | Screen bodies the route files render. |
 | `src/components` | Shared building blocks for screens. Design system components come from `@sajao/ui`. |
 | `src/capture` | Scan logic, all unit-tested: frame statistics, feature points, triangulation, mesh tracking, guardrails and the scan session. `scan-camera.tsx` is the only file that touches the camera library. |
+| `src/rooms` | Rooms on My home: the room model, card labels, the room card and the room still (a real image, or a drawn stand-in until one exists). Also what a room holds after the pipeline (`room-content.ts`: hero views and three looks, each a view of one `Design`), the generation stages, the sample content that stands in for both, the shopping list as a view of a `Design` (`shopping.ts`), the room's measured walls, openings and big items read from its `SpaceTwin` (`measures.ts`), the geometry of the 2D plan drawn from a `Design` and the room's floor polygon (`design-plan.ts`), which floor edges are walls or open and the room's confidence level (`room-shape.ts`), and turning photos or a video picked by the gallery import (`src/import`) into a room on My home (`media-import.ts`). |
 | `src/space` | Space Profile card logic: what was found, user edits, tape re-fit, plan geometry. |
 | `src/taste` | Taste onboarding: adaptive swipes, the card deck and the onboarding flow. |
 | `src/i18n` | String catalogs (`locales/en.json`, `locales/hi.json`) and language choice. |
-| `src/state` | On-device settings (language, units), saved across launches. |
+| `src/state` | On-device settings (language, units) and the rooms on My home, saved across launches. |
 | `src/uploads` | Photo resizing and resumable uploads through signed URLs. |
 | `src/utils` | Length and INR formatting. |
+
+## Real rooms
+
+With `EXPO_PUBLIC_API_URL` set, a confirmed scan becomes a room on the server: `src/rooms/room-source.ts` waits for the upload, creates the room, follows its job stage by stage and reads its `SpaceTwin`. `room-api.ts` holds the pure mapping (stages done, failure reasons, twin to room content) and `room-client.ts` the typed network client. Designs and photos are not read yet.
+
+## Samples
+
+Stand-in content (the sample room, designs, space profile, and the drawn stills) shows only where `samplesAllowed()` in `src/rooms/samples.ts` says so: development and preview builds. A store or closed-test build shows none of it; where real data is missing a screen is skipped or says the room is being prepared.
+
+## Flags
+
+`src/features.ts` holds features that are built towards but switched off. `EXPO_PUBLIC_TWIN_VIEWER=1` on an EAS environment shows the place kept for the 3D view on the Room tab; without it the tab is hero photos and measurements only.
 
 ## Rules for screens
 
 - Every user-facing string goes in both catalogs. A test fails if the keys or placeholders differ, or if a Hindi string is left in English.
-- Lengths are metres in data and are shown through `formatLength` in the user's units. Prices are paise in data and are shown through `formatInr`.
+- Lengths are metres in data and are shown through `formatLength` in the user's units: feet and inches by default, centimetres as the alternative in settings. Prices are paise in data and are shown through `formatInr`.
 - Colors, spacing, motion and haptics come from `@sajao/ui`.
 
 ## Hindi copy: needs native review

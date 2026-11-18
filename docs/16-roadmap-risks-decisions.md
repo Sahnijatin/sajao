@@ -10,7 +10,7 @@ Sprint dates live in Notion. Each phase ends at a gate with numbers; the next ph
 | Foundations and spikes | Design system and component gallery, app shell, schemas, API skeleton with auth and uploads, render bake-off, geometry spike, Flipkart feed ingestion | Bake-off winner and fallback chosen; geometry error bands measured on tape-measured rooms; cost per room measured |
 | Room and taste | Capture with guides, space understanding pipeline, Space Profile card, adaptive swipes, curation tool, first approved products | Space Profile within targets on the golden set; enough approved products per style |
 | Design engine and commerce | Spec, retrieval, designer, solver, verifier, relaxation, three intents, shopping list, redirect service, 2D plan | Zero verifier failures shown; totals match retailer prices |
-| Render, plan, Vastu | Render pipeline with checks and fallbacks, reveal, plan editing, swap, Vastu tab | Render gates in [assumptions and accuracy](02-assumptions-and-accuracy.md) |
+| Render, plan, Vastu | Render pipeline with checks and fallbacks, reveal, plan editing, swap, Vastu view on the Designs tab | Render gates in [assumptions and accuracy](02-assumptions-and-accuracy.md) |
 | Polish and test build | Share reel, save and history, motion and haptics pass, budget Android pass, consent and privacy | Stable build in the Play closed test and TestFlight |
 | Test fixes and release candidate | Closed-test fixes, quality gates on the golden set, 3D view on capable phones, store listings | All quality gates pass; store submission |
 | After launch | Subscription switched on by the founder, Next tier features, all room types if accuracy holds | Per decision |
@@ -46,7 +46,7 @@ Sprint dates live in Notion. Each phase ends at a gate with numbers; the next ph
 | Attribution | Coupon codes first, tracked links second | Codes survive app switching and delayed purchases |
 | Vastu | Room-level in v1, whole-home next | Room-level needs only the scanned room; whole-home needs plan reading |
 | Own trained models | Next tier | Need vote and curation data that does not exist yet |
-| Design system | LiveMap tokens, motion and haptics | Proven premium look; consistent across products |
+| Design system | LiveMap structure, motion and haptics with a warm palette (ivory, sand, wood, terracotta accent) | Proven premium structure; the warm palette fits Indian homes and keeps the app calm |
 | 3D renderer | react-native-filament | Native performance on budget phones |
 | Launch | Public on both stores, free, no invites, then marketing | Founder decision: maximum reach from day one; testing groups run separately through store tools |
 | Fallbacks | Gateway chain down to degraded mode | The app must never stop suddenly |
@@ -71,7 +71,7 @@ These supersede earlier rows where they conflict; earlier rows are kept as histo
 | Login | Truecaller, Google, Apple, WhatsApp OTP fallback; guest first, sign-in before generation | Lowest friction in India; protects cost per room |
 | Spaces | Scan any space at any extent; type and extent are detected and editable, never picked up front. Living room and bedroom are the quality bar; other spaces use a labelled lighter template set until golden-set tests pass | Founder decision: nothing rigid |
 | Scan feedback | Live scan mesh from on-device feature points, drawn with Skia; AR planes where available; dots and edges on low-tier phones | Founder decision: scanning should feel like the space is being mapped in real time, at no server cost |
-| Vastu | Own tab: room-level now; floor plans, expert call and home visit later | Founder decision |
+| Vastu | A toggle on each room's Designs tab, enabled only with a compass reading; no tab of its own. Room-level now; floor plans, expert call and home visit later. Replaces the earlier choice of an own tab | Founder decision: Vastu belongs with the designs it shapes, and the app keeps two tabs, Home and Profile |
 | Infrastructure | Supabase Postgres, R2, Cloud Run, Modal, one model gateway, durable jobs | Scales from 10 to 1 lakh users without a rebuild |
 | Tracking | Notion is the single tracker; scope changes need founder approval | Prevents drift |
 | Skills in repo | Licensed third-party skills copied into `.claude/skills/` instead of declared as plugins | Cloud sessions do not reliably install plugins; copies are versioned with the code |

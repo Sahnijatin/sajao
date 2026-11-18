@@ -8,6 +8,7 @@ export type HapticMoment =
   | "cornerCaptured"
   | "levelReached"
   | "roomVerified"
+  | "roomAdded"
   | "furnitureSnap"
   | "collision"
   | "swapLands"
@@ -36,6 +37,7 @@ export const hapticMap: Record<HapticMoment, HapticPattern> = {
     ios: [{ kind: "notification", type: Notify.Success }],
     android: AndroidHaptics.Confirm, // double tick
   },
+  roomAdded: { ios: [{ kind: "impact", style: Impact.Soft }], android: shortTick },
   furnitureSnap: { ios: [{ kind: "impact", style: Impact.Medium }], android: shortTick },
   collision: {
     ios: [{ kind: "impact", style: Impact.Rigid }],

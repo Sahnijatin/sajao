@@ -449,7 +449,80 @@ def depth(model: str, payload: dict[str, Any]) -> dict[str, Any]:
     return {"frames": frames}
 
 
-HANDLERS = {"twin_detect": detect, "twin_segment": segment, "twin_depth": depth}
+# The pose model's input size: landscape, or turned for a mostly portrait set.
+POSE_SIZE = (518, 392)
+
+
+def poses(model: str, payload: dict[str, Any]) -> dict[str, Any]:
+    """A camera (OpenCV, camera to world), intrinsics and depth for each imported photo,
+    from the images alone, in the pose model's own frame and scale. Code turns that
+    into metres and stands it up (twin/photo_frames.py)."""
+    import io
+
+    import cv2
+    import numpy as np
+    import torch
+    from mapanything.models import MapAnything
+    from mapanything.utils.image import preprocess_inputs
+
+    if model not in _loaded:
+        name, revision = _split(model)
+        if name != "facebook/map-anything-apache":
+            raise InputError(f"unknown pose model {model}")
+        _loaded[model] = MapAnything.from_pretrained(name, revision=revision).cuda().eval()
+    network = _loaded[model]
+    rgbs = [_rgb(f["image"]) for f in payload["frames"]]
+    portrait = sum(r.shape[0] > r.shape[1] for r in rgbs) * 2 > len(rgbs)
+    tw, th = (POSE_SIZE[1], POSE_SIZE[0]) if portrait else POSE_SIZE
+    views = [
+        {"img": torch.from_numpy(cv2.resize(r, (tw, th), interpolation=cv2.INTER_AREA))}
+        for r in rgbs
+    ]
+    proc = preprocess_inputs(views, resize_mode="fixed_size", size=(tw, th))
+    with torch.no_grad():
+        # No output masks: this depth only sets the scale (a median ratio), and the
+        # masks blank most of some rooms. The cameras do not depend on them.
+        preds = network.infer(
+            proc,
+            memory_efficient_inference=True,
+            use_amp=True,
+            amp_dtype="bf16",
+            apply_mask=False,
+            mask_edges=False,
+            apply_confidence_mask=False,
+        )
+    store = _store()
+    frames = []
+    for frame, rgb, p in zip(payload["frames"], rgbs, preds, strict=True):
+        h, w = rgb.shape[:2]
+        k = p["intrinsics"][0].float().cpu().numpy().astype(np.float64)
+        dh, dw = p["depth_z"].shape[1:3]
+        k[0] *= w / dw  # back to the photo's own size
+        k[1] *= h / dh
+        d = p["depth_z"][0, ..., 0].float().cpu().numpy()
+        # In the pose model's own units, which need not be metres: kept as float32.
+        depth_units = np.where(np.isfinite(d) & (d > 0), d, 0.0).astype(np.float32)
+        buf = io.BytesIO()
+        np.save(buf, depth_units)
+        frames.append(
+            {
+                "image": frame["image"],
+                "width": int(w),
+                "height": int(h),
+                "intrinsics": [[float(v) for v in row] for row in k],
+                "c2w": [[float(v) for v in row] for row in p["camera_poses"][0].float().cpu()],
+                "pose_depth": store.put_blob(buf.getvalue()),
+                "coverage": round(float((depth_units > 0).mean()), 4),
+            }
+        )
+    return {"frames": frames}
+
+
+HANDLERS = {
+    "twin_detect": detect,
+    "twin_segment": segment,
+    "twin_depth": depth,
+}
 
 
 @app.function(
@@ -483,9 +556,10 @@ def run_model(model: str, task: str, payload: dict[str, Any]) -> dict[str, Any]:
     scaledown_window=60,
 )
 def run_splat(model: str, task: str, payload: dict[str, Any]) -> dict[str, Any]:
-    """Train and split one splat, or remove objects from one (fill B).
+    """Train and split one splat, remove objects from one (fill B), or give imported
+    photos their cameras (MapAnything is in this image).
 
-    Both share this function, so they share its GPU. The time charged includes
+    They share this function, so they share its GPU. The time charged includes
     loading and evaluation.
     """
     import removal_gpu
@@ -510,13 +584,16 @@ def run_splat(model: str, task: str, payload: dict[str, Any]) -> dict[str, Any]:
                 lama_sha256=model.split("@", 1)[1],
                 steps=int(payload.get("steps", 5000)),
             )
+        elif task == "twin_poses" and model.startswith("facebook/map-anything-apache@"):
+            # Imported photos: MapAnything is installed in this image, for pose refinement.
+            output = poses(model, payload)
         elif task == "twin_review" and model.startswith("gsplat@"):
             import review_gpu
 
             output = review_gpu.review(payload, _store())
         else:
             return {"error": f"unknown splat task {task} for {model}"}
-    except splat_gpu.InputError as error:
+    except (splat_gpu.InputError, InputError) as error:
         return {"error": str(error)}
     splat_gpu.save_compiled_kernels()
     vol.commit()
@@ -2296,3 +2373,144 @@ def understanding_smoke(
     for name, data in result["files"].items():
         (target / name).write_bytes(data)
     print(json.dumps(result["summary"], indent=1))
+
+
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=4, memory=8192, timeout=3600
+)
+def photos_smoke_cpu(scene: str, photos: int) -> dict[str, Any]:
+    """Imported photos on one ARKitScenes room: poses, metric depth and scale with no AR.
+
+    The AR poses are kept aside only to score the result: distances between the
+    cameras, in metres, against the AR distances."""
+    import asyncio
+    import itertools
+    import json
+
+    import numpy as np
+
+    from sajao_gateway import InMemorySpendLedger, ModelGateway, SpendCaps
+    from sajao_workers.models import depth_chain, pose_chain
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.depth_step import depth_step
+    from sajao_workers.twin.photo_frames import photo_poses_step, photo_scale_step
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    truth = _arkit_manifest(store, scene, photos, y_up=True)
+    keyframes = [
+        {"id": f["keyframe_id"], "image": f"smoke/{f['keyframe_id']}.jpg",
+         "captured_at_ms": 500 * i, "sharpness": 0}
+        for i, f in enumerate(truth["frames"])
+    ]  # fmt: skip
+    capture = {
+        "id": "smoke",
+        "package": {
+            "ar": {"tracking": "none", "lidar": False, "depth": False},
+            "keyframes": keyframes,
+            "detections": [],
+            "sensor_log": "smoke/log.jsonl",
+        },
+    }
+    images = {f["keyframe_id"]: f["image"] for f in truth["frames"]}
+    caps = SpendCaps(per_user_daily_micro_inr=10**9, global_daily_micro_inr=10**9)
+    ledger = InMemorySpendLedger(caps)
+    runner = StepRunner(store, max_attempts=1)
+
+    async def run() -> dict[str, Any]:
+        posed = await runner.run(
+            photo_poses_step(
+                ModelGateway(pose_chain(volume_invoke("twin_poses", run_splat)), ledger=ledger)
+            ),
+            {
+                "capture": store.put_blob(json.dumps(capture).encode()),
+                "images": store.put_blob(json.dumps(images).encode()),
+            },
+            {},
+        )
+        depth = await runner.run(
+            depth_step(ModelGateway(depth_chain(volume_invoke("twin_depth")), ledger=ledger)),
+            {"frames": posed.outputs["frames"]},
+            {},
+        )
+        scaled = await runner.run(photo_scale_step(), {"frames": depth.outputs["frames"]}, {})
+        out = json.loads(store.read_blob(scaled.outputs["frames"]))
+        got = [np.asarray(f["c2w"])[:3, 3] for f in out["frames"]]
+        want = [np.asarray(f["c2w"])[:3, 3] for f in truth["frames"]]
+        ratios = [
+            float(np.linalg.norm(got[i] - got[j]) / np.linalg.norm(want[i] - want[j]))
+            for i, j in itertools.combinations(range(len(got)), 2)
+            if np.linalg.norm(want[i] - want[j]) > 0.5
+        ]
+        tilt = [
+            float(np.degrees(np.arccos(np.clip(-np.asarray(f["c2w"])[1, 1], -1, 1))))
+            for f in out["frames"]
+        ]
+        cost = posed.cost_micro_inr + depth.cost_micro_inr
+        return {
+            "scene": scene,
+            "photos": len(out["frames"]),
+            "pose_model": posed.meta["model"],
+            "depth_model": depth.meta.get("model"),
+            "scale": scaled.meta["scale"],
+            "up_from": scaled.meta["up_from"],
+            "up_correction_deg": scaled.meta["up_correction_deg"],
+            "floor_photos": scaled.meta["floor_photos"],
+            "camera_distance_ratio_median": round(float(np.median(ratios)), 3),
+            "camera_distance_ratio_p10_p90": [
+                round(float(np.percentile(ratios, 10)), 3),
+                round(float(np.percentile(ratios, 90)), 3),
+            ],
+            "camera_tilt_deg_median": round(float(np.median(tilt)), 1),
+            "ar_camera_tilt_deg_median": round(
+                float(
+                    np.median(
+                        [
+                            np.degrees(np.arccos(np.clip(-np.asarray(f["c2w"])[1, 1], -1, 1)))
+                            for f in truth["frames"]
+                        ]
+                    )
+                ),
+                1,
+            ),
+            # Angle between the levelled world's up and the true up, through the camera axes.
+            "up_error_deg": round(
+                float(
+                    np.degrees(
+                        np.arccos(
+                            np.clip(
+                                np.mean(
+                                    [
+                                        np.asarray(g["c2w"])[:3, :3]
+                                        @ np.asarray(t["c2w"])[:3, :3].T
+                                        for g, t in zip(
+                                            [f for f in out["frames"]],
+                                            [
+                                                t
+                                                for t in truth["frames"]
+                                                if t["keyframe_id"]
+                                                in {f["keyframe_id"] for f in out["frames"]}
+                                            ],
+                                            strict=True,
+                                        )
+                                    ],
+                                    axis=0,
+                                )[1, 1],
+                                -1,
+                                1,
+                            )
+                        )
+                    )
+                ),
+                1,
+            ),
+            "charged_inr": round(cost / 1e6, 2),
+        }
+
+    return asyncio.run(run())
+
+
+@app.local_entrypoint()
+def photos_smoke(scene: str = "arkit_living_47331265", photos: int = 15) -> None:
+    import json
+
+    print(json.dumps(photos_smoke_cpu.remote(scene, photos), indent=1))

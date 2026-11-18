@@ -1,15 +1,17 @@
 {
   "tabs": {
     "home": "Home",
-    "rooms": "My rooms",
-    "vastu": "Vastu",
     "profile": "Profile"
   },
   "home": {
-    "headline": "Any corner, redone.",
-    "intro": "Scan a whole room, a corner or a balcony. See three ways it could look, built from real products that fit.",
-    "start": "Start scanning",
-    "worksWith": "Works with whole rooms, corners and balconies",
+    "title": "My home",
+    "addRoom": "Add a room",
+    "empty": {
+      "line": "See your room redone with furniture you can buy.",
+      "before": "Before",
+      "after": "After",
+      "picture": "A room before and after a redesign"
+    },
     "upload": {
       "waiting": "Your scan is saved on this phone",
       "uploading": "Uploading your scan, {{finished}} of {{total}}",
@@ -28,12 +30,13 @@
       "measured": "Room measured",
       "failed": {
         "no_walls": "We could not find the walls in this scan. Please scan again and walk around the room",
-        "other": "We could not measure this room. Please scan again"
+        "other": "We could not measure this room. Please scan again",
+        "no_ar_data": "Your pictures are uploaded. Rooms from photos and videos are not ready yet"
       }
-    }
+    },
+    "usePhotos": "Use photos or a video"
   },
   "capture": {
-    "title": "Mapping your space",
     "close": "Close",
     "torch": "Torch",
     "chips": {
@@ -54,29 +57,8 @@
         "warn": "Glare"
       }
     },
-    "guideTitle": "Cover what you want to change",
-    "guideBody": "A whole room, one corner or the balcony. Tap Done once it's all in.",
     "usePhotos": "Use photos",
     "done": "Done",
-    "pausedTitle": "Paused, nothing lost",
-    "fix": {
-      "light": {
-        "title": "A little more light",
-        "body": "Switch on a lamp or open the curtains, then move slowly. We keep everything mapped so far.",
-        "fixed": "I've turned it on"
-      },
-      "motion": {
-        "title": "A little slower",
-        "body": "Pan slowly and hold the phone steady. We keep everything mapped so far.",
-        "fixed": "I'll go slower"
-      },
-      "glare": {
-        "title": "Too much glare",
-        "body": "Point away from mirrors, windows and bare bulbs, or change your angle. We keep everything mapped so far.",
-        "fixed": "I've moved"
-      }
-    },
-    "scanAnyway": "Scan anyway",
     "permissionTitle": "Sajao needs your camera",
     "permissionBody": "The camera is used only to scan the space you want redone.",
     "permissionAllow": "Allow camera",
@@ -140,26 +122,194 @@
       "chair": "Chair",
       "microwave": "Microwave"
     },
-    "hints": {
-      "doorway": "Finish this space first, then scan the next one",
-      "stepBack": "Step back to fit it all in",
-      "walkAround": "Walk around the {{object}}",
-      "coverMore": "Done is ready. Cover a bit more for the best result",
-      "slowDown": "Slow down a little",
-      "walk": "Walk around the space as you scan",
-      "complete": "All covered. Tap Done",
+    "guide": {
+      "move": "Move slowly around the room",
+      "corners": "Get the corners",
+      "slowDown": "A little slower",
+      "stepBack": "Step back a little",
+      "walk": "Walk around as you go",
+      "doorway": "Stay in this room for now",
+      "enough": "You have enough. Tap Done",
+      "complete": "That's everything. Tap Done",
+      "dark": "It's a bit dark. Switch on a light",
+      "fast": "Hold steady and go slower",
+      "glare": "Point away from the bright light",
       "walkWalls": "Walk along the walls",
       "keepGoing": "Keep going round",
       "standMiddle": "Now stand in the middle and turn slowly",
-      "tiltDown": "Tilt down a little",
       "oneMoreSpot": "One more spot, over there",
-      "meterDone": "Done"
+      "tiltWall": "On each wall, tilt slowly up to the ceiling, then down to the floor"
+    },
+    "keepGoing": "Keep going",
+    "torchOn": "Use the torch",
+    "progress": "Scanning your room",
+    "rescan": {
+      "floor": "Point down at the floor",
+      "walls": "Show the walls you missed",
+      "walk": "Walk to the far side of the room",
+      "ahead": "Scan what's in front of you",
+      "left": "Turn to your left",
+      "behind": "Turn around",
+      "right": "Turn to your right",
+      "middle": "Stand in the middle and turn slowly"
     },
     "finishAnyway": "Finish anyway",
     "noAr": {
       "title": "This phone can't measure a room by scanning",
       "body": "Scanning needs a phone that supports AR. Yours can still get a redesign and a shopping list: use photos of your space instead."
+    },
+    "hints": {
+      "tiltWall": "On each wall, tilt slowly up to the ceiling, then down to the floor"
     }
+  },
+  "review": {
+    "titleComplete": "We got your room",
+    "titleMissing": "Nearly there",
+    "covered": "{{percent}}% of your room is in",
+    "missingTitle": "Still missing",
+    "nothingMissing": "Nothing. Every side is in.",
+    "missing": {
+      "floor": "The floor",
+      "walls": "One or more walls",
+      "walk": "The far side of the room",
+      "ahead": "The side in front of you",
+      "left": "The side on your left",
+      "behind": "The side behind you",
+      "right": "The side on your right",
+      "middle": "The middle of the room"
+    },
+    "sizeTitle": "Rough size",
+    "size": "About {{long}} by {{short}}",
+    "sizeLater": "We'll measure it from your scan",
+    "rescan": "Rescan this part",
+    "scanMore": "Scan a bit more",
+    "confirm": "Looks good"
+  },
+  "generating": {
+    "title": "Designing your room",
+    "stages": {
+      "walls": "Measuring your walls",
+      "furniture": "Finding your furniture",
+      "looks": "Designing three looks"
+    },
+    "titleRoomOnly": "Getting your room ready",
+    "failed": {
+      "title": "We couldn't finish this room",
+      "no_walls": "We couldn't find the walls. Scan the room again, keeping the walls in view as you go.",
+      "upload": "Your scan didn't upload. Check your connection, then try again from My home. Nothing is lost.",
+      "unknown": "Something went wrong on our side. Your scan is saved, and you can try again from My home.",
+      "back": "Back to My home",
+      "no_ar_data": "Your pictures are uploaded. Rooms from photos and videos are not ready yet"
+    }
+  },
+  "reveal": {
+    "roomTitle": "Here's your room",
+    "roomCta": "See my three looks",
+    "looksTitle": "Three looks for your room",
+    "looksCta": "Open my room",
+    "view": "Your room, view {{number}} of {{total}}",
+    "sample": "These are sample looks. Yours appear here when they are ready."
+  },
+  "design": {
+    "slot": {
+      "best_value": "Best value",
+      "best_match": "Best match",
+      "bold": "Bold"
+    },
+    "total": "{{amount}} for everything"
+  },
+  "room": {
+    "tabs": {
+      "room": "Room",
+      "designs": "Designs",
+      "shopping": "Shopping list"
+    },
+    "size": {
+      "title": "Size",
+      "area": "About {{area}}",
+      "ceilingTitle": "Ceiling height",
+      "none": "Your room's measurements appear here once it is measured.",
+      "source": {
+        "estimated": "Estimated, to within {{band}}",
+        "measured": "Measured, to within {{band}}",
+        "user_confirmed": "Confirmed by you, to within {{band}}"
+      }
+    },
+    "walls": {
+      "title": "Walls",
+      "wall": "Wall {{name}}"
+    },
+    "openings": {
+      "title": "Doors and windows",
+      "door": "Door",
+      "window": "Window",
+      "doorOnWall": "Door on wall {{name}}",
+      "windowOnWall": "Window on wall {{name}}",
+      "size": "{{width}} wide, {{height}} high"
+    },
+    "items": {
+      "title": "Big items",
+      "size": "{{width}} by {{depth}}, {{height}} high"
+    },
+    "view3d": {
+      "title": "3D view",
+      "body": "A 3D view of your room will appear here."
+    },
+    "plan": {
+      "title": "Floor plan",
+      "titleFor": "Floor plan, {{look}}",
+      "picture_one": "Plan of your room with {{count}} item",
+      "picture_other": "Plan of your room with {{count}} items",
+      "softEdge": "Walls not yet checked with a tape are drawn with a soft edge.",
+      "openEdge": "A dashed line is an open side: the room carries on there, with no wall."
+    },
+    "sample": "These are sample views and measurements. Yours appear here when they are ready.",
+    "approx": "approx.",
+    "measureHint": "Shows where this measurement came from",
+    "waiting": {
+      "title": "Getting your room ready",
+      "body": "Your photos, measurements and designs appear here when they are ready."
+    },
+    "confidence": {
+      "taped": {
+        "title": "Checked with a tape",
+        "body": "These sizes were checked with a tape measure."
+      },
+      "measured": {
+        "title": "Measured by your scan",
+        "body": "These sizes come from scanning the room."
+      },
+      "estimated": {
+        "title": "Estimated",
+        "body": "These sizes are worked out from photos. Measure to confirm before you buy."
+      },
+      "measure": "Measure to confirm"
+    }
+  },
+  "designs": {
+    "why": "Why this works",
+    "fits": "Everything fits your room",
+    "check": "Some pieces need a fit check",
+    "vastu": "Vastu view",
+    "vastuNeedsCompass": "Needs a compass reading from your scan",
+    "vastuPoints": "Vastu points for this look appear here.",
+    "comingForSpace": "Designs for this kind of space are coming. Your photos and measurements are on the Room tab."
+  },
+  "shopping": {
+    "total": "Total",
+    "buy": "Buy",
+    "buyItem": "Buy {{item}}",
+    "outOfStock": "Out of stock",
+    "checking": "Prices are being checked",
+    "fit": {
+      "fits": "Fits your room",
+      "check": "Needs a fit check",
+      "tight": "A tight fit",
+      "does_not_fit": "Does not fit here",
+      "fitsWith": "Fits with {{spare}} to spare",
+      "confirm": "Measure your room to confirm the fit"
+    },
+    "sample": "These are sample products. Links open when your own designs are ready."
   },
   "space": {
     "found": "We found",
@@ -285,14 +435,22 @@
     "finish": "Done"
   },
   "rooms": {
-    "title": "My rooms",
-    "emptyTitle": "No rooms yet",
-    "emptyBody": "Rooms you scan and designs you save will appear here."
+    "defaultName": "Room {{number}}",
+    "updated": {
+      "today": "Updated today",
+      "yesterday": "Updated yesterday",
+      "daysAgo": "Updated {{count}} days ago",
+      "lastMonth": "Updated last month",
+      "monthsAgo": "Updated {{count}} months ago"
+    },
+    "designs": {
+      "none": "No designs yet",
+      "count_one": "{{count}} design",
+      "count_other": "{{count}} designs"
+    }
   },
   "vastu": {
-    "title": "Vastu",
-    "label": "Vastu guidance, as close as possible. For a full consultation, speak to an expert.",
-    "body": "Scan a room to see its direction and a room scorecard."
+    "label": "Vastu guidance, as close as possible. For a full consultation, speak to an expert."
   },
   "profile": {
     "title": "Profile",
@@ -305,7 +463,12 @@
     "unitsExample": "A 3.4 m wall shows as {{length}}",
     "gallery": "Component gallery",
     "spacePreview": "Space Profile preview",
-    "tastePreview": "Taste preview"
+    "tastePreview": "Taste preview",
+    "tasteTitle": "Your taste and budget",
+    "tasteNone": "Tell us what you like and what you want to spend. It takes a minute.",
+    "tasteBudget": "Budget {{amount}}",
+    "tasteChange": "Change",
+    "tasteStart": "Set my taste"
   },
   "languages": {
     "en": "English",
@@ -329,6 +492,48 @@
     "gallery": "Gallery",
     "spacePreview": "Space Profile",
     "tastePreview": "Taste",
-    "capture": "Scan"
+    "capture": "Scan",
+    "generating": "Designing",
+    "reveal": "Your room",
+    "room": "Room",
+    "space": "Your space",
+    "taste": "Your taste",
+    "areas": "Choose an area",
+    "import": "Photos or a video"
+  },
+  "areas": {
+    "title": "Which one should we redesign?",
+    "body_one": "Your scan covers {{count}} area.",
+    "body_other": "Your scan covers {{count}} areas. Pick the one to redesign.",
+    "others": "The others stay in this room with their photos and measurements.",
+    "choose": "Redesign this one",
+    "notYet": "Designs for this kind of space are coming",
+    "unnamed": "Area {{number}}",
+    "chooseFirst_one": "Your scan covers {{count}} area.",
+    "chooseFirst_other": "Your scan covers {{count}} areas. Choose one to see its designs.",
+    "chooseOne": "Choose an area",
+    "designsFor": "Designs for: {{area}}",
+    "change": "Change"
+  },
+  "import": {
+    "title": "Use photos or a video",
+    "body": "Already have photos or a video of the room? Use them to get a redesign and a shopping list.",
+    "tipsTitle": "For the best result",
+    "tipWalls": "Show every wall, from the floor up.",
+    "tipLight": "Use pictures taken in good light.",
+    "estimated": "Sizes from photos are estimates. Scan the room, or measure it, to confirm what fits.",
+    "choose": "Choose photos or a video",
+    "scanInstead": "Scan the room instead",
+    "problemTitle": "We could not use that",
+    "problems": {
+      "nothing": "Nothing was chosen. Pick some photos of the room, or one video.",
+      "tooManyPhotos": "Please choose 20 photos or fewer.",
+      "photosAndVideo": "Please choose photos or one video, not both.",
+      "severalVideos": "Please choose one video.",
+      "videoTooShort": "That video is very short. Choose one of 5 seconds or more.",
+      "videoTooLong": "That video is long. Choose one of 2 minutes or less.",
+      "failed": "Something went wrong opening your photos. Please try again."
+    },
+    "tipCount": "Choose up to 20 photos, or one video of 5 seconds to 2 minutes."
   }
 }

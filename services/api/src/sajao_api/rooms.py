@@ -69,6 +69,10 @@ class RoomStore(Protocol):
 
     async def latest_design_request(self, room_id: str, user_id: str) -> DesignRequest | None: ...
 
+    async def get_design_request(self, request_id: str, user_id: str) -> DesignRequest | None:
+        """One of the caller's design requests, with its designs once ready."""
+        ...
+
 
 def _queued(names: tuple[str, ...]) -> tuple[Stage, ...]:
     return tuple(Stage(name, "queued") for name in names)
@@ -126,6 +130,13 @@ class InMemoryRoomStore:
         if held is None or held.room.user_id != user_id or not held.requests:
             return None
         return held.requests[-1]
+
+    async def get_design_request(self, request_id: str, user_id: str) -> DesignRequest | None:
+        for held in self._rooms.values():
+            for request in held.requests:
+                if request.request_id == request_id and request.user_id == user_id:
+                    return request
+        return None
 
     # What the pipeline worker does. Each is safe to repeat.
     async def set_stage(
@@ -350,6 +361,13 @@ class PostgresRoomStore:
                 await connection.execute(_LATEST_REQUEST, {"room_id": room_id, "user_id": user_id})
             ).fetchone()
         return await self._request(row) if row is not None else None
+
+    async def get_design_request(self, request_id: str, user_id: str) -> DesignRequest | None:
+        async with self._pool.connection() as connection:
+            row = await (await connection.execute(_READ_REQUEST, {"id": request_id})).fetchone()
+        if row is None or row[2] != user_id:
+            return None
+        return await self._request(row)
 
     async def capture_for_room(self, room_id: str) -> tuple[str, dict[str, Any]] | None:
         """The room's owner and the capture it was made from, for the pipeline worker."""
