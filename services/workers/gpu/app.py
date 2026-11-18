@@ -2532,3 +2532,282 @@ def photos_smoke(scene: str = "arkit_living_47331265", photos: int = 15) -> None
     import json
 
     print(json.dumps(photos_smoke_cpu.remote(scene, photos), indent=1))
+
+
+@app.function(
+    image=cpu_image,
+    volumes={"/work": vol, "/vol": spike_vol},
+    cpu=4,
+    memory=8192,
+    timeout=1800,
+    secrets=VISION_SECRETS,
+)
+def single_photo_smoke_cpu(scene: str, candidates: int) -> dict[str, Any]:
+    """The photo-first room stages on one real ARKitScenes photo, through run_room.
+
+    The photo goes in with no AR, no intrinsics and no depth. Its LiDAR depth and AR
+    pose are kept aside only to score the camera height and the ceiling, measured
+    the same way from LiDAR."""
+    import asyncio
+    import io
+    import json
+    import time
+
+    import numpy as np
+    from PIL import Image
+
+    from sajao_gateway import ModelGateway
+    from sajao_workers.models import depth_chain, detect_chain, segment_chain
+    from sajao_workers.photo_pipeline import PhotoModels, photo_room_stages
+    from sajao_workers.pipeline import MEASURE, run_room
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.objects import decode_depth_mm
+    from sajao_workers.twin.single_photo import ceiling_height, level_camera, lift, to_world
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    truth = _arkit_manifest(store, scene, candidates, y_up=True)
+
+    def lidar_view(frame: dict[str, Any]) -> tuple[Any, Any, Any]:
+        depth = decode_depth_mm(store.read_blob(frame["depth"]))
+        k = np.asarray(frame["intrinsics"], dtype=np.float64).copy()
+        k[0] *= depth.shape[1] / frame["width"]
+        k[1] *= depth.shape[0] / frame["height"]
+        points = lift(depth, k, stride=1)
+        camera = level_camera(points)
+        return depth, points, camera
+
+    # A landscape photo looking across the room, a little down, with the floor in it.
+    best, best_far = None, 0.0
+    for f in truth["frames"]:
+        forward = np.asarray(f["c2w"])[:3, :3] @ np.array([0.0, 0.0, 1.0])
+        tilt = float(np.degrees(np.arcsin(-forward[1])))
+        if f["width"] < f["height"] or not 3.0 <= tilt <= 25.0:
+            continue
+        depth, _, camera = lidar_view(f)
+        far = float(np.median(depth[depth > 0])) if (depth > 0).any() else 0.0
+        if camera is not None and far > best_far:
+            best, best_far = f, far
+    if best is None:
+        return {"error": "no landscape frame with a floor"}
+    depth, points, lidar_camera = lidar_view(best)
+    lidar_ceiling = ceiling_height(to_world(points, lidar_camera), lidar_camera)
+    photo = store.read_blob(best["image"])
+
+    capture = {
+        "schema_version": "1.0",
+        "id": "00000000-0000-4000-8000-00000000f070",
+        "user_id": "00000000-0000-4000-8000-000000000001",
+        "created_at": "2026-11-18T00:00:00Z",
+        "device": {"platform": "android", "tier": "budget", "has_ar": False},
+        "media": [
+            {
+                "id": "00000000-0000-4000-8000-00000000f071",
+                "kind": "photo",
+                "origin": "camera",
+                "storage_key": "smoke/photo.jpg",
+                "width_px": best["width"],
+                "height_px": best["height"],
+                "has_ar_pose": False,
+                "compass_heading_deg": 0.0,
+            }
+        ],
+        "package": {
+            "ar": {"tracking": "none", "lidar": False, "depth": False},
+            "keyframes": [
+                {"id": "k0", "image": "smoke/photo.jpg", "captured_at_ms": 0, "sharpness": 1}
+            ],
+            "detections": [],
+            "sensor_log": "smoke/log.jsonl",
+        },
+    }
+
+    class Files:
+        def read(self, key: str) -> bytes:
+            return photo
+
+    class Board:
+        def __init__(self) -> None:
+            self.moves: list[tuple[float, str, str, str | None]] = []
+            self.twin: dict[str, Any] | None = None
+
+        async def set_stage(self, room_id, stage, status, detail=None, request_id=None) -> None:  # type: ignore[no-untyped-def]
+            self.moves.append((time.time(), stage, status, detail))
+
+        async def set_space_twin(self, room_id: str, twin: dict[str, Any]) -> None:
+            self.twin = twin
+
+    ledger = _ledger()
+    lister, checker = _inventory_gateways(ledger)
+    models = PhotoModels(
+        depth=ModelGateway(depth_chain(volume_invoke("twin_depth")), ledger=ledger),
+        lister=lister,
+        checker=checker,
+        detect=ModelGateway(detect_chain(volume_invoke("twin_detect")), ledger=ledger),
+        segment=ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger),
+    )
+    board = Board()
+    # A fresh room id per run, so nothing is reused from an earlier run's cache.
+    room_id = f"smoke-{int(time.time())}"
+    started = time.time()
+    run = asyncio.run(
+        run_room(
+            StepRunner(store, max_attempts=2),
+            board,
+            Files(),
+            room_id,
+            capture,
+            (MEASURE,),
+            photo_room_stages(models),
+        )
+    )
+    total = time.time() - started
+    vol.commit()
+    rows: dict[str, float] = {}
+    begun: dict[str, float] = {}
+    for at, stage, status, _ in board.moves:
+        if status == "running":
+            begun.setdefault(stage, at)
+        elif status == "done":
+            rows[stage] = round(at - begun.get(stage, started), 1)
+    twin = board.twin or {}
+    frame_meta: dict[str, Any] = {}
+    files: dict[str, bytes] = {"photo.jpg": photo}
+    if twin:
+        heights = {"lidar_camera_m": round(lidar_camera.height_m, 3)}
+        keyframe = twin["keyframes"][0]
+        heights["photo_camera_m"] = round(float(keyframe["pose"]["position"]["z_m"]), 3)
+        frame_meta = {
+            **heights,
+            "lidar_ceiling_m": None if lidar_ceiling is None else round(lidar_ceiling, 3),
+            "twin_ceiling": twin["shell"]["ceiling_height"],
+            "walls": [
+                (
+                    w["id"],
+                    w.get("kind", "wall"),
+                    w["length"]["value_m"],
+                    w["length"]["error_band_m"],
+                )
+                for w in twin["shell"]["walls"]
+            ],
+            "openings": [
+                (o["kind"], o["width"]["value_m"], o["height"]["value_m"])
+                for o in twin["shell"]["openings"]
+            ],
+            "objects": [
+                (o["category"], o.get("keep_or_replace"), len(o.get("hero_masks") or []))
+                for o in twin["objects"]
+            ],
+            "scale": twin["scale"],
+            "confidence": twin.get("confidence"),
+        }
+        image = np.asarray(Image.open(io.BytesIO(photo)).convert("RGB")).copy()
+        for o in twin["objects"]:
+            for m in o.get("hero_masks") or []:
+                mask = (
+                    np.asarray(
+                        Image.open(io.BytesIO(store.read_blob(m["mask"].rsplit("/", 1)[-1])))
+                        .convert("L")
+                        .resize((image.shape[1], image.shape[0]))
+                    )
+                    > 127
+                )
+                image[mask] = (0.5 * image[mask] + [0, 90, 60]).astype(np.uint8)
+        buf = io.BytesIO()
+        Image.fromarray(image).save(buf, format="JPEG", quality=85)
+        files["masks.jpg"] = buf.getvalue()
+        files["twin.json"] = json.dumps(twin, indent=1).encode()
+    summary = {
+        "scene": scene,
+        "keyframe": best["keyframe_id"],
+        "outcome": run.outcome,
+        "failed": [m[1:] for m in board.moves if m[2] == "failed"],
+        "seconds_total": round(total, 1),
+        "seconds_per_row": rows,
+        "charged_inr": round(run.cost_micro_inr / 1e6, 2),
+        "gpu_seconds": round(run.gpu_seconds, 1),
+        **frame_meta,
+    }
+    files["summary.json"] = (json.dumps(summary, indent=1) + "\n").encode()
+    return {"files": files, "summary": summary}
+
+
+@app.local_entrypoint()
+def single_photo_smoke(
+    scene: str = "arkit_living_47331265", candidates: int = 40, out: str = "single-photo"
+) -> None:
+    import json
+
+    result = single_photo_smoke_cpu.remote(scene, candidates)
+    if "files" not in result:
+        print(result)
+        return
+    target = Path(out)
+    target.mkdir(parents=True, exist_ok=True)
+    for name, data in result["files"].items():
+        (target / name).write_bytes(data)
+    print(json.dumps(result["summary"], indent=1))
+
+
+@app.function(image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, timeout=900)
+def single_photo_depth_cpu(scene: str, keyframe: str, candidates: int) -> dict[str, bytes]:
+    """The photo, its metric depth from the depth chain (no intrinsics given), the LiDAR
+    depth and the AR intrinsics, for tuning the single-photo floor search offline."""
+    import asyncio
+    import json
+
+    from sajao_gateway import ModelGateway
+    from sajao_workers.models import depth_chain
+    from sajao_workers.steps import LocalArtifactStore
+    from sajao_workers.validate import check_depths
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    truth = _arkit_manifest(store, scene, candidates, y_up=True)
+    (frame,) = [f for f in truth["frames"] if f["keyframe_id"] == keyframe]
+    payload = {
+        "frames": [
+            {
+                "image": frame["image"],
+                "width": frame["width"],
+                "height": frame["height"],
+                "intrinsics": None,
+            }
+        ]
+    }
+    gateway = ModelGateway(depth_chain(volume_invoke("twin_depth")), ledger=_ledger())
+    from sajao_gateway import ModelRequest
+
+    response = asyncio.run(
+        gateway.call(
+            ModelRequest("twin_depth", "vision", "twin_depth@1", payload),
+            validate=check_depths(payload),
+        )
+    )
+    found = response.output["frames"][0]
+    vol.commit()
+    meta = {
+        "ar_intrinsics": frame["intrinsics"],
+        "estimated_intrinsics": found["intrinsics"],
+        "c2w": frame["c2w"],
+        "model": response.model,
+        "charged_inr": round(response.cost_micro_inr / 1e6, 3),
+    }
+    return {
+        "photo.jpg": store.read_blob(frame["image"]),
+        "depth.png": store.read_blob(found["depth"]),
+        "lidar.png": store.read_blob(frame["depth"]),
+        "meta.json": json.dumps(meta, indent=1).encode(),
+    }
+
+
+@app.local_entrypoint()
+def single_photo_depth(
+    scene: str = "arkit_living_47331265",
+    keyframe: str = "kf0007",
+    candidates: int = 40,
+    out: str = "depth",
+) -> None:
+    target = Path(out)
+    target.mkdir(parents=True, exist_ok=True)
+    for name, data in single_photo_depth_cpu.remote(scene, keyframe, candidates).items():
+        (target / name).write_bytes(data)
+    print((target / "meta.json").read_text())
