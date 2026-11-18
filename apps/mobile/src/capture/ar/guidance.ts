@@ -149,6 +149,13 @@ export type Hint =
   | { id: "walk" }
   | { id: "coverMore" }
   | { id: "complete" }
+  // The coverage meter's next step.
+  | { id: "walkWalls" }
+  | { id: "keepGoing" }
+  | { id: "standMiddle" }
+  | { id: "tiltWall" }
+  | { id: "oneMoreSpot" }
+  | { id: "meterDone" }
   | null;
 
 /** One hint at a time: a doorway first, then step back, walk around, and last cover a bit more. */

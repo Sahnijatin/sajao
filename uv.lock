@@ -11,6 +11,7 @@ resolution-markers = [
 members = [
     "sajao",
     "sajao-api",
+    "sajao-catalog",
     "sajao-dataset",
     "sajao-engine",
     "sajao-gateway",
@@ -2013,6 +2014,17 @@ requires-dist = [
     { name = "structlog", specifier = ">=25.4" },
     { name = "uvicorn", specifier = ">=0.38" },
 ]
+
+[[package]]
+name = "sajao-catalog"
+version = "0.0.0"
+source = { editable = "services/catalog" }
+dependencies = [
+    { name = "sajao-schemas" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "sajao-schemas", editable = "packages/schemas" }]
 
 [[package]]
 name = "sajao-dataset"

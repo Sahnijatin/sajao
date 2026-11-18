@@ -12,7 +12,7 @@ Furniture is often bought days later, frequently inside the retailer's own app. 
 
 1. **Deeplinks that track in apps** where the program supports it (Flipkart does).
 2. **Brand coupon codes** for direct D2C deals. A code works on any device, in any app, days later.
-3. **Redirect service.** Every buy or rent tap gets a click ID (user, design, product, position) and opens in a browser tab we control.
+3. **Redirect service.** Every buy or rent tap gets a click ID (user, design, product, position) and opens in a browser tab we control. The API (`POST /v1/clicks`) takes the link from the product as the user's design showed it, refuses a product out of stock, logs the tap once per click ID, and puts the click ID in the network's sub-id parameter where the retailer has one (Flipkart `affExtParam1`, Amazon `ascsubtag`).
 4. **Re-engagement.** Saved designs, price-drop and restock alerts bring you back through a fresh tracked link.
 5. **Daily reconciliation** of network and brand reports against click IDs and code redemptions gives revenue per design.
 

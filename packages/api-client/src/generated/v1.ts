@@ -44,6 +44,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/clicks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open Product
+         * @description Log a buy or rent tap and return the retailer link for it. Safe to repeat.
+         */
+        post: operations["openProduct"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/health": {
         parameters: {
             query?: never;
@@ -76,6 +96,101 @@ export interface paths {
          * @description The caller's own identity. Guests have one too.
          */
         get: operations["getMe"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Me
+         * @description Erase the caller's account and everything stored for it. There is no undo.
+         *
+         *     The request is recorded and the erasure starts at once; it finishes within
+         *     minutes. Safe to repeat: a repeat starts the erasure again where it stopped.
+         */
+        delete: operations["deleteMe"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/rooms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Rooms
+         * @description The caller's rooms, newest first, each with its job status.
+         */
+        get: operations["listRooms"];
+        put?: never;
+        /**
+         * Create Room
+         * @description Create the room for a registered capture and start measuring it. Safe to repeat.
+         */
+        post: operations["createRoom"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/rooms/{room_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Room
+         * @description One room and its job status by stage.
+         */
+        get: operations["getRoom"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/rooms/{room_id}/designs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Designs
+         * @description The room's latest design request: its job status and, once ready, the three Designs.
+         */
+        get: operations["getDesigns"];
+        put?: never;
+        /**
+         * Request Designs
+         * @description Ask for designs for a room with a brief. Safe to repeat with the same id.
+         */
+        post: operations["requestDesigns"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/rooms/{room_id}/twin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Room Twin
+         * @description The room's SpaceTwin: its measurements, what is in it and its hero views.
+         */
+        get: operations["getRoomTwin"];
         put?: never;
         post?: never;
         delete?: never;
@@ -148,6 +263,11 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AccountDeletion */
+        AccountDeletion: {
+            /** Status */
+            status: string;
+        };
         /** Ar */
         Ar: {
             /**
@@ -183,6 +303,66 @@ export interface components {
             position: components["schemas"]["ArPoint"];
             /** Rotation */
             rotation: components["schemas"]["RotationItem"][];
+        };
+        /**
+         * Brief
+         * @description Per-room choices on top of the taste profile. With the space profile and the catalog, the only input the design engine reads.
+         */
+        Brief: {
+            budget: components["schemas"]["Budget"];
+            /** Consider Vastu */
+            consider_vastu: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             * @description UTC instant, RFC 3339.
+             */
+            created_at: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Intent
+             * @enum {string}
+             */
+            intent: "refresh" | "full_makeover" | "rearrange_only";
+            /**
+             * Keep Item Ids
+             * @description Existing items in the space profile to keep.
+             */
+            keep_item_ids: components["schemas"]["LocalId"][];
+            /**
+             * Must Haves
+             * @description Product categories that must appear.
+             */
+            must_haves: components["schemas"]["MustHave"][];
+            /**
+             * Schema Version
+             * @description Contract version of the object. Minor versions only add optional fields.
+             */
+            schema_version: string;
+            /**
+             * Space Profile Id
+             * Format: uuid
+             */
+            space_profile_id: string;
+            /**
+             * Taste Profile Id
+             * Format: uuid
+             */
+            taste_profile_id: string;
+        };
+        /** Budget */
+        Budget: {
+            /**
+             * Flexibility
+             * @description strict is never relaxed; stretch_10 allows up to 10% over.
+             * @enum {string}
+             */
+            flexibility: "strict" | "stretch_10";
+            limit: components["schemas"]["Money"];
         };
         /** CameraIntrinsics */
         CameraIntrinsics: {
@@ -362,6 +542,14 @@ export interface components {
             /** Size Bytes */
             size_bytes: number;
         };
+        /** CreateRoom */
+        CreateRoom: {
+            /**
+             * Capture Id
+             * Format: uuid
+             */
+            capture_id: string;
+        };
         /** CreateUpload */
         CreateUpload: {
             /** Content Type */
@@ -373,6 +561,23 @@ export interface components {
             kind: "photo" | "video" | "data";
             /** Size Bytes */
             size_bytes: number;
+        };
+        /** DesignsStatus */
+        DesignsStatus: {
+            /** Created At */
+            created_at: string;
+            /** Designs */
+            designs?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Id */
+            id: string;
+            /** Room Id */
+            room_id: string;
+            /** Stages */
+            stages: components["schemas"]["StageStatus"][];
+            /** Status */
+            status: string;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -408,12 +613,47 @@ export interface components {
             /** @description Where the detection hit the AR scene, when it did. */
             world?: components["schemas"]["ArPoint"] | null;
         };
+        /**
+         * LocalId
+         * @description Identifier that is unique inside its parent object, for example a wall or a design item.
+         */
+        LocalId: string;
         /** Me */
         Me: {
             /** Is Guest */
             is_guest: boolean;
             /** User Id */
             user_id: string;
+        };
+        /**
+         * Money
+         * @description A price. Set only from retailer data, never by a generative model.
+         */
+        Money: {
+            /**
+             * Amount Minor
+             * @description Amount in paise.
+             */
+            amount_minor: number;
+            /**
+             * Currency
+             * @constant
+             */
+            currency: "INR";
+        };
+        /** MustHave */
+        MustHave: string;
+        /** Opened */
+        Opened: {
+            /** Id */
+            id: string;
+            /** Kind */
+            kind: string;
+            price: components["schemas"]["Price"];
+            /** Retailer */
+            retailer: string;
+            /** Url */
+            url: string;
         };
         /** Part */
         Part: {
@@ -431,6 +671,16 @@ export interface components {
             /** Url */
             url: string;
         };
+        /** Price */
+        Price: {
+            /** Amount Minor */
+            amount_minor: number;
+            /**
+             * Currency
+             * @constant
+             */
+            currency: "INR";
+        };
         /** RegisterCapture */
         RegisterCapture: {
             compass?: components["schemas"]["CompassReading"] | null;
@@ -443,6 +693,15 @@ export interface components {
             /** Media */
             media: components["schemas"]["CaptureMedia"][];
             package?: components["schemas"]["CapturePackage"] | null;
+        };
+        /** RequestDesigns */
+        RequestDesigns: {
+            brief: components["schemas"]["Brief"];
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
         };
         /** ResumeUpload */
         ResumeUpload: {
@@ -460,8 +719,66 @@ export interface components {
             /** Start Ms */
             start_ms: number;
         };
+        /** RoomList */
+        RoomList: {
+            /** Rooms */
+            rooms: components["schemas"]["RoomStatus"][];
+        };
+        /** RoomStatus */
+        RoomStatus: {
+            /** Capture Id */
+            capture_id: string;
+            /** Created At */
+            created_at: string;
+            /** Id */
+            id: string;
+            /** Stages */
+            stages: components["schemas"]["StageStatus"][];
+            /** Status */
+            status: string;
+        };
         /** RotationItem */
         RotationItem: number;
+        /** StageStatus */
+        StageStatus: {
+            /** Detail */
+            detail?: string | null;
+            /** Stage */
+            stage: string;
+            /** Status */
+            status: string;
+        };
+        /** Tap */
+        Tap: {
+            /**
+             * Design Id
+             * Format: uuid
+             */
+            design_id: string;
+            /**
+             * Design Request Id
+             * Format: uuid
+             */
+            design_request_id: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Kind
+             * @default buy
+             * @enum {string}
+             */
+            kind: "buy" | "rent";
+            /** Position */
+            position: number;
+            /**
+             * Product Id
+             * Format: uuid
+             */
+            product_id: string;
+        };
         /** UploadPlan */
         UploadPlan: {
             /** Key */
@@ -569,6 +886,39 @@ export interface operations {
             };
         };
     };
+    openProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Tap"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Opened"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     getHealth: {
         parameters: {
             query?: never;
@@ -605,6 +955,209 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    deleteMe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountDeletion"];
+                };
+            };
+        };
+    };
+    listRooms: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomList"];
+                };
+            };
+        };
+    };
+    createRoom: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateRoom"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getRoom: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                room_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getDesigns: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                room_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DesignsStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    requestDesigns: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                room_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestDesigns"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DesignsStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    getRoomTwin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                room_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

@@ -42,7 +42,8 @@
           "value_m": 4.2,
           "source": "measured",
           "error_band_m": 0.01
-        }
+        },
+        "kind": "wall"
       },
       {
         "id": "w2",
@@ -90,7 +91,8 @@
           "value_m": 3.4,
           "source": "user_confirmed",
           "error_band_m": 0.12
-        }
+        },
+        "kind": "open"
       }
     ],
     "ceiling_height": {
@@ -220,6 +222,37 @@
         "detection": {
           "source": "server_segmentation",
           "confidence": 0.8
+        },
+        "footprint": {
+          "polygon": [
+            {
+              "x_m": 0.4,
+              "y_m": 0.03
+            },
+            {
+              "x_m": 1.6,
+              "y_m": 0.03
+            },
+            {
+              "x_m": 1.6,
+              "y_m": 0.13
+            },
+            {
+              "x_m": 0.4,
+              "y_m": 0.13
+            }
+          ],
+          "width": {
+            "value_m": 1.2,
+            "source": "estimated",
+            "error_band_m": 0.06
+          },
+          "depth": {
+            "value_m": 0.1,
+            "source": "estimated",
+            "error_band_m": 0.06
+          },
+          "on_floor": true
         }
       }
     ]
@@ -277,7 +310,50 @@
         }
       ],
       "state": "keep",
-      "object_type": "furniture"
+      "object_type": "furniture",
+      "footprint": {
+        "polygon": [
+          {
+            "x_m": 1.05,
+            "y_m": 0.15
+          },
+          {
+            "x_m": 3.15,
+            "y_m": 0.15
+          },
+          {
+            "x_m": 3.15,
+            "y_m": 1.05
+          },
+          {
+            "x_m": 1.05,
+            "y_m": 1.05
+          }
+        ],
+        "width": {
+          "value_m": 2.1,
+          "source": "estimated",
+          "error_band_m": 0.06
+        },
+        "depth": {
+          "value_m": 0.9,
+          "source": "estimated",
+          "error_band_m": 0.06
+        },
+        "on_floor": true
+      },
+      "redesign": {
+        "state": "replace",
+        "source": "rule"
+      },
+      "hero_masks": [
+        {
+          "hero_view_id": "h1",
+          "mask": "twins/00000000-0000-4000-8000-0000000000a1/masks/h1-sofa-1.png",
+          "visible_share": 0.82,
+          "source": "detected"
+        }
+      ]
     },
     {
       "id": "almirah-1",
@@ -313,7 +389,11 @@
       "views": [],
       "catalog_matches": [],
       "state": "keep",
-      "object_type": "furniture"
+      "object_type": "furniture",
+      "redesign": {
+        "state": "keep",
+        "source": "user"
+      }
     }
   ],
   "keyframes": [
@@ -420,5 +500,36 @@
         "reason": "not_detected"
       }
     ]
-  }
+  },
+  "free_floor": {
+    "area_m2": 11.62,
+    "error_band_m2": 0.74,
+    "floor_area_m2": 14.28,
+    "kept_ids": ["almirah-1", "b1"]
+  },
+  "confidence": {
+    "level": "ar_measured",
+    "basis": "lidar",
+    "tape_values": 0
+  },
+  "areas": [
+    {
+      "id": "a1",
+      "space_type": "living_room",
+      "floor_polygon": [
+        { "x_m": 0, "y_m": 0 },
+        { "x_m": 4.2, "y_m": 0 },
+        { "x_m": 4.2, "y_m": 3.4 },
+        { "x_m": 0, "y_m": 3.4 }
+      ],
+      "floor_area_m2": 14.28,
+      "object_ids": ["sofa-1", "almirah-1", "b1"],
+      "keyframe_ids": ["k1"],
+      "photo_keyframe_id": "k1",
+      "confidence": {
+        "level": "ar_measured",
+        "basis": "lidar"
+      }
+    }
+  ]
 }

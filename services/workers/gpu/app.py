@@ -449,7 +449,80 @@ def depth(model: str, payload: dict[str, Any]) -> dict[str, Any]:
     return {"frames": frames}
 
 
-HANDLERS = {"twin_detect": detect, "twin_segment": segment, "twin_depth": depth}
+# The pose model's input size: landscape, or turned for a mostly portrait set.
+POSE_SIZE = (518, 392)
+
+
+def poses(model: str, payload: dict[str, Any]) -> dict[str, Any]:
+    """A camera (OpenCV, camera to world), intrinsics and depth for each imported photo,
+    from the images alone, in the pose model's own frame and scale. Code turns that
+    into metres and stands it up (twin/photo_frames.py)."""
+    import io
+
+    import cv2
+    import numpy as np
+    import torch
+    from mapanything.models import MapAnything
+    from mapanything.utils.image import preprocess_inputs
+
+    if model not in _loaded:
+        name, revision = _split(model)
+        if name != "facebook/map-anything-apache":
+            raise InputError(f"unknown pose model {model}")
+        _loaded[model] = MapAnything.from_pretrained(name, revision=revision).cuda().eval()
+    network = _loaded[model]
+    rgbs = [_rgb(f["image"]) for f in payload["frames"]]
+    portrait = sum(r.shape[0] > r.shape[1] for r in rgbs) * 2 > len(rgbs)
+    tw, th = (POSE_SIZE[1], POSE_SIZE[0]) if portrait else POSE_SIZE
+    views = [
+        {"img": torch.from_numpy(cv2.resize(r, (tw, th), interpolation=cv2.INTER_AREA))}
+        for r in rgbs
+    ]
+    proc = preprocess_inputs(views, resize_mode="fixed_size", size=(tw, th))
+    with torch.no_grad():
+        # No output masks: this depth only sets the scale (a median ratio), and the
+        # masks blank most of some rooms. The cameras do not depend on them.
+        preds = network.infer(
+            proc,
+            memory_efficient_inference=True,
+            use_amp=True,
+            amp_dtype="bf16",
+            apply_mask=False,
+            mask_edges=False,
+            apply_confidence_mask=False,
+        )
+    store = _store()
+    frames = []
+    for frame, rgb, p in zip(payload["frames"], rgbs, preds, strict=True):
+        h, w = rgb.shape[:2]
+        k = p["intrinsics"][0].float().cpu().numpy().astype(np.float64)
+        dh, dw = p["depth_z"].shape[1:3]
+        k[0] *= w / dw  # back to the photo's own size
+        k[1] *= h / dh
+        d = p["depth_z"][0, ..., 0].float().cpu().numpy()
+        # In the pose model's own units, which need not be metres: kept as float32.
+        depth_units = np.where(np.isfinite(d) & (d > 0), d, 0.0).astype(np.float32)
+        buf = io.BytesIO()
+        np.save(buf, depth_units)
+        frames.append(
+            {
+                "image": frame["image"],
+                "width": int(w),
+                "height": int(h),
+                "intrinsics": [[float(v) for v in row] for row in k],
+                "c2w": [[float(v) for v in row] for row in p["camera_poses"][0].float().cpu()],
+                "pose_depth": store.put_blob(buf.getvalue()),
+                "coverage": round(float((depth_units > 0).mean()), 4),
+            }
+        )
+    return {"frames": frames}
+
+
+HANDLERS = {
+    "twin_detect": detect,
+    "twin_segment": segment,
+    "twin_depth": depth,
+}
 
 
 @app.function(
@@ -483,9 +556,10 @@ def run_model(model: str, task: str, payload: dict[str, Any]) -> dict[str, Any]:
     scaledown_window=60,
 )
 def run_splat(model: str, task: str, payload: dict[str, Any]) -> dict[str, Any]:
-    """Train and split one splat, or remove objects from one (fill B).
+    """Train and split one splat, remove objects from one (fill B), or give imported
+    photos their cameras (MapAnything is in this image).
 
-    Both share this function, so they share its GPU. The time charged includes
+    They share this function, so they share its GPU. The time charged includes
     loading and evaluation.
     """
     import removal_gpu
@@ -510,13 +584,16 @@ def run_splat(model: str, task: str, payload: dict[str, Any]) -> dict[str, Any]:
                 lama_sha256=model.split("@", 1)[1],
                 steps=int(payload.get("steps", 5000)),
             )
+        elif task == "twin_poses" and model.startswith("facebook/map-anything-apache@"):
+            # Imported photos: MapAnything is installed in this image, for pose refinement.
+            output = poses(model, payload)
         elif task == "twin_review" and model.startswith("gsplat@"):
             import review_gpu
 
             output = review_gpu.review(payload, _store())
         else:
             return {"error": f"unknown splat task {task} for {model}"}
-    except splat_gpu.InputError as error:
+    except (splat_gpu.InputError, InputError) as error:
         return {"error": str(error)}
     splat_gpu.save_compiled_kernels()
     vol.commit()
@@ -1256,10 +1333,16 @@ async def _objects(runner: Any, ledger: Any, frames: str, detectors: str = "") -
 
 
 async def _build_twin(
-    store: Any, runner: Any, ledger: Any, capture: dict[str, Any], manifest: dict[str, Any]
+    store: Any,
+    runner: Any,
+    ledger: Any,
+    capture: dict[str, Any],
+    manifest: dict[str, Any],
+    with_splat: bool = True,
 ) -> dict[str, Any]:
     """Inventory, objects, splat, phone splats and the twin, each a durable step (stored
-    results reused)."""
+    results reused). Without the splat the twin still has its shell, objects, inventory
+    and hero views: what the measured plan and the hero-photo redesign read."""
     import json
     import uuid
 
@@ -1271,14 +1354,22 @@ async def _build_twin(
 
     frames = store.put_blob(json.dumps(manifest).encode())
     inventory, objects = await _objects(runner, ledger, frames)
-    splat = await runner.run(
-        splat_step(
-            ModelGateway(splat_chain(volume_invoke("twin_splat", run_splat)), ledger=ledger)
-        ),
-        {"frames": frames, "objects": objects.outputs["objects"]},
-        {},
-    )
-    phone = await runner.run(phone_splat_step(_compress), {"splat": splat.outputs["splat"]}, {})
+    splat, phone = None, None
+    splat_inputs: dict[str, str] = {"phone": store.put_blob(json.dumps({"variants": {}}).encode())}
+    if with_splat:
+        splat = await runner.run(
+            splat_step(
+                ModelGateway(splat_chain(volume_invoke("twin_splat", run_splat)), ledger=ledger)
+            ),
+            {"frames": frames, "objects": objects.outputs["objects"]},
+            {},
+        )
+        phone = await runner.run(phone_splat_step(_compress), {"splat": splat.outputs["splat"]}, {})
+        splat_inputs = {
+            "splat": splat.outputs["splat"],
+            "phone": store.put_blob(json.dumps(dict(phone.meta)).encode()),
+            **phone.outputs,
+        }
     twin = await runner.run(
         assemble_step(),
         {
@@ -1288,9 +1379,7 @@ async def _build_twin(
             "openings": objects.outputs["openings"],
             "built_ins": objects.outputs["built_ins"],
             "inventory": objects.outputs["inventory"],
-            "splat": splat.outputs["splat"],
-            "phone": store.put_blob(json.dumps(dict(phone.meta)).encode()),
-            **phone.outputs,
+            **splat_inputs,
         },
         {
             "twin_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"twin/{capture['id']}")),
@@ -1484,7 +1573,7 @@ def _capture_file(root: Path, key: str) -> bytes:
     timeout=7200,
     secrets=VISION_SECRETS,
 )
-def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
+def golden_room_cpu(folder: str, sheet: dict[str, Any], with_splat: bool = True) -> dict[str, Any]:
     """An uploaded capture to its twin, and the twin's accuracy against the tape sheet."""
     import asyncio
     import json
@@ -1530,7 +1619,7 @@ def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
             )
             manifest = json.loads(store.read_blob(estimated.outputs["frames"]))
             depth_meta = dict(estimated.meta)
-        built = await _build_twin(store, runner, ledger, capture, manifest)
+        built = await _build_twin(store, runner, ledger, capture, manifest, with_splat)
         twin = json.loads(store.read_blob(built["twin"].outputs["twin"]))
         truth, to_space = None, None
         if (root / "ground_truth.json").is_file():  # an annotated dataset room
@@ -1549,7 +1638,11 @@ def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
         ar_measurements["keyframe_openings"] = openings_from_keyframes(ar_measurements, masks)
         ar = ar_report(ar_measurements, read_sheet(sheet))
         report = accuracy_report(twin, read_sheet(sheet), truth=truth, to_space=to_space)
-        charged = sum(built[k].cost_micro_inr for k in ("inventory", "objects", "splat", "phone"))
+        charged = sum(
+            built[k].cost_micro_inr
+            for k in ("inventory", "objects", "splat", "phone")
+            if built[k] is not None
+        )
         return {
             "twin": twin,
             "report": report,
@@ -1558,7 +1651,8 @@ def golden_room_cpu(folder: str, sheet: dict[str, Any]) -> dict[str, Any]:
             "run": {
                 "depth": depth_meta,
                 "objects": dict(built["objects"].meta),
-                "splat": dict(built["splat"].meta),
+                "inventory": dict(built["inventory"].meta),
+                "splat": dict(built["splat"].meta) if built["splat"] is not None else None,
                 "twin": dict(built["twin"].meta),
                 "charged_micro_inr": charged,
             },
@@ -1688,7 +1782,7 @@ def golden_fixture(scene: str = "arkit_living_47331265", keyframes: int = 120) -
 
 
 @app.local_entrypoint()
-def golden_room(capture: str, tape: str, out: str = "") -> None:
+def golden_room(capture: str, tape: str, out: str = "", splat: bool = True) -> None:
     """One golden room: `--capture` is the uploaded capture folder (capture.json plus the
     files its storage keys name), `--tape` the measurement sheet (eval/golden). Writes the
     twin, the report as JSON and Markdown, and run details to `--out`."""
@@ -1704,7 +1798,8 @@ def golden_room(capture: str, tape: str, out: str = "") -> None:
         raise SystemExit(f"{capture} has no capture.json: pass the capture folder itself")
     with vol.batch_upload(force=True) as batch:
         batch.put_directory(capture, f"golden/{slug}")
-    result = golden_room_cpu.remote(slug, sheet)
+    # `--no-splat`: the shell, objects, inventory and AR measurements without the GPU splat.
+    result = golden_room_cpu.remote(slug, sheet, splat)
     target = Path(out or f"golden-runs/{slug}")
     target.mkdir(parents=True, exist_ok=True)
     (target / "twin.json").write_text(json.dumps(result["twin"], indent=1) + "\n")
@@ -2101,3 +2196,321 @@ def review_pack(
     for name, data in result["files"].items():
         (target / name).write_bytes(data)
     print(result["files"]["summary.json"].decode())
+
+
+@app.function(
+    image=cpu_image,
+    volumes={"/work": vol, "/vol": spike_vol},
+    cpu=8,
+    memory=16384,
+    timeout=7200,
+    secrets=VISION_SECRETS,
+)
+def understanding_smoke_cpu(scene: str, keyframes: int) -> dict[str, Any]:
+    """One ARKitScenes room without the splat: inventory, objects, the twin, then room
+    understanding for design. Draws the hero masks and the floor plan to look at."""
+    import asyncio
+    import io
+    import json
+
+    import numpy as np
+    from PIL import Image, ImageDraw
+
+    from sajao_gateway import ModelGateway
+    from sajao_workers.models import segment_chain
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.assemble_step import assemble_step
+    from sajao_workers.twin.understanding_step import understanding_step
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    manifest = _arkit_manifest(store, scene, keyframes, y_up=True)
+    runner = StepRunner(store, max_attempts=1)
+    ledger = _ledger()
+
+    async def run() -> dict[str, Any]:
+        frames = store.put_blob(json.dumps(manifest).encode())
+        inventory, objects = await _objects(runner, ledger, frames)
+        twin = await runner.run(
+            assemble_step(),
+            {
+                "capture": store.put_blob(json.dumps(_arkit_capture(scene, manifest)).encode()),
+                "frames": frames,
+                "objects": objects.outputs["objects"],
+                "openings": objects.outputs["openings"],
+                "built_ins": objects.outputs["built_ins"],
+                "inventory": objects.outputs["inventory"],
+                "phone": store.put_blob(json.dumps({"variants": {}}).encode()),
+            },
+            {
+                "twin_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"twin/{scene}/nosplat")),
+                "version": 1,
+                "created_at": "2026-11-17T00:00:00Z",
+            },
+        )
+        understood = await runner.run(
+            understanding_step(
+                ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger)
+            ),
+            {
+                "twin": twin.outputs["twin"],
+                "objects": objects.outputs["objects"],
+                "frames": frames,
+            },
+            {},
+        )
+        vol.commit()
+        return {
+            "inventory": inventory,
+            "objects": objects,
+            "twin": twin,
+            "understood": understood,
+        }
+
+    import uuid
+
+    built = asyncio.run(run())
+    doc = json.loads(store.read_blob(built["understood"].outputs["twin"]))
+    by_kf = {f["keyframe_id"]: f for f in manifest["frames"]}
+
+    def blob(key: str) -> bytes:
+        return store.read_blob(key.rsplit("/", 1)[-1])
+
+    files: dict[str, bytes] = {}
+    colours = {"detected": (40, 120, 255), "prompted": (255, 140, 0)}
+    for hero in doc["viewing"]["hero_views"]:
+        frame = by_kf[hero["keyframe_id"]]
+        photo = np.asarray(Image.open(io.BytesIO(store.read_blob(frame["image"]))).convert("RGB"))
+        canvas = photo.astype(np.float32)
+        labels = []
+        for obj in doc["objects"]:
+            for m in obj.get("hero_masks", []):
+                if m["hero_view_id"] != hero["id"]:
+                    continue
+                mask = np.asarray(Image.open(io.BytesIO(blob(m["mask"]))).convert("L")) > 127
+                if mask.shape != photo.shape[:2]:
+                    mask = (
+                        np.asarray(
+                            Image.fromarray(mask.astype(np.uint8) * 255).resize(photo.shape[1::-1])
+                        )
+                        > 127
+                    )
+                canvas[mask] = 0.45 * canvas[mask] + 0.55 * np.array(colours[m["source"]])
+                ys, xs = np.nonzero(mask)
+                if len(xs):
+                    labels.append(
+                        (int(xs.mean()), int(ys.mean()), obj["category"], obj["redesign"]["state"])
+                    )
+        image = Image.fromarray(canvas.clip(0, 255).astype(np.uint8))
+        draw = ImageDraw.Draw(image)
+        for x, y, name, state in labels:
+            draw.text((x, y), f"{name} ({state})", fill=(255, 255, 255))
+        buf = io.BytesIO()
+        image.save(buf, format="JPEG", quality=88)
+        files[f"hero_{hero['id']}_masks.jpg"] = buf.getvalue()
+
+    floor = doc["shell"]["floor_polygon"]
+    xs = [p["x_m"] for p in floor]
+    ys = [p["y_m"] for p in floor]
+    scale = 120.0
+    size = (int((max(xs) - min(xs)) * scale) + 40, int((max(ys) - min(ys)) * scale) + 40)
+
+    def to_px(p: dict[str, float]) -> tuple[float, float]:
+        return (20 + (p["x_m"] - min(xs)) * scale, size[1] - 20 - (p["y_m"] - min(ys)) * scale)
+
+    plan = Image.new("RGB", size, (250, 247, 240))
+    draw = ImageDraw.Draw(plan)
+    draw.polygon([to_px(p) for p in floor], outline=(40, 40, 40), fill=(235, 245, 235))
+    for thing in [*doc["objects"], *doc["shell"].get("built_ins", [])]:
+        fp = thing.get("footprint")
+        if not fp or not fp["on_floor"]:
+            continue
+        kept = thing.get("redesign", {"state": "keep"})["state"] == "keep"
+        draw.polygon(
+            [to_px(p) for p in fp["polygon"]],
+            outline=(173, 79, 39) if not kept else (60, 60, 60),
+            fill=(150, 150, 150) if kept else None,
+        )
+        c = thing["box"]["center"]
+        draw.text(to_px({"x_m": c["x_m"], "y_m": c["y_m"]}), thing["category"], fill=(0, 0, 0))
+    ff = doc["free_floor"]
+    draw.text(
+        (24, 4),
+        f"free floor {ff['area_m2']:.1f} of {ff['floor_area_m2']:.1f} m2"
+        f" (+/- {ff['error_band_m2']:.1f})",
+        fill=(0, 0, 0),
+    )
+    buf = io.BytesIO()
+    plan.save(buf, format="PNG")
+    files["floor_plan.png"] = buf.getvalue()
+    files["twin.json"] = json.dumps(doc, indent=1).encode()
+    steps = built
+    summary = {
+        "scene": scene,
+        "objects": len(doc["objects"]),
+        "built_ins": len(doc["shell"].get("built_ins", [])),
+        "hero_views": len(doc["viewing"]["hero_views"]),
+        "hero_masks": dict(steps["understood"].meta["hero_masks"]),
+        "free_floor": doc["free_floor"],
+        "redesign": {
+            s: sum(o["redesign"]["state"] == s for o in doc["objects"]) for s in ("keep", "replace")
+        },
+        "on_floor": sum(o["footprint"]["on_floor"] for o in doc["objects"]),
+        "charged_micro_inr": sum(steps[k].cost_micro_inr for k in steps),
+    }
+    files["summary.json"] = (json.dumps(summary, indent=1) + "\n").encode()
+    return {"files": files, "summary": summary}
+
+
+@app.local_entrypoint()
+def understanding_smoke(
+    scene: str = "arkit_living_47331265", keyframes: int = 120, out: str = "understanding"
+) -> None:
+    import json
+
+    result = understanding_smoke_cpu.remote(scene, keyframes)
+    target = Path(out)
+    target.mkdir(parents=True, exist_ok=True)
+    for name, data in result["files"].items():
+        (target / name).write_bytes(data)
+    print(json.dumps(result["summary"], indent=1))
+
+
+@app.function(
+    image=cpu_image, volumes={"/work": vol, "/vol": spike_vol}, cpu=4, memory=8192, timeout=3600
+)
+def photos_smoke_cpu(scene: str, photos: int) -> dict[str, Any]:
+    """Imported photos on one ARKitScenes room: poses, metric depth and scale with no AR.
+
+    The AR poses are kept aside only to score the result: distances between the
+    cameras, in metres, against the AR distances."""
+    import asyncio
+    import itertools
+    import json
+
+    import numpy as np
+
+    from sajao_gateway import InMemorySpendLedger, ModelGateway, SpendCaps
+    from sajao_workers.models import depth_chain, pose_chain
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+    from sajao_workers.twin.depth_step import depth_step
+    from sajao_workers.twin.photo_frames import photo_poses_step, photo_scale_step
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    truth = _arkit_manifest(store, scene, photos, y_up=True)
+    keyframes = [
+        {"id": f["keyframe_id"], "image": f"smoke/{f['keyframe_id']}.jpg",
+         "captured_at_ms": 500 * i, "sharpness": 0}
+        for i, f in enumerate(truth["frames"])
+    ]  # fmt: skip
+    capture = {
+        "id": "smoke",
+        "package": {
+            "ar": {"tracking": "none", "lidar": False, "depth": False},
+            "keyframes": keyframes,
+            "detections": [],
+            "sensor_log": "smoke/log.jsonl",
+        },
+    }
+    images = {f["keyframe_id"]: f["image"] for f in truth["frames"]}
+    caps = SpendCaps(per_user_daily_micro_inr=10**9, global_daily_micro_inr=10**9)
+    ledger = InMemorySpendLedger(caps)
+    runner = StepRunner(store, max_attempts=1)
+
+    async def run() -> dict[str, Any]:
+        posed = await runner.run(
+            photo_poses_step(
+                ModelGateway(pose_chain(volume_invoke("twin_poses", run_splat)), ledger=ledger)
+            ),
+            {
+                "capture": store.put_blob(json.dumps(capture).encode()),
+                "images": store.put_blob(json.dumps(images).encode()),
+            },
+            {},
+        )
+        depth = await runner.run(
+            depth_step(ModelGateway(depth_chain(volume_invoke("twin_depth")), ledger=ledger)),
+            {"frames": posed.outputs["frames"]},
+            {},
+        )
+        scaled = await runner.run(photo_scale_step(), {"frames": depth.outputs["frames"]}, {})
+        out = json.loads(store.read_blob(scaled.outputs["frames"]))
+        got = [np.asarray(f["c2w"])[:3, 3] for f in out["frames"]]
+        want = [np.asarray(f["c2w"])[:3, 3] for f in truth["frames"]]
+        ratios = [
+            float(np.linalg.norm(got[i] - got[j]) / np.linalg.norm(want[i] - want[j]))
+            for i, j in itertools.combinations(range(len(got)), 2)
+            if np.linalg.norm(want[i] - want[j]) > 0.5
+        ]
+        tilt = [
+            float(np.degrees(np.arccos(np.clip(-np.asarray(f["c2w"])[1, 1], -1, 1))))
+            for f in out["frames"]
+        ]
+        cost = posed.cost_micro_inr + depth.cost_micro_inr
+        return {
+            "scene": scene,
+            "photos": len(out["frames"]),
+            "pose_model": posed.meta["model"],
+            "depth_model": depth.meta.get("model"),
+            "scale": scaled.meta["scale"],
+            "up_from": scaled.meta["up_from"],
+            "up_correction_deg": scaled.meta["up_correction_deg"],
+            "floor_photos": scaled.meta["floor_photos"],
+            "camera_distance_ratio_median": round(float(np.median(ratios)), 3),
+            "camera_distance_ratio_p10_p90": [
+                round(float(np.percentile(ratios, 10)), 3),
+                round(float(np.percentile(ratios, 90)), 3),
+            ],
+            "camera_tilt_deg_median": round(float(np.median(tilt)), 1),
+            "ar_camera_tilt_deg_median": round(
+                float(
+                    np.median(
+                        [
+                            np.degrees(np.arccos(np.clip(-np.asarray(f["c2w"])[1, 1], -1, 1)))
+                            for f in truth["frames"]
+                        ]
+                    )
+                ),
+                1,
+            ),
+            # Angle between the levelled world's up and the true up, through the camera axes.
+            "up_error_deg": round(
+                float(
+                    np.degrees(
+                        np.arccos(
+                            np.clip(
+                                np.mean(
+                                    [
+                                        np.asarray(g["c2w"])[:3, :3]
+                                        @ np.asarray(t["c2w"])[:3, :3].T
+                                        for g, t in zip(
+                                            [f for f in out["frames"]],
+                                            [
+                                                t
+                                                for t in truth["frames"]
+                                                if t["keyframe_id"]
+                                                in {f["keyframe_id"] for f in out["frames"]}
+                                            ],
+                                            strict=True,
+                                        )
+                                    ],
+                                    axis=0,
+                                )[1, 1],
+                                -1,
+                                1,
+                            )
+                        )
+                    )
+                ),
+                1,
+            ),
+            "charged_inr": round(cost / 1e6, 2),
+        }
+
+    return asyncio.run(run())
+
+
+@app.local_entrypoint()
+def photos_smoke(scene: str = "arkit_living_47331265", photos: int = 15) -> None:
+    import json
+
+    print(json.dumps(photos_smoke_cpu.remote(scene, photos), indent=1))

@@ -6,6 +6,10 @@ settings come from the `sajao-api` Modal secret as SAJAO_* environment
 variables, state lives in Postgres, and capture files go to the private
 `captures` bucket in Supabase Storage, signed with each caller's own session.
 
+The durable pipeline runs beside it as `run_room` and `run_designs`: the API
+spawns them by name and returns at once. Only `run_room` mounts the
+`sajao-pipeline` secret, which lets it read any user's capture files.
+
     uv run --with 'modal[api-proxy-support]==1.6.4' modal deploy services/api/deploy/modal_app.py
 """
 
@@ -31,14 +35,25 @@ image = (
     )
     .add_local_dir(ROOT / "services/api/src/sajao_api", "/root/sajao_api")
     .add_local_dir(ROOT / "packages/schemas/python/sajao_schemas", "/root/sajao_schemas")
+    # The pipeline's stages; the ones run here are plain Python on a CPU.
+    .add_local_dir(ROOT / "services/workers/src/sajao_workers", "/root/sajao_workers")
 )
+
+# Step results, content addressed, in one folder per user: a room that is run
+# again reuses them, and erasing an account removes its folder.
+artifacts = modal.Volume.from_name("sajao-pipeline", create_if_missing=True)
+ARTIFACTS = "/artifacts"
 
 app = modal.App("sajao-api")
 
 
 @app.function(
     image=image,
-    secrets=[modal.Secret.from_name("sajao-api")],
+    secrets=[
+        modal.Secret.from_name("sajao-api"),
+        # Not a secret: which Modal app runs the pipeline (this one).
+        modal.Secret.from_dict({"SAJAO_PIPELINE_MODAL_APP": "sajao-api"}),
+    ],
     # Scales to zero between scans; a few containers are plenty for testing.
     min_containers=0,
     max_containers=3,
@@ -51,3 +66,195 @@ def api() -> object:
     from sajao_api.main import create_app
 
     return create_app()
+
+
+class _CaptureFiles:
+    """Reads any user's capture files: the one place that holds that right.
+
+    `SAJAO_PIPELINE_STORAGE_TOKEN` (Modal secret `sajao-pipeline`) is a storage
+    session that passes row level security; the API itself never has it.
+    """
+
+    def __init__(self) -> None:
+        import os
+
+        import boto3
+
+        self._bucket = os.environ["SAJAO_STORAGE_BUCKET"]
+        self._client = boto3.client(
+            "s3",
+            endpoint_url=os.environ["SAJAO_STORAGE_ENDPOINT"],
+            region_name=os.environ["SAJAO_STORAGE_REGION"],
+            aws_access_key_id=os.environ["SAJAO_STORAGE_ACCESS_KEY_ID"],
+            aws_secret_access_key=os.environ["SAJAO_STORAGE_SECRET_ACCESS_KEY"],
+            aws_session_token=os.environ["SAJAO_PIPELINE_STORAGE_TOKEN"],
+        )
+
+    def read(self, storage_key: str) -> bytes:
+        body: bytes = self._client.get_object(Bucket=self._bucket, Key=storage_key)["Body"].read()
+        return body
+
+
+@app.function(
+    image=image,
+    secrets=[modal.Secret.from_name("sajao-api"), modal.Secret.from_name("sajao-pipeline")],
+    volumes={ARTIFACTS: artifacts},
+    max_containers=3,
+    timeout=900,
+    # The step layer retries inside a stage; a crashed container is started once more.
+    retries=1,
+)
+async def run_room(room_id: str) -> str:
+    """Run a room's stages from its capture. Safe to call again at any point."""
+    import os
+
+    from psycopg_pool import AsyncConnectionPool
+
+    from sajao_api.rooms import PostgresRoomStore
+    from sajao_workers import pipeline
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+
+    artifacts.reload()  # a warm container sees what other runs stored
+    pool = AsyncConnectionPool(
+        os.environ["SAJAO_DATABASE_URL"],
+        open=False,
+        min_size=1,
+        max_size=2,
+        kwargs={"prepare_threshold": None, "autocommit": True},
+    )
+    await pool.open()
+    try:
+        rooms = PostgresRoomStore(pool)
+        found = await rooms.capture_for_room(room_id)
+        if found is None:
+            return "unknown room"
+        user_id, capture = found
+        runner = StepRunner(LocalArtifactStore(Path(ARTIFACTS) / user_id))
+        run = await pipeline.run_room(runner, rooms, _CaptureFiles(), room_id, capture)
+        return run.outcome
+    finally:
+        await pool.close()
+        artifacts.commit()
+
+
+@app.function(image=image, timeout=60)
+async def run_designs(room_id: str, request_id: str) -> str:
+    """Design stages are not handed over yet: the request stays queued."""
+    return "queued"
+
+
+class _UserFiles:
+    """Deletes every file in one user's folder of the captures bucket."""
+
+    def __init__(self) -> None:
+        self._files = _CaptureFiles()
+
+    def erase(self, user_id: str) -> int:
+        import shutil
+
+        # What the pipeline derived from the user's scans, then the scans.
+        artifacts.reload()
+        shutil.rmtree(Path(ARTIFACTS) / user_id, ignore_errors=True)
+        artifacts.commit()
+        client, bucket = self._files._client, self._files._bucket
+        deleted = 0
+        while True:
+            # Listed again from the start each time: what was deleted is gone.
+            page = client.list_objects_v2(Bucket=bucket, Prefix=f"{user_id}/", MaxKeys=500)
+            keys = [item["Key"] for item in page.get("Contents", [])]
+            if not keys:
+                return deleted
+            # One by one: this store refuses the batch delete call.
+            for key in keys:
+                client.delete_object(Bucket=bucket, Key=key)
+            deleted += len(keys)
+
+
+class _SignIn:
+    """Deletes the user's sign-in account through the auth service's admin API."""
+
+    async def erase(self, user_id: str) -> None:
+        import asyncio
+        import os
+        import urllib.error
+        import urllib.request
+
+        key = os.environ["SAJAO_PIPELINE_STORAGE_TOKEN"]
+        request = urllib.request.Request(  # noqa: S310
+            f"{os.environ['SAJAO_AUTH_ISSUER'].rstrip('/')}/admin/users/{user_id}",
+            method="DELETE",
+            headers={"Authorization": f"Bearer {key}", "apikey": key},
+        )
+
+        def send() -> None:
+            try:
+                urllib.request.urlopen(request, timeout=30).close()  # noqa: S310
+            except urllib.error.HTTPError as error:
+                if error.code != 404:  # already gone is fine
+                    raise
+
+        await asyncio.to_thread(send)
+
+
+@app.function(
+    image=image,
+    secrets=[modal.Secret.from_name("sajao-api"), modal.Secret.from_name("sajao-pipeline")],
+    volumes={ARTIFACTS: artifacts},
+    max_containers=2,
+    timeout=900,
+    retries=2,
+)
+async def delete_account(user_id: str) -> int:
+    """Erase one user's files, rows and sign-in account. Safe to call again."""
+    import os
+
+    from psycopg_pool import AsyncConnectionPool
+
+    from sajao_api.accounts import PostgresAccountStore, erase_account
+
+    pool = AsyncConnectionPool(
+        os.environ["SAJAO_DATABASE_URL"],
+        open=False,
+        min_size=1,
+        max_size=2,
+        kwargs={"prepare_threshold": None, "autocommit": True},
+    )
+    await pool.open()
+    try:
+        accounts = PostgresAccountStore(pool)
+        if await accounts.deletion_finished(user_id) is None:
+            return 0  # nobody asked: never erase on a bare call
+        return await erase_account(user_id, accounts, _UserFiles(), _SignIn())
+    finally:
+        await pool.close()
+
+
+@app.function(
+    image=image,
+    secrets=[modal.Secret.from_name("sajao-api")],
+    schedule=modal.Period(hours=1),
+    timeout=120,
+)
+async def sweep_account_deletions() -> int:
+    """Start again any erasure that was asked for and did not finish."""
+    import os
+
+    from psycopg_pool import AsyncConnectionPool
+
+    from sajao_api.accounts import PostgresAccountStore
+
+    pool = AsyncConnectionPool(
+        os.environ["SAJAO_DATABASE_URL"],
+        open=False,
+        min_size=1,
+        max_size=1,
+        kwargs={"prepare_threshold": None, "autocommit": True},
+    )
+    await pool.open()
+    try:
+        waiting = await PostgresAccountStore(pool).unfinished_deletions()
+    finally:
+        await pool.close()
+    for user_id in waiting:
+        await delete_account.spawn.aio(user_id)
+    return len(waiting)

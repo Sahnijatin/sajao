@@ -157,6 +157,24 @@ class LocalId(RootModel[str]):
     ]
 
 
+class MeasurementConfidence(BaseModel):
+    """
+    How a room's lengths were measured. taped: a tape value the person entered checked or set them. ar_measured: the phone's AR (planes or LiDAR) measured them. estimated: a depth model guessed them from pictures, as for imported photos and videos; the app shows sizes with measure to confirm and makes no fit claim.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    level: Literal["taped", "ar_measured", "estimated"]
+    basis: Annotated[
+        Literal["tape", "ar_planes", "lidar", "depth_model"],
+        Field(description="Where the room's lengths came from."),
+    ]
+    tape_values: Annotated[
+        int | None, Field(description="Tape values the person entered for this room.", ge=0)
+    ] = None
+
+
 class Money(BaseModel):
     """
     A price. Set only from retailer data, never by a generative model.
@@ -228,6 +246,18 @@ class ProductRoute(BaseModel):
         Money, Field(description="Purchase price for buy routes; price per month for rent routes.")
     ]
     coupon_code: Annotated[str | None, Field(min_length=1)] = None
+
+
+class Redesign(BaseModel):
+    """
+    Whether a redesign keeps this thing or may replace it. The rule keeps fixtures (fans, lights, AC units, switchboards, geysers) and lets everything else be replaced; the person can change it.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    state: Literal["keep", "replace"]
+    source: Literal["rule", "user"]
 
 
 class RedoArea(BaseModel):
@@ -483,6 +513,48 @@ class ViewOrbit(BaseModel):
         float,
         Field(description="Largest turn about the vertical axis, either way.", ge=0.0, le=90.0),
     ]
+
+
+class Area(BaseModel):
+    """
+    One space of a capture: its floor, what is in it and a photo that shows it.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[
+        str,
+        Field(
+            description="Identifier that is unique inside its parent object, for example a wall or a design item.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ]
+    space_type: Annotated[
+        Literal["living_room", "bedroom", "balcony", "other"] | None,
+        Field(
+            description="What the scanned space is. Detected from the scan, never picked up front; the user can change it."
+        ),
+    ] = None
+    floor_polygon: Annotated[
+        list[Point2], Field(description="In the space frame, seen from above.", min_length=3)
+    ]
+    floor_area_m2: Annotated[float, Field(ge=0.0)]
+    object_ids: Annotated[
+        list[LocalId],
+        Field(description="Objects and built-ins whose footprint centre is in this area."),
+    ]
+    keyframe_ids: Annotated[
+        list[LocalId], Field(description="Keyframes taken standing in this area.")
+    ]
+    photo_keyframe_id: Annotated[
+        str | None,
+        Field(
+            description="The keyframe that shows the most of this area's floor, for the app to show when asking which area to redesign.",
+            pattern="^[a-z0-9_-]{1,40}$",
+        ),
+    ] = None
+    confidence: MeasurementConfidence | None = None
 
 
 class Budget(BaseModel):
@@ -771,6 +843,87 @@ class Fixture(BaseModel):
     offset: Dimension
     mount_height: Dimension
     width: Dimension | None = None
+
+
+class Footprint(BaseModel):
+    """
+    Where a thing stands on the floor plan: its box seen from above, in the space frame. From the fused geometry, never from a model.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    polygon: Annotated[
+        list[Point2],
+        Field(description="Closed floor polygon; the last point joins the first.", min_length=3),
+    ]
+    width: Annotated[
+        Dimension,
+        Field(
+            description="The longer side, with its error band: each edge may be off by up to that band."
+        ),
+    ]
+    depth: Annotated[Dimension, Field(description="The shorter side, with its error band.")]
+    on_floor: Annotated[
+        bool,
+        Field(
+            description="Whether it takes up floor: false for things on a wall or hanging from the ceiling, whose box does not reach down to the floor."
+        ),
+    ]
+
+
+class FreeFloor(BaseModel):
+    """
+    Floor a redesign can use: the floor polygon minus the footprints of everything kept that stands on the floor (objects marked keep, and built-ins).
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    area_m2: Annotated[float, Field(ge=0.0)]
+    error_band_m2: Annotated[
+        float,
+        Field(description="From the walls' and footprints' error bands along their edges.", ge=0.0),
+    ]
+    floor_area_m2: Annotated[float, Field(ge=0.0)]
+    kept_ids: Annotated[
+        list[LocalId], Field(description="Objects and built-ins whose footprints were taken out.")
+    ]
+
+
+class HeroMask(BaseModel):
+    """
+    Where a thing is in one hero photo, for taking it out of that photo.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    hero_view_id: Annotated[
+        str, Field(description="A hero view in viewing.hero_views.", pattern="^[a-z0-9_-]{1,40}$")
+    ]
+    mask: Annotated[
+        str,
+        Field(
+            description="PNG, white where the thing is, at the keyframe's resolution. Not dilated.",
+            max_length=512,
+            min_length=1,
+        ),
+    ]
+    visible_share: Annotated[
+        float,
+        Field(
+            description="Share of the thing's box that is in frame and not hidden behind something nearer.",
+            ge=0.0,
+            le=1.0,
+        ),
+    ]
+    source: Annotated[
+        Literal["detected", "prompted"],
+        Field(
+            description="detected: the detector's own mask in this keyframe. prompted: segmented from the thing's box projected into the photo."
+        ),
+    ]
 
 
 class HeroView(BaseModel):
@@ -1507,6 +1660,11 @@ class TwinObject(BaseModel):
             description="What kind of thing it is. Built-ins are not objects: they are in the shell's built_ins."
         ),
     ] = None
+    footprint: Footprint | None = None
+    redesign: Redesign | None = None
+    hero_masks: Annotated[
+        list[HeroMask] | None, Field(description="One per hero view this thing is visible in.")
+    ] = None
 
 
 class Viewing(BaseModel):
@@ -1542,6 +1700,12 @@ class Wall(BaseModel):
     start: Point2
     end: Point2
     length: Dimension
+    kind: Annotated[
+        Literal["wall", "open"] | None,
+        Field(
+            description="What this edge of the floor polygon is. wall (the default when absent): a wall was seen here, from near the floor to near the ceiling. open: no wall was seen between the walls on either side: a doorway, the way into the next area, or a stretch that was not scanned. Open edges are passable, never a surface to place things against."
+        ),
+    ] = None
 
 
 class AddEdit(BaseModel):
@@ -1589,6 +1753,7 @@ class BuiltIn(BaseModel):
     label: Annotated[str, Field(max_length=80, min_length=1)]
     box: OrientedBox
     detection: Detection
+    footprint: Footprint | None = None
 
 
 class CapturePackage(BaseModel):
@@ -1990,3 +2155,17 @@ class SpaceTwin(BaseModel):
     ] = None
     viewing: Viewing | None = None
     inventory: Inventory | None = None
+    free_floor: FreeFloor | None = None
+    confidence: Annotated[
+        MeasurementConfidence | None,
+        Field(
+            description="How far the room's measurements can be trusted. Fit claims only at taped or ar_measured."
+        ),
+    ] = None
+    areas: Annotated[
+        list[Area] | None,
+        Field(
+            description="The spaces the capture passed through, split where the floor narrows to a doorway. One area when the capture is one space (an open-plan L included). The app shows each area's photo and asks which to redesign.",
+            min_length=1,
+        ),
+    ] = None

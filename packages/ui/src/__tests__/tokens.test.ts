@@ -13,18 +13,44 @@ import {
 
 const GB = 1024 ** 3;
 
-describe("LiveMap tokens match the design doc", () => {
+describe("tokens match the design doc", () => {
   it("colors", () => {
     expect(colors).toMatchObject({
-      canvas: "#eef0f5",
-      ink: "#1d1d1f",
-      inkSecondary: "#55595f",
-      inkTertiary: "#636873",
-      accent: "#0a7cff",
+      canvas: "#f6f1e8",
+      surface: "#fffdf9",
+      ink: "#221e19",
+      inkSecondary: "#5a5249",
+      inkTertiary: "#6b6258",
+      accent: "#ad4f27",
+      sand: "#e9dfd0",
+      wood: "#b08968",
+      daylight: "#fbf4e4",
       success: "#1fae55",
       danger: "#ff3b30",
       warning: "#ff8a00",
     });
+  });
+
+  it("text stays readable: every ink on the canvas and white on the accent pass 4.5:1", () => {
+    const channel = (hex: string, at: number) => {
+      const value = parseInt(hex.slice(at, at + 2), 16) / 255;
+      return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+    };
+    const luminance = (hex: string) =>
+      0.2126 * channel(hex, 1) + 0.7152 * channel(hex, 3) + 0.0722 * channel(hex, 5);
+    const contrast = (one: string, two: string) => {
+      const [light, dark] = [luminance(one), luminance(two)].sort((x, y) => y - x) as [
+        number,
+        number,
+      ];
+      return (light + 0.05) / (dark + 0.05);
+    };
+    for (const ink of [colors.ink, colors.inkSecondary, colors.inkTertiary]) {
+      expect(contrast(ink, colors.canvas)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(ink, colors.surface)).toBeGreaterThanOrEqual(4.5);
+    }
+    expect(contrast(colors.onAccent, colors.accent)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(colors.accent, colors.canvas)).toBeGreaterThanOrEqual(4.5);
   });
 
   it("light and dark glass", () => {
@@ -46,8 +72,8 @@ describe("LiveMap tokens match the design doc", () => {
   it("shadows: three stacked on standard devices, one on the low tier", () => {
     expect(shadows.standard.card.split("),")).toHaveLength(3);
     expect(shadows.low.card.split("),")).toHaveLength(1);
-    expect(shadows.standard.sheet).toBe("0 -16px 40px rgba(29, 29, 31, 0.12)");
-    expect(shadows.standard.accentGlow).toBe("0 10px 24px rgba(10, 124, 255, 0.35)");
+    expect(shadows.standard.sheet).toBe("0 -16px 40px rgba(34, 30, 25, 0.12)");
+    expect(shadows.standard.accentGlow).toBe("0 10px 24px rgba(173, 79, 39, 0.30)");
     expect(shadows.low.accentGlow).toBe("none");
   });
 });

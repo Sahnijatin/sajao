@@ -1,6 +1,7 @@
 // The screen shown when something breaks at startup or while rendering.
 // It uses nothing but plain views and text, because the theme, the fonts or
-// the string catalogs may be the very thing that failed.
+// the string catalogs may be the very thing that failed. The colours repeat
+// the theme tokens by value for the same reason.
 import { Pressable, Text, View } from "react-native";
 import i18n from "@/i18n";
 import { previewScreensEnabled } from "@/preview-screens";
@@ -30,14 +31,14 @@ export function ErrorScreen({ error, onRetry }: { error: CaughtError; onRetry?: 
         justifyContent: "center",
         gap: 16,
         padding: 24,
-        backgroundColor: "#eef0f5",
+        backgroundColor: "#f6f1e8",
       }}
     >
-      <Text style={{ fontSize: 26, lineHeight: 30, color: "#1d1d1f" }}>{text("title")}</Text>
-      <Text style={{ fontSize: 16, lineHeight: 23, color: "#55595f" }}>{text("body")}</Text>
+      <Text style={{ fontSize: 26, lineHeight: 30, color: "#221e19" }}>{text("title")}</Text>
+      <Text style={{ fontSize: 16, lineHeight: 23, color: "#5a5249" }}>{text("body")}</Text>
       {/* Testers see the cause; store users never see technical text. */}
       {previewScreensEnabled() ? (
-        <Text selectable style={{ fontSize: 12, lineHeight: 16, color: "#636873" }}>
+        <Text selectable style={{ fontSize: 12, lineHeight: 16, color: "#6b6258" }}>
           {`${error.source}: ${error.message}`}
         </Text>
       ) : null}
@@ -50,7 +51,7 @@ export function ErrorScreen({ error, onRetry }: { error: CaughtError; onRetry?: 
             borderRadius: 999,
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "#0a7cff",
+            backgroundColor: "#ad4f27",
           }}
         >
           <Text style={{ fontSize: 16, fontWeight: "600", color: "#ffffff" }}>{text("retry")}</Text>

@@ -26,7 +26,7 @@ export function isAnimated(level: EffectLevel): boolean {
 export const glow = {
   /** Soft halo behind a stroke or shape. */
   blurRadius: 2.2,
-  accent: "#0a7cff",
+  accent: "#ad4f27",
   success: "#1fae55",
   warning: "#ff8a00",
 } as const;
@@ -73,9 +73,9 @@ export interface Blob {
 }
 
 export const canvasBlobs: readonly Blob[] = [
-  { color: "rgba(10, 124, 255, 0.20)", x: 0.15, y: 0.12, radius: 0.55, drift: 0.06, phase: 0 },
-  { color: "rgba(255, 138, 0, 0.18)", x: 0.9, y: 0.3, radius: 0.5, drift: 0.05, phase: 0.33 },
-  { color: "rgba(255, 105, 180, 0.12)", x: 0.4, y: 0.85, radius: 0.6, drift: 0.07, phase: 0.66 },
+  { color: "rgba(173, 79, 39, 0.12)", x: 0.15, y: 0.12, radius: 0.55, drift: 0.06, phase: 0 },
+  { color: "rgba(232, 178, 96, 0.20)", x: 0.9, y: 0.3, radius: 0.5, drift: 0.05, phase: 0.33 },
+  { color: "rgba(176, 137, 104, 0.14)", x: 0.4, y: 0.85, radius: 0.6, drift: 0.07, phase: 0.66 },
 ];
 
 /** One slow loop of the blob drift. */

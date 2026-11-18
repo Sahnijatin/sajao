@@ -40,6 +40,8 @@ export interface UploadSource {
   sizeBytes: number;
   /** Bytes from start (inclusive) to end (exclusive). */
   slice(start: number, end: number): Promise<Blob | ArrayBuffer>;
+  /** Where the file is on the phone, when it is a file. */
+  uri?: string;
 }
 
 /** Where an unfinished upload is remembered across app restarts. */
@@ -51,6 +53,12 @@ export interface UploadStateStore {
 
 /** Sends one part and returns its ETag. Rejects with PartUrlExpiredError on 403. */
 export type PutPart = (url: string, body: Blob | ArrayBuffer) => Promise<string>;
+/**
+ * Sends a whole file as one part and returns its ETag. The phone's own
+ * transfer service does the sending, so it carries on when the app is in
+ * the background. Rejects with PartUrlExpiredError on 403.
+ */
+export type PutFile = (url: string, uri: string) => Promise<string>;
 
 export class UploadGoneError extends Error {}
 /** The server refused the file as too large; retrying will not help. */
@@ -65,6 +73,8 @@ export interface UploadOptions {
   source: UploadSource;
   api: UploadsApi;
   putPart: PutPart;
+  /** Used instead of putPart for a file that fits in one part. */
+  putFile?: PutFile;
   store: UploadStateStore;
   onProgress?: (sentBytes: number, totalBytes: number) => void;
   maxAttemptsPerPart?: number;
@@ -100,7 +110,7 @@ async function startOrResume(options: UploadOptions): Promise<UploadPlan> {
 }
 
 export async function uploadResumable(options: UploadOptions): Promise<{ key: string }> {
-  const { api, localId, source, store, putPart, onProgress } = options;
+  const { api, localId, source, store, putPart, putFile, onProgress } = options;
   const maxAttempts = options.maxAttemptsPerPart ?? 4;
   const wait = options.wait ?? defaultWait;
 
@@ -118,7 +128,10 @@ export async function uploadResumable(options: UploadOptions): Promise<{ key: st
       const url = plan.parts.find((part) => part.part_number === number)?.url;
       try {
         if (!url) throw new PartUrlExpiredError();
-        const etag = await putPart(url, await source.slice(start, end));
+        const whole = putFile && source.uri && plan.part_count === 1;
+        const etag = whole
+          ? await putFile(url, source.uri as string)
+          : await putPart(url, await source.slice(start, end));
         done.set(number, { part_number: number, size_bytes: end - start, etag });
         onProgress?.(sent(), source.sizeBytes);
         break;

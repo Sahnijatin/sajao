@@ -1,15 +1,17 @@
 // The state of the last scan's upload, shown on the home screen: uploading
 // with a count, uploaded, paused with a retry, or saved on the phone when
-// this build has no server. Nothing shows before the first scan.
-import { Button, Card, Text } from "@sajao/ui";
+// this build has no server. Once the scan is up, a second line follows the
+// room being measured. Nothing shows before the first scan.
+import { Button, Card, Text, useTheme } from "@sajao/ui";
 import { useTranslation } from "react-i18next";
 import { startCaptureUpload } from "@/capture/package/start-upload";
+import { roomMessage } from "@/rooms/room-job";
 import { type UploadStatus, useCaptureStore } from "@/state/capture";
 
 /** The message key and its values for an upload state; null when there is nothing to show. */
 export function uploadMessage(
   upload: UploadStatus,
-): { key: string; values?: Record<string, number> } | null {
+): { key: string; values?: Record<string, number | string> } | null {
   switch (upload.state) {
     case "idle":
       return null;
@@ -22,11 +24,21 @@ export function uploadMessage(
             values: { finished: upload.finished, total: upload.total },
           }
         : { key: "home.upload.starting" };
-    case "done":
-      return { key: upload.videoSkipped ? "home.upload.doneNoVideo" : "home.upload.done" };
+    case "done": {
+      const key = upload.videoSkipped ? "home.upload.doneNoVideo" : "home.upload.done";
+      // The size is only known for files sent in this run, not ones skipped as already up.
+      return upload.bytes
+        ? { key: `${key}Size`, values: { megabytes: megabytes(upload.bytes) } }
+        : { key };
+    }
     case "failed":
       return { key: "home.upload.failed" };
   }
+}
+
+/** Bytes as megabytes with one decimal, for example "84.3". */
+export function megabytes(bytes: number): string {
+  return (bytes / (1024 * 1024)).toFixed(1);
 }
 
 export function UploadStatus() {
@@ -34,11 +46,23 @@ export function UploadStatus() {
   const upload = useCaptureStore((store) => store.upload);
   const last = useCaptureStore((store) => store.last);
   const device = useCaptureStore((store) => store.device);
+  const room = useCaptureStore((store) => store.room);
+  const { tokens } = useTheme();
   const message = uploadMessage(upload);
   if (!message) return null;
   return (
-    <Card testID="upload-status" accessibilityRole="summary">
+    <Card
+      testID="upload-status"
+      accessibilityRole="summary"
+      // Room between the lines, and above the button when the upload is paused.
+      style={{ gap: tokens.spacing.lg }}
+    >
       <Text variant="bodySmall">{t(message.key, message.values ?? {})}</Text>
+      {room ? (
+        <Text testID="room-status" variant="bodySmall">
+          {t(roomMessage(room))}
+        </Text>
+      ) : null}
       {upload.state === "failed" && last && device ? (
         <Button
           label={t("home.upload.retry")}

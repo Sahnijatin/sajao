@@ -8,6 +8,17 @@ The full twin is the direction, not the launch. At launch the twin supplies what
 
 After launch: the room splat and its viewer on the phone, 3D models of your own items, catalog matches for your own items, removal inside the splat, and rearrange-only mode. What the evidence showed: the splat reads like a soft photo near the capture path and breaks down away from it; removing an object inside the splat leaves a visible ghost at room scale, so removal for redesigns is 2D inpainting on hero keyframes; and frame rate on a budget phone has not been measured on a device. The sections below describe the full twin and stay as the design for that work.
 
+## What the design engine and the render read
+
+Added to the twin by the room understanding step, all from the fused geometry and the hero photos:
+
+- **Footprint** of every object and built-in: its box seen from above, with width and depth as dimensions (value, source, error band), and whether it stands on the floor (a clock or a ceiling fan does not).
+- **Keep or replace** for every object. The rule keeps fixtures (fans, lights, AC units, switchboards, geysers) and lets everything else be replaced; the person can change it, and their choice is kept.
+- **Hero masks**: for every object, its mask in each hero photo where at least 30% of it is in frame and not hidden behind something nearer. The detector's own mask is reused where it has one for that keyframe; otherwise the segmenter is prompted with the object's box projected into the photo. Masks are not dilated; the render decides how far to grow them before inpainting.
+- **Free floor**: the floor area less the footprints of everything kept that stands on the floor (objects marked keep, and built-ins), with an error band from the walls' and footprints' bands.
+- **Confidence level** of the room's measurements: `taped` (a tape value the person entered checked or set them), `ar_measured` (the phone's AR planes or LiDAR measured them) or `estimated` (a depth model guessed them from pictures, as for imported photos and videos). Fit claims are made only at `taped` or `ar_measured`; at `estimated` the app shows sizes with measure to confirm. One tape value fixes an estimated room's scale but not its shape, so an estimated room counts as taped only once every wall length fit needs has its own tape value; a tape value that disagrees with AR walls drops the room to `estimated` (`sajao_workers.twin.confidence`).
+- **Areas**: the spaces a capture passed through, split where the floor narrows to a doorway; an open-plan L stays one area. Each has its floor polygon and area, the objects and keyframes in it, the photo that shows most of its floor (the app shows it when asking which area to redesign) and its own confidence level.
+
 ## Why this is new
 
 | What exists | What it lacks |

@@ -38,8 +38,28 @@ class KeyframeGate {
      * The cell for a frame: by direction when tracking gives a pose, by
      * time otherwise, so frames are kept whatever tracking says.
      */
-    fun cellFor(yaw: Double?, pitch: Double?, elapsedMs: Long): String =
-      if (yaw != null && pitch != null) cellOf(yaw, pitch) else "t${elapsedMs / TIME_CELL_MS}"
+    fun cellFor(
+      yaw: Double?,
+      pitch: Double?,
+      elapsedMs: Long,
+      x: Float? = null,
+      z: Float? = null,
+    ): String = when {
+      yaw == null || pitch == null -> "t${elapsedMs / TIME_CELL_MS}"
+      x == null || z == null -> cellOf(yaw, pitch)
+      else -> "${placeOf(x, z)}-${cellOf(yaw, pitch)}"
+    }
+
+    /** Side of a square of floor that counts as one place to stand, as `PLACE_CELL_M` in keyframes.ts. */
+    const val PLACE_CELL_M = 0.5
+
+    /**
+     * "p<column>_<row>": where the camera stood. A keyframe is a new
+     * viewpoint when it is taken from a new place or looks a new way, so
+     * walking the room keeps adding keyframes that turning on one spot cannot.
+     */
+    fun placeOf(x: Float, z: Float): String =
+      "p${Math.floor(x / PLACE_CELL_M).toInt()}_${Math.floor(z / PLACE_CELL_M).toInt()}"
 
     /** "d<sector>-<band>", as `cellOf` in keyframes.ts. */
     fun cellOf(yaw: Double, pitch: Double): String {
