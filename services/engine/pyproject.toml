@@ -1,0 +1,19 @@
+[project]
+name = "sajao-engine"
+version = "0.0.0"
+description = "Sajao design engine: archetypes, placement solver, verifier and relaxation order (pure code, no model calls)"
+requires-python = ">=3.13"
+dependencies = [
+    "numpy>=2.1",
+    "sajao-schemas",
+]
+
+[tool.uv.sources]
+sajao-schemas = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sajao_engine"]

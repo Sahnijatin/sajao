@@ -7,7 +7,6 @@ Every model, library and dataset used to build, train or evaluate Sajao is liste
 Items engineering flags for the legal team to read before any shipped use. Each has a full row in the table below.
 
 - DINOv3 (Meta, DINOv3 License): custom license with trade-control use restrictions, an indemnity to Meta, termination on suit, and terms Meta can change unilaterally. Used for the fidelity gate (evaluation and catalog admission), not in the app.
-- nvdiffrast (NVIDIA Source Code License, non-commercial): used by the fidelity gate's pose search. Fine for evaluation; a gate that admits products in production needs another rasteriser or an NVIDIA license.
 - Development catalog listing photos (IKEA India, Wooden Street): retailer terms grant no reuse; development only until each source grants image permission.
 
 | Name | Type | Used for | Source | License as stated by the source | Training use | Added by task |
@@ -112,6 +111,8 @@ Items engineering flags for the legal team to read before any shipped use. Each 
 | pytest 9.2.0 | Library (Python) | Build and test tooling in root | https://github.com/pytest-dev/pytest | MIT | No | Existing |
 | pytest-asyncio 1.5.0 | Library (Python) | Build and test tooling in root | https://github.com/pytest-dev/pytest-asyncio | Apache-2.0 | No | Existing |
 | ruff 0.17.5 | Library (Python) | Build and test tooling in root | https://github.com/astral-sh/ruff | MIT | No | Existing |
+| Hypothesis 6.170.15 | Library (Python) | Property tests for the solver, verifier and relaxation order | https://github.com/HypothesisWorks/hypothesis | MPL-2.0 | No | SJ-53 Verifier and relaxation order |
+| sortedcontainers 2.4.0 | Library (Python) | Dependency of Hypothesis, test tooling only | https://github.com/grantjenks/python-sortedcontainers | Apache-2.0 | No | SJ-53 Verifier and relaxation order |
 | structlog 26.1.0 | Library (Python) | Service code in services/api | https://github.com/hynek/structlog | MIT OR Apache-2.0 | No | Existing |
 | types-jsonschema 4.26.0.20261006 | Library (Python) | Build and test tooling in root | https://github.com/python/typeshed | Apache-2.0 | No | Existing |
 | uvicorn 0.54.0 | Library (Python) | Service code in services/api | https://github.com/encode/uvicorn | BSD-3-Clause | No | Existing |
@@ -148,7 +149,8 @@ Items engineering flags for the legal team to read before any shipped use. Each 
 | Transformers 4.57.1 (Hugging Face) | Library | Loading Grounding DINO, OWLv2 and SAM 2.1 | https://github.com/huggingface/transformers | Apache 2.0 | No | SJ-116 twin risk spike |
 | OpenCV 4.10 (headless) | Library | Image processing | https://github.com/opencv/opencv | Apache 2.0 | No | SJ-116 twin risk spike |
 | Open3D 0.19 | Library | Ray casting Replica meshes | https://github.com/isl-org/Open3D | MIT | No | SJ-116 twin risk spike |
-| trimesh 4.5.3 | Library | Mesh loading and light mesh export | https://github.com/mikedh/trimesh | MIT | No | SJ-116 twin risk spike |
+| trimesh 4.5.3 | Library | Mesh loading and light mesh export | https://github.com/mikedh/trimesh | MIT | No | SJ-116 twin risk spike, SJ-151 fidelity gate (loading assets) |
+| SciPy | Library | Nearest-point search when colouring an untextured asset from its photo (fidelity gate) | https://scipy.org | BSD-3-Clause | No | SJ-151 fidelity gate |
 | pycolmap 3.10 | Library | Reading Mip-NeRF 360 COLMAP poses | https://github.com/colmap/pycolmap | BSD 3-clause | No | SJ-116 twin risk spike |
 | pytorch-msssim 1.0 | Library | SSIM loss and metric | https://github.com/VainF/pytorch-msssim | MIT | No | SJ-116 twin risk spike |
 | NumPy, Pillow | Library | Arrays and images | https://numpy.org, https://python-pillow.org | BSD 3-clause; MIT-CMU | No | SJ-116 twin risk spike |
@@ -165,7 +167,7 @@ Items engineering flags for the legal team to read before any shipped use. Each 
 | TripoSG `VAST-AI/TripoSG`, revision 2c1c516d; code at commit fc5c4099 | Model and library | Image-to-3D for product assets: the fidelity gate's asset and render-ready assets | https://github.com/VAST-AI-Research/TripoSG | MIT | No | SJ-24 render bake-off, SJ-151 fidelity gate |
 | diso 0.1.4 | Library | Mesh extraction inside TripoSG | https://github.com/SarahWeiii/diso | Not checked yet: legal to confirm | No | SJ-24 render bake-off |
 | DINOv3 ViT-L/16 `facebook/dinov3-vitl16-pretrain-lvd1689m`, revision ea8dc286 | Model | Image encoder for the product fidelity gate (embedding similarity of each product to its held-out listing photos) (results stored on development catalog products). Evaluation only; not in the app | https://huggingface.co/facebook/dinov3-vitl16-pretrain-lvd1689m | DINOv3 License (Meta), gated; access approved for the founder's Hugging Face account. Non-exclusive, worldwide, non-transferable, royalty-free license to use, reproduce, modify and distribute, with no commercial-use exclusion. Conditions: redistribution only under the same agreement with a copy of it; acknowledge DINOv3 in published research; no reverse engineering; comply with trade controls (no ITAR, military, nuclear, espionage or weapons uses); license ends for anyone who sues Meta over the materials, with an indemnity to Meta; California law; Meta may amend the terms and continued use means acceptance. On the legal review list | No | SJ-24 render bake-off, SJ-151 fidelity gate |
-| nvdiffrast v0.4.0 | Library | Rasterising assets for the fidelity gate's pose search (evaluation only) | https://github.com/NVlabs/nvdiffrast | NVIDIA Source Code License (non-commercial). Evaluation only; a shipped gate needs another rasteriser or an NVIDIA license | No | SJ-24 render bake-off |
+| nvdiffrast v0.4.0 | Library | Rasterising assets in the bake-off harness only. The fidelity gate no longer uses it: it runs on our own numpy rasterizer (`services/catalog`) | https://github.com/NVlabs/nvdiffrast | NVIDIA Source Code License (non-commercial). Bake-off harness only, never in a shipped path | No | SJ-24 render bake-off |
 | timm 1.0.15, kornia 0.8.1, einops 0.8.1, scikit-image 0.25.2, omegaconf 2.3.0, jaxtyping, typeguard | Library | Dependencies of BiRefNet and TripoSG | https://pypi.org | Apache 2.0 (timm, kornia), MIT (einops, jaxtyping, typeguard), BSD (scikit-image, omegaconf) | No | SJ-24 render bake-off |
 
 

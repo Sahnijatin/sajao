@@ -1,0 +1,1375 @@
+{
+ "note": "Fidelity gate on TripoSG assets of the bake-off beds and lamps, our own rasterizer, DINOv3 ea8dc286. Scores only; photos stay on the private volume.",
+ "thresholds": {
+  "approved": {
+   "silhouette": 0.7,
+   "colour": 10.0,
+   "embedding": 0.475
+  },
+  "proposed_bed": {
+   "silhouette": 0.7,
+   "colour": 10.0,
+   "embedding": 0.35
+  }
+ },
+ "products": [
+  {
+   "id": "ikea_20518271",
+   "name": "VEVELSTAD Bed frame",
+   "category": "bed",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "check",
+    "3": "crop",
+    "4": "crop",
+    "5": "drawing"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.7927,
+     "colour_de": 5.308,
+     "look": 0.2401,
+     "lit": false
+    },
+    {
+     "view": "2",
+     "shape": 0.684,
+     "colour_de": 8.709,
+     "look": 0.1499,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_30503655",
+   "name": "BRIMNES Day-bed frame with 2 drawers",
+   "category": "bed",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "check",
+    "3": "check",
+    "4": "crop",
+    "5": "check",
+    "6": "check"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.9565,
+     "colour_de": 13.821,
+     "look": 0.1464,
+     "lit": false
+    },
+    {
+     "view": "2",
+     "shape": 0.8491,
+     "colour_de": 3.534,
+     "look": 0.1644,
+     "lit": false
+    },
+    {
+     "view": "3",
+     "shape": 0.9309,
+     "colour_de": 5.628,
+     "look": 0.2477,
+     "lit": false
+    },
+    {
+     "view": "5",
+     "shape": 0.8383,
+     "colour_de": 3.052,
+     "look": 0.3919,
+     "lit": false
+    },
+    {
+     "view": "6",
+     "shape": 0.9661,
+     "colour_de": 4.339,
+     "look": 0.1294,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_30504631",
+   "name": "KLEPPSTAD Bed frame",
+   "category": "bed",
+   "result_approved": "fail",
+   "result_calibrated": "pass",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "part_or_scene",
+    "3": "check",
+    "4": "part_or_scene",
+    "5": "crop",
+    "6": "crop",
+    "7": "crop",
+    "8": "drawing"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.9573,
+     "colour_de": 5.746,
+     "look": 0.4604,
+     "lit": false
+    },
+    {
+     "view": "3",
+     "shape": 0.8755,
+     "colour_de": 8.126,
+     "look": 0.3778,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_40573681",
+   "name": "VITARNA Four-poster bed frame",
+   "category": "bed",
+   "result_approved": "fail",
+   "result_calibrated": "pass",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "10": "crop",
+    "11": "drawing",
+    "2": "check",
+    "3": "part_or_scene",
+    "4": "check",
+    "5": "part_or_scene",
+    "6": "crop",
+    "7": "crop",
+    "8": "crop",
+    "9": "crop"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.8722,
+     "colour_de": 2.634,
+     "look": 0.7709,
+     "lit": false
+    },
+    {
+     "view": "2",
+     "shape": 0.7789,
+     "colour_de": 2.058,
+     "look": 0.3969,
+     "lit": false
+    },
+    {
+     "view": "4",
+     "shape": 0.8528,
+     "colour_de": 5.515,
+     "look": 0.5117,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_50579055",
+   "name": "STJÄRNÖ Bed frame",
+   "category": "bed",
+   "result_approved": "pass",
+   "result_calibrated": "pass",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "check",
+    "3": "crop",
+    "4": "crop",
+    "5": "crop",
+    "6": "part_or_scene",
+    "7": "drawing"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.8995,
+     "colour_de": 4.453,
+     "look": 0.7109,
+     "lit": false
+    },
+    {
+     "view": "2",
+     "shape": 0.889,
+     "colour_de": 4.713,
+     "look": 0.5095,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_60458755",
+   "name": "GRIMSBU Bed frame",
+   "category": "bed",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "check",
+    "3": "crop",
+    "4": "check"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.9227,
+     "colour_de": 2.334,
+     "look": 0.3962,
+     "lit": false
+    },
+    {
+     "view": "2",
+     "shape": 0.9562,
+     "colour_de": 2.656,
+     "look": 0.5014,
+     "lit": false
+    },
+    {
+     "view": "4",
+     "shape": 0.8864,
+     "colour_de": 17.281,
+     "look": 0.5458,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_s29308527",
+   "name": "NODELAND Bed frame",
+   "category": "bed",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "check",
+    "3": "crop",
+    "4": "too_small"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.9347,
+     "colour_de": 3.559,
+     "look": 0.2056,
+     "lit": false
+    },
+    {
+     "view": "2",
+     "shape": 0.9027,
+     "colour_de": 17.299,
+     "look": 0.1423,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_s39581837",
+   "name": "VIHALS Bed frame",
+   "category": "bed",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "check",
+    "3": "crop",
+    "4": "crop",
+    "5": "drawing"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.9642,
+     "colour_de": 7.747,
+     "look": 0.2945,
+     "lit": false
+    },
+    {
+     "view": "2",
+     "shape": 0.9204,
+     "colour_de": 14.562,
+     "look": 0.1063,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_s49241183",
+   "name": "SONGESAND Bed frame with 4 storage boxes",
+   "category": "bed",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "10": "drawing",
+    "2": "crop",
+    "3": "check",
+    "4": "check",
+    "5": "check",
+    "6": "crop",
+    "7": "part_or_scene",
+    "8": "check",
+    "9": "crop"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.8226,
+     "colour_de": 14.883,
+     "look": 0.316,
+     "lit": false
+    },
+    {
+     "view": "3",
+     "shape": 0.628,
+     "colour_de": 22.738,
+     "look": 0.3879,
+     "lit": false
+    },
+    {
+     "view": "4",
+     "shape": 0.5793,
+     "colour_de": 23.269,
+     "look": 0.3282,
+     "lit": false
+    },
+    {
+     "view": "5",
+     "shape": 0.8377,
+     "colour_de": 5.66,
+     "look": 0.1536,
+     "lit": false
+    },
+    {
+     "view": "8",
+     "shape": 0.5699,
+     "colour_de": 13.558,
+     "look": 0.1599,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_s69200643",
+   "name": "MALM Bed frame, high, w 2 storage boxes",
+   "category": "bed",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "crop",
+    "3": "crop",
+    "4": "check",
+    "5": "crop",
+    "6": "crop",
+    "7": "check",
+    "8": "drawing",
+    "9": "drawing"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.9697,
+     "colour_de": 1.914,
+     "look": 0.3861,
+     "lit": false
+    },
+    {
+     "view": "4",
+     "shape": 0.8694,
+     "colour_de": 4.596,
+     "look": 0.2694,
+     "lit": false
+    },
+    {
+     "view": "7",
+     "shape": 0.9311,
+     "colour_de": 9.563,
+     "look": 0.6235,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_s89198465",
+   "name": "NESTTUN Bed frame",
+   "category": "bed",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "crop",
+    "3": "check",
+    "4": "check",
+    "5": "crop",
+    "6": "check",
+    "7": "check",
+    "8": "crop",
+    "9": "drawing"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.9467,
+     "colour_de": 6.209,
+     "look": 0.6249,
+     "lit": false
+    },
+    {
+     "view": "3",
+     "shape": 0.9399,
+     "colour_de": 11.837,
+     "look": 0.3848,
+     "lit": false
+    },
+    {
+     "view": "4",
+     "shape": 0.9505,
+     "colour_de": 6.71,
+     "look": 0.612,
+     "lit": false
+    },
+    {
+     "view": "6",
+     "shape": 0.9455,
+     "colour_de": 10.02,
+     "look": 0.489,
+     "lit": false
+    },
+    {
+     "view": "7",
+     "shape": 0.9491,
+     "colour_de": 16.379,
+     "look": 0.5763,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_s89240983",
+   "name": "SONGESAND Bed frame with 2 storage boxes",
+   "category": "bed",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "check",
+    "3": "part_or_scene",
+    "4": "check",
+    "5": "check",
+    "6": "crop",
+    "7": "drawing"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.6814,
+     "colour_de": 4.801,
+     "look": 0.4816,
+     "lit": false
+    },
+    {
+     "view": "2",
+     "shape": 0.9269,
+     "colour_de": 9.874,
+     "look": 0.3483,
+     "lit": false
+    },
+    {
+     "view": "4",
+     "shape": 0.8774,
+     "colour_de": 10.252,
+     "look": 0.2511,
+     "lit": false
+    },
+    {
+     "view": "5",
+     "shape": 0.7093,
+     "colour_de": 15.433,
+     "look": 0.2308,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ws_adolph-bed-honey-finish",
+   "name": "Adolph Sheesham Wood King Size Bed Without Storage (Honey Finish)",
+   "category": "bed",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "check",
+    "1": "main",
+    "2": "check",
+    "3": "check",
+    "4": "check"
+   },
+   "views": [
+    {
+     "view": "0",
+     "shape": 0.8881,
+     "colour_de": 12.49,
+     "look": 0.4565,
+     "lit": false
+    },
+    {
+     "view": "2",
+     "shape": 0.9621,
+     "colour_de": 12.207,
+     "look": 0.4381,
+     "lit": false
+    },
+    {
+     "view": "3",
+     "shape": 0.9646,
+     "colour_de": 8.381,
+     "look": 0.2751,
+     "lit": false
+    },
+    {
+     "view": "4",
+     "shape": 0.934,
+     "colour_de": 1.605,
+     "look": 0.2628,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ws_adolph-queen-size-bed-walnut-finish",
+   "name": "Adolph Sheesham Wood Bed Without Storage (Queen Size, Walnut Finish)",
+   "category": "bed",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "check",
+    "1": "main",
+    "2": "check",
+    "3": "check",
+    "4": "check"
+   },
+   "views": [
+    {
+     "view": "0",
+     "shape": 0.892,
+     "colour_de": 11.438,
+     "look": 0.5905,
+     "lit": false
+    },
+    {
+     "view": "2",
+     "shape": 0.9597,
+     "colour_de": 10.731,
+     "look": 0.49,
+     "lit": false
+    },
+    {
+     "view": "3",
+     "shape": 0.9828,
+     "colour_de": 8.057,
+     "look": 0.3756,
+     "lit": false
+    },
+    {
+     "view": "4",
+     "shape": 0.8621,
+     "colour_de": 2.026,
+     "look": 0.2745,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ws_evaline-bed-with-box-storage-queen-size-exotic-teak-finish",
+   "name": "Evaline Bed With Box Storage (Queen Size, Exotic Teak Finish)",
+   "category": "bed",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "check",
+    "1": "part_or_scene",
+    "2": "check",
+    "3": "part_or_scene",
+    "4": "crop",
+    "5": "main",
+    "6": "check",
+    "7": "part_or_scene",
+    "8": "check",
+    "9": "part_or_scene"
+   },
+   "views": [
+    {
+     "view": "0",
+     "shape": 0.8919,
+     "colour_de": 12.701,
+     "look": 0.3262,
+     "lit": false
+    },
+    {
+     "view": "2",
+     "shape": 0.8989,
+     "colour_de": 8.928,
+     "look": 0.4007,
+     "lit": false
+    },
+    {
+     "view": "6",
+     "shape": 0.9875,
+     "colour_de": 8.264,
+     "look": 0.3516,
+     "lit": false
+    },
+    {
+     "view": "8",
+     "shape": 0.9396,
+     "colour_de": 6.234,
+     "look": 0.3086,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ws_lotus-premium-ash-wood-bed-with-brass-inlay-queen-size-teak-",
+   "name": "Lotus Premium Ash Wood Bed with Brass Inlay (Queen Size, Teak Finish)",
+   "category": "bed",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "part_or_scene",
+    "1": "main",
+    "10": "crop",
+    "2": "crop",
+    "3": "check",
+    "4": "check",
+    "5": "check",
+    "6": "part_or_scene",
+    "7": "check",
+    "8": "check",
+    "9": "crop"
+   },
+   "views": [
+    {
+     "view": "3",
+     "shape": 0.92,
+     "colour_de": 8.197,
+     "look": 0.1468,
+     "lit": false
+    },
+    {
+     "view": "4",
+     "shape": 0.9544,
+     "colour_de": 8.653,
+     "look": 0.1922,
+     "lit": false
+    },
+    {
+     "view": "5",
+     "shape": 0.8724,
+     "colour_de": 8.923,
+     "look": 0.2066,
+     "lit": false
+    },
+    {
+     "view": "7",
+     "shape": 0.9147,
+     "colour_de": 9.825,
+     "look": 0.2218,
+     "lit": false
+    },
+    {
+     "view": "8",
+     "shape": 0.9082,
+     "colour_de": 9.651,
+     "look": 0.1768,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ws_walken-queen-size-bed-honey-finish",
+   "name": "Walken Sheesham Wood Bed with Full Drawer Storage (Queen Size, Honey Finish)",
+   "category": "bed",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "check",
+    "1": "main",
+    "2": "check",
+    "3": "check",
+    "4": "crop",
+    "5": "check",
+    "6": "check",
+    "7": "part_or_scene",
+    "8": "part_or_scene"
+   },
+   "views": [
+    {
+     "view": "0",
+     "shape": 0.9704,
+     "colour_de": 4.533,
+     "look": 0.1167,
+     "lit": false
+    },
+    {
+     "view": "2",
+     "shape": 0.9004,
+     "colour_de": 4.738,
+     "look": 0.2724,
+     "lit": false
+    },
+    {
+     "view": "3",
+     "shape": 0.9261,
+     "colour_de": 3.563,
+     "look": 0.2404,
+     "lit": false
+    },
+    {
+     "view": "5",
+     "shape": 0.9579,
+     "colour_de": 11.585,
+     "look": 0.2986,
+     "lit": false
+    },
+    {
+     "view": "6",
+     "shape": 0.9665,
+     "colour_de": 13.422,
+     "look": 0.2475,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_00440829",
+   "name": "UPPLYST LED wall lamp",
+   "category": "lamp",
+   "result_approved": "pass",
+   "result_calibrated": "pass",
+   "photos": {
+    "0": "main",
+    "1": "crop",
+    "2": "drawing",
+    "3": "several_objects",
+    "4": "check",
+    "5": "part_or_scene",
+    "6": "check"
+   },
+   "views": [
+    {
+     "view": "4",
+     "shape": 0.8831,
+     "colour_de": 13.386,
+     "look": 0.6647,
+     "lit": true
+    },
+    {
+     "view": "6",
+     "shape": 0.8956,
+     "colour_de": 2.69,
+     "look": 0.6765,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_00594614",
+   "name": "LAMPAN LED portable lamp",
+   "category": "lamp",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "several_objects",
+    "2": "several_objects",
+    "3": "part_or_scene",
+    "4": "part_or_scene",
+    "5": "crop",
+    "6": "check"
+   },
+   "views": [
+    {
+     "view": "6",
+     "shape": 0.9999,
+     "colour_de": 22.96,
+     "look": 0.7262,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_10314024",
+   "name": "HÅRTE LED work lamp",
+   "category": "lamp",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "several_objects",
+    "2": "part_or_scene",
+    "3": "drawing",
+    "4": "drawing",
+    "5": "several_objects",
+    "6": "crop",
+    "7": "check"
+   },
+   "views": [
+    {
+     "view": "7",
+     "shape": 0.061,
+     "colour_de": 5.509,
+     "look": 0.1707,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_10478124",
+   "name": "PILSKOTT LED floor lamp",
+   "category": "lamp",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "part_or_scene",
+    "2": "part_or_scene",
+    "3": "crop",
+    "4": "check"
+   },
+   "views": [
+    {
+     "view": "4",
+     "shape": 0.2074,
+     "colour_de": 19.108,
+     "look": 0.551,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_20321321",
+   "name": "ÅRSTID Floor lamp",
+   "category": "lamp",
+   "result": "unverifiable",
+   "reason": "no asset (no clean main photo to build one from)"
+  },
+  {
+   "id": "ikea_20405047",
+   "name": "LAUTERS Floor lamp",
+   "category": "lamp",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "check",
+    "3": "crop",
+    "4": "crop",
+    "5": "check",
+    "6": "check"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.9872,
+     "colour_de": 10.105,
+     "look": 0.7443,
+     "lit": false
+    },
+    {
+     "view": "2",
+     "shape": 0.9878,
+     "colour_de": 8.861,
+     "look": 0.733,
+     "lit": true
+    },
+    {
+     "view": "5",
+     "shape": 0.5701,
+     "colour_de": 11.909,
+     "look": 0.2994,
+     "lit": false
+    },
+    {
+     "view": "6",
+     "shape": 0.9347,
+     "colour_de": 6.885,
+     "look": 0.707,
+     "lit": true
+    }
+   ]
+  },
+  {
+   "id": "ikea_20437699",
+   "name": "UPPVIND Table lamp",
+   "category": "lamp",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "check",
+    "1": "main",
+    "2": "crop"
+   },
+   "views": [
+    {
+     "view": "0",
+     "shape": 0.9295,
+     "colour_de": 10.021,
+     "look": 0.4556,
+     "lit": true
+    }
+   ]
+  },
+  {
+   "id": "ikea_20568223",
+   "name": "HÖGVIND Table lamp",
+   "category": "lamp",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "check",
+    "3": "crop",
+    "4": "part_or_scene",
+    "5": "part_or_scene"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.9992,
+     "colour_de": 15.318,
+     "look": 0.5301,
+     "lit": false
+    },
+    {
+     "view": "2",
+     "shape": 0.9959,
+     "colour_de": 13.407,
+     "look": 0.545,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_30437811",
+   "name": "BARLAST Floor lamp",
+   "category": "lamp",
+   "result": "unverifiable",
+   "reason": "no asset (no clean main photo to build one from)"
+  },
+  {
+   "id": "ikea_30542162",
+   "name": "BRUNBÅGE LED work lamp",
+   "category": "lamp",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "drawing",
+    "3": "check",
+    "4": "crop",
+    "5": "crop"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.4225,
+     "colour_de": 21.88,
+     "look": 0.3812,
+     "lit": true
+    },
+    {
+     "view": "3",
+     "shape": 0.5174,
+     "colour_de": 15.128,
+     "look": 0.2493,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_30580074",
+   "name": "ZEBRASÄV Pendant lamp",
+   "category": "lamp",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "part_or_scene",
+    "2": "part_or_scene",
+    "3": "too_small",
+    "4": "part_or_scene",
+    "5": "several_objects",
+    "6": "check",
+    "7": "crop",
+    "8": "crop"
+   },
+   "views": [
+    {
+     "view": "6",
+     "shape": 0.496,
+     "colour_de": 3.215,
+     "look": 0.3614,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_40476835",
+   "name": "FÖRUT Pendant/ceiling lamp hook",
+   "category": "lamp",
+   "result_approved": "unverifiable",
+   "result_calibrated": "unverifiable",
+   "reason": "no held-out photo of the whole product",
+   "photos": {
+    "0": "main",
+    "1": "part_or_scene"
+   },
+   "views": []
+  },
+  {
+   "id": "ikea_40597781",
+   "name": "TVÅMASTAD LED portable lamp",
+   "category": "lamp",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "check",
+    "3": "check",
+    "4": "crop",
+    "5": "crop",
+    "6": "crop",
+    "7": "crop"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.9823,
+     "colour_de": 11.227,
+     "look": 0.7268,
+     "lit": true
+    },
+    {
+     "view": "2",
+     "shape": 0.8043,
+     "colour_de": 14.195,
+     "look": 0.2539,
+     "lit": false
+    },
+    {
+     "view": "3",
+     "shape": 0.9928,
+     "colour_de": 8.457,
+     "look": 0.7646,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_50314814",
+   "name": "HEKTAR Floor lamp",
+   "category": "lamp",
+   "result": "unverifiable",
+   "reason": "no asset (no clean main photo to build one from)"
+  },
+  {
+   "id": "ikea_50510400",
+   "name": "ISKÄRNA LED table lamp",
+   "category": "lamp",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "drawing",
+    "2": "check",
+    "3": "check",
+    "4": "part_or_scene",
+    "5": "drawing",
+    "6": "drawing",
+    "7": "drawing",
+    "8": "drawing"
+   },
+   "views": [
+    {
+     "view": "2",
+     "shape": 0.9772,
+     "colour_de": 33.831,
+     "look": 0.5441,
+     "lit": true
+    },
+    {
+     "view": "3",
+     "shape": 0.9447,
+     "colour_de": 26.416,
+     "look": 0.4416,
+     "lit": true
+    }
+   ]
+  },
+  {
+   "id": "ikea_60404913",
+   "name": "NÄVLINGE LED work lamp",
+   "category": "lamp",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "drawing",
+    "2": "check",
+    "3": "part_or_scene",
+    "4": "part_or_scene",
+    "5": "check",
+    "6": "part_or_scene",
+    "7": "check",
+    "8": "check"
+   },
+   "views": [
+    {
+     "view": "2",
+     "shape": 0.7381,
+     "colour_de": 11.136,
+     "look": 0.1523,
+     "lit": false
+    },
+    {
+     "view": "5",
+     "shape": 0.8557,
+     "colour_de": 2.35,
+     "look": 0.2198,
+     "lit": false
+    },
+    {
+     "view": "7",
+     "shape": 0.9544,
+     "colour_de": 4.169,
+     "look": 0.8232,
+     "lit": false
+    },
+    {
+     "view": "8",
+     "shape": 0.6387,
+     "colour_de": 16.161,
+     "look": 0.2702,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_60405955",
+   "name": "SKAFTET Table lamp base",
+   "category": "lamp",
+   "result_approved": "unverifiable",
+   "result_calibrated": "unverifiable",
+   "reason": "no held-out photo of the whole product",
+   "photos": {
+    "0": "main",
+    "1": "part_or_scene",
+    "2": "part_or_scene",
+    "3": "crop",
+    "4": "part_or_scene",
+    "5": "crop",
+    "6": "crop"
+   },
+   "views": []
+  },
+  {
+   "id": "ikea_60459712",
+   "name": "ISJAKT LED floor uplighter/reading lamp",
+   "category": "lamp",
+   "result": "unverifiable",
+   "reason": "no asset (no clean main photo to build one from)"
+  },
+  {
+   "id": "ikea_60487753",
+   "name": "ÄNGARNA LED table lamp",
+   "category": "lamp",
+   "result_approved": "pass",
+   "result_calibrated": "pass",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "check",
+    "3": "part_or_scene"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.9949,
+     "colour_de": 11.576,
+     "look": 0.7265,
+     "lit": true
+    },
+    {
+     "view": "2",
+     "shape": 0.9785,
+     "colour_de": 11.594,
+     "look": 0.7707,
+     "lit": true
+    }
+   ]
+  },
+  {
+   "id": "ikea_60563577",
+   "name": "RÖDFLIK Floor/reading lamp",
+   "category": "lamp",
+   "result": "unverifiable",
+   "reason": "no asset (no clean main photo to build one from)"
+  },
+  {
+   "id": "ikea_60602041",
+   "name": "GREJSIMOJS LED decoration lighting, floor",
+   "category": "lamp",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "crop",
+    "2": "crop",
+    "3": "drawing",
+    "4": "check",
+    "5": "drawing"
+   },
+   "views": [
+    {
+     "view": "4",
+     "shape": 0.9655,
+     "colour_de": 10.633,
+     "look": 0.5104,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_70524458",
+   "name": "FLYGHÖJD Table lamp",
+   "category": "lamp",
+   "result_approved": "unverifiable",
+   "result_calibrated": "unverifiable",
+   "reason": "no held-out photo of the whole product",
+   "photos": {
+    "0": "main",
+    "1": "part_or_scene",
+    "2": "several_objects",
+    "3": "crop"
+   },
+   "views": []
+  },
+  {
+   "id": "ikea_80573580",
+   "name": "STORSEGEL Table lamp",
+   "category": "lamp",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "check",
+    "3": "crop"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.7254,
+     "colour_de": 4.938,
+     "look": 0.3994,
+     "lit": true
+    },
+    {
+     "view": "2",
+     "shape": 0.9787,
+     "colour_de": 12.632,
+     "look": 0.7596,
+     "lit": true
+    }
+   ]
+  },
+  {
+   "id": "ikea_90325472",
+   "name": "KRUX LED work lamp",
+   "category": "lamp",
+   "result_approved": "fail",
+   "result_calibrated": "fail",
+   "photos": {
+    "0": "main",
+    "1": "several_objects",
+    "2": "part_or_scene",
+    "3": "check",
+    "4": "crop",
+    "5": "crop",
+    "6": "crop"
+   },
+   "views": [
+    {
+     "view": "3",
+     "shape": 0.5038,
+     "colour_de": 5.183,
+     "look": 0.232,
+     "lit": false
+    }
+   ]
+  },
+  {
+   "id": "ikea_s29387355",
+   "name": "RINGSTA / SKAFTET Table lamp",
+   "category": "lamp",
+   "result_approved": "pass",
+   "result_calibrated": "pass",
+   "photos": {
+    "0": "main",
+    "1": "check",
+    "2": "crop",
+    "3": "crop",
+    "4": "crop"
+   },
+   "views": [
+    {
+     "view": "1",
+     "shape": 0.9641,
+     "colour_de": 17.286,
+     "look": 0.8016,
+     "lit": true
+    }
+   ]
+  },
+  {
+   "id": "ws_knot-floor-lamp",
+   "name": "Knot Floor Lamp",
+   "category": "lamp",
+   "result": "unverifiable",
+   "reason": "no asset (no clean main photo to build one from)"
+  }
+ ],
+ "wrong_pairs": {
+  "bed": {
+   "pairs": 51,
+   "pass_approved": 0,
+   "pass_calibrated": 0
+  },
+  "lamp": {
+   "pairs": 51,
+   "pass_approved": 2,
+   "pass_calibrated": 2
+  }
+ }
+}

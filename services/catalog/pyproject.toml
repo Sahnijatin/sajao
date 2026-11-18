@@ -3,7 +3,13 @@ name = "sajao-catalog"
 version = "0.0.0"
 description = "Sajao catalog: one ingest path for curated products and retailer feeds"
 requires-python = ">=3.13"
-dependencies = ["sajao-schemas"]
+dependencies = [
+    "sajao-schemas",
+    "numpy>=2.0",
+    "pillow>=11.0",
+    "scipy>=1.14",
+    "trimesh>=4.5",
+]
 
 [project.scripts]
 sajao-catalog = "sajao_catalog.cli:main"
