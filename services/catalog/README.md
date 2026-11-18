@@ -37,7 +37,7 @@ The folder holds `product.json` (`category`, `dims_cm`, `main`: the photo the as
 
 The shape threshold is calibrated so that another product's asset of the same category passes at most 5% of the time (`gate.calibrate`).
 
-The rule is per category (`gate.CATEGORY`): a held-out bed photo is styled with bedding the asset does not have, so even the right bed scores lower on look. Beds use look 0.35, proposed in Decisions: 0 of 51 wrong-bed pairs pass there. Other categories keep the approved values (shape 0.70, colour 10, look 0.475).
+Launch admission uses one rule for every category (shape 0.70, colour 10, look 0.475); that is `result` in `gate.json`. A held-out bed photo is styled with bedding the asset does not have, so even the right bed scores lower on look. Beds get look 0.35 for development and closed-test builds only (`gate.DEVELOPMENT`): 0 of 51 wrong-bed pairs pass there. That verdict is `development_result` in `gate.json` and never admits a product to the launch catalog.
 
 ### Beds and lamps
 

@@ -116,9 +116,18 @@ def test_calibrate_caps_wrong_passes() -> None:
 def test_category_thresholds() -> None:
     from sajao_catalog.gate.gate import thresholds_for
 
-    assert thresholds_for("bed").embedding == 0.35
-    assert thresholds_for("bed", approved_only=True) == Thresholds()
-    assert thresholds_for("lamp") == Thresholds()
+    assert thresholds_for("bed") == Thresholds()
+    assert thresholds_for("bed", "development").embedding == 0.35
+    assert thresholds_for("lamp", "development") == Thresholds()
+
+
+def test_a_development_pass_never_becomes_the_launch_result() -> None:
+    from sajao_catalog.gate.gate import ViewScore, report, thresholds_for
+
+    view = ViewScore(view="v", silhouette=0.9, colour=5.0, embedding=0.40, lit=False, pose={})
+    out = report([view], thresholds_for("bed"), thresholds_for("bed", "development"))
+    assert out["result"] == "fail"
+    assert out["development_result"] == "pass"
 
 
 def _photo(fill: tuple[int, int, int], region: tuple[slice, slice]) -> np.ndarray:

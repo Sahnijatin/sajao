@@ -37,13 +37,16 @@ class Thresholds:
 # Calibrated per category so that another product's asset passes at most 5% of the time
 # (see `calibrate` and the README). Beds: the listing's other photos are styled with
 # bedding the asset does not have, so look scores sit lower for the right product too;
-# no wrong bed passed at 0.35 (0 of 51 pairs). Proposed in Decisions; until approved,
-# `thresholds_for(..., approved_only=True)` keeps the defaults.
-CATEGORY: dict[str, Thresholds] = {"bed": Thresholds(embedding=0.35)}
+# no wrong bed passed at 0.35 (0 of 51 pairs). Approved for development and closed-test
+# builds only; launch admission keeps the default thresholds.
+Scope = Literal["launch", "development"]
+DEVELOPMENT: dict[str, Thresholds] = {"bed": Thresholds(embedding=0.35)}
 
 
-def thresholds_for(category: str, approved_only: bool = False) -> Thresholds:
-    return Thresholds() if approved_only else CATEGORY.get(category, Thresholds())
+def thresholds_for(category: str, scope: Scope = "launch") -> Thresholds:
+    if scope == "development":
+        return DEVELOPMENT.get(category, Thresholds())
+    return Thresholds()
 
 
 @dataclass
@@ -79,12 +82,20 @@ def decide(views: list[ViewScore], th: Thresholds) -> Result:
     return "pass" if all(v.passes(th) for v in views) else "fail"
 
 
-def report(views: list[ViewScore], th: Thresholds) -> dict[str, object]:
-    return {
+def report(
+    views: list[ViewScore], th: Thresholds, development: Thresholds | None = None
+) -> dict[str, object]:
+    """`result` is the launch verdict. `development_result`, when given thresholds for
+    it, is the verdict development and closed-test builds may use; never for launch."""
+    out: dict[str, object] = {
         "result": decide(views, th),
         "thresholds": asdict(th),
         "views": [{**asdict(v), "misses": v.misses(th)} for v in views],
     }
+    if development is not None:
+        out["development_result"] = decide(views, development)
+        out["development_thresholds"] = asdict(development)
+    return out
 
 
 def fit_to_listing(vertices: F, dims_cm: dict[str, float]) -> F:

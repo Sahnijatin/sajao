@@ -99,6 +99,7 @@ def gate_product(
     """`photos`: cut-outs (RGBA, alpha = product) by name; `main` is the one the asset
     was built from. Pass `views` to reuse a selection (wrong-product calibration)."""
     th = thresholds or thresholds_for(category)
+    dev = None if thresholds else thresholds_for(category, "development")
     info, keep = views or select_views(photos, main, category, embed)
     cloud = build_cloud(mesh, dims_cm, photos[main])
     scores = []
@@ -116,4 +117,4 @@ def gate_product(
                 pose={"azimuth": m.pose.azimuth, "elevation": m.pose.elevation, "fov": m.pose.fov},
             )
         )
-    return {**report(scores, th), "photos": info}
+    return {**report(scores, th, dev), "photos": info}
