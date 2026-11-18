@@ -63,13 +63,14 @@ exclude = [
     "services/spikes/twin-depth/gpu/",
     "services/spikes/twin-noar/gpu/",
     "services/workers/gpu/",
+    "services/catalog/gpu/",
     "services/dataset/cloud/",
     # The Modal client exists only where the deployment runs.
     "services/api/deploy/",
 ]
 
 [[tool.mypy.overrides]]
-module = ["boto3.*", "botocore.*", "yt_dlp.*"]
+module = ["boto3.*", "botocore.*", "yt_dlp.*", "scipy.*", "trimesh.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
