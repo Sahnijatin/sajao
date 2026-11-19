@@ -72,9 +72,19 @@ export function PlanCanvas({
           strokeCap="round"
         />
       ))}
-      {items.map((path, index) => (
-        <Path key={plan.items[index]?.id} path={path} color={colors.wood} opacity={0.45} />
-      ))}
+      {items.map((path, index) => {
+        const id = plan.items[index]?.id;
+        // The selected piece stands out; the rest stay as they are.
+        const chosen = id !== undefined && id === plan.selected?.id;
+        return (
+          <Path
+            key={id}
+            path={path}
+            color={chosen ? colors.accent : colors.wood}
+            opacity={chosen ? 0.75 : 0.45}
+          />
+        );
+      })}
       {items.map((path, index) => (
         <Path
           key={`${plan.items[index]?.id}-edge`}

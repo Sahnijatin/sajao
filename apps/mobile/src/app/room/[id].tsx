@@ -4,7 +4,7 @@ import { roomName } from "@/rooms/room-card";
 import { useEffect } from "react";
 import { useRoomContent } from "@/rooms/room-content";
 import { loadRoomContent } from "@/rooms/room-source";
-import { roomSpaceProfile } from "@/rooms/room-space";
+import { getArCapabilities } from "../../../modules/sajao-ar";
 import { RoomScreen, RoomWaiting } from "@/screens/room";
 import { useRooms, useRoomsLoaded } from "@/state/rooms";
 
@@ -32,10 +32,11 @@ export default function RoomRoute() {
           content={content}
           redesignAreaId={room.redesignAreaId ?? null}
           onChooseArea={() => router.push({ pathname: "/areas", params: { room: id } })}
-          // Measuring with a tape happens on the space profile, where there is one.
+          // "Measure this room for exact fit": the AR scan, on a phone that can run it.
+          // The two-tape-value step joins it once the API takes tape values for a room.
           onMeasure={
-            roomSpaceProfile(id)
-              ? () => router.push({ pathname: "/space", params: { room: id } })
+            getArCapabilities().arSupported
+              ? () => router.push({ pathname: "/capture", params: { room: id } })
               : undefined
           }
         />
