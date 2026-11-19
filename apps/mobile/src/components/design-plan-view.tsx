@@ -6,7 +6,7 @@ import { Text, useTheme } from "@sajao/ui";
 import type { Design } from "@sajao/schemas";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { designPlan, type PlanShell, type Px } from "@/rooms/design-plan";
 import { formatLength, type LengthUnits } from "@/utils/format-length";
 import { PlanCanvas } from "./plan-canvas";
@@ -50,12 +50,18 @@ function Label({ at, text, tone }: { at: Px; text: string; tone: "wall" | "gap" 
   );
 }
 
+/** The smallest target a finger can hit reliably, in points. */
+const MIN_TARGET = 44;
+
 export function DesignPlanView({
   design,
   shell,
   units,
   width,
   height,
+  selectedId = null,
+  onSelect,
+  gaps = true,
 }: {
   /** The design whose furniture is drawn; null draws the room alone. */
   design: Design | null;
@@ -63,21 +69,54 @@ export function DesignPlanView({
   units: LengthUnits;
   width: number;
   height: number;
+  /** The piece picked on the plan; its gap to the nearest wall is the one shown. */
+  selectedId?: string | null;
+  /** Tapping a piece picks it; tapping it again lets it go. Left out, pieces are not tappable. */
+  onSelect?: (itemId: string | null) => void;
+  /** Gaps to the walls: shown for measured rooms only. */
+  gaps?: boolean;
 }) {
   const { t } = useTranslation();
   const plan = useMemo(
-    () => designPlan(design, shell, { width, height, padding: PADDING }),
-    [design, shell, width, height],
+    () => designPlan(design, shell, { width, height, padding: PADDING }, { selectedId, gaps }),
+    [design, shell, width, height, selectedId, gaps],
   );
   return (
     <View
       testID="room-plan"
-      accessible
-      accessibilityRole="image"
+      // With tappable pieces the plan is a group, so each piece can be reached.
+      accessible={!onSelect}
+      accessibilityRole={onSelect ? undefined : "image"}
       accessibilityLabel={t("room.plan.picture", { count: plan.items.length })}
       style={{ width, height }}
     >
       <PlanCanvas plan={plan} width={width} height={height} />
+      {onSelect
+        ? plan.items.map((item) => {
+            const xs = item.corners.map((corner) => corner.x);
+            const ys = item.corners.map((corner) => corner.y);
+            const w = Math.max(Math.max(...xs) - Math.min(...xs), MIN_TARGET);
+            const h = Math.max(Math.max(...ys) - Math.min(...ys), MIN_TARGET);
+            const chosen = item.id === plan.selected?.id;
+            return (
+              <Pressable
+                key={item.id}
+                testID={`plan-item-${item.id}`}
+                accessibilityRole="button"
+                accessibilityLabel={item.title}
+                accessibilityState={{ selected: chosen }}
+                onPress={() => onSelect(chosen ? null : item.id)}
+                style={{
+                  position: "absolute",
+                  left: item.centre.x - w / 2,
+                  top: item.centre.y - h / 2,
+                  width: w,
+                  height: h,
+                }}
+              />
+            );
+          })
+        : null}
       {plan.walls.map((wall) => (
         <Label key={wall.id} at={wall.at} tone="wall" text={formatLength(wall.metres, units, t)} />
       ))}

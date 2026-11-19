@@ -263,7 +263,10 @@
       "picture_one": "Plan of your room with {{count}} item",
       "picture_other": "Plan of your room with {{count}} items",
       "softEdge": "Walls not yet checked with a tape are drawn with a soft edge.",
-      "openEdge": "A dashed line is an open side: the room carries on there, with no wall."
+      "openEdge": "A dashed line is an open side: the room carries on there, with no wall.",
+      "size": "{{width}} wide, {{depth}} deep, {{height}} tall",
+      "tapPiece": "Tap a piece to see its size.",
+      "gapsMeasured": "Gaps to the walls show once the room is measured."
     },
     "sample": "These are sample views and measurements. Yours appear here when they are ready.",
     "approx": "approx.",
