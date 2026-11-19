@@ -180,7 +180,7 @@ class ScaleCheck:
         return max(floor_m, self.band_fraction * value_m)
 
 
-PRIORS: dict[Cue, tuple[float, float]] = {"ceiling": CEILING_HEIGHT_M, "door": DOOR_HEIGHT_M}
+PRIORS: dict[str, tuple[float, float]] = {"ceiling": CEILING_HEIGHT_M, "door": DOOR_HEIGHT_M}
 
 
 def check_scale(ceiling_m: float | None, doors_m: Sequence[float]) -> ScaleCheck:
@@ -215,3 +215,51 @@ def check_scale(ceiling_m: float | None, doors_m: Sequence[float]) -> ScaleCheck
         return ScaleCheck(1.0, BAND_UNCHECKED, "implausible", cues)
     # A corrected scale rests on the priors' own width, so it is no tighter than one cue.
     return ScaleCheck(factor, BAND_ONE_CUE, "corrected", cues)
+
+
+def camera_of(c2w: Any) -> Camera:
+    """The Camera for a frame the single-photo step stood on the floor."""
+    pose = np.asarray(c2w, dtype=np.float64)
+    forward = pose[:3, :3] @ np.array([0.0, 0.0, 1.0])
+    tilt = math.degrees(math.asin(float(np.clip(-forward[1], -1.0, 1.0))))
+    return Camera(pose, float(pose[1, 3]), tilt)
+
+
+def scale_dimension(d: dict[str, Any], factor: float, band_fraction: float) -> dict[str, Any]:
+    """A Dimension times `factor`, its band no narrower than `band_fraction` of it."""
+    value = d["value_m"] * factor
+    band = max(d["error_band_m"] * factor, band_fraction * value)
+    return {**d, "value_m": round(value, 3), "error_band_m": round(band, 3)}
+
+
+def scale_object(obj: dict[str, Any], check: ScaleCheck) -> dict[str, Any]:
+    """An object or built-in from the objects step, its box scaled about the origin.
+
+    The world's origin is the floor under the camera, so scaling every length by the
+    same factor about it keeps the floor at 0 and every point on its camera ray."""
+    box = obj["box"]
+    scaled = {
+        **box,
+        "center": [round(c * check.factor, 3) for c in box["center"]],
+        **{
+            k: scale_dimension(box[k], check.factor, check.band_fraction)
+            for k in ("length", "width", "height")
+        },
+    }
+    return {**obj, "box": scaled}
+
+
+def scale_evidence(check: ScaleCheck) -> dict[str, Any]:
+    """The twin's `scale` (ScaleEvidence) for a single photo."""
+    anchors: list[dict[str, Any]] = [{"kind": "geometry_model", "implied_scale": 1.0}]
+    for cue, kind in (("ceiling", "ceiling_prior"), ("door", "door_height")):
+        if cue in check.cues:
+            implied = min(max(check.cues[cue], PRIORS[cue][0]), PRIORS[cue][1]) / check.cues[cue]
+            anchors.append({"kind": kind, "implied_scale": round(implied, 4)})
+    return {
+        "anchors": anchors,
+        "anchors_agree": check.outcome in ("confirmed", "corrected"),
+        # A single photo is estimated whatever the priors say; the tape (or an AR scan)
+        # is the upgrade, and the app asks for it when a fit decision needs it.
+        "needs_tape_value": True,
+    }

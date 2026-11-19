@@ -65,6 +65,8 @@ class OpeningSighting:
 def _walls(shell: Mapping[str, Any]) -> list[tuple[str, np.ndarray, np.ndarray, float]]:
     out = []
     for w in shell["walls"]:
+        if w.get("kind") == "open":
+            continue  # nothing hangs on an edge with no wall
         s = np.array([w["start"]["x_m"], w["start"]["y_m"]])
         e = np.array([w["end"]["x_m"], w["end"]["y_m"]])
         length = float(np.linalg.norm(e - s))
@@ -151,9 +153,10 @@ def _dimension(value: float, depth_source: DepthSource) -> dict[str, Any]:
 
 
 def fuse_openings(
-    sightings: Sequence[OpeningSighting], depth_source: DepthSource
+    sightings: Sequence[OpeningSighting], depth_source: DepthSource, min_frames: int = MIN_FRAMES
 ) -> list[dict[str, Any]]:
-    """Openings seen in at least MIN_FRAMES frames, as SpaceTwin openings."""
+    """Openings seen in at least `min_frames` frames (1 for a single photo), as SpaceTwin
+    openings."""
     groups: list[list[OpeningSighting]] = []
     for s in sightings:
         for group in groups:
@@ -169,7 +172,7 @@ def fuse_openings(
             groups.append([s])
     fused: list[tuple[str, str, float, float, float, float]] = []
     for group in groups:
-        if len(group) < MIN_FRAMES:
+        if len(group) < min_frames:
             continue
         a0, a1, z0, z1 = np.median(
             [[g.along[0], g.along[1], g.vertical[0], g.vertical[1]] for g in group], axis=0
