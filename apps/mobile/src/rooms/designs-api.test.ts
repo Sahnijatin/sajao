@@ -48,6 +48,16 @@ describe("the design request", () => {
     // Asking again sends the same request.
     expect(designsRequest(answers, IDS)).toEqual(request);
   });
+
+  it("uses the room's own budget when it has one", () => {
+    const budget = {
+      limit: { currency: "INR", amount_minor: 5_000_000 },
+      flexibility: "strict",
+    } as const;
+    const request = designsRequest(answers, IDS, budget);
+    expect(request.brief.budget).toEqual(budget);
+    expect(validate("Brief", request.brief).ok).toBe(true);
+  });
 });
 
 describe("designs from the server", () => {

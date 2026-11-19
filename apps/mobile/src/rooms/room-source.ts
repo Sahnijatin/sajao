@@ -62,7 +62,7 @@ export function roomGeneration(): GenerationSource | null {
       requestFor(roomId) {
         const answers = useTaste.getState().answers;
         const ids = useRooms.getState().designIdsFor(roomId, uuidV4);
-        return answers && ids ? designsRequest(answers, ids) : null;
+        return answers && ids ? designsRequest(answers, ids, roomOf(roomId)?.budget) : null;
       },
       onDesigns(roomId, designs) {
         const content = useRoomData.getState().content[roomId];

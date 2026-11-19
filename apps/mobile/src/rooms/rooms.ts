@@ -1,6 +1,7 @@
 // Rooms on My home. Pure: what a room is, how the list is ordered and what
 // each card says. Rooms live on this phone until the API serves them; the
 // store in state/rooms.ts is the only place that knows that.
+import type { TasteAnswers } from "@/taste/taste-session";
 import type { DesignIds } from "./designs-api";
 
 /**
@@ -37,6 +38,8 @@ export interface Room {
   redesignAreaId?: string | null;
   /** The photos the room was added with, on this phone, in order, by keyframe id. Unset for an AR scan. */
   photos?: RoomPhoto[];
+  /** The budget for this room's designs. Unset until it is asked. */
+  budget?: TasteAnswers["budget"];
   /** The ids its designs are asked for with, made once. Unset until designs are first asked for. */
   designIds?: DesignIds;
 }

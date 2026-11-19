@@ -9,7 +9,12 @@ import { useTaste } from "@/state/taste";
 
 export { RouteErrorBoundary as ErrorBoundary } from "@/components/route-error-boundary";
 
-const ROUTES = { space: "/space", taste: "/taste", generating: "/generating" } as const;
+const ROUTES = {
+  space: "/space",
+  taste: "/taste",
+  budget: "/budget",
+  generating: "/generating",
+} as const;
 
 /** Add a room: take one to three photos of it. */
 export default function PhotosRoute() {

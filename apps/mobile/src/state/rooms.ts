@@ -25,6 +25,8 @@ interface RoomsState {
   setRoomDesigns(roomId: string, designCount: number, still: RoomStill, atMs?: number): void;
   /** For a scan of several areas: which one to redesign. */
   setRedesignArea(roomId: string, areaId: string): void;
+  /** The budget this room's designs are asked for with. */
+  setRoomBudget(roomId: string, budget: NonNullable<Room["budget"]>): void;
   /**
    * The room was measured again with a new scan: it follows that scan from
    * now on, and its designs are asked for afresh. Its name and photos stay.
@@ -91,6 +93,11 @@ export const useRooms = create<RoomsState>()(
           rooms: get().rooms.map((each) => (each.id === roomId ? { ...each, designIds } : each)),
         });
         return designIds;
+      },
+      setRoomBudget(roomId, budget) {
+        set({
+          rooms: get().rooms.map((room) => (room.id === roomId ? { ...room, budget } : room)),
+        });
       },
       setRedesignArea(roomId, areaId) {
         set({

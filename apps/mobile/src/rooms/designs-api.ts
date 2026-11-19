@@ -36,7 +36,12 @@ export interface DesignsRequest {
 }
 
 /** The request for a room's designs, from the taste and budget given on this phone. */
-export function designsRequest(answers: TasteAnswers, ids: DesignIds): DesignsRequest {
+export function designsRequest(
+  answers: TasteAnswers,
+  ids: DesignIds,
+  /** This room's budget; the taste answers' when the room has none. */
+  budget: TasteAnswers["budget"] = answers.budget,
+): DesignsRequest {
   return {
     id: ids.requestId,
     brief: {
@@ -46,7 +51,7 @@ export function designsRequest(answers: TasteAnswers, ids: DesignIds): DesignsRe
       taste_profile_id: ids.tasteProfileId,
       created_at: ids.createdAt,
       intent: "full_makeover",
-      budget: answers.budget,
+      budget,
       must_haves: answers.must_haves,
       keep_item_ids: [],
       consider_vastu: answers.consider_vastu,

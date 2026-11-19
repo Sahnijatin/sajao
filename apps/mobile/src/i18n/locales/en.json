@@ -347,11 +347,6 @@
     },
     "estimated": "Estimated ±{{band}}",
     "verified": "Verified",
-    "redoTitle": "What should we redo?",
-    "redoAll": "All of it",
-    "redoAllBody": "The whole space you scanned",
-    "redoPart": "Just a part",
-    "redoPartBody": "Draw around a corner or wall",
     "itemsTitle": "Things already here",
     "actions": {
       "keep": "Keep",
@@ -505,7 +500,8 @@
     "taste": "Your taste",
     "areas": "Choose an area",
     "import": "Photos or a video",
-    "photos": "Take photos"
+    "photos": "Take photos",
+    "budget": "Budget"
   },
   "areas": {
     "title": "Which one should we redesign?",
@@ -570,5 +566,10 @@
       "continue": "Continue",
       "another": "Add another view ({{number}} of {{most}})"
     }
+  },
+  "budget": {
+    "title": "Budget for this room",
+    "body": "Started from your last room. Change it if this room is different.",
+    "continue": "Show me designs"
   }
 }
