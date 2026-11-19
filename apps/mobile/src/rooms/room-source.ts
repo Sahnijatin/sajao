@@ -3,6 +3,7 @@
 // and nothing otherwise.
 import { useCaptureStore } from "@/state/capture";
 import { useRoomData } from "@/state/room-data";
+import { type RoomJobState, useRoomJobs } from "@/state/room-jobs";
 import { useRooms } from "@/state/rooms";
 import type { GenerationSource } from "./generation";
 import { uuidV4 } from "@/capture/package/upload-capture";
@@ -14,6 +15,7 @@ import {
   failureOf,
   isTwin,
   looksFrom,
+  ROOM_STAGES,
   type RoomApi,
 } from "./room-api";
 import { roomApi } from "./room-client";
@@ -88,16 +90,18 @@ function uploaded(captureId: string): Promise<boolean> {
   });
 }
 
-/** Real progress for a room, or null when this build has no server. */
-export function roomGeneration(): GenerationSource | null {
-  const client = configuredRoomApi();
-  if (!client) return null;
+/** The source of a room's job: the API generation with this phone's hooks. */
+function jobSource(client: RoomApi, hooks: { onUploaded: () => void; onSettled: () => void }) {
   return apiGeneration(client, {
     captureIdOf: workingCaptureOf,
     uploaded,
     photosOf,
     onReady: showOrHold,
-    onSettled: finishRemeasure,
+    onUploaded: hooks.onUploaded,
+    onSettled: (roomId) => {
+      finishRemeasure(roomId);
+      hooks.onSettled();
+    },
     onFailed: abandonRemeasure,
     designs: {
       requestFor(roomId) {
@@ -119,6 +123,83 @@ export function roomGeneration(): GenerationSource | null {
       },
     },
   });
+}
+
+/** Rooms whose job this phone is following, and how to stop following each. */
+const following: Record<string, () => void> = {};
+
+/**
+ * Follow a room's job until it is done or fails, whichever screen is open:
+ * the stages, the room or none. Safe to call again: a job already followed
+ * is left alone. False when this build has no server.
+ */
+export function startRoomJob(roomId: string): boolean {
+  const client = configuredRoomApi();
+  if (!client) return false;
+  if (following[roomId]) return true;
+  const set = (job: RoomJobState) => useRoomJobs.getState().setJob(roomId, job);
+  let settled = false;
+  set({ stage: "uploading", finished: 0 });
+  const source = jobSource(client, {
+    onUploaded: () => set({ stage: "reading", finished: 1 }),
+    onSettled: () => {
+      settled = true;
+    },
+  });
+  following[roomId] = source.watch(
+    roomId,
+    (finished) => {
+      // Shown as three stages: uploaded, the room read, the designs made.
+      if (settled) {
+        set({ stage: "done", finished: 3 });
+        delete following[roomId];
+      } else if (finished >= ROOM_STAGES.length) {
+        set({ stage: "designing", finished: 2 });
+      }
+    },
+    (reason) => {
+      const before = useRoomJobs.getState().jobs[roomId]?.finished ?? 0;
+      set({ stage: "failed", finished: before, reason });
+      delete following[roomId];
+    },
+  );
+  return true;
+}
+
+/** Try a failed room again: its upload first if that is what stopped, then the job. */
+export async function retryRoomJob(roomId: string): Promise<void> {
+  const reason = useRoomJobs.getState().jobs[roomId]?.reason;
+  following[roomId]?.();
+  delete following[roomId];
+  useRoomJobs.getState().clearJob(roomId);
+  if (reason === "upload") {
+    const { resumePendingUpload } = await import("@/capture/package/start-upload");
+    void resumePendingUpload();
+  }
+  startRoomJob(roomId);
+}
+
+/**
+ * Real progress for a room, for the stages screen, or null when this build
+ * has no server. It shows the room's job, which goes on if the screen closes.
+ */
+export function roomGeneration(): GenerationSource | null {
+  if (!configuredRoomApi()) return null;
+  return {
+    watch(roomId, onFinished, onFailed) {
+      const job = useRoomJobs.getState().jobs[roomId];
+      // A room whose job ended earlier is shown as it ended; Retry starts it again.
+      if (!job || job.stage === "done") startRoomJob(roomId);
+      const emit = () => {
+        const now = useRoomJobs.getState().jobs[roomId];
+        if (!now) return;
+        onFinished(now.finished);
+        if (now.stage === "failed") onFailed?.(now.reason ?? "unknown");
+      };
+      emit();
+      return useRoomJobs.subscribe(emit);
+    },
+  };
 }
 
 /**

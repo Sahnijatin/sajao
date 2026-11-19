@@ -3,7 +3,7 @@
 // reports progress, a timed stand-in walks through the stages.
 import { useEffect, useState } from "react";
 
-export const GENERATION_STAGES = ["walls", "furniture", "looks"] as const;
+export const GENERATION_STAGES = ["upload", "read", "design"] as const;
 export type GenerationStage = (typeof GENERATION_STAGES)[number];
 
 /** The stages for a room: a space that gets no designs stops after its furniture is found. */

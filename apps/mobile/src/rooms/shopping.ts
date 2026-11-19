@@ -33,9 +33,9 @@ export interface ShoppingLine {
   url: string | null;
   inStock: boolean;
   /**
-   * The item's own verdict from the verifier when the design carries one.
-   * Otherwise the design's: fits when it passed, check when it did not, so
-   * nothing is promised.
+   * The item's own verdict from the verifier. Without one nothing is
+   * promised: "check". The design passing as a whole does not say this item
+   * fits.
    */
   fit: ItemFit | "check";
   /** Space to spare for this item, in metres, when the verifier gave it. */
@@ -54,7 +54,6 @@ export interface Shopping {
 }
 
 export function shoppingFor(design: Design): Shopping {
-  const whole = design.check_report.passed ? "fits" : "check";
   const lines = design.items.map((item) => {
     const own = itemFit(item);
     return {
@@ -65,7 +64,7 @@ export function shoppingFor(design: Design): Shopping {
       priceMinor: item.product.price.amount_minor,
       url: item.product.routes.find((route) => route.kind === "buy")?.url ?? null,
       inStock: item.product.in_stock,
-      fit: own?.status ?? whole,
+      fit: own?.status ?? "check",
       spareM: own?.spareM ?? null,
     };
   }) satisfies ShoppingLine[];

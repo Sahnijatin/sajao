@@ -17,6 +17,8 @@ import {
   View,
 } from "react-native";
 import { DesignPlanView } from "@/components/design-plan-view";
+import { JobProgress } from "@/components/job-progress";
+import type { RoomJobState } from "@/state/room-jobs";
 import { Segmented } from "@/components/segmented";
 import { twinViewerEnabled } from "@/features";
 import { isApprox, leastCertain, wallName } from "@/rooms/measures";
@@ -621,7 +623,14 @@ function ShoppingTabBody({
 }
 
 /** A room whose photos, measurements and designs are not ready yet. */
-export function RoomWaiting() {
+export function RoomWaiting({
+  job,
+  onRetry,
+}: {
+  /** The room's job, when this phone is following it. */
+  job?: RoomJobState;
+  onRetry?: () => void;
+} = {}) {
   const { t } = useTranslation();
   const { tokens } = useTheme();
   const { colors, spacing } = tokens;
@@ -635,6 +644,7 @@ export function RoomWaiting() {
         {t("room.waiting.title")}
       </Text>
       <Text tone="secondary">{t("room.waiting.body")}</Text>
+      {job ? <JobProgress job={job} onRetry={onRetry} /> : null}
     </ScrollView>
   );
 }
@@ -646,8 +656,14 @@ export function RoomScreen({
   onChooseArea,
   onMeasure,
   remeasuring = false,
+  job,
+  onRetry,
 }: {
   content: RoomContent;
+  /** The room's job while its designs are being made, or why it stopped. */
+  job?: RoomJobState;
+  /** Try the room's job again after it stopped. */
+  onRetry?: () => void;
   /**
    * A new scan is measuring the room again: what shows is still the old
    * content, based on estimated sizes, until the new designs arrive.
@@ -764,7 +780,12 @@ export function RoomScreen({
         <ShoppingTabBody content={designView} look={look} picker={picker} units={units} />
       ) : null}
       {tab !== "room" && !awaitingChoice && offered && !look ? (
-        <Text tone="secondary">{t("rooms.designs.none")}</Text>
+        // No designs yet: how the job is getting on, or why it stopped. Never a stand-in.
+        job && job.stage !== "done" ? (
+          <JobProgress job={job} onRetry={onRetry} />
+        ) : (
+          <Text tone="secondary">{t("rooms.designs.none")}</Text>
+        )
       ) : null}
     </ScrollView>
   );

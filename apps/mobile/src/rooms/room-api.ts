@@ -199,6 +199,8 @@ export interface ApiGenerationOptions {
     /** Called with the three checked designs, in slot order. */
     onDesigns(roomId: string, designs: readonly [Design, Design, Design]): void;
   };
+  /** Called once the photos or scan are uploaded, before the room is created. */
+  onUploaded?(roomId: string): void;
   /** Called once every stage is done, after the designs (if any) were delivered. */
   onSettled?(roomId: string): void;
   /** Called when a stage fails, with the reason. */
@@ -296,6 +298,7 @@ export function apiGeneration(api: RoomApi, options: ApiGenerationOptions): Gene
         if (!captureId) return fail("unknown");
         if (!(await options.uploaded(captureId))) return fail("upload");
         if (stopped) return;
+        options.onUploaded?.(roomId);
         try {
           const job = await api.createRoom(captureId);
           await follow(job.id);

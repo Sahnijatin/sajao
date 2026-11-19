@@ -241,7 +241,9 @@ describe("Shopping list tab", () => {
     expect(screen.getByText("Oak frame three seater sofa")).toBeTruthy();
     expect(screen.getByText("₹42,999")).toBeTruthy();
     expect(screen.getByText("Cane and teak coffee table")).toBeTruthy();
-    expect(screen.getAllByText("Fits your room")).toHaveLength(4);
+    // No item carries its own fit check, so none is said to fit.
+    expect(screen.queryByText("Fits your room")).toBeNull();
+    expect(screen.getAllByText("Needs a fit check")).toHaveLength(4);
     expect(screen.getByTestId("shopping-total").props.children).toBe("₹60,496");
   });
 
@@ -382,6 +384,42 @@ describe("a room with nothing ready yet", () => {
     ).toBeTruthy();
     expect(screen.queryAllByRole("tab")).toHaveLength(0);
     expect(screen.queryByText(/sample|₹/i)).toBeNull();
+  });
+});
+
+describe("a room whose job is running or stopped", () => {
+  it("shows the stages while there is nothing yet, never a stand-in", async () => {
+    await render(
+      <ThemeProvider tier="standard" reducedMotion>
+        <RoomWaiting job={{ stage: "reading", finished: 1 }} />
+      </ThemeProvider>,
+    );
+    expect(screen.getByTestId("job-stage-upload").props.accessibilityState).toEqual({
+      busy: false,
+      checked: true,
+    });
+    expect(screen.getByTestId("job-stage-read").props.accessibilityState.busy).toBe(true);
+    expect(screen.queryByTestId("sample-note")).toBeNull();
+  });
+
+  it("says why it stopped, with a Retry on that room", async () => {
+    const onRetry = jest.fn();
+    await render(
+      <ThemeProvider tier="standard" reducedMotion>
+        <RoomWaiting job={{ stage: "failed", finished: 1, reason: "upload" }} onRetry={onRetry} />
+      </ThemeProvider>,
+    );
+    expect(screen.getByText(/^The upload didn't finish\./)).toBeTruthy();
+    await fireEvent.press(screen.getByRole("button", { name: "Retry" }));
+    expect(onRetry).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows the designing stage on Designs and Shopping list until the designs arrive", async () => {
+    await show({ ...real, looks: [] }, { job: { stage: "designing", finished: 2 } });
+    await openTab("Designs");
+    expect(screen.getByTestId("job-stage-design").props.accessibilityState.busy).toBe(true);
+    await openTab("Shopping list");
+    expect(screen.getByTestId("job-progress")).toBeTruthy();
   });
 });
 
@@ -541,8 +579,9 @@ describe("shopping list: photos and per-item fit", () => {
     await openTab("Shopping list");
     expect(screen.getByText("Fits with 12 cm to spare")).toBeTruthy();
     expect(screen.getByText("Does not fit here")).toBeTruthy();
-    // Items without their own verdict keep the design's.
-    expect(screen.getAllByText("Fits your room")).toHaveLength(2);
+    // Items without their own verdict promise nothing.
+    expect(screen.queryByText("Fits your room")).toBeNull();
+    expect(screen.getAllByText("Needs a fit check")).toHaveLength(2);
   });
 
   it("does not offer to buy an item that does not fit", async () => {

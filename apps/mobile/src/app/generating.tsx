@@ -2,7 +2,7 @@ import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo } from "react";
 import { afterMeasured } from "@/rooms/flow";
 import { roomContent } from "@/rooms/room-content";
-import { roomGeneration } from "@/rooms/room-source";
+import { retryRoomJob, roomGeneration } from "@/rooms/room-source";
 import { GeneratingScreen } from "@/screens/generating";
 import { useRooms } from "@/state/rooms";
 import { useTaste } from "@/state/taste";
@@ -45,6 +45,7 @@ export default function GeneratingRoute() {
           );
         }}
         onLeave={() => router.dismissTo("/")}
+        onRetry={() => void retryRoomJob(room)}
       />
     );
   }

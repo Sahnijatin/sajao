@@ -47,11 +47,11 @@ describe("generating", () => {
     const { source } = manualSource();
     await show(<GeneratingScreen roomId="r" onDone={jest.fn()} source={source} />);
     expect(screen.getByRole("header", { name: "Designing your room" })).toBeTruthy();
-    expect(screen.getByText("Measuring your walls")).toBeTruthy();
-    expect(screen.getByText("Finding your furniture")).toBeTruthy();
+    expect(screen.getByText("Uploading your photos")).toBeTruthy();
+    expect(screen.getByText("Reading your room")).toBeTruthy();
     expect(screen.getByText("Designing three looks")).toBeTruthy();
-    expect(stage("walls")).toEqual({ busy: true, checked: false });
-    expect(stage("furniture")).toEqual({ busy: false, checked: false });
+    expect(stage("upload")).toEqual({ busy: true, checked: false });
+    expect(stage("read")).toEqual({ busy: false, checked: false });
     // No bar, and no percentage to watch.
     expect(screen.queryByRole("progressbar")).toBeNull();
     expect(screen.queryByText(/%/)).toBeNull();
@@ -62,12 +62,12 @@ describe("generating", () => {
     const { source, finish } = manualSource();
     await show(<GeneratingScreen roomId="r" onDone={onDone} source={source} />);
     await finish(1);
-    expect(stage("walls")).toEqual({ busy: false, checked: true });
-    expect(stage("furniture")).toEqual({ busy: true, checked: false });
+    expect(stage("upload")).toEqual({ busy: false, checked: true });
+    expect(stage("read")).toEqual({ busy: true, checked: false });
     expect(mockHaptic).toHaveBeenCalledTimes(1);
     await finish(2);
     await finish(3);
-    expect(stage("looks")).toEqual({ busy: false, checked: true });
+    expect(stage("design")).toEqual({ busy: false, checked: true });
     expect(mockHaptic.mock.calls).toEqual([
       ["cornerCaptured"],
       ["cornerCaptured"],
@@ -86,7 +86,7 @@ describe("generating", () => {
     await show(<GeneratingScreen roomId="r" onDone={jest.fn()} source={source} />);
     await finish(2);
     await finish(1);
-    expect(stage("furniture")).toEqual({ busy: false, checked: true });
+    expect(stage("read")).toEqual({ busy: false, checked: true });
     expect(mockHaptic).toHaveBeenCalledTimes(1);
   });
 });
@@ -192,7 +192,7 @@ describe("generating for a space with no designs", () => {
       };
       await show(<GeneratingScreen roomId="r" onDone={onDone} source={source} designs={false} />);
       expect(screen.getByRole("header", { name: "Getting your room ready" })).toBeTruthy();
-      expect(screen.getByText("Finding your furniture")).toBeTruthy();
+      expect(screen.getByText("Reading your room")).toBeTruthy();
       expect(screen.queryByText("Designing three looks")).toBeNull();
       await act(async () => report(2));
       await act(async () => {
@@ -224,9 +224,9 @@ describe("generating: a stage that fails", () => {
         source={failing("no_walls")}
       />,
     );
-    expect(screen.getByRole("header", { name: "We couldn't finish this room" })).toBeTruthy();
-    expect(screen.getByText(/^We couldn't find the walls\./)).toBeTruthy();
-    expect(screen.queryByText("Measuring your walls")).toBeNull();
+    expect(screen.getByRole("header", { name: "This room stopped" })).toBeTruthy();
+    expect(screen.getByText(/^We couldn't find the walls in these photos\./)).toBeTruthy();
+    expect(screen.queryByText("Uploading your photos")).toBeNull();
     await fireEvent.press(screen.getByRole("button", { name: "Back to My home" }));
     expect(onLeave).toHaveBeenCalledTimes(1);
     expect(onDone).not.toHaveBeenCalled();
@@ -240,6 +240,6 @@ describe("generating: a stage that fails", () => {
 
   it("an upload that failed says so", async () => {
     await show(<GeneratingScreen roomId="r" onDone={jest.fn()} source={failing("upload")} />);
-    expect(screen.getByText(/^Your scan didn't upload\./)).toBeTruthy();
+    expect(screen.getByText(/^The upload didn't finish\./)).toBeTruthy();
   });
 });
