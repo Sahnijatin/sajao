@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "id": "00000000-0000-4000-8000-000000000050",
+  "source": "flipkart",
+  "sku": "SOFA-OAK-3S",
+  "title": "Oak frame three seater sofa",
+  "brand": "Example Home",
+  "group": "furniture",
+  "category": "sofa",
+  "dimensions": {
+    "width": {
+      "value_m": 1.95,
+      "source": "measured",
+      "error_band_m": 0.01
+    },
+    "depth": {
+      "value_m": 0.85,
+      "source": "measured",
+      "error_band_m": 0.01
+    },
+    "height": {
+      "value_m": 0.8,
+      "source": "measured",
+      "error_band_m": 0.01
+    }
+  },
+  "color": "oatmeal",
+  "material": "oak and linen",
+  "style_tags": ["japandi", "minimal_wabi_sabi"],
+  "price": {
+    "currency": "INR",
+    "amount_minor": 4299900
+  },
+  "in_stock": true,
+  "checked_at": "2026-01-05T10:00:00Z",
+  "images": ["https://cdn.example.com/products/sofa-oak-3s/front.jpg"],
+  "image_use_permitted": false,
+  "routes": [
+    {
+      "kind": "buy",
+      "retailer": "flipkart",
+      "url": "https://www.example.com/p/sofa-oak-3s",
+      "price": {
+        "currency": "INR",
+        "amount_minor": 4299900
+      }
+    },
+    {
+      "kind": "rent",
+      "retailer": "example-rentals",
+      "url": "https://rent.example.com/sofa-oak-3s",
+      "price": {
+        "currency": "INR",
+        "amount_minor": 129900
+      },
+      "coupon_code": "SAJAO10"
+    }
+  ],
+  "catalog_stage": "development"
+}

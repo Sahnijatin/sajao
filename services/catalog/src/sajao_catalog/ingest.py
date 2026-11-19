@@ -71,15 +71,15 @@ def to_entry(item: Listing) -> CatalogEntry:
         "checked_at": item.freshness.checked_at,
         "images": item.images,
         "image_use_permitted": permitted,
+        "catalog_stage": "live" if permitted else "development",
         "routes": [{"kind": "buy", "retailer": item.retailer, "url": item.url, "price": price}],
     }
     for key in ("brand", "color", "material"):
         value = getattr(item, key)
         if value:
             product[key] = value
-    # Validate everything the contract checks; the permission field is the one known gap
-    # for development products and is reported, not faked.
-    Product.model_validate({**product, "image_use_permitted": True})
+    # A development product is a valid contract product with its permission false.
+    Product.model_validate(product)
     flags = []
     if item.image_use != "granted":
         flags.append("image use not granted by the source (engineering rule 9)")
