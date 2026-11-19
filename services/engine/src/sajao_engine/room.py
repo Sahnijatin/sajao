@@ -169,6 +169,9 @@ class Room:
     ceiling_m: float
     # New items go only inside this area when the user chose "just a part".
     redo: Poly | None = None
+    # On a photo-first room, the floor the photo shows: a new item's centre must be on it,
+    # so the render shows what the list sells (sajao_engine.photo.visible_floor).
+    in_view: Poly | None = None
     wall_by_id: dict[str, WallLine] = field(default_factory=dict, compare=False)
     open_edges: tuple[OpenEdge, ...] = ()
     confidence: Confidence = "estimated"
@@ -210,12 +213,17 @@ def _inward(a: Point, b: Point, floor: Poly) -> Point:
 
 
 def _wall_lines(twin: SpaceTwin, floor: Poly) -> tuple[WallLine, ...]:
+    # An edge marked open (a doorway, the way on, or a stretch not seen) is no wall:
+    # it becomes an open edge, passable and never a surface to place against.
     raw = [
         (w.id, (w.start.x_m, w.start.y_m), (w.end.x_m, w.end.y_m), w.length.error_band_m)
         for w in twin.shell.walls
     ]
+    solid = {w.id for w in twin.shell.walls if w.kind != "open"}
     lines = []
     for wid, a, b, band in raw:
+        if wid not in solid:
+            continue
         # A wall's position is fixed by the lengths of the walls that meet it.
         neighbours = [
             nb
@@ -369,6 +377,8 @@ def _obstacles(
         kind = o.object_type if o.object_type is not None else "furniture"
         if kind in ("wall_item", "decor"):
             continue
+        if o.footprint is not None and not o.footprint.on_floor:
+            continue  # a ceiling light or a wall-mounted TV takes no floor
         box = o.box
         ov = overrides.get(o.id, ObjectOverride())
         width, depth, height = ov.size or (box.width, box.depth, box.height)
@@ -399,6 +409,7 @@ def room_from_twin(
     overrides: Mapping[str, ObjectOverride] | None = None,
     redo: Sequence[Point] | None = None,
     confidence: Confidence | None = None,
+    in_view: Sequence[Point] | None = None,
 ) -> Room:
     """The room with every twin object kept except those in ``removed``."""
     floor = ccw([(p.x_m, p.y_m) for p in twin.shell.floor_polygon])
@@ -422,6 +433,7 @@ def room_from_twin(
         obstacles=_obstacles(twin, set(removed), overrides or {}),
         ceiling_m=low(twin.shell.ceiling_height),
         redo=ccw(list(redo)) if redo else None,
+        in_view=ccw(list(in_view)) if in_view else None,
         wall_by_id=by_id,
         open_edges=_open_edges(floor, walls),
         confidence=confidence or confidence_of(twin),

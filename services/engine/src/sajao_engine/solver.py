@@ -24,9 +24,11 @@ from sajao_engine.categories import Category, category
 from sajao_engine.geometry import (
     Poly,
     Rect,
+    clip_convex,
     normalise_deg,
     overlaps,
     point_in_polygon,
+    polygon_area,
     polygon_distance,
     polygon_inside,
 )
@@ -47,6 +49,8 @@ STEP_M = 0.10
 DROP_PENALTY = 1.5
 SLOT_FLOOR = 1.2
 BEAM = 8
+# What a floor piece the photo does not show at all costs, against a rule score of 1.
+OUT_OF_VIEW_WEIGHT = 1.0
 PER_STATE = 6
 # Keep this many poses per wall so the beam never bets everything on one wall.
 PER_WALL = 2
@@ -75,6 +79,8 @@ class PlacementRequest(BaseModel):
     twin: SpaceTwin
     brief: Brief
     redo: RedoArea | None = None
+    # The floor a photo shows (photo-first rooms): new items' centres stay on it.
+    in_view: list[tuple[float, float]] | None = None
     archetype: str
     choices: list[SlotChoice]
     design_id: uuid.UUID
@@ -459,6 +465,8 @@ class Solver:
         room = self.room
         poly = piece.poly
         mount = piece.mount
+        if room.in_view is not None and not point_in_polygon(piece.rect.center, room.in_view):
+            return False
         if mount in ("ceiling", "surface"):
             inside = point_in_polygon(piece.rect.center, room.floor)
             return inside and (room.redo is None or point_in_polygon(piece.rect.center, room.redo))
@@ -533,6 +541,19 @@ class Solver:
         return False
 
     # Soft score: how good the partial layout looks, from geometry only.
+
+    def out_of_view_penalty(self, piece: Piece) -> float:
+        """On a photo room, the share of a floor piece the photo does not show: a pose
+        seen whole leaves room in view for what goes around it."""
+        view = self.room.in_view
+        if view is None or piece.mount != "floor":
+            return 0.0
+        area = polygon_area(piece.poly)
+        if area <= 0:
+            return 0.0
+        seen = clip_convex(list(piece.poly), list(view))
+        shown = polygon_area(seen) if len(seen) >= 3 else 0.0
+        return OUT_OF_VIEW_WEIGHT * (1.0 - min(1.0, shown / area))
 
     def dead_gap_penalty(self, piece: Piece, state: State) -> float:
         """Gaps a person cannot use: wider than a hairline, narrower than a walkway."""
@@ -613,7 +634,11 @@ class Solver:
                     )
                     if not self.fits(piece, state):
                         continue
-                    score = _bounded(rule_score - self.dead_gap_penalty(piece, state))
+                    score = _bounded(
+                        rule_score
+                        - self.dead_gap_penalty(piece, state)
+                        - self.out_of_view_penalty(piece)
+                    )
                     options.append((score, piece))
                 options.sort(
                     key=lambda o: (-o[0], o[1].rect.cx, o[1].rect.cy, o[1].rect.rotation_deg)
@@ -688,13 +713,21 @@ def _dedupe(states: Sequence[State]) -> list[State]:
 
 
 def removed_objects(twin: SpaceTwin, brief: Brief) -> list[str]:
-    """Furniture, rugs and loose decor the brief does not keep make way for the design."""
+    """What makes way for the design. The brief's keep list wins; then each object's own
+    keep or replace (set by the rule or by the person); without one, furniture, rugs and
+    loose decor go."""
     keep = {k.root for k in brief.keep_item_ids}
-    return [
-        o.id
-        for o in twin.objects
-        if o.id not in keep and (o.object_type or "furniture") in ("furniture", "textile", "decor")
-    ]
+    out = []
+    for o in twin.objects:
+        if o.id in keep:
+            continue
+        state = o.redesign.state if o.redesign is not None else None
+        if state is not None:
+            if state != "keep":
+                out.append(o.id)
+        elif (o.object_type or "furniture") in ("furniture", "textile", "decor"):
+            out.append(o.id)
+    return out
 
 
 def _edit_id(prefix: str, key: str, used: set[str]) -> str:
@@ -740,10 +773,14 @@ def _explanations(state: State, room: Room, verification: Verification) -> list[
         )
     table = state.get("coffee_table")
     if seat is not None and table is not None:
-        gap = polygon_distance(seat.poly, table.poly)
-        out.append(
-            f"The coffee table sits {gap * 100:.0f} cm in front of the seat, within easy reach."
-        )
+        if verification.fit_claims:
+            gap = polygon_distance(seat.poly, table.poly)
+            out.append(
+                f"The coffee table sits {gap * 100:.0f} cm in front of the seat, within easy reach."
+            )
+        else:
+            # Gaps are shown only for measured rooms.
+            out.append("The coffee table sits in front of the seat, within easy reach.")
     bed = state.get("bed")
     if bed is not None:
         stands = [p for p in state.pieces if p.cat.key == "nightstand"]
@@ -855,6 +892,7 @@ def place(req: PlacementRequest) -> PlacementResult:
         removed=removed,
         redo=[(p.x_m, p.y_m) for p in redo] if redo else None,
         confidence=req.confidence,
+        in_view=req.in_view,
     )
     choices = {c.slot: c.product for c in req.choices}
     solver = Solver(room, arch, req.walkway_m)
@@ -911,6 +949,8 @@ def place(req: PlacementRequest) -> PlacementResult:
     data = draft.model_dump(mode="json", exclude_unset=True)
     data["check_report"] = result.report.model_dump(mode="json", exclude_unset=True)
     data["explanations"] = _explanations(state, room, result)
+    # An estimated room makes the whole design illustrative (no fit or gap claims).
+    data["measurement_level"] = result.confidence
     return PlacementResult(
         design=Design.model_validate(data),
         fit_claims=result.fit_claims,

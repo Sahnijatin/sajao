@@ -290,3 +290,33 @@ def normalise_deg(deg: float) -> float:
     """An angle in [0, 360), as the schema's AngleDeg requires."""
     value = deg % 360.0
     return 0.0 if abs(value - 360.0) < 1e-9 else value
+
+
+def clip_convex(subject: list[Point], clip: list[Point]) -> list[Point]:
+    """Sutherland-Hodgman: `subject` clipped to the convex, counterclockwise `clip`."""
+
+    def inside(p: Point, a: Point, b: Point) -> bool:
+        return (b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0]) >= -1e-9
+
+    def cut(p: Point, q: Point, a: Point, b: Point) -> Point:
+        dx, dy = q[0] - p[0], q[1] - p[1]
+        ex, ey = b[0] - a[0], b[1] - a[1]
+        den = dx * ey - dy * ex
+        t = ((a[0] - p[0]) * ey - (a[1] - p[1]) * ex) / den if abs(den) > 1e-12 else 0.0
+        return (p[0] + t * dx, p[1] + t * dy)
+
+    out = subject
+    for i, a in enumerate(clip):
+        b = clip[(i + 1) % len(clip)]
+        if not out:
+            break
+        points, out = out, []
+        for j, p in enumerate(points):
+            q = points[(j + 1) % len(points)]
+            if inside(q, a, b):
+                if not inside(p, a, b):
+                    out.append(cut(p, q, a, b))
+                out.append(q)
+            elif inside(p, a, b):
+                out.append(cut(p, q, a, b))
+    return out

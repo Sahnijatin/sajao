@@ -61,6 +61,7 @@ class DesignRequest(BaseModel):
     twin: SpaceTwin
     brief: Brief
     redo: RedoArea | None = None
+    in_view: list[tuple[float, float]] | None = None
     intent: Literal["best_value", "best_match", "bold"] = "best_match"
     # Archetypes to try, preferred first; switching moves down this list.
     archetypes: list[str] = Field(min_length=1)
@@ -130,7 +131,9 @@ def _pick(
 ) -> list[SlotChoice]:
     choices = []
     for slot in arch.slots:
-        products = [p for p in options.get(slot.key, []) if p.category in slot.categories]
+        products = [
+            p for p in options.get(slot.key, []) if category(p.category).key in slot.categories
+        ]
         if not products:
             continue
         if "drop_optional_items" in relaxations and not slot.required:
@@ -160,6 +163,7 @@ def _attempt(
             twin=req.twin,
             brief=req.brief,
             redo=req.redo,
+            in_view=req.in_view,
             archetype=arch_key,
             choices=_pick(arch, options, relaxations),
             design_id=req.design_id,

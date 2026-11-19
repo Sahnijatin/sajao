@@ -92,11 +92,18 @@ def _wall_coverage(xy: np.ndarray, start: np.ndarray, end: np.ndarray) -> float:
     return len(hit) / bins
 
 
-def fit_space(points: np.ndarray, depth_source: DepthSource, unseen_open: bool = False) -> Space:
+def fit_space(
+    points: np.ndarray,
+    depth_source: DepthSource,
+    unseen_open: bool = False,
+    stood_at: np.ndarray | None = None,
+) -> Space:
     """Space frame and shell from depth points in the AR world (N, 3).
 
     `unseen_open` (a single photo): edges the depth barely reaches, such as the side
-    behind the camera, are marked open instead of claimed as walls."""
+    behind the camera, are marked open instead of claimed as walls. `stood_at`: where
+    the photo was taken from (AR world); the floor reaches at least there, because the
+    person stood on it, even where the photo does not show it."""
     up = points @ AR_TO_Z_UP.T
     floor, ceiling = np.percentile(up[:, 2], [2.0, 98.0])
     band = up[(up[:, 2] > floor + 0.3) & (up[:, 2] < ceiling - 0.3)]
@@ -111,6 +118,10 @@ def fit_space(points: np.ndarray, depth_source: DepthSource, unseen_open: bool =
     squared = band @ _turn(turn_deg).T
     x0, x1 = np.percentile(squared[:, 0], [1.0, 99.0])
     y0, y1 = np.percentile(squared[:, 1], [1.0, 99.0])
+    if stood_at is not None:
+        cx, cy = (np.asarray(stood_at, dtype=np.float64) @ AR_TO_Z_UP.T @ _turn(turn_deg).T)[:2]
+        x0, x1 = min(x0, cx), max(x1, cx)
+        y0, y1 = min(y0, cy), max(y1, cy)
     origin = np.array([x0, y0, floor])
     length, width = float(x1 - x0), float(y1 - y0)
 
