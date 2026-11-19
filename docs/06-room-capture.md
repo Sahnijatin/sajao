@@ -78,7 +78,7 @@ Force-closing the app stops the upload on both platforms; it resumes on the next
 
 ## Import from the gallery
 
-Photos or one video the person already has go up through the same package and the same uploader, with no AR data (`ar.tracking` is `none`; no poses, planes or depth). "Use photos or a video" beside Take photos, on My home and on the note for phones without AR opens the phone's own picker, which hands the app only what was chosen, so no library permission is asked for.
+Photos or one video the person already has go up through the same package and the same uploader (a picture under the server's minimum, 1024 px on the long edge and 576 px on the short edge, is refused on the phone before anything uploads), with no AR data (`ar.tracking` is `none`; no poses, planes or depth). "Use photos or a video" beside Take photos, on My home and on the note for phones without AR opens the phone's own picker, which hands the app only what was chosen, so no library permission is asked for.
 
 - Up to 20 photos, resized like any other photo, or one video of 5 seconds to 2 minutes.
 - A video is not uploaded. Up to 20 frames are taken from it on the phone, evenly through its length and never at its first or last moment, at most two a second; those are the keyframes.

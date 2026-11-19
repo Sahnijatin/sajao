@@ -23,6 +23,20 @@ const video = (seconds: number): PickedItem => ({
 });
 
 describe("what was picked", () => {
+  it("refuses a photo or video too small to read the room from, before anything uploads", () => {
+    const small = { ...photo(9), widthPx: 1000, heightPx: 750 };
+    const narrow = { ...photo(8), widthPx: 1600, heightPx: 500 };
+    expect(checkSelection([photo(1), small])).toEqual({ ok: false, problem: "tooSmall" });
+    expect(checkSelection([narrow])).toEqual({ ok: false, problem: "tooSmall" });
+    expect(checkSelection([{ ...photo(7), widthPx: 1024, heightPx: 576 }]).ok).toBe(true);
+    expect(checkSelection([{ ...video(30), widthPx: 640, heightPx: 360 }])).toEqual({
+      ok: false,
+      problem: "tooSmall",
+    });
+    // A size the phone did not report is left to the server.
+    expect(checkSelection([{ ...photo(6), widthPx: 0, heightPx: 0 }]).ok).toBe(true);
+  });
+
   it("takes up to twenty photos, or one video", () => {
     expect(checkSelection([photo(1)])).toEqual({ ok: true, photos: [photo(1)] });
     expect(checkSelection(Array.from({ length: 20 }, (_, i) => photo(i))).ok).toBe(true);

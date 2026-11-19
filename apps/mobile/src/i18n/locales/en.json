@@ -541,7 +541,8 @@
       "severalVideos": "Please choose one video.",
       "videoTooShort": "That video is very short. Choose one of 5 seconds or more.",
       "videoTooLong": "That video is long. Choose one of 2 minutes or less.",
-      "failed": "Something went wrong opening your photos. Please try again."
+      "failed": "Something went wrong opening your photos. Please try again.",
+      "tooSmall": "Some of these are too small to read the room from. Choose photos or a video of at least 1024 by 576 pixels."
     },
     "tipCount": "Choose up to 20 photos, or one video of 5 seconds to 2 minutes."
   },
