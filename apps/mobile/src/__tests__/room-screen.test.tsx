@@ -3,7 +3,7 @@ import { ThemeProvider } from "@sajao/ui";
 import { act, fireEvent, render, screen, within } from "@testing-library/react-native";
 import { Linking } from "react-native";
 import "@/i18n";
-import { type RoomContent, roomContent } from "@/rooms/room-content";
+import { type RoomContent, sampleContent } from "@/rooms/room-content";
 import { RoomScreen, RoomWaiting } from "@/screens/room";
 import { useSettings } from "@/state/settings";
 
@@ -15,7 +15,7 @@ jest.mock("@sajao/ui", () => ({
   playHaptic: (moment: string) => mockHaptic(moment),
 }));
 
-const sample = roomContent("r") as RoomContent;
+const sample = sampleContent() as RoomContent;
 /** The same content as it will arrive from the pipeline: not a sample. */
 const real: RoomContent = { ...sample, sample: false };
 
@@ -374,9 +374,11 @@ describe("a room with nothing ready yet", () => {
         <RoomWaiting />
       </ThemeProvider>,
     );
-    expect(screen.getByText("Getting your room ready")).toBeTruthy();
+    expect(screen.getByText("This room is not ready yet")).toBeTruthy();
     expect(
-      screen.getByText("Your photos, measurements and designs appear here when they are ready."),
+      screen.getByText(
+        "Your photos are saved. Its measurements and three designs show here once they are ready.",
+      ),
     ).toBeTruthy();
     expect(screen.queryAllByRole("tab")).toHaveLength(0);
     expect(screen.queryByText(/sample|₹/i)).toBeNull();

@@ -1,7 +1,7 @@
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo } from "react";
 import { afterMeasured } from "@/rooms/flow";
-import { designsOffered, roomContent, sampleContent } from "@/rooms/room-content";
+import { roomContent } from "@/rooms/room-content";
 import { roomGeneration } from "@/rooms/room-source";
 import { GeneratingScreen } from "@/screens/generating";
 import { useRooms } from "@/state/rooms";
@@ -39,28 +39,8 @@ export default function GeneratingRoute() {
       />
     );
   }
-  const content = sampleContent();
-  // No server and no stand-in allowed in this build: the room screen says
-  // the room is being prepared.
-  if (!content) return <Redirect href={toRoom} />;
-  const designs = designsOffered(content.spaceType);
-  return (
-    <GeneratingScreen
-      roomId={room}
-      designs={designs}
-      onLeave={() => router.dismissTo("/")}
-      onDone={() => {
-        // The room's card on My home now shows its designs.
-        if (designs) {
-          const still = content.looks[1]?.still ?? content.looks[0]?.still;
-          if (still) useRooms.getState().setRoomDesigns(room, content.looks.length, still);
-        }
-        router.replace(
-          askArea()
-            ? { pathname: "/areas", params: { room, next: "reveal" } }
-            : { pathname: "/reveal", params: { room } },
-        );
-      }}
-    />
-  );
+  // No server in this build: nothing is being worked on, so the room screen
+  // says plainly that the room is not ready yet. A sample is never shown as
+  // someone's room.
+  return <Redirect href={toRoom} />;
 }
