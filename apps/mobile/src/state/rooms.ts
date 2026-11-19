@@ -28,11 +28,18 @@ interface RoomsState {
   /** The budget this room's designs are asked for with. */
   setRoomBudget(roomId: string, budget: NonNullable<Room["budget"]>): void;
   /**
-   * The room was measured again with a new scan: it follows that scan from
-   * now on, and its designs are asked for afresh. Its name and photos stay.
+   * The room is being measured again with a new scan. The room keeps all it
+   * has until the new scan is done (`finishRemeasure`) or fails (`abandonRemeasure`).
    */
-  remeasure(roomId: string, captureId: string, atMs?: number): void;
-  /** The ids the room's designs are asked for with, made on first use and kept. */
+  remeasure(roomId: string, captureId: string): void;
+  /** The new scan is measured and has its designs: the room follows it from now on. */
+  finishRemeasure(roomId: string, atMs?: number): void;
+  /** The new scan failed or was given up: the room stays exactly as it was. */
+  abandonRemeasure(roomId: string): void;
+  /**
+   * The ids the room's designs are asked for with, made on first use and
+   * kept: the new scan's own while the room is being measured again.
+   */
   designIdsFor(roomId: string, newId: () => string, now?: Date): DesignIds | null;
 }
 
@@ -63,14 +70,23 @@ export const useRooms = create<RoomsState>()(
           ),
         });
       },
-      remeasure(roomId, captureId, atMs = Date.now()) {
+      remeasure(roomId, captureId) {
+        set({
+          rooms: get().rooms.map((room) =>
+            room.id === roomId ? { ...room, remeasure: { captureId } } : room,
+          ),
+        });
+      },
+      finishRemeasure(roomId, atMs = Date.now()) {
         set({
           rooms: get().rooms.map((room) => {
-            if (room.id !== roomId) return room;
-            const { designIds: _designs, redesignAreaId: _area, ...kept } = room;
+            if (room.id !== roomId || !room.remeasure) return room;
+            const { remeasure, designIds: _designs, redesignAreaId: _area, ...kept } = room;
             return {
               ...kept,
-              captureId,
+              captureId: remeasure.captureId,
+              ...(remeasure.designIds ? { designIds: remeasure.designIds } : {}),
+              // The new designs, if any, are set on the card right after.
               designCount: 0,
               still: { kind: "placeholder", look: "before" },
               updatedAtMs: atMs,
@@ -78,10 +94,20 @@ export const useRooms = create<RoomsState>()(
           }),
         });
       },
+      abandonRemeasure(roomId) {
+        set({
+          rooms: get().rooms.map((room) => {
+            if (room.id !== roomId) return room;
+            const { remeasure: _gone, ...kept } = room;
+            return kept;
+          }),
+        });
+      },
       designIdsFor(roomId, newId, now = new Date()) {
         const room = get().rooms.find((each) => each.id === roomId);
         if (!room) return null;
-        if (room.designIds) return room.designIds;
+        const held = room.remeasure ? room.remeasure.designIds : room.designIds;
+        if (held) return held;
         const designIds: DesignIds = {
           requestId: newId(),
           briefId: newId(),
@@ -90,7 +116,12 @@ export const useRooms = create<RoomsState>()(
           createdAt: now.toISOString(),
         };
         set({
-          rooms: get().rooms.map((each) => (each.id === roomId ? { ...each, designIds } : each)),
+          rooms: get().rooms.map((each) => {
+            if (each.id !== roomId) return each;
+            return each.remeasure
+              ? { ...each, remeasure: { ...each.remeasure, designIds } }
+              : { ...each, designIds };
+          }),
         });
         return designIds;
       },
