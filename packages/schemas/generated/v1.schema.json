@@ -2672,7 +2672,8 @@
           "$ref": "#/$defs/Uuid"
         },
         "item_id": {
-          "$ref": "#/$defs/Uuid"
+          "$ref": "#/$defs/LocalId",
+          "description": "The design item's id, as in the Design."
         },
         "fit_checked": {
           "type": "boolean",

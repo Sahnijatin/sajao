@@ -1273,7 +1273,7 @@ stages: StageRow[]
  */
 export interface RoomStatusItem {
 design_id: Uuid
-item_id: Uuid
+item_id: LocalId
 /**
  * True when the verifier checked this item's fit against measured (ar_measured or taped) sizes. False on an estimated room, where items are placed at nominal sizes and no fit is claimed.
  */

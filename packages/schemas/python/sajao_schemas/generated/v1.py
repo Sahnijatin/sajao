@@ -1585,7 +1585,10 @@ class RoomStatusItem(BaseModel):
         extra="forbid",
     )
     design_id: UUID
-    item_id: UUID
+    item_id: Annotated[
+        str,
+        Field(description="The design item's id, as in the Design.", pattern="^[a-z0-9_-]{1,40}$"),
+    ]
     fit_checked: Annotated[
         bool,
         Field(

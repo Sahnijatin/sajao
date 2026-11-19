@@ -145,7 +145,8 @@
           "$ref": "common.schema.json#/$defs/Uuid"
         },
         "item_id": {
-          "$ref": "common.schema.json#/$defs/Uuid"
+          "$ref": "common.schema.json#/$defs/LocalId",
+          "description": "The design item's id, as in the Design."
         },
         "fit_checked": {
           "type": "boolean",
