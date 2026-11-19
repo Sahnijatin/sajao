@@ -30,8 +30,11 @@ from sajao_workers.twin.inventory import (
     pick_keyframes,
 )
 
+# Captures of this many frames or fewer (photo rooms) are listed photo by photo.
+PER_PHOTO_UP_TO = 3
+
 # Bump when this step's logic, prompt or pinned model chains change.
-VERSION = 2
+VERSION = 3
 LONG_SIDE = 1024
 
 
@@ -53,22 +56,37 @@ def inventory_step(lister: ModelGateway, checker: ModelGateway) -> Step:
             "response_schema": INVENTORY_SCHEMA,
             "max_output_tokens": INVENTORY_MAX_TOKENS,
         }
-        request = ModelRequest("twin_inventory", "vision", INVENTORY_PROMPT_ID, payload, blobs)
+        # A photo room (a few photos): each photo is listed on its own and the lists are
+        # joined, so what one listing misses another can add. A scan's keyframes go in
+        # one request.
+        per_photo = len(frames) <= PER_PHOTO_UP_TO
+        groups = [(b,) for b in blobs] if per_photo else [blobs]
 
         answers: dict[str, ModelResponse] = {}
         failed = []
         for role, gateway in (("list", lister), ("cross_check", checker)):
-            try:
-                answers[role] = await gateway.call(request, validate=check_inventory)
-            except GatewayError:
-                failed.append(role)
+            for index, group in enumerate(groups):
+                request = ModelRequest(
+                    "twin_inventory", "vision", INVENTORY_PROMPT_ID, payload, group
+                )
+                key = f"{role}#{index}" if per_photo else role
+                try:
+                    answers[key] = await gateway.call(request, validate=check_inventory)
+                except GatewayError:
+                    failed.append(key)
         if not answers:
             raise RuntimeError("no vision model could list the room")
 
-        lists: dict[str, Any] = {r.model: r.output["items"] for r in answers.values()}
+        lists: dict[str, Any] = {
+            (f"{a.model}#{k}" if "#" in k else a.model): a.output["items"]
+            for k, a in answers.items()
+        }
         items = merge_inventories(lists)
+        # Lists were keyed per photo; the record names only the pinned models.
+        for item in items:
+            item["listed_by"] = sorted({m.split("#")[0] for m in item["listed_by"]})
         inventory = {
-            "listed_by": list(lists),
+            "listed_by": list(dict.fromkeys(m.split("#")[0] for m in lists)),
             "items": items,
             "keyframes": [frames[i]["keyframe_id"] for i in picked],
         }
