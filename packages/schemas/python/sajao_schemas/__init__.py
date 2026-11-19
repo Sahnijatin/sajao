@@ -18,6 +18,7 @@ from sajao_schemas.generated.v1 import (
     Plan,
     Product,
     Render,
+    RoomStatus,
     ShoppingList,
     SpaceProfile,
     SpaceTwin,
@@ -39,6 +40,7 @@ OBJECTS: dict[str, type[BaseModel]] = {
         Render,
         Plan,
         ShoppingList,
+        RoomStatus,
         Event,
     )
 }
@@ -61,6 +63,7 @@ __all__ = [
     "Plan",
     "Product",
     "Render",
+    "RoomStatus",
     "ShoppingList",
     "SpaceProfile",
     "TasteProfile",

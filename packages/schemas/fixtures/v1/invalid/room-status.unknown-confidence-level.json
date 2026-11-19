@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "id": "0b9819c8-9461-4802-b831-a98fcf9a9aeb",
+  "capture_id": "7d1c2f4e-5a6b-4c8d-9e0f-1a2b3c4d5e6f",
+  "created_at": "2026-11-19T18:13:25Z",
+  "stage": "ready",
+  "confidence_level": "lidar",
+  "design_request_id": "5e3f1a2b-4c5d-4e6f-8a9b-0c1d2e3f4a5b",
+  "awaiting_brief": false,
+  "items": [
+    {
+      "design_id": "9a8b7c6d-5e4f-4a3b-8c1d-0e9f8a7b6c5d",
+      "item_id": "sofa",
+      "fit_checked": false
+    }
+  ],
+  "status": "ready",
+  "stages": [
+    {
+      "stage": "measure",
+      "status": "done"
+    },
+    {
+      "stage": "inventory",
+      "status": "done"
+    },
+    {
+      "stage": "spec",
+      "status": "done"
+    },
+    {
+      "stage": "placement",
+      "status": "done"
+    },
+    {
+      "stage": "render",
+      "status": "done"
+    }
+  ]
+}

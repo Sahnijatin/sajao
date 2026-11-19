@@ -15,6 +15,7 @@ export const OBJECT_NAMES = [
   "Plan",
   "ShoppingList",
   "Event",
+  "RoomStatus",
 ] as const;
 
 export type ObjectName = (typeof OBJECT_NAMES)[number];
