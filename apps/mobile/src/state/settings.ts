@@ -5,7 +5,11 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import type { Language } from "@/i18n";
 import type { LengthUnits } from "@/utils/format-length";
 
-/** Rooms are talked about in feet and inches in India; centimetres are the alternative. */
+/**
+ * Rooms are talked about in feet and inches in India, and the app shows
+ * every length that way. Centimetres are offered only when typing a tape
+ * value.
+ */
 export const DEFAULT_UNITS: LengthUnits = "ft_in";
 
 type Saved = Pick<SettingsState, "language" | "units">;
@@ -20,7 +24,8 @@ export function migrateSettings(saved: unknown, version: number): Saved {
   const units = state.units === "cm" || state.units === "ft_in" ? state.units : DEFAULT_UNITS;
   return {
     language: state.language ?? null,
-    units: version < 2 && units === "cm" ? DEFAULT_UNITS : units,
+    // From version 3 every length shows in feet and inches.
+    units: version < 3 ? DEFAULT_UNITS : units,
   };
 }
 
@@ -42,7 +47,7 @@ export const useSettings = create<SettingsState>()(
     }),
     {
       name: "sajao.settings",
-      version: 2,
+      version: 3,
       migrate: migrateSettings,
       storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ language, units }) => ({ language, units }),

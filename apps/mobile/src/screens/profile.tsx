@@ -10,7 +10,6 @@ import { previewScreensEnabled } from "@/preview-screens";
 import { useSettings } from "@/state/settings";
 import { useTaste } from "@/state/taste";
 import { formatInr } from "@/utils/format-inr";
-import { formatLength } from "@/utils/format-length";
 
 function Setting({ title, children }: { title: string; children: ReactNode }) {
   const { tokens } = useTheme();
@@ -48,7 +47,7 @@ export function ProfileScreen({
       setUnreachable(true);
     }
   };
-  const { language, units, setLanguage, setUnits } = useSettings();
+  const { language, setLanguage } = useSettings();
   const activeLanguage = resolveLanguage(language);
   const taste = useTaste((state) => state.answers);
 
@@ -90,22 +89,6 @@ export function ProfileScreen({
             onPress={() => setLanguage(code)}
           />
         ))}
-      </Setting>
-
-      <Setting title={t("profile.units")}>
-        <Chip
-          label={t("profile.unitsFtIn")}
-          selected={units === "ft_in"}
-          onPress={() => setUnits("ft_in")}
-        />
-        <Chip
-          label={t("profile.unitsCm")}
-          selected={units === "cm"}
-          onPress={() => setUnits("cm")}
-        />
-        <Text variant="caption" tone="tertiary">
-          {t("profile.unitsExample", { length: formatLength(3.4, units, t) })}
-        </Text>
       </Setting>
 
       <Card style={{ gap: tokens.spacing.xl }}>

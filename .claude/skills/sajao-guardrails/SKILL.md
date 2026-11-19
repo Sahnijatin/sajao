@@ -37,7 +37,7 @@ All three are derived from one `Design` object (schemas in `packages/schemas`). 
 - Every write endpoint accepts an idempotency key. Expensive endpoints require app attestation and respect spend caps.
 - Database changes are backward compatible (expand, then contract) and go only through migrations in the repo.
 - Every screen uses the theme package, motion presets and haptic map, respects reduced motion and works on the budget Android.
-- Strings are externalised (English and Hindi). Dimensions show in cm or feet and inches by user choice. Prices in INR.
+- Strings are externalised (English and Hindi). Dimensions show in feet and inches; a tape value can be typed in feet and inches or centimetres. No metres in user-facing copy. Prices in INR.
 - Secrets never enter the repository, logs or chat.
 
 ## 5. Writing and hygiene

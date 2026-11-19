@@ -209,15 +209,10 @@ describe("Profile", () => {
     expect(stored.state.answers.budget.limit.amount_minor).toBe(15000000);
   });
 
-  it("switches units between centimetres and feet and inches, and remembers", async () => {
+  it("offers no units choice: every length is in feet and inches", async () => {
     await show(<ProfileScreen onDeleteAccount={mockDelete} />);
-    expect(screen.getByText("A 3.4 m wall shows as 340 cm")).toBeTruthy();
-
-    await fireEvent.press(screen.getByRole("button", { name: "Feet and inches" }));
-    expect(screen.getByText("A 3.4 m wall shows as 11 ft 2 in")).toBeTruthy();
-    expect(useSettings.getState().units).toBe("ft_in");
-    const stored = JSON.parse((await AsyncStorage.getItem("sajao.settings")) ?? "{}");
-    expect(stored.state).toEqual({ language: null, units: "ft_in" });
+    expect(screen.queryByRole("button", { name: "Centimetres" })).toBeNull();
+    expect(screen.queryByText(/ m wall/)).toBeNull();
   });
 
   it("stores the chosen language", async () => {
