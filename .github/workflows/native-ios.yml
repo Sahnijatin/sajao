@@ -1,27 +1,24 @@
 name: Native iOS compile
 
 # iOS builds on EAS are rationed, so the Swift in the native modules is
-# compiled here instead, whenever it or the native setup changes. This only
-# compiles for a device: no signing, no JavaScript bundle, nothing uploaded.
+# compiled here instead. It runs only when the iOS native modules or the app
+# config (including its config plugins) change; anything else can be run by
+# hand. This only compiles for a device: no signing, no JavaScript bundle,
+# nothing uploaded.
 on:
   pull_request:
     paths:
-      - "apps/mobile/modules/**"
-      - "apps/mobile/plugins/**"
+      - "apps/mobile/modules/*/ios/**"
       - "apps/mobile/app.json"
       - "apps/mobile/app.config.ts"
-      - "apps/mobile/package.json"
-      - "pnpm-lock.yaml"
-      - ".github/workflows/native-ios.yml"
+      - "apps/mobile/plugins/**"
   push:
     branches: [main]
     paths:
-      - "apps/mobile/modules/**"
-      - "apps/mobile/plugins/**"
+      - "apps/mobile/modules/*/ios/**"
       - "apps/mobile/app.json"
       - "apps/mobile/app.config.ts"
-      - "apps/mobile/package.json"
-      - "pnpm-lock.yaml"
+      - "apps/mobile/plugins/**"
   workflow_dispatch:
 
 permissions:
