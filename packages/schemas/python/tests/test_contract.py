@@ -49,11 +49,22 @@ def test_valid_fixture_round_trips(path: Path) -> None:
     assert to_json_dict(again) == data
 
 
+# Rules across two fields, which the JSON Schema states (if/then) and the generated
+# models cannot: only the schema validator rejects these. Python code that builds
+# designs takes products through sajao_catalog.visibility.may_show.
+SCHEMA_ONLY = {
+    "product.images-not-permitted.json",  # no permission and not a development product
+    "product.live-without-permission.json",
+}
+
+
 @pytest.mark.parametrize("path", INVALID, ids=lambda p: p.name)
 def test_invalid_fixture_is_rejected_by_schema_and_model(path: Path) -> None:
     name = object_name(path)
     data = json.loads(path.read_text())
     assert list(schema_validator(name).iter_errors(data)) != []
+    if path.name in SCHEMA_ONLY:
+        return
     with pytest.raises(ValidationError):
         OBJECTS[name].model_validate(data)
 
