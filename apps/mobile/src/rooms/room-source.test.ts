@@ -4,6 +4,7 @@ import twinFixture from "../../../../packages/schemas/fixtures/v1/valid/space-tw
 import { useCaptureStore } from "@/state/capture";
 import { useRoomData } from "@/state/room-data";
 import { useRoomJobs } from "@/state/room-jobs";
+import { breadcrumbs, clearBreadcrumbs } from "@/telemetry/breadcrumbs";
 import { useRooms } from "@/state/rooms";
 import { useTaste } from "@/state/taste";
 import type { TasteAnswers } from "@/taste/taste-session";
@@ -70,6 +71,7 @@ function roomBeingMeasured() {
   useCaptureStore.setState({
     last: { captureId: "new-capture" } as never,
     upload: { state: "done", finished: 1, total: 1 },
+    uploads: { "new-capture": "done" },
   });
   useTaste.setState({
     answers: {
@@ -152,6 +154,7 @@ describe("a room's job, followed whichever screen is open", () => {
     useCaptureStore.setState({
       last: { captureId: "job-capture" } as never,
       upload: { state: "uploading", finished: 0, total: 2 },
+      uploads: { "job-capture": "uploading" },
     });
     useTaste.setState({
       answers: {
@@ -169,7 +172,7 @@ describe("a room's job, followed whichever screen is open", () => {
     startRoomJob(id);
     await jest.advanceTimersByTimeAsync(0);
     expect(useRoomJobs.getState().jobs[id]).toEqual({ stage: "uploading", finished: 0 });
-    useCaptureStore.setState({ upload: { state: "done", finished: 2, total: 2 } });
+    useCaptureStore.setState({ uploads: { "job-capture": "done" } });
     await jest.advanceTimersByTimeAsync(0);
     expect(useRoomJobs.getState().jobs[id]).toEqual({ stage: "designing", finished: 2 });
     (mockApi.current.getDesigns as jest.Mock).mockResolvedValue(designsReady);
@@ -180,7 +183,7 @@ describe("a room's job, followed whichever screen is open", () => {
 
   it("stops with the real reason, and Retry starts it again", async () => {
     const id = newRoom();
-    useCaptureStore.setState({ upload: { state: "done", finished: 2, total: 2 } });
+    useCaptureStore.setState({ uploads: { "job-capture": "done" } });
     mockApi.current = fakeApi(failedJob);
     startRoomJob(id);
     await jest.advanceTimersByTimeAsync(0);
@@ -193,7 +196,7 @@ describe("a room's job, followed whichever screen is open", () => {
 
   it("the stages screen shows the job, which goes on after the screen closes", async () => {
     const id = newRoom();
-    useCaptureStore.setState({ upload: { state: "done", finished: 2, total: 2 } });
+    useCaptureStore.setState({ uploads: { "job-capture": "done" } });
     mockApi.current = fakeApi(ready, { id: "req", status: "working", stages: [] });
     const seen: number[] = [];
     const stop = roomGeneration()!.watch(id, (count) => seen.push(count));
@@ -203,5 +206,50 @@ describe("a room's job, followed whichever screen is open", () => {
     await jest.advanceTimersByTimeAsync(POLL_MS);
     expect(seen.at(-1)).toBe(2);
     expect(useRoomJobs.getState().jobs[id]?.stage).toBe("done");
+  });
+
+  it("waits for its own photos' upload, not a failed one left by another room", async () => {
+    // Room 1 in the recording: the last upload status was another capture's
+    // failure, and the new room failed at once with "didn't upload".
+    const id = newRoom();
+    useCaptureStore.setState({
+      upload: { state: "failed", finished: 0, total: 0, captureId: "older-capture" },
+      uploads: { "older-capture": "failed", "job-capture": "queued" },
+    });
+    mockApi.current = fakeApi(ready);
+    startRoomJob(id);
+    await jest.advanceTimersByTimeAsync(POLL_MS);
+    expect(useRoomJobs.getState().jobs[id]?.stage).toBe("uploading");
+    useCaptureStore.setState({ uploads: { "job-capture": "done" } });
+    await jest.advanceTimersByTimeAsync(0);
+    expect(useRoomJobs.getState().jobs[id]?.stage).toBe("done");
+  });
+
+  it("asks again when creating the room meets a request still in progress", async () => {
+    // Room 2 in the recording: two requests created the room at once; the
+    // API answered the second with 409 and the room was called failed.
+    const id = newRoom();
+    useCaptureStore.setState({ uploads: { "job-capture": "done" } });
+    mockApi.current = fakeApi(ready);
+    (mockApi.current.createRoom as jest.Mock).mockRejectedValueOnce(
+      new Error("Creating the room failed with 409"),
+    );
+    startRoomJob(id);
+    await jest.advanceTimersByTimeAsync(0);
+    expect(useRoomJobs.getState().jobs[id]?.stage).toBe("reading");
+    await jest.advanceTimersByTimeAsync(POLL_MS);
+    expect(useRoomJobs.getState().jobs[id]?.stage).toBe("done");
+  });
+
+  it("leaves a breadcrumb for every job state change", async () => {
+    clearBreadcrumbs();
+    const id = newRoom();
+    useCaptureStore.setState({ uploads: { "job-capture": "done" } });
+    mockApi.current = fakeApi(failedJob);
+    startRoomJob(id);
+    await jest.advanceTimersByTimeAsync(0);
+    const trail = breadcrumbs().filter((crumb) => crumb.category === "job");
+    expect(trail.map((crumb) => crumb.message)).toEqual(["uploading", "reading", "failed"]);
+    expect(trail.at(-1)?.data).toMatchObject({ roomId: id, reason: "no_walls" });
   });
 });

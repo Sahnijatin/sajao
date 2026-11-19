@@ -25,15 +25,6 @@
       "notificationTitle": "Uploading your scan",
       "notificationText": "You can keep using your phone"
     },
-    "room": {
-      "measuring": "Measuring your room",
-      "measured": "Room measured",
-      "failed": {
-        "no_walls": "We could not find the walls in this scan. Please scan again and walk around the room",
-        "other": "We could not measure this room. Please scan again",
-        "no_ar_data": "Your pictures are uploaded. Rooms from photos and videos are not ready yet"
-      }
-    },
     "usePhotos": "Use photos or a video"
   },
   "capture": {
