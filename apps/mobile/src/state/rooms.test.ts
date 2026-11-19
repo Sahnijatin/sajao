@@ -61,3 +61,32 @@ describe("a room's design ids", () => {
     expect(useRooms.getState().designIdsFor("nope", newId)).toBeNull();
   });
 });
+
+describe("measuring a room again", () => {
+  it("points the room at the new scan and asks for its designs afresh, keeping its name and photos", () => {
+    useRooms.setState({ rooms: [] });
+    const room = useRooms
+      .getState()
+      .addRoomForCapture("old", 0, [{ id: "k1", uri: "file:///a.jpg" }]);
+    useRooms.getState().designIdsFor(room.id, () => "id", new Date(0));
+    useRooms.getState().setRoomDesigns(room.id, 3, { kind: "image", uri: "file:///a.jpg" }, 1);
+    useRooms.getState().setRedesignArea(room.id, "a1");
+    useRooms.setState({
+      rooms: useRooms.getState().rooms.map((each) => ({ ...each, name: "Den" })),
+    });
+    useRooms.getState().remeasure(room.id, "new", 5);
+    const after = useRooms.getState().rooms[0];
+    expect(after).toMatchObject({
+      id: room.id,
+      name: "Den",
+      captureId: "new",
+      designCount: 0,
+      still: { kind: "placeholder", look: "before" },
+      updatedAtMs: 5,
+      photos: [{ id: "k1", uri: "file:///a.jpg" }],
+    });
+    expect(after?.designIds).toBeUndefined();
+    expect(after?.redesignAreaId).toBeUndefined();
+    expect(useRooms.getState().rooms).toHaveLength(1);
+  });
+});
