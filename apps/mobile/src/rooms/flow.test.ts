@@ -6,14 +6,14 @@ describe("from Looks good to the stages", () => {
     expect(afterSpace({ hasTaste: false })).toBe("taste");
   });
 
-  it("a later room skips taste: it was asked once", () => {
+  it("a later room skips taste, which was asked once, and is asked its own budget", () => {
     expect(afterReview({ hasSpaceProfile: true, hasTaste: true })).toBe("space");
-    expect(afterSpace({ hasTaste: true })).toBe("generating");
+    expect(afterSpace({ hasTaste: true })).toBe("budget");
   });
 
   it("with no space profile yet, the flow does not stop on an empty screen", () => {
     expect(afterReview({ hasSpaceProfile: false, hasTaste: false })).toBe("taste");
-    expect(afterReview({ hasSpaceProfile: false, hasTaste: true })).toBe("generating");
+    expect(afterReview({ hasSpaceProfile: false, hasTaste: true })).toBe("budget");
   });
 });
 

@@ -1,7 +1,7 @@
 """Assembling the SpaceTwin from the worker's step outputs.
 
 Everything the twin says comes from measurement and code: boxes from depth,
-the shell from depth, the scale from AR, the direction from the compass. No
+the shell from depth, the scale from AR, the direction from the compass when there is one. No
 model sets a dimension. The result is checked against the generated SpaceTwin
 model before anything stores it.
 
@@ -29,7 +29,7 @@ LIVING = {"sofa", "armchair", "television"}
 
 
 class AssemblyError(Exception):
-    """The outputs cannot make a valid twin (missing compass, schema violation)."""
+    """The outputs cannot make a valid twin (a schema violation)."""
 
 
 def storage_key(digest: str) -> str:
@@ -183,6 +183,35 @@ def _objects(
     return out
 
 
+def _photo_heading(
+    capture: Mapping[str, Any], manifest: Mapping[str, Any]
+) -> dict[str, Any] | None:
+    """A single photo's own compass heading, as a compass reading. Its camera looks
+    along the world's -z, the direction a capture's compass bearing describes."""
+    if not manifest.get("single_view"):
+        return None
+    headings = [
+        m["compass_heading_deg"]
+        for m in capture.get("media", [])
+        if m.get("kind") == "photo" and "compass_heading_deg" in m
+    ]
+    return {"mean_heading_deg": headings[0]} if len(headings) == 1 else None
+
+
+def _widen(node: Any, fraction: float) -> None:
+    """Every Dimension under `node` gets an error band of at least `fraction` of it."""
+    if isinstance(node, dict):
+        if {"value_m", "error_band_m", "source"} <= node.keys():
+            band = max(float(node["error_band_m"]), fraction * float(node["value_m"]))
+            node["error_band_m"] = round(band, 3)
+            return
+        for value in node.values():
+            _widen(value, fraction)
+    elif isinstance(node, list):
+        for value in node:
+            _widen(value, fraction)
+
+
 def assemble_twin(
     *,
     twin_id: str,
@@ -199,6 +228,7 @@ def assemble_twin(
     inventory: Mapping[str, Any] | None = None,
     hero_views: Sequence[Mapping[str, Any]] = (),
     anchor_ids: Sequence[str] = (),
+    scale: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """The SpaceTwin as JSON-ready data, validated against the schema.
 
@@ -206,10 +236,12 @@ def assemble_twin(
     the vision models listed and every item that could not be placed.
     `hero_views` are hero.pick_hero_views' picks and `anchor_ids` the keyframes
     the safe region is built around; without hero views the twin has no viewing
-    section and nothing may show it from a free camera."""
-    compass = capture.get("compass")
-    if not compass:
-        raise AssemblyError("the capture has no compass reading, so north cannot be set")
+    section and nothing may show it from a free camera. `scale` is the single-photo
+    scale check: its evidence becomes the twin's `scale`, and no shell length is
+    claimed tighter than its band."""
+    # Without a compass reading (gallery photos) the twin has no direction, and Vastu
+    # stays off until the person confirms one.
+    compass = capture.get("compass") or _photo_heading(capture, manifest)
     twin: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "id": twin_id,
@@ -232,16 +264,20 @@ def assemble_twin(
             "anchors_agree": True,
             "needs_tape_value": False,
         },
-        "direction": {
-            "north_deg": round(space.north_deg(float(compass["mean_heading_deg"])), 2),
-            "confidence": "approximate",
-            "sources": ["compass"],
-        },
         # The shell comes from depth: LiDAR measures it, a depth model only estimates it.
         "confidence": dict(
             confidence_level("lidar" if manifest.get("depth_source") == "lidar" else "depth_model")
         ),
     }
+    if compass:
+        twin["direction"] = {
+            "north_deg": round(space.north_deg(float(compass["mean_heading_deg"])), 2),
+            "confidence": "approximate",
+            "sources": ["compass"],
+        }
+    if scale is not None:
+        twin["scale"] = dict(scale["evidence"])
+        _widen(twin["shell"], float(scale["band_fraction"]))
     if hero_views:
         twin["viewing"] = _viewing(twin["keyframes"], hero_views, anchor_ids)
     if inventory is not None:

@@ -10,7 +10,6 @@ import pytest
 
 from sajao_schemas.generated.v1 import SpaceTwin
 from sajao_workers.twin.assemble import (
-    AssemblyError,
     assemble_twin,
     space_type_from,
     storage_key,
@@ -147,11 +146,11 @@ def test_north_comes_from_the_compass_turned_into_the_space_frame(
     }
 
 
-def test_a_capture_without_a_compass_cannot_set_north(room: Room) -> None:
+def test_a_capture_without_a_compass_has_no_direction(room: Room) -> None:
     no_compass = capture()
     del no_compass["compass"]
-    with pytest.raises(AssemblyError, match="compass"):
-        build(room, capture=no_compass)
+    twin = build(room, capture=no_compass)
+    assert "direction" not in twin
 
 
 def test_phone_splats_are_listed_by_tier(room: Room) -> None:

@@ -257,11 +257,16 @@ def hero_mask_plan(
 def attach_hero_masks(
     twin: Mapping[str, Any], results: Sequence[Mapping[str, Any]]
 ) -> dict[str, Any]:
-    """Masks ({object_id, hero_view_id, mask, visible_share, source}) onto their objects."""
+    """Masks ({object_id, hero_view_id, mask, visible_share, source, and optionally
+    outline}) onto their objects."""
     out = copy.deepcopy(_validated(twin))
     objects = {o["id"]: o for o in out["objects"]}
     for r in results:
         objects[r["object_id"]].setdefault("hero_masks", []).append(
-            {k: r[k] for k in ("hero_view_id", "mask", "visible_share", "source")}
+            {
+                k: r[k]
+                for k in ("hero_view_id", "mask", "visible_share", "source", "outline")
+                if k in r
+            }
         )
     return _validated(out)

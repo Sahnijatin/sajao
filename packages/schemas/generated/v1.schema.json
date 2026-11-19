@@ -891,6 +891,15 @@
         "twin": {
           "$ref": "#/$defs/TwinReference",
           "description": "The twin this design builds on and its edits. The render, plan, 3D view and shopping list read the same twin plus edits."
+        },
+        "measurement_level": {
+          "type": "string",
+          "enum": [
+            "taped",
+            "ar_measured",
+            "estimated"
+          ],
+          "description": "How the room was measured when the design was placed, from the twin's confidence. estimated: the design is illustrative; the plan, the render and the list say measure to confirm, and no item carries a fit or a gap. taped and ar_measured: fit and gaps may be shown."
         }
       }
     },
@@ -1213,6 +1222,20 @@
             "prompted"
           ],
           "description": "detected: the detector's own mask in this keyframe. prompted: segmented from the thing's box projected into the photo."
+        },
+        "outline": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/ImagePoint"
+            },
+            "minItems": 3,
+            "maxItems": 128
+          },
+          "minItems": 1,
+          "maxItems": 8,
+          "description": "The mask's outer edges as closed polygons on the photo, largest first, simplified to within about 0.3% of the photo's width. The app draws the outline when the thing is tapped, without fetching the mask."
         }
       }
     },
@@ -1257,6 +1280,27 @@
       "type": "string",
       "pattern": "^https://\\S+$",
       "maxLength": 2048
+    },
+    "ImagePoint": {
+      "description": "A point on a photo as a share of its width (x, from the left) and height (y, from the top).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ],
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
     },
     "Inventory": {
       "description": "The open-vocabulary inventory the objects were found from, and what could not be placed.",
@@ -2792,7 +2836,6 @@
         "openings",
         "fixtures",
         "existing_items",
-        "direction",
         "scale"
       ],
       "properties": {
@@ -2873,7 +2916,8 @@
           "$ref": "#/$defs/SpaceLight"
         },
         "direction": {
-          "$ref": "#/$defs/SpaceDirection"
+          "$ref": "#/$defs/SpaceDirection",
+          "description": "Absent when the twin it comes from has no direction; Vastu stays off until the person confirms one."
         },
         "scale": {
           "$ref": "#/$defs/ScaleEvidence"
@@ -2898,8 +2942,7 @@
         "shell",
         "objects",
         "keyframes",
-        "scale",
-        "direction"
+        "scale"
       ],
       "properties": {
         "schema_version": {
@@ -2958,7 +3001,8 @@
           "$ref": "#/$defs/ScaleEvidence"
         },
         "direction": {
-          "$ref": "#/$defs/SpaceDirection"
+          "$ref": "#/$defs/SpaceDirection",
+          "description": "Compass bearing of the space and how sure it is. Absent when no compass reading was taken (photos imported from the gallery); Vastu stays off until the person confirms a direction."
         },
         "splat": {
           "$ref": "#/$defs/SplatRef"

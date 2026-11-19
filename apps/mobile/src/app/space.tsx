@@ -17,7 +17,7 @@ export default function SpaceRoute() {
   );
   if (!room) return <Redirect href="/" />;
   const step = afterSpace({ hasTaste: useTaste.getState().answers !== null });
-  const href = { pathname: step === "taste" ? "/taste" : "/generating", params: { room } } as const;
+  const href = { pathname: step === "taste" ? "/taste" : "/budget", params: { room } } as const;
   const next = () => router.replace(href);
   // Nothing to confirm yet: carry on rather than stop on an empty screen.
   if (!profile) return <Redirect href={href} />;

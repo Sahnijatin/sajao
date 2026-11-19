@@ -161,6 +161,12 @@ function RoomTabBody({
   // The plan fills its card: the screen less the page and card padding.
   const planWidth = width - spacing.gutter * 4;
   const measures = content.measures;
+  // A piece tapped on the plan; a different look starts with none.
+  const [picked, setPicked] = useState<{ slot: string; id: string } | null>(null);
+  const selectedId = look && picked?.slot === look.design.slot ? picked.id : null;
+  const selectedItem = look?.design.items.find((item) => item.id === selectedId) ?? null;
+  // Gaps to the walls are fit claims: measured rooms only.
+  const gaps = fitClaimsAllowed(content.confidence);
   // The source and error band of a value. Several dimensions of one thing
   // (a door's width and height) share a line: the least certain one speaks.
   const sourceOf = (...dimensions: [Dimension, ...Dimension[]]): Provenance => {
@@ -190,6 +196,7 @@ function RoomTabBody({
             key={view.id}
             still={view.still}
             label={t("reveal.view", { number: index + 1, total: content.heroViews.length })}
+            drawn={content.sample}
             style={{
               width: cardWidth,
               aspectRatio: STILL_ASPECT,
@@ -326,8 +333,34 @@ function RoomTabBody({
               units={units}
               width={planWidth}
               height={Math.round(planWidth * PLAN_ASPECT)}
+              selectedId={selectedId}
+              gaps={gaps}
+              onSelect={
+                look ? (id) => setPicked(id ? { slot: look.design.slot, id } : null) : undefined
+              }
             />
           </View>
+          {selectedItem ? (
+            <View testID="room-plan-selected" style={{ gap: spacing.xxs }}>
+              <Text variant="bodyStrong">{selectedItem.product.title}</Text>
+              <Text variant="meta" tone="secondary" style={{ fontVariant: ["tabular-nums"] }}>
+                {t("room.plan.size", {
+                  width: formatLength(selectedItem.product.dimensions.width.value_m, units, t),
+                  depth: formatLength(selectedItem.product.dimensions.depth.value_m, units, t),
+                  height: formatLength(selectedItem.product.dimensions.height.value_m, units, t),
+                })}
+              </Text>
+              {gaps ? null : (
+                <Text variant="caption" tone="tertiary">
+                  {t("room.plan.gapsMeasured")}
+                </Text>
+              )}
+            </View>
+          ) : look ? (
+            <Text variant="caption" tone="tertiary">
+              {t("room.plan.tapPiece")}
+            </Text>
+          ) : null}
           {content.shell.walls.some((wall) => wall.length.source !== "measured") ? (
             <Text variant="caption" tone="tertiary">
               {t("room.plan.softEdge")}
@@ -389,16 +422,40 @@ function DesignsTabBody({
     <>
       {content.sample ? <Sample text={t("reveal.sample")} /> : null}
       {picker}
-      <RoomStillView
-        still={look.still}
-        label={t(`design.slot.${design.slot}`)}
-        style={{
-          aspectRatio: STILL_ASPECT,
-          borderRadius: radius.card,
-          borderCurve: "continuous",
-          boxShadow: tokens.shadows[tier].card,
-        }}
-      />
+      <View>
+        <RoomStillView
+          still={look.still}
+          label={
+            look.stillIsToday
+              ? `${t(`design.slot.${design.slot}`)}. ${t("reveal.today")}`
+              : t(`design.slot.${design.slot}`)
+          }
+          // A real room never shows a drawn stand-in.
+          drawn={content.sample}
+          style={{
+            aspectRatio: STILL_ASPECT,
+            borderRadius: radius.card,
+            borderCurve: "continuous",
+            boxShadow: tokens.shadows[tier].card,
+          }}
+        />
+        {look.stillIsToday ? (
+          <View
+            testID="design-today"
+            style={{
+              position: "absolute",
+              top: spacing.lg,
+              left: spacing.lg,
+              paddingHorizontal: spacing.md,
+              paddingVertical: spacing.xs,
+              borderRadius: radius.pill,
+              backgroundColor: colors.surface,
+            }}
+          >
+            <Text variant="caption">{t("reveal.today")}</Text>
+          </View>
+        ) : null}
+      </View>
       <View style={{ gap: spacing.xs }}>
         <Text variant="heading">{t(`design.slot.${design.slot}`)}</Text>
         <Text variant="meta" tone="secondary" selectable>
@@ -413,7 +470,9 @@ function DesignsTabBody({
           <Text key={line}>{line}</Text>
         ))}
         <Text variant="meta" tone="secondary">
-          {t(design.check_report.passed ? "designs.fits" : "designs.check")}
+          {fitClaimsAllowed(content.confidence)
+            ? t(design.check_report.passed ? "designs.fits" : "designs.check")
+            : t("reveal.illustrative")}
         </Text>
       </Card>
 
@@ -586,15 +645,21 @@ export function RoomScreen({
   redesignAreaId = null,
   onChooseArea,
   onMeasure,
+  remeasuring = false,
 }: {
   content: RoomContent;
+  /**
+   * A new scan is measuring the room again: what shows is still the old
+   * content, based on estimated sizes, until the new designs arrive.
+   */
+  remeasuring?: boolean;
   /** Show the place kept for the 3D view. Off unless its flag is on. */
   show3d?: boolean;
   /** For a scan of several areas: the one chosen to redesign. */
   redesignAreaId?: string | null;
   /** Opens the choice of which area to redesign. */
   onChooseArea?: () => void;
-  /** Opens measuring with a tape, for a room whose sizes are estimates. */
+  /** Opens "Measure this room for exact fit", for a room whose sizes are estimates. */
   onMeasure?: () => void;
 }) {
   const { t } = useTranslation();
@@ -631,6 +696,11 @@ export function RoomScreen({
         gap: spacing.sheetBottom,
       }}
     >
+      {remeasuring ? (
+        <View testID="remeasuring-note">
+          <Sample text={t("room.remeasuring")} />
+        </View>
+      ) : null}
       <Segmented
         segments={ROOM_TABS.map((key) => ({ key, label: t(`room.tabs.${key}`) }))}
         selected={tab}

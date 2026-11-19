@@ -10,6 +10,8 @@ import re
 from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
+import numpy as np
+
 from sajao_gateway import InvalidOutputError, ProviderResult
 
 DIGEST = re.compile(r"^[0-9a-f]{64}$")
@@ -90,12 +92,33 @@ MIN_POSE_DEPTH_COVERAGE = 0.2
 DEPTH_MEDIAN_RANGE_M = (0.3, 15.0)
 
 
+# A field of view outside this (degrees, horizontal) is not a phone photo.
+FOV_X_RANGE_DEG = (35.0, 120.0)
+
+
+def _plausible_intrinsics(k: Any, frame: Mapping[str, Any]) -> bool:
+    try:
+        m = np.asarray(k, dtype=np.float64)
+    except (TypeError, ValueError):
+        return False
+    if m.shape != (3, 3) or not np.isfinite(m).all() or min(m[0, 0], m[1, 1]) <= 0:
+        return False
+    w, h = float(frame["width"]), float(frame["height"])
+    fov = math.degrees(2 * math.atan(w / (2 * m[0, 0])))
+    return (
+        FOV_X_RANGE_DEG[0] <= fov <= FOV_X_RANGE_DEG[1]
+        and 0 < m[0, 2] < w
+        and 0 < m[1, 2] < h
+        and 0.8 <= m[0, 0] / m[1, 1] <= 1.25
+    )
+
+
 def check_depths(payload: Mapping[str, Any]) -> Validator:
     asked: Sequence[Mapping[str, Any]] = payload["frames"]
 
     def validate(result: ProviderResult) -> None:
         low, high = DEPTH_MEDIAN_RANGE_M
-        for frame in _frames(result, asked):
+        for frame, asked_frame in zip(_frames(result, asked), asked, strict=True):
             _require(DIGEST.match(str(frame.get("depth"))) is not None, "depth is a blob digest")
             coverage = frame.get("coverage")
             _require(
@@ -107,6 +130,11 @@ def check_depths(payload: Mapping[str, Any]) -> Validator:
                 isinstance(median, int | float) and math.isfinite(median) and low <= median <= high,
                 "median depth is plausible for a room",
             )
+            if "intrinsics" in asked_frame and asked_frame["intrinsics"] is None:
+                _require(
+                    _plausible_intrinsics(frame.get("intrinsics"), asked_frame),
+                    "estimated intrinsics are a pinhole camera inside the image",
+                )
 
     return validate
 

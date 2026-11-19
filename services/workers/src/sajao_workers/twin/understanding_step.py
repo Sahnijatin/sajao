@@ -13,12 +13,13 @@ import json
 from sajao_gateway import ModelGateway, ModelRequest
 from sajao_workers.steps import NonRetryableStepError, Step, StepContext, StepOutput
 from sajao_workers.twin.assemble import storage_key
-from sajao_workers.twin.objects import decode_depth_mm, depth_at
+from sajao_workers.twin.objects import decode_depth_mm, decode_mask, depth_at
+from sajao_workers.twin.outline import outline
 from sajao_workers.twin.understanding import attach_hero_masks, hero_mask_plan, understand_room
 from sajao_workers.validate import check_masks
 
 # Bump when this step's logic or pinned model chain changes.
-VERSION = 2
+VERSION = 3
 
 
 def understanding_step(segment: ModelGateway) -> Step:
@@ -76,6 +77,7 @@ def understanding_step(segment: ModelGateway) -> Step:
             digest = p["mask"] if p["source"] == "detected" else masks.get(i)
             if digest is None:
                 continue
+            drawn = outline(decode_mask(context.store.read_blob(digest)))
             results.append(
                 {
                     "object_id": twin["objects"][p["object"]]["id"],
@@ -83,6 +85,7 @@ def understanding_step(segment: ModelGateway) -> Step:
                     "mask": storage_key(digest),
                     "visible_share": p["visible_share"],
                     "source": p["source"],
+                    **({"outline": drawn} if drawn else {}),
                 }
             )
         twin = attach_hero_masks(twin, results)

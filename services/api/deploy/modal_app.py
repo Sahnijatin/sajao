@@ -14,6 +14,7 @@ spawns them by name and returns at once. Only `run_room` mounts the
 """
 
 from pathlib import Path
+from typing import Any
 
 import modal
 
@@ -32,17 +33,29 @@ image = (
         "pydantic-settings==2.16.3",
         "structlog==26.1.0",
         "pydantic==2.14.3",
+        # The photo stages: geometry in numpy, photos in Pillow, the item-list models.
+        "numpy==2.5.5",
+        "pillow==13.0.0",
+        "anthropic==2.8.0",
+        "google-auth[requests]==2.62.2",
+        "httpx==0.28.1",
     )
     .add_local_dir(ROOT / "services/api/src/sajao_api", "/root/sajao_api")
     .add_local_dir(ROOT / "packages/schemas/python/sajao_schemas", "/root/sajao_schemas")
     # The pipeline's stages; the ones run here are plain Python on a CPU.
     .add_local_dir(ROOT / "services/workers/src/sajao_workers", "/root/sajao_workers")
+    .add_local_dir(ROOT / "services/gateway/src/sajao_gateway", "/root/sajao_gateway")
 )
 
 # Step results, content addressed, in one folder per user: a room that is run
 # again reuses them, and erasing an account removes its folder.
 artifacts = modal.Volume.from_name("sajao-pipeline", create_if_missing=True)
 ARTIFACTS = "/artifacts"
+# The GPU worker's volume (app sajao-twin-worker): a photo room's blobs are copied
+# there for a model call and back, and the copies deleted (sajao_workers.gpu_bridge).
+gpu_volume = modal.Volume.from_name("sajao-twin", create_if_missing=True)
+GPU_STORE = "/gpu"
+GPU_APP = "sajao-twin-worker"
 
 app = modal.App("sajao-api")
 
@@ -97,8 +110,14 @@ class _CaptureFiles:
 
 @app.function(
     image=image,
-    secrets=[modal.Secret.from_name("sajao-api"), modal.Secret.from_name("sajao-pipeline")],
-    volumes={ARTIFACTS: artifacts},
+    secrets=[
+        modal.Secret.from_name("sajao-api"),
+        modal.Secret.from_name("sajao-pipeline"),
+        # The photo stages' item lists: Gemini on Vertex AI and Claude.
+        modal.Secret.from_name("gcp"),
+        modal.Secret.from_name("anthropic-secret"),
+    ],
+    volumes={ARTIFACTS: artifacts, GPU_STORE: gpu_volume},
     max_containers=3,
     timeout=900,
     # The step layer retries inside a stage; a crashed container is started once more.
@@ -129,12 +148,34 @@ async def run_room(room_id: str) -> str:
         if found is None:
             return "unknown room"
         user_id, capture = found
-        runner = StepRunner(LocalArtifactStore(Path(ARTIFACTS) / user_id))
-        run = await pipeline.run_room(runner, rooms, _CaptureFiles(), room_id, capture)
+        store = LocalArtifactStore(Path(ARTIFACTS) / user_id)
+        runner = StepRunner(store)
+        photo_stages = _photo_stages(store) if pipeline.is_single_photo(capture) else ()
+        run = await pipeline.run_room(
+            runner, rooms, _CaptureFiles(), room_id, capture, photo_stages=photo_stages
+        )
         return run.outcome
     finally:
         await pool.close()
         artifacts.commit()
+
+
+def _photo_stages(store: Any) -> Any:
+    """The photo-first stages, their GPU calls bridged to the worker's volume."""
+    from sajao_workers.gpu_bridge import bridged
+    from sajao_workers.photo_pipeline import photo_models, photo_room_stages, room_ledger
+    from sajao_workers.steps import LocalArtifactStore
+
+    run_model = modal.Function.from_name(GPU_APP, "run_model")
+    shared = LocalArtifactStore(Path(GPU_STORE) / "artifacts")
+
+    def gpu(task: str) -> Any:
+        async def call(model: str, payload: Any) -> Any:
+            return await run_model.remote.aio(model, task, dict(payload))
+
+        return bridged(call, store, shared, gpu_volume.commit.aio, gpu_volume.reload.aio)
+
+    return photo_room_stages(photo_models(gpu, room_ledger()))
 
 
 @app.function(image=image, timeout=60)
