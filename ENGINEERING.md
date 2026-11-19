@@ -11,7 +11,7 @@ Every change to Sajao follows these rules. Breaking one requires a decision log 
 ## Product truth
 
 4. Generative models never set a dimension, position, rotation, price or stock value. Geometry models estimate; tape verifies; code decides fit.
-5. Every dimension carries a value, a source (measured, estimated, user-confirmed) and an error band. The solver uses the band as margin.
+5. Every dimension carries a value, a source (measured, estimated, user-confirmed) and an error band. For measured and taped rooms the solver uses the band as margin. Estimated rooms are placed at nominal sizes with a small fixed clearance and make no fit claims.
 6. Every design passes the verifier before it reaches a user. When none passes, follow the relaxation order, then show an honest result.
 7. The render, the plan and the shopping list are derived from one `Design` object and are cross-checked: render to plan (grounding), render to cart (likeness), plan to cart (dimensions, budget, stock).
 8. Renders are labelled illustrative and pass structure, grounding, likeness and aesthetic checks, or the 3D render is shown. Never a broken image.
