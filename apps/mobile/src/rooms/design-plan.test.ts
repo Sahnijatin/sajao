@@ -106,6 +106,19 @@ describe("the plan", () => {
     expect(AGAINST_WALL_M).toBe(0.05);
   });
 
+  it("labels only the picked item's gap, and no gaps at all when they are off", () => {
+    const picked = designPlan(bestMatch, shell, box, { selectedId: "sofa" });
+    expect(picked.clearances.map((gap) => gap.itemId)).toEqual(["sofa"]);
+    expect(picked.selected).toMatchObject({ id: "sofa", widthM: 1.95, depthM: 0.85 });
+    const off = designPlan(bestMatch, shell, box, { selectedId: "sofa", gaps: false });
+    expect(off.clearances).toEqual([]);
+    // The size is the product's own and shows either way.
+    expect(off.selected?.widthM).toBe(1.95);
+    const unknown = designPlan(bestMatch, shell, box, { selectedId: "nope" });
+    expect(unknown.selected).toBeNull();
+    expect(unknown.clearances).toEqual(designPlan(bestMatch, shell, box).clearances);
+  });
+
   it("the halo is the widest band of a wall that is not tape-measured", () => {
     // Wall w3 is estimated to within 15 cm.
     expect(round(plan.haloPx)).toBe(round(0.15 * plan.scale));

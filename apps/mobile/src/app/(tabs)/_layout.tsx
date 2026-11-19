@@ -1,6 +1,8 @@
 import { useTheme } from "@sajao/ui";
+import { Redirect } from "expo-router";
 import { NativeTabs } from "expo-router/unstable-native-tabs";
 import { useTranslation } from "react-i18next";
+import { hasConsent, useConsent, useConsentLoaded } from "@/state/consent";
 
 export { RouteErrorBoundary as ErrorBoundary } from "@/components/route-error-boundary";
 
@@ -11,6 +13,11 @@ export { RouteErrorBoundary as ErrorBoundary } from "@/components/route-error-bo
 export default function TabsLayout() {
   const { t } = useTranslation();
   const { tokens } = useTheme();
+  const loaded = useConsentLoaded();
+  const consented = useConsent(hasConsent);
+  if (!loaded) return null;
+  // Consent comes first, once, before anything else in the app.
+  if (!consented) return <Redirect href="/consent" />;
   return (
     // The tab you are on takes the theme accent, icon and label alike.
     <NativeTabs tintColor={tokens.colors.accent}>

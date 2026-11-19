@@ -11,7 +11,6 @@ import {
   cycleItemAction,
   describeSpace,
   planDrawing,
-  setRedo,
   setSpaceType,
   SPACE_TYPES,
 } from "@/space/space-profile";
@@ -22,11 +21,6 @@ export interface SpaceProfileScreenProps {
   profile: SpaceProfile;
   onChange: (profile: SpaceProfile) => void;
   onShowIdeas: () => void;
-  /**
-   * "Just a part": the screen where the user draws around a corner or wall.
-   * Left out while that screen is not built: the choice is then not offered.
-   */
-  onChoosePart?: () => void;
 }
 
 const PLAN_HEIGHT = 300;
@@ -52,52 +46,12 @@ function Badge({ label, tone }: { label: string; tone: "warning" | "success" }) 
   );
 }
 
-function Choice({
-  title,
-  body,
-  selected,
-  onPress,
-}: {
-  title: string;
-  body: string;
-  selected: boolean;
-  onPress: () => void;
-}) {
-  const { tokens } = useTheme();
-  return (
-    <Pressable
-      accessibilityRole="radio"
-      accessibilityState={{ checked: selected }}
-      onPress={onPress}
-      style={{
-        flex: 1,
-        gap: tokens.spacing.xxs,
-        padding: tokens.spacing.xl,
-        borderRadius: tokens.radius.card,
-        borderWidth: 2,
-        borderColor: selected ? tokens.colors.accent : "transparent",
-        backgroundColor: tokens.colors.surface,
-      }}
-    >
-      <Text variant="label">{title}</Text>
-      <Text variant="caption" tone="secondary">
-        {body}
-      </Text>
-    </Pressable>
-  );
-}
-
 /**
  * The Space Profile card: what the scan found, with every number labelled
  * estimated or verified. The user confirms and corrects; nothing is drawn
  * from scratch.
  */
-export function SpaceProfileScreen({
-  profile,
-  onChange,
-  onShowIdeas,
-  onChoosePart,
-}: SpaceProfileScreenProps) {
+export function SpaceProfileScreen({ profile, onChange, onShowIdeas }: SpaceProfileScreenProps) {
   const { t } = useTranslation();
   const { tokens } = useTheme();
   const { spacing } = tokens;
@@ -186,26 +140,6 @@ export function SpaceProfileScreen({
             <Text variant="bodySmall" tone="secondary">
               {summary}
             </Text>
-          </View>
-
-          <View style={{ gap: spacing.md }}>
-            <Text variant="label">{t("space.redoTitle")}</Text>
-            <View accessibilityRole="radiogroup" style={{ flexDirection: "row", gap: spacing.md }}>
-              <Choice
-                title={t("space.redoAll")}
-                body={t("space.redoAllBody")}
-                selected={profile.redo.scope === "all"}
-                onPress={() => onChange(setRedo(profile, { scope: "all" }))}
-              />
-              {onChoosePart ? (
-                <Choice
-                  title={t("space.redoPart")}
-                  body={t("space.redoPartBody")}
-                  selected={profile.redo.scope === "part"}
-                  onPress={onChoosePart}
-                />
-              ) : null}
-            </View>
           </View>
 
           {profile.existing_items.length > 0 ? (

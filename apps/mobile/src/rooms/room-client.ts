@@ -3,6 +3,7 @@
 import { createApiClient } from "@sajao/api-client";
 import { uuidV4 } from "@/capture/package/upload-capture";
 import { configResult } from "@/config";
+import type { DesignsJob, DesignsRequest } from "./designs-api";
 import type { RoomApi, RoomJob } from "./room-api";
 
 export function roomApi(): RoomApi | null {
@@ -45,6 +46,25 @@ export function roomApi(): RoomApi | null {
       return ok(
         await client.GET("/v1/rooms/{room_id}/twin", { params: { path: { room_id: roomId } } }),
         "Reading the room's twin",
+      );
+    },
+    async requestDesigns(roomId, request: DesignsRequest): Promise<DesignsJob> {
+      return ok(
+        await client.POST("/v1/rooms/{room_id}/designs", {
+          params: { path: { room_id: roomId } },
+          body: request,
+          // The request id makes a repeat of this call the same request.
+          headers: { "Idempotency-Key": `designs-${request.id}` },
+        }),
+        "Asking for designs",
+      );
+    },
+    async getDesigns(roomId): Promise<DesignsJob> {
+      return ok(
+        await client.GET("/v1/rooms/{room_id}/designs", {
+          params: { path: { room_id: roomId } },
+        }),
+        "Reading the designs",
       );
     },
   };

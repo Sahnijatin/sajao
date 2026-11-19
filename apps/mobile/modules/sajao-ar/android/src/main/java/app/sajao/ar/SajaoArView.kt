@@ -64,8 +64,7 @@ class SajaoArView(context: Context, appContext: AppContext) :
   // are unchanged.
   @Volatile private var overlay = true
   // True while the app's review is open: no keyframe is saved. The AR
-  // session keeps running. ARCore's recording cannot pause, so the app also
-  // writes the review window into the package for the server to drop.
+  // session keeps running. No scan video is recorded (SJ-SCOPE-30).
   @Volatile var capturePaused = false
 
   private val container = FrameLayout(context)
@@ -159,8 +158,6 @@ class SajaoArView(context: Context, appContext: AppContext) :
   @Volatile private var lastError = ""
   // ARCore raw depth (with confidence) where the phone supports it.
   private var rawDepthSupported = false
-  // The scan video, recorded by ARCore while a capture id is set.
-  @Volatile private var videoStatus = "off"
   private var pixelIntensity = 1.0
   private var featureCount = 0
   private var trackingName = "initializing"
@@ -253,46 +250,6 @@ class SajaoArView(context: Context, appContext: AppContext) :
         onError = ::countError,
       )
     }
-    if (running) startRecording()
-  }
-
-  /**
-   * Record the scan video with ARCore's Recording API: an MP4 of the
-   * camera with AR data tracks, from the first frame to Done, whatever
-   * tracking says. Safe to call again; starts only once per capture.
-   */
-  private fun startRecording() {
-    val session = session ?: return
-    val capture = recorder ?: return
-    if (videoStatus == "recording" || videoStatus.startsWith("saved")) return
-    try {
-      val config = com.google.ar.core.RecordingConfig(session)
-        .setMp4DatasetUri(android.net.Uri.fromFile(capture.videoFile))
-        .setAutoStopOnPause(false)
-      session.startRecording(config)
-      videoStatus = "recording"
-      Log.i(Detector.TAG, "video recording to ${capture.videoFile.name}")
-    } catch (error: Throwable) {
-      videoStatus = "failed: ${error.javaClass.simpleName}"
-      countError(error)
-    }
-  }
-
-  /** Stop the video; the file's uri, or null when nothing was recorded. */
-  private fun stopRecording(): String? {
-    val session = session ?: return null
-    val capture = recorder ?: return null
-    if (videoStatus != "recording") return null
-    return try {
-      session.stopRecording()
-      val file = capture.videoFile
-      videoStatus = "saved (${file.length() / 1024} KB)"
-      if (file.exists() && file.length() > 0) "file://${file.absolutePath}" else null
-    } catch (error: Throwable) {
-      videoStatus = "failed: ${error.javaClass.simpleName}"
-      countError(error)
-      null
-    }
   }
 
   /** Delete keyframe candidates the app's recorder dropped. */
@@ -309,7 +266,7 @@ class SajaoArView(context: Context, appContext: AppContext) :
     val current = recorder ?: return done(mapOf("planes" to null, "depth" to null, "sceneMesh" to null, "video" to null))
     val session = session
     if (session == null || !running) {
-      current.finish(org.json.JSONArray(), chosen, stopRecording(), done)
+      current.finish(org.json.JSONArray(), chosen, done)
       return
     }
     surface.queueEvent {
@@ -319,7 +276,7 @@ class SajaoArView(context: Context, appContext: AppContext) :
         countError(error)
         org.json.JSONArray()
       }
-      current.finish(planes, chosen, stopRecording(), done)
+      current.finish(planes, chosen, done)
     }
   }
 
@@ -328,7 +285,6 @@ class SajaoArView(context: Context, appContext: AppContext) :
     recorder?.close()
     session?.close()
     session = null
-    stopRecording()
     detector.close()
     linkExecutor.shutdown()
     imageWorker.shutdown()
@@ -378,7 +334,6 @@ class SajaoArView(context: Context, appContext: AppContext) :
         session = created
       }
       current.resume()
-      startRecording()
       surface.onResume()
       running = true
       displayDirty = true
@@ -917,7 +872,7 @@ class SajaoArView(context: Context, appContext: AppContext) :
         "planeStates" to planeStates,
         "errors" to errorCounts.entries.sortedByDescending { it.value }.joinToString(", ") { "${it.key} ${it.value}" },
         "lastError" to lastError,
-        "video" to videoStatus,
+        "video" to "off",
         "surfaceHits" to "planes $surfacePlaneHits points $surfacePointHits",
         "labels" to labels.size,
         "frames" to cameraFrames,

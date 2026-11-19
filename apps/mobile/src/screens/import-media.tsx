@@ -10,13 +10,13 @@ import { importFromGallery, type ImportResult } from "@/rooms/media-import";
 
 export function ImportMediaScreen({
   onImported,
-  onScan,
+  onTakePhotos,
   importMedia = importFromGallery,
 }: {
   /** The pictures are a room on My home and their upload has started. */
   onImported: (roomId: string) => void;
-  /** "Scan the room instead". */
-  onScan: () => void;
+  /** "Take photos instead". */
+  onTakePhotos: () => void;
   importMedia?: () => Promise<ImportResult>;
 }) {
   const { t } = useTranslation();
@@ -72,7 +72,12 @@ export function ImportMediaScreen({
 
       <View style={{ gap: spacing.lg }}>
         <Button label={t("import.choose")} disabled={busy} onPress={() => void choose()} />
-        <Button label={t("import.scanInstead")} variant="ghost" size="small" onPress={onScan} />
+        <Button
+          label={t("import.photosInstead")}
+          variant="ghost"
+          size="small"
+          onPress={onTakePhotos}
+        />
       </View>
     </ScrollView>
   );
