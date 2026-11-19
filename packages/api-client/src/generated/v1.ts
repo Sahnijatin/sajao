@@ -128,8 +128,7 @@ export interface paths {
         /**
          * Create Room
          * @description The room for a registered capture. Registering the capture already made it and
-         *     started it; this returns it, and starts it again if that start was lost. Safe to
-         *     repeat.
+         *     started it; this returns it, and starts it again if it failed. Safe to repeat.
          */
         post: operations["createRoom"];
         delete?: never;

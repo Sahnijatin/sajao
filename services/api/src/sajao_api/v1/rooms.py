@@ -128,8 +128,7 @@ async def create_room(
     response: Response,
 ) -> dict[str, Any]:
     """The room for a registered capture. Registering the capture already made it and
-    started it; this returns it, and starts it again if that start was lost. Safe to
-    repeat."""
+    started it; this returns it, and starts it again if it failed. Safe to repeat."""
     capture = await captures.get(str(body.capture_id), user.user_id)
     if capture is None:
         raise ApiError(404, "capture_not_found", "This capture does not exist.")
@@ -186,7 +185,8 @@ async def request_designs(
         raise ApiError(409, "design_request_id_taken", "Please ask for designs again.")
     if not created:
         response.status_code = 200
-    if room.space_twin is not None:
+    retry = any(stage.status == "failed" for stage in request.stages)
+    if room.space_twin is not None and (created or retry):
         try:
             await launcher.start_designs(room.room_id, request.request_id)
         except Exception:
