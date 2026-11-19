@@ -1,0 +1,72 @@
+name: Native iOS compile
+
+# iOS builds on EAS are rationed, so the Swift in the native modules is
+# compiled here instead. It runs only when the iOS native modules or the app
+# config (including its config plugins) change; anything else can be run by
+# hand. This only compiles for a device: no signing, no JavaScript bundle,
+# nothing uploaded.
+on:
+  pull_request:
+    paths:
+      - "apps/mobile/modules/*/ios/**"
+      - "apps/mobile/app.json"
+      - "apps/mobile/app.config.ts"
+      - "apps/mobile/plugins/**"
+  push:
+    branches: [main]
+    paths:
+      - "apps/mobile/modules/*/ios/**"
+      - "apps/mobile/app.json"
+      - "apps/mobile/app.config.ts"
+      - "apps/mobile/plugins/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios:
+    name: Native iOS compile
+    # Expo SDK 58 needs Swift 6.2, which ships with Xcode 26.
+    runs-on: macos-26
+    timeout-minutes: 75
+    env:
+      APP_VARIANT: preview
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show the Xcode in use
+        run: xcodebuild -version && swift --version
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Generate the iOS project
+        working-directory: apps/mobile
+        run: npx expo prebuild --platform ios --clean --no-install
+      - name: Install pods
+        working-directory: apps/mobile/ios
+        run: pod install
+      - name: Compile for a device, unsigned
+        working-directory: apps/mobile/ios
+        env:
+          # The JavaScript is checked by the TypeScript job; skip bundling it here.
+          SKIP_BUNDLING: "1"
+        run: |
+          workspace=$(ls -d *.xcworkspace | head -1)
+          scheme=$(basename "$workspace" .xcworkspace)
+          set -o pipefail
+          xcodebuild build \
+            -workspace "$workspace" \
+            -scheme "$scheme" \
+            -configuration Debug \
+            -sdk iphoneos \
+            -destination "generic/platform=iOS" \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            | tail -n 200

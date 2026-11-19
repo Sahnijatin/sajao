@@ -1,6 +1,8 @@
 // Rooms on My home. Pure: what a room is, how the list is ordered and what
 // each card says. Rooms live on this phone until the API serves them; the
 // store in state/rooms.ts is the only place that knows that.
+import type { TasteAnswers } from "@/taste/taste-session";
+import type { DesignIds } from "./designs-api";
 
 /**
  * A still of a room. `image` is a real picture (a hero view from the twin,
@@ -15,6 +17,12 @@ export type RoomStill =
       view?: 0 | 1 | 2;
     };
 
+/** A photo of the room on this phone, with the id of the keyframe it was uploaded as. */
+export interface RoomPhoto {
+  id: string;
+  uri: string;
+}
+
 export interface Room {
   id: string;
   /** The name you gave it; null shows "Room 2" from its number. */
@@ -28,6 +36,12 @@ export interface Room {
   captureId: string | null;
   /** For a scan of several areas: the one chosen to redesign. Unset until chosen. */
   redesignAreaId?: string | null;
+  /** The photos the room was added with, on this phone, in order, by keyframe id. Unset for an AR scan. */
+  photos?: RoomPhoto[];
+  /** The budget for this room's designs. Unset until it is asked. */
+  budget?: TasteAnswers["budget"];
+  /** The ids its designs are asked for with, made once. Unset until designs are first asked for. */
+  designIds?: DesignIds;
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -55,6 +69,18 @@ export function newRoom(
     still: { kind: "placeholder", look: "before" },
     captureId: input.captureId,
   };
+}
+
+/**
+ * Rooms with sample designs taken off. Designs with no real picture can only
+ * have come from the stand-in, so the room goes back to having none.
+ */
+export function clearSampleDesigns(rooms: readonly Room[]): Room[] {
+  return rooms.map((room) =>
+    room.still.kind === "placeholder" && room.designCount > 0
+      ? { ...room, designCount: 0, still: { kind: "placeholder", look: "before" } }
+      : room,
+  );
 }
 
 export interface Label {

@@ -43,7 +43,7 @@ When no design passes, the engine relaxes in this order and stops at the first s
 
 ## Archetypes
 
-Layout archetypes for living rooms and bedrooms only, grown from real failures toward 10 to 12 each. They cover the repeated layouts of Indian flats: a sofa facing the TV wall, a conversation set, an L-sofa in a corner, a sofa on the short wall of a long hall, a diwan lounge; a bed centered on the headboard wall, a bed in the corner of a small room, a study corner, a dresser or wardrobe opposite the bed. Other spaces can be scanned but get no designs at launch. When you choose "Just a part", the solver places new items only inside the area you drew and treats the rest of the space as fixed.
+Layout archetypes for living rooms and bedrooms only, grown from real failures toward 10 to 12 each. They cover the repeated layouts of Indian flats: a sofa facing the TV wall, a conversation set, an L-sofa in a corner, a sofa on the short wall of a long hall, a diwan lounge; a bed centered on the headboard wall, a bed in the corner of a small room, a study corner, a dresser or wardrobe opposite the bed. Other spaces can be scanned but get no designs at launch. The app redoes the whole captured space; "Just a part" is not offered at launch. The solver still supports a part (new items only inside a drawn area, the rest fixed) for when it returns.
 
 ## Explanations
 

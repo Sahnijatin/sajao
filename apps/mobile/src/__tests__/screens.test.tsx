@@ -71,8 +71,8 @@ describe("My home", () => {
     expect(screen.queryByLabelText("A room before and after a redesign")).toBeNull();
     expect(screen.getByText("See your room redone with furniture you can buy.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Add a room" })).toBeTruthy();
-    // Photos and videos are not offered until something can take them.
-    expect(screen.queryByRole("button", { name: "Use photos or a video" })).toBeNull();
+    // Photos are the main way in, so every build offers both.
+    expect(screen.getByRole("button", { name: "Use photos or a video" })).toBeTruthy();
   });
 
   it("Use photos or a video opens the import screen", async () => {
@@ -81,11 +81,11 @@ describe("My home", () => {
     expect(mockPush).toHaveBeenCalledWith("/import");
   });
 
-  it("Add a room is the only way to the scan", async () => {
+  it("Add a room opens Take photos, never the scan", async () => {
     await show(<HomeScreen />);
     await fireEvent.press(screen.getByRole("button", { name: "Add a room" }));
     expect(mockPush).toHaveBeenCalledTimes(1);
-    expect(mockPush).toHaveBeenCalledWith("/capture");
+    expect(mockPush).toHaveBeenCalledWith("/photos");
   });
 
   it("lists rooms newest first, each with its name, last update and designs", async () => {
@@ -122,7 +122,7 @@ describe("My home", () => {
     ]);
     expect(screen.queryByLabelText("A room before and after a redesign")).toBeNull();
     await fireEvent.press(screen.getByRole("button", { name: "Add a room" }));
-    expect(mockPush).toHaveBeenCalledWith("/capture");
+    expect(mockPush).toHaveBeenCalledWith("/photos");
     // A card opens its room.
     await fireEvent.press(screen.getByTestId("room-card-one"));
     expect(mockPush).toHaveBeenLastCalledWith({ pathname: "/room/[id]", params: { id: "one" } });
