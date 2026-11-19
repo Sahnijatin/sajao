@@ -10,6 +10,7 @@ import Animated, { Easing, FadeIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { designsOffered, type RoomContent } from "@/rooms/room-content";
 import type { RoomStill } from "@/rooms/rooms";
+import { fitClaimsAllowed } from "@/rooms/room-shape";
 import { RoomStillView } from "@/rooms/room-still";
 import { formatInr } from "@/utils/format-inr";
 
@@ -29,7 +30,12 @@ export function RevealScreen({ content, onOpenRoom }: RevealProps) {
   const { tokens, tier, duration } = useTheme();
   const { colors, spacing, radius } = tokens;
   const { width } = useWindowDimensions();
-  const [phase, setPhase] = useState<"room" | "looks">("room");
+  // With no views of the room to show, the reveal opens on the looks.
+  const [phase, setPhase] = useState<"room" | "looks">(
+    content.heroViews.length > 0 ? "room" : "looks",
+  );
+  // Sizes estimated from photos: the looks are illustrative and make no fit claims.
+  const illustrative = !fitClaimsAllowed(content.confidence);
   const offered = designsOffered(content.spaceType);
   // The next card peeks in from the right, so it is clear there is more.
   const cardWidth = Math.round((width - spacing.gutter * 2) * 0.86);
@@ -48,6 +54,7 @@ export function RevealScreen({ content, onOpenRoom }: RevealProps) {
     still: RoomStill,
     label: string,
     below?: React.ReactNode,
+    today = false,
   ) => (
     <Animated.View
       key={key}
@@ -63,7 +70,9 @@ export function RevealScreen({ content, onOpenRoom }: RevealProps) {
     >
       <RoomStillView
         still={still}
-        label={label}
+        label={today ? `${label}. ${t("reveal.today")}` : label}
+        // A real room never shows a drawn stand-in.
+        drawn={content.sample}
         style={{
           aspectRatio: STILL_ASPECT,
           borderTopLeftRadius: radius.card,
@@ -73,6 +82,23 @@ export function RevealScreen({ content, onOpenRoom }: RevealProps) {
           borderCurve: "continuous",
         }}
       />
+      {today ? (
+        // There is no picture of this look yet: say the photo is the room as it is.
+        <View
+          testID={`reveal-today-${key}`}
+          style={{
+            position: "absolute",
+            top: spacing.lg,
+            left: spacing.lg,
+            paddingHorizontal: spacing.md,
+            paddingVertical: spacing.xs,
+            borderRadius: radius.pill,
+            backgroundColor: colors.surface,
+          }}
+        >
+          <Text variant="caption">{t("reveal.today")}</Text>
+        </View>
+      ) : null}
       {below}
     </Animated.View>
   );
@@ -139,12 +165,18 @@ export function RevealScreen({ content, onOpenRoom }: RevealProps) {
                       })}
                     </Text>
                   </View>,
+                  look.stillIsToday,
                 ),
               )}
         </ScrollView>
 
         <View style={{ flex: 1 }} />
         <View style={{ paddingHorizontal: spacing.gutter, gap: spacing.xl }}>
+          {illustrative && phase === "looks" ? (
+            <Text testID="reveal-illustrative" variant="caption" tone="secondary">
+              {t("reveal.illustrative")}
+            </Text>
+          ) : null}
           {content.sample && phase === "looks" ? (
             <Text variant="caption" tone="tertiary">
               {t("reveal.sample")}

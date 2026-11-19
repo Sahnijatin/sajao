@@ -84,10 +84,14 @@ export function photoFrames(photos: readonly PickedItem[]): ImportedFrame[] {
   }));
 }
 
-/** The capture to upload: keyframes without poses, and a one-line log that says where they came from. */
+/**
+ * The capture to upload: keyframes without poses, and a one-line log that
+ * says where they came from. "camera" is Take photos in the app; the others
+ * are pictures picked from the gallery.
+ */
 export function importedCapture(
   captureId: string,
-  source: "photos" | "video",
+  source: "photos" | "video" | "camera",
   frames: readonly ImportedFrame[],
 ): LocalCapture {
   const [first] = frames;
@@ -108,7 +112,7 @@ export function importedCapture(
     captureId,
     state,
     files: filesToUpload(state, { video: null, planes: null, sceneMesh: null, depth: null }),
-    origin: "gallery",
+    origin: source === "camera" ? "camera" : "gallery",
     firstPictureSize: { width_px: first.widthPx, height_px: first.heightPx },
   };
 }

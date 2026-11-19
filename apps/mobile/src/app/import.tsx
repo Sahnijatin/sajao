@@ -8,7 +8,7 @@ export default function ImportRoute() {
   const router = useRouter();
   return (
     <ImportMediaScreen
-      onScan={() => router.replace("/capture")}
+      onTakePhotos={() => router.replace("/photos")}
       // The new room is on My home; its stages show how it is getting on.
       onImported={(room) => router.replace({ pathname: "/generating", params: { room } })}
     />

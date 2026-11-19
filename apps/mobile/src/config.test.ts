@@ -8,7 +8,12 @@ const dev = {
 
 describe("app config", () => {
   it("works with nothing set: development, no backend", () => {
-    expect(parseConfig({})).toEqual({ environment: "development", apiUrl: null, supabase: null });
+    expect(parseConfig({})).toEqual({
+      environment: "development",
+      apiUrl: null,
+      supabase: null,
+      legal: null,
+    });
   });
 
   it("reads the environment's public values", () => {
@@ -16,7 +21,26 @@ describe("app config", () => {
       environment: "development",
       apiUrl: "https://api.example.com",
       supabase: { url: "https://example.supabase.co", publishableKey: "sb_publishable_abc" },
+      legal: null,
     });
+  });
+
+  it("reads the privacy policy and terms links, which go together and must be https", () => {
+    expect(
+      parseConfig({
+        EXPO_PUBLIC_PRIVACY_URL: "https://sajao.app/privacy",
+        EXPO_PUBLIC_TERMS_URL: "https://sajao.app/terms",
+      }).legal,
+    ).toEqual({ privacyUrl: "https://sajao.app/privacy", termsUrl: "https://sajao.app/terms" });
+    expect(() => parseConfig({ EXPO_PUBLIC_PRIVACY_URL: "https://sajao.app/privacy" })).toThrow(
+      /go together/,
+    );
+    expect(() =>
+      parseConfig({
+        EXPO_PUBLIC_PRIVACY_URL: "http://sajao.app/privacy",
+        EXPO_PUBLIC_TERMS_URL: "https://sajao.app/terms",
+      }),
+    ).toThrow(/https/);
   });
 
   it("refuses a secret or legacy key: only a publishable key may ship in the app", () => {

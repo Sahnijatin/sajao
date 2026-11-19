@@ -1,6 +1,7 @@
-import { Button, Card, Chip, Text, useTheme } from "@sajao/ui";
+import { Button, Card, Chip, Sheet, Text, useTheme } from "@sajao/ui";
 import { useRouter } from "expo-router";
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
+import type { DeleteResult } from "@/account/delete-account";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { Screen } from "@/components/screen";
@@ -23,10 +24,30 @@ function Setting({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-export function ProfileScreen() {
+export function ProfileScreen({
+  onDeleteAccount,
+}: {
+  /** Erases the account and everything kept for it; resolves with how it went. */
+  onDeleteAccount: () => Promise<DeleteResult>;
+}) {
   const { t } = useTranslation();
   const router = useRouter();
   const { tokens } = useTheme();
+  const [confirming, setConfirming] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [unreachable, setUnreachable] = useState(false);
+  const confirmDelete = async () => {
+    setDeleting(true);
+    setUnreachable(false);
+    const result = await onDeleteAccount();
+    setDeleting(false);
+    if (result === "deleted") {
+      setConfirming(false);
+      router.replace("/");
+    } else {
+      setUnreachable(true);
+    }
+  };
   const { language, units, setLanguage, setUnits } = useSettings();
   const activeLanguage = resolveLanguage(language);
   const taste = useTaste((state) => state.answers);
@@ -86,6 +107,43 @@ export function ProfileScreen() {
           {t("profile.unitsExample", { length: formatLength(3.4, units, t) })}
         </Text>
       </Setting>
+
+      <Card style={{ gap: tokens.spacing.xl }}>
+        <Text variant="label">{t("profile.account.title")}</Text>
+        <Text tone="secondary">{t("profile.account.body")}</Text>
+        <Button
+          testID="delete-account"
+          label={t("profile.account.delete")}
+          variant="outline"
+          onPress={() => setConfirming(true)}
+        />
+      </Card>
+
+      <Sheet isPresented={confirming} onDismiss={() => !deleting && setConfirming(false)}>
+        <View testID="delete-account-sheet" style={{ gap: tokens.spacing.xl }}>
+          <Text variant="heading" accessibilityRole="header">
+            {t("profile.account.confirmTitle")}
+          </Text>
+          <Text tone="secondary">{t("profile.account.confirmBody")}</Text>
+          {unreachable ? (
+            <Text testID="delete-account-unreachable" tone="secondary">
+              {t("profile.account.unreachable")}
+            </Text>
+          ) : null}
+          <Button
+            label={t(deleting ? "profile.account.deleting" : "profile.account.confirm")}
+            variant="ink"
+            disabled={deleting}
+            onPress={() => void confirmDelete()}
+          />
+          <Button
+            label={t("profile.account.keep")}
+            variant="ghost"
+            disabled={deleting}
+            onPress={() => setConfirming(false)}
+          />
+        </View>
+      </Sheet>
 
       {previewScreensEnabled() ? (
         <>
