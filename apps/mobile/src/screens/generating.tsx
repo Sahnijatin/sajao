@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import Animated, { cubicBezier } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { KNOWN_REASONS } from "@/components/job-progress";
 import {
   type GenerationSource,
   type GenerationStage,
@@ -19,9 +20,6 @@ export const HANDOVER_MS = 700;
 
 const breathe = { from: { opacity: 0.35 }, to: { opacity: 1 } };
 const easing = cubicBezier(...motion.ease.bezier);
-
-/** Failure reasons the app has words for; any other gets the general message. */
-const KNOWN_REASONS = ["no_walls", "no_ar_data", "upload"];
 
 type StageState = "done" | "current" | "next";
 

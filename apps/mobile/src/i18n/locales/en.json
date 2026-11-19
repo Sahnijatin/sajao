@@ -198,7 +198,21 @@
       "unknown": "Something went wrong on our side. Nothing is lost: tap Retry.",
       "back": "Back to My home",
       "retry": "Retry",
-      "no_ar_data": "Your photos are uploaded. Rooms from photos are not ready yet on our side."
+      "no_ar_data": "Your photos are uploaded. Rooms from photos are not ready yet on our side.",
+      "upload_incomplete": "Some of your photos didn't finish uploading. Tap Retry: nothing is lost.",
+      "photo_too_small": "A photo is too small to read the room from. Take the photos again.",
+      "photo_missing": "A photo is missing from the upload. Take the photos again.",
+      "photo_unreadable": "A photo couldn't be read. Take the photos again.",
+      "planes_unreadable": "The scan couldn't be read. Scan the room again.",
+      "floor_not_visible": "We couldn't see enough of the floor. Step back so the floor shows, then take the photos again.",
+      "space_not_supported": "We can't design this kind of space yet.",
+      "invalid_request": "Something went wrong on our side. Nothing is lost: tap Retry.",
+      "no_products": "We couldn't find products for this room within your budget. Try a higher budget.",
+      "no_layout_for_room": "We couldn't find a layout that works in this room yet.",
+      "nothing_fits": "None of our layouts fit what we could see of this room. Add a photo that shows more of the room, such as the wall facing the TV.",
+      "render_failed": "We couldn't draw the designs this time. Tap Retry.",
+      "timed_out": "This took too long on our side. Nothing is lost: tap Retry.",
+      "internal": "Something went wrong on our side. Nothing is lost: tap Retry."
     }
   },
   "reveal": {

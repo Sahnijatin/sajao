@@ -4,6 +4,7 @@ import { afterMeasured } from "@/rooms/flow";
 import { roomContent } from "@/rooms/room-content";
 import { retryRoomJob, roomGeneration } from "@/rooms/room-source";
 import { GeneratingScreen } from "@/screens/generating";
+import { useRoomJobs } from "@/state/room-jobs";
 import { useRooms } from "@/state/rooms";
 import { useTaste } from "@/state/taste";
 
@@ -14,6 +15,8 @@ export default function GeneratingRoute() {
   const { room } = useLocalSearchParams<{ room?: string }>();
   // With a server, the stages are the room's real job, then its design request.
   const real = useMemo(() => roomGeneration(), []);
+  // Whether asking again may help, as the server said when the job stopped.
+  const retryable = useRoomJobs((state) => state.jobs[room ?? ""]?.retryable !== false);
   if (!room) return <Redirect href="/" />;
   const toRoom = { pathname: "/room/[id]", params: { id: room } } as const;
   // A scan of several areas stops once to ask which one to redesign.
@@ -45,7 +48,8 @@ export default function GeneratingRoute() {
           );
         }}
         onLeave={() => router.dismissTo("/")}
-        onRetry={() => void retryRoomJob(room)}
+        // Retry only when the server says asking again may help.
+        onRetry={retryable ? () => void retryRoomJob(room) : undefined}
       />
     );
   }

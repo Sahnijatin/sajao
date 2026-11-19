@@ -5,6 +5,8 @@ import {
   areasFromTwin,
   failureOf,
   finishedStages,
+  fitCheckedOf,
+  retryableOf,
   heroViewsFrom,
   isTwin,
   looksFrom,
@@ -279,6 +281,22 @@ describe("real progress for a room", () => {
     expect(run.api.requestDesigns).not.toHaveBeenCalled();
   });
 
+  it("stops with the room's own reason when designing fails, such as nothing fits", async () => {
+    const failedDesigning: RoomJob = {
+      id: "server-room",
+      status: "ready",
+      stages: [],
+      stage: "failed",
+      failure: { reason: "nothing_fits", retryable: false, stage: "designing" },
+    };
+    const run = setup([job("done", "done"), failedDesigning], true, twinFixture, {
+      jobs: [designsJob("working")],
+    });
+    await run.tick(0);
+    expect(run.failed).toEqual(["nothing_fits"]);
+    expect(run.delivered).toEqual([]);
+  });
+
   it("keeps asking for designs through a dropped connection", async () => {
     const run = setup([job("done", "done")], true, twinFixture, {
       jobs: [new Error("offline"), designsJob("ready", threeDesigns)],
@@ -372,5 +390,47 @@ describe("a scan that went through more than one area", () => {
     const content = contentFromTwin(split, photos);
     expect(content.areas.map((area) => area.id)).toEqual(["a1", "a2"]);
     expect(content.heroViews.map((view) => view.id)).toEqual(["k1", "k2"]);
+  });
+});
+
+describe("the room's status from a server that sends stage and failure", () => {
+  const status = (stage: string, failure: RoomJob["failure"] = null): RoomJob => ({
+    id: "server-room",
+    status: "working",
+    stages: [],
+    stage,
+    failure,
+  });
+
+  it("counts the room read from designing on, whatever the older rows say", () => {
+    expect(finishedStages(status("uploaded"))).toBe(0);
+    expect(finishedStages(status("reading"))).toBe(0);
+    for (const stage of ["designing", "rendering", "ready"]) {
+      expect(finishedStages(status(stage))).toBe(2);
+    }
+    const failedDesigning = { reason: "nothing_fits", retryable: false, stage: "designing" };
+    expect(finishedStages(status("failed", failedDesigning))).toBe(2);
+    expect(finishedStages(status("failed", { ...failedDesigning, stage: "reading" }))).toBe(0);
+  });
+
+  it("gives the failure's reason and whether asking again may help", () => {
+    const failure = { reason: "nothing_fits", retryable: false, stage: "designing" };
+    expect(failureOf(status("failed", failure))).toBe("nothing_fits");
+    expect(retryableOf(status("failed", failure))).toBe(false);
+    expect(failureOf(status("designing"))).toBeNull();
+    expect(failureOf(status("failed"))).toBe("internal");
+    expect(retryableOf(status("reading"))).toBe(true);
+  });
+
+  it("lists the items whose fit was checked; none when the server does not say", () => {
+    const withItems: RoomJob = {
+      ...status("ready"),
+      items: [
+        { design_id: "d1", item_id: "sofa", fit_checked: true },
+        { design_id: "d1", item_id: "lamp", fit_checked: false },
+      ],
+    };
+    expect(fitCheckedOf(withItems)).toEqual(["d1:sofa"]);
+    expect(fitCheckedOf(status("ready"))).toBeNull();
   });
 });

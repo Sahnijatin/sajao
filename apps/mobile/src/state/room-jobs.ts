@@ -10,6 +10,8 @@ export interface RoomJobState {
   finished: number;
   /** The server's short reason code, or "upload", when the job failed. */
   reason?: string;
+  /** False when asking again cannot help: the photos themselves must change. */
+  retryable?: boolean;
 }
 
 interface RoomJobs {

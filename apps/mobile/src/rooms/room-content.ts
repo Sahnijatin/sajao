@@ -73,6 +73,12 @@ export interface RoomContent {
    * their photos and measurements.
    */
   areas: readonly RoomArea[];
+  /**
+   * The items whose fit the verifier checked against measured sizes, as
+   * "design:item". Only these can be said to fit. Unset when the server does
+   * not say, as an older one does not.
+   */
+  fitChecked?: readonly string[] | null;
 }
 
 /** True when the scan covers more than one area, so one must be chosen to redesign. */

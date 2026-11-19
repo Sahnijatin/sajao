@@ -7,7 +7,25 @@ import { GENERATION_STAGES } from "@/rooms/generation";
 import type { RoomJobState } from "@/state/room-jobs";
 
 /** Reasons the app has words for; any other gets the general message. */
-const KNOWN_REASONS = ["no_walls", "no_ar_data", "upload"];
+export const KNOWN_REASONS: readonly string[] = [
+  "no_walls",
+  "no_ar_data",
+  "upload",
+  "upload_incomplete",
+  "photo_too_small",
+  "photo_missing",
+  "photo_unreadable",
+  "planes_unreadable",
+  "floor_not_visible",
+  "space_not_supported",
+  "invalid_request",
+  "no_products",
+  "no_layout_for_room",
+  "nothing_fits",
+  "render_failed",
+  "timed_out",
+  "internal",
+];
 
 export function JobProgress({ job, onRetry }: { job: RoomJobState; onRetry?: () => void }) {
   const { t } = useTranslation();
@@ -19,7 +37,10 @@ export function JobProgress({ job, onRetry }: { job: RoomJobState; onRetry?: () 
       <Card testID="job-failed" style={{ gap: spacing.xl }}>
         <Text variant="bodyStrong">{t("generating.failed.title")}</Text>
         <Text tone="secondary">{t(`generating.failed.${reason}`)}</Text>
-        {onRetry ? <Button label={t("generating.failed.retry")} onPress={onRetry} /> : null}
+        {/* Retry only when the server says asking again may help. */}
+        {onRetry && job.retryable !== false ? (
+          <Button label={t("generating.failed.retry")} onPress={onRetry} />
+        ) : null}
       </Card>
     );
   }

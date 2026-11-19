@@ -540,7 +540,7 @@ function ShoppingTabBody({
   const { t } = useTranslation();
   const { tokens } = useTheme();
   const { colors, spacing } = tokens;
-  const shopping = shoppingFor(look.design);
+  const shopping = shoppingFor(look.design, content.fitChecked);
   // "This fits" is only said of a room that was taped or measured by the scan.
   const fitClaims = fitClaimsAllowed(content.confidence);
   return (
