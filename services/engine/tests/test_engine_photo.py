@@ -250,3 +250,21 @@ def test_an_estimated_room_is_placed_at_nominal_sizes_and_a_measured_one_keeps_i
     )
     assert all(w.margin_m == pytest.approx(0.4) for w in taped.walls)
     assert not estimated.fit_claims and taped.fit_claims
+
+
+def test_a_long_catalog_title_still_makes_a_valid_design() -> None:
+    from sajao_engine.solver import LABEL_MAX, short_label
+
+    long = (
+        "Melvina Sheesham Wood TV Unit with Two Drawers and Open Shelf Storage"
+        " (Honey Finish) for Living Room"
+    )
+    cut = short_label(long)
+    assert len(cut) <= LABEL_MAX and cut.endswith("...") and cut.startswith("Melvina Sheesham")
+    assert short_label("Sofa") == "Sofa"
+
+    twin = room_twin()
+    kit = living_kit()
+    titled = [p.model_copy(update={"title": long}) for p in kit.values()]
+    out = three_designs(twin, brief(twin, budget_rupees=300_000), titled, uuid.uuid4(), WHEN)
+    assert all(r.result.design is not None for r in out)

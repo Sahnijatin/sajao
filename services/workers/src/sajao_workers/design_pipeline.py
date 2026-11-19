@@ -21,6 +21,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
 
+from pydantic import ValidationError
+
 from sajao_engine.intents import three_designs
 from sajao_engine.photo import visible_floor
 from sajao_schemas import to_json_dict
@@ -125,6 +127,11 @@ async def run_design_request(
             created_at,
             in_view=in_view_for(room),
         )
+    except ValidationError:
+        # A design that breaks the contract is our bug, not the room's: say so.
+        logger.exception("a design for request %s broke the contract", request_id)
+        await move("placement", "failed", "internal")
+        return DesignOutcome("failed", [], "internal")
     except ValueError as error:
         logger.exception("no design for request %s", request_id)
         await move("placement", "failed", "no_layout_for_room")
