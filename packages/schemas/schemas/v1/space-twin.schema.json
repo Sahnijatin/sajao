@@ -18,8 +18,7 @@
     "shell",
     "objects",
     "keyframes",
-    "scale",
-    "direction"
+    "scale"
   ],
   "properties": {
     "schema_version": {
@@ -75,7 +74,8 @@
       "$ref": "space-profile.schema.json#/$defs/ScaleEvidence"
     },
     "direction": {
-      "$ref": "space-profile.schema.json#/$defs/SpaceDirection"
+      "$ref": "space-profile.schema.json#/$defs/SpaceDirection",
+      "description": "Compass bearing of the space and how sure it is. Absent when no compass reading was taken (photos imported from the gallery); Vastu stays off until the person confirms a direction."
     },
     "splat": {
       "$ref": "#/$defs/SplatRef"

@@ -2760,7 +2760,6 @@
         "openings",
         "fixtures",
         "existing_items",
-        "direction",
         "scale"
       ],
       "properties": {
@@ -2841,7 +2840,8 @@
           "$ref": "#/$defs/SpaceLight"
         },
         "direction": {
-          "$ref": "#/$defs/SpaceDirection"
+          "$ref": "#/$defs/SpaceDirection",
+          "description": "Absent when the twin it comes from has no direction; Vastu stays off until the person confirms one."
         },
         "scale": {
           "$ref": "#/$defs/ScaleEvidence"
@@ -2866,8 +2866,7 @@
         "shell",
         "objects",
         "keyframes",
-        "scale",
-        "direction"
+        "scale"
       ],
       "properties": {
         "schema_version": {
@@ -2926,7 +2925,8 @@
           "$ref": "#/$defs/ScaleEvidence"
         },
         "direction": {
-          "$ref": "#/$defs/SpaceDirection"
+          "$ref": "#/$defs/SpaceDirection",
+          "description": "Compass bearing of the space and how sure it is. Absent when no compass reading was taken (photos imported from the gallery); Vastu stays off until the person confirms a direction."
         },
         "splat": {
           "$ref": "#/$defs/SplatRef"

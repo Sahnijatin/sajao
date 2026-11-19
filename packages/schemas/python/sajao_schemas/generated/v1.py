@@ -1962,7 +1962,12 @@ class SpaceProfile(BaseModel):
     fixtures: list[Fixture]
     existing_items: list[ExistingItem]
     light: SpaceLight | None = None
-    direction: SpaceDirection
+    direction: Annotated[
+        SpaceDirection | None,
+        Field(
+            description="Absent when the twin it comes from has no direction; Vastu stays off until the person confirms one."
+        ),
+    ] = None
     scale: ScaleEvidence
 
 
@@ -2144,7 +2149,12 @@ class SpaceTwin(BaseModel):
         ),
     ]
     scale: ScaleEvidence
-    direction: SpaceDirection
+    direction: Annotated[
+        SpaceDirection | None,
+        Field(
+            description="Compass bearing of the space and how sure it is. Absent when no compass reading was taken (photos imported from the gallery); Vastu stays off until the person confirms a direction."
+        ),
+    ] = None
     splat: SplatRef | None = None
     phone_splats: Annotated[
         list[PhoneSplat] | None,
