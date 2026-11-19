@@ -233,3 +233,20 @@ def test_picked_styles_come_first_within_the_intent() -> None:
         plain.id,
         tagged.id,
     }
+
+
+def test_an_estimated_room_is_placed_at_nominal_sizes_and_a_measured_one_keeps_its_band() -> None:
+    from sajao_engine.room import ESTIMATED_CLEARANCE_M
+    from sajao_schemas.generated.v1 import MeasurementConfidence
+
+    twin = room_twin(band=0.4)  # wide bands, as from a single photo
+    estimated = room_from_twin(twin)
+    assert estimated.confidence == "estimated"
+    assert all(w.margin_m == ESTIMATED_CLEARANCE_M for w in estimated.walls)
+    taped = room_from_twin(
+        twin.model_copy(
+            update={"confidence": MeasurementConfidence(level="taped", basis="tape", tape_values=2)}
+        )
+    )
+    assert all(w.margin_m == pytest.approx(0.4) for w in taped.walls)
+    assert not estimated.fit_claims and taped.fit_claims
