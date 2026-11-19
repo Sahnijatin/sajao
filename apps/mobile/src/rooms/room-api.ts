@@ -6,9 +6,16 @@ import type { Design, SpaceTwin } from "@sajao/schemas";
 import { type DesignsJob, type DesignsRequest, readDesigns } from "./designs-api";
 import type { GenerationSource } from "./generation";
 import { measuresFromTwin } from "./measures";
-import { confidenceOf } from "./room-shape";
-import { designsOffered, type HeroView, type RoomContent, type RoomLook } from "./room-content";
+import { confidenceOf, EDGE_TOLERANCE_M } from "./room-shape";
+import {
+  designsOffered,
+  type HeroView,
+  type RoomArea,
+  type RoomContent,
+  type RoomLook,
+} from "./room-content";
 import type { RoomJob } from "./room-job";
+import type { RoomPhoto } from "./rooms";
 
 // The room's job is the capture session's type: the upload makes the room
 // and follows its measuring; this follows it to the end and reads its twin.
@@ -76,29 +83,73 @@ export function isTwin(data: unknown): data is SpaceTwin {
   );
 }
 
-/**
- * What the Room screen shows for a real room, from its twin. Hero photos and
- * designs are not here yet: the API serves no picture links, and designs are
- * asked for separately.
- */
-export function contentFromTwin(twin: SpaceTwin): RoomContent {
-  return {
-    sample: false,
-    spaceType: twin.space_type,
-    heroViews: [],
-    looks: [],
-    measures: measuresFromTwin(twin),
-    shell: twin.shell,
-    direction: twin.direction ?? null,
-    // The level comes from the server or not at all; a twin split into areas is not served yet.
-    confidence: confidenceOf(twin),
-    areas: [],
-  };
+type Metres = { x_m: number; y_m: number };
+
+function distanceToSegment(p: Metres, a: Metres, b: Metres): number {
+  const dx = b.x_m - a.x_m;
+  const dy = b.y_m - a.y_m;
+  const lengthSq = dx * dx + dy * dy;
+  const t =
+    lengthSq === 0
+      ? 0
+      : Math.max(0, Math.min(1, ((p.x_m - a.x_m) * dx + (p.y_m - a.y_m) * dy) / lengthSq));
+  return Math.hypot(p.x_m - (a.x_m + t * dx), p.y_m - (a.y_m + t * dy));
+}
+
+/** Whether a point lies on the outline of a floor polygon, within the edge tolerance. */
+function onOutline(point: Metres, polygon: readonly Metres[]): boolean {
+  return polygon.some(
+    (a, index) =>
+      distanceToSegment(point, a, polygon[(index + 1) % polygon.length] as Metres) <=
+      EDGE_TOLERANCE_M,
+  );
 }
 
 /** The person's own photos of the room as its hero views, in the order taken. */
-export function heroViewsFrom(photos: readonly string[]): HeroView[] {
-  return photos.map((uri, index) => ({ id: `photo-${index + 1}`, still: { kind: "image", uri } }));
+export function heroViewsFrom(photos: readonly RoomPhoto[]): HeroView[] {
+  return photos.map((photo) => ({ id: photo.id, still: { kind: "image", uri: photo.uri } }));
+}
+
+/**
+ * The room's areas, from its twin, when the scan went through more than one
+ * space. Each area gets its own floor, the walls and openings along it, the
+ * objects in it, its photo when this phone has it, and its own confidence.
+ */
+export function areasFromTwin(twin: SpaceTwin, photos: readonly RoomPhoto[] = []): RoomArea[] {
+  const areas = twin.areas ?? [];
+  if (areas.length < 2) return [];
+  return areas.map((area) => {
+    const polygon = area.floor_polygon;
+    // An area can have no wall of its own on record; the plan then draws its floor alone.
+    const walls = twin.shell.walls.filter(
+      (wall) => onOutline(wall.start, polygon) && onOutline(wall.end, polygon),
+    ) as SpaceTwin["shell"]["walls"];
+    const wallIds = new Set(walls.map((wall) => wall.id));
+    const shell = {
+      ...twin.shell,
+      floor_polygon: polygon,
+      walls,
+      openings: twin.shell.openings.filter((opening) => wallIds.has(opening.wall_id)),
+    };
+    const inArea = new Set(area.object_ids);
+    const areaTwin = {
+      ...twin,
+      shell,
+      objects: twin.objects.filter((object) => inArea.has(object.id)),
+    };
+    const photo = photos.find((each) => each.id === area.photo_keyframe_id);
+    const own = photos.filter((each) => area.keyframe_ids.includes(each.id));
+    return {
+      id: area.id,
+      spaceType: area.space_type ?? null,
+      photo: photo ? { kind: "image", uri: photo.uri } : null,
+      heroViews: heroViewsFrom(own),
+      measures: measuresFromTwin(areaTwin),
+      shell,
+      // An area's own level when the twin gives one, else the room's.
+      confidence: confidenceOf(area.confidence ? area : twin),
+    };
+  });
 }
 
 /**
@@ -110,6 +161,25 @@ export function looksFrom(designs: readonly Design[], heroViews: readonly HeroVi
   return designs.map((design) => ({ design, still: today, stillIsToday: true }));
 }
 
+/**
+ * What the Room screen shows for a real room, from its twin and the photos
+ * this phone took of it. Designs are asked for separately.
+ */
+export function contentFromTwin(twin: SpaceTwin, photos: readonly RoomPhoto[] = []): RoomContent {
+  return {
+    sample: false,
+    spaceType: twin.space_type,
+    heroViews: heroViewsFrom(photos),
+    looks: [],
+    measures: measuresFromTwin(twin),
+    shell: twin.shell,
+    direction: twin.direction ?? null,
+    // The level comes from the server or not at all.
+    confidence: confidenceOf(twin),
+    areas: areasFromTwin(twin, photos),
+  };
+}
+
 export interface ApiGenerationOptions {
   /** The scan the room was made from. */
   captureIdOf(roomId: string): string | null;
@@ -117,6 +187,8 @@ export interface ApiGenerationOptions {
   uploaded(captureId: string): Promise<boolean>;
   /** Called with the room's content once its twin is read. */
   onReady(roomId: string, content: RoomContent): void;
+  /** The photos this phone took of the room, to show as the room and its areas. */
+  photosOf?(roomId: string): readonly RoomPhoto[];
   /**
    * Designs, once the room is measured. Left out, the room stops at its
    * measurements and designs are asked for later.
@@ -201,7 +273,7 @@ export function apiGeneration(api: RoomApi, options: ApiGenerationOptions): Gene
           const twin = await api.getTwin(serverId);
           if (stopped) return;
           if (!isTwin(twin)) return fail("bad_twin");
-          options.onReady(roomId, contentFromTwin(twin));
+          options.onReady(roomId, contentFromTwin(twin, options.photosOf?.(roomId) ?? []));
           await askForDesigns(serverId, twin);
         } catch {
           // A dropped connection is not a failed room: look again shortly.

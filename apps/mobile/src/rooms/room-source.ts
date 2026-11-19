@@ -12,13 +12,11 @@ import {
   apiGeneration,
   contentFromTwin,
   failureOf,
-  heroViewsFrom,
   isTwin,
   looksFrom,
   type RoomApi,
 } from "./room-api";
 import { roomApi } from "./room-client";
-import type { RoomContent } from "./room-content";
 
 let api: RoomApi | null | undefined;
 /** The room API for this build, made once; null when no server is configured. */
@@ -30,11 +28,8 @@ export function configuredRoomApi(): RoomApi | null {
 const roomOf = (roomId: string) => useRooms.getState().rooms.find((room) => room.id === roomId);
 const captureIdOf = (roomId: string) => roomOf(roomId)?.captureId ?? null;
 
-/** The room's content from its twin, with the person's own photos as its views. */
-function withPhotos(roomId: string, content: RoomContent): RoomContent {
-  const photos = roomOf(roomId)?.photos ?? [];
-  return photos.length > 0 ? { ...content, heroViews: heroViewsFrom(photos) } : content;
-}
+/** The photos this phone took of a room; none for an AR scan. */
+const photosOf = (roomId: string) => roomOf(roomId)?.photos ?? [];
 
 /** Resolves once the last scan's upload has finished: true when it is up, false when it failed. */
 function uploaded(captureId: string): Promise<boolean> {
@@ -61,8 +56,8 @@ export function roomGeneration(): GenerationSource | null {
   return apiGeneration(client, {
     captureIdOf,
     uploaded,
-    onReady: (roomId, content) =>
-      useRoomData.getState().setContent(roomId, withPhotos(roomId, content)),
+    photosOf,
+    onReady: (roomId, content) => useRoomData.getState().setContent(roomId, content),
     designs: {
       requestFor(roomId) {
         const answers = useTaste.getState().answers;
@@ -98,7 +93,7 @@ export async function loadRoomContent(roomId: string): Promise<void> {
     if (job.status !== "ready" || failureOf(job)) return;
     const twin = await client.getTwin(job.id);
     if (!isTwin(twin)) return;
-    const content = withPhotos(roomId, contentFromTwin(twin));
+    const content = contentFromTwin(twin, photosOf(roomId));
     useRoomData.getState().setContent(roomId, content);
     // Designs, if they were asked for and are ready.
     const read = readDesigns(await client.getDesigns(job.id));

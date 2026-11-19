@@ -45,8 +45,10 @@ describe("a room's design ids", () => {
     useRooms.setState({ rooms: [] });
     let n = 0;
     const newId = () => `id-${(n += 1)}`;
-    const room = useRooms.getState().addRoomForCapture("cap", 0, ["file:///a.jpg"]);
-    expect(room.photos).toEqual(["file:///a.jpg"]);
+    const room = useRooms
+      .getState()
+      .addRoomForCapture("cap", 0, [{ id: "k1", uri: "file:///a.jpg" }]);
+    expect(room.photos).toEqual([{ id: "k1", uri: "file:///a.jpg" }]);
     const first = useRooms.getState().designIdsFor(room.id, newId, new Date(0));
     expect(first).toEqual({
       requestId: "id-1",
