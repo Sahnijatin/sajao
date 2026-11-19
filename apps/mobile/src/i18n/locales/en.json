@@ -501,7 +501,8 @@
     "areas": "Choose an area",
     "import": "Photos or a video",
     "photos": "Take photos",
-    "budget": "Budget"
+    "budget": "Budget",
+    "consent": "Before you start"
   },
   "areas": {
     "title": "Which one should we redesign?",
@@ -571,5 +572,17 @@
     "title": "Budget for this room",
     "body": "Started from your last room. Change it if this room is different.",
     "continue": "Show me designs"
+  },
+  "consent": {
+    "title": "Before you start",
+    "points": {
+      "photos": "Your photos and scans go to Sajao to measure your room and make its designs.",
+      "people": "Keep people and private things out of frame.",
+      "delete": "You can delete your account and everything kept for it from Profile at any time."
+    },
+    "agree": "By continuing you agree to the privacy policy and terms.",
+    "privacy": "Privacy policy",
+    "terms": "Terms",
+    "continue": "Agree and continue"
   }
 }
