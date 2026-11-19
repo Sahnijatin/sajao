@@ -39,6 +39,17 @@ export interface SwipeCard {
   traits: readonly Trait[];
   /** Where the card sits on each readable attribute, 0 to 1. */
   attributes: Attributes;
+  /** The room photo shown on the card; the swipes are not shown without one for every card. */
+  image?: number | string;
+}
+
+/**
+ * Whether the swipe step can be shown: every card has its picture. A card
+ * with no picture is a blank card, so until the deck's images exist the
+ * step is left out and taste is asked from context and budget alone.
+ */
+export function swipesReady(deck: readonly SwipeCard[]): boolean {
+  return deck.length > 0 && deck.every((card) => card.image !== undefined);
 }
 
 export interface Attributes {

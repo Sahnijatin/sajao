@@ -7,7 +7,7 @@ import type { Design } from "@sajao/schemas";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, View } from "react-native";
-import { designPlan, type PlanShell, type Px } from "@/rooms/design-plan";
+import { designPlan, placeLabels, type PlanShell, type Px } from "@/rooms/design-plan";
 import { formatLength, type LengthUnits } from "@/utils/format-length";
 import { PlanCanvas } from "./plan-canvas";
 
@@ -81,6 +81,31 @@ export function DesignPlanView({
     () => designPlan(design, shell, { width, height, padding: PADDING }, { selectedId, gaps }),
     [design, shell, width, height, selectedId, gaps],
   );
+  // Labels never overlap: the picked piece's gap first, then the walls, then other gaps.
+  const labels = useMemo(
+    () =>
+      placeLabels(
+        [
+          ...plan.walls.map((wall) => ({
+            id: `wall-${wall.id}`,
+            at: wall.at,
+            text: formatLength(wall.metres, units, t),
+            tone: "wall" as const,
+            priority: 1,
+          })),
+          ...plan.clearances.map((gap) => ({
+            id: `gap-${gap.itemId}`,
+            at: { x: (gap.from.x + gap.to.x) / 2, y: (gap.from.y + gap.to.y) / 2 },
+            text: formatLength(gap.metres, units, t),
+            tone: "gap" as const,
+            priority: gap.itemId === selectedId ? 0 : 2,
+          })),
+        ],
+        { width, height },
+        LABEL,
+      ),
+    [plan, units, t, selectedId, width, height],
+  );
   return (
     <View
       testID="room-plan"
@@ -117,16 +142,8 @@ export function DesignPlanView({
             );
           })
         : null}
-      {plan.walls.map((wall) => (
-        <Label key={wall.id} at={wall.at} tone="wall" text={formatLength(wall.metres, units, t)} />
-      ))}
-      {plan.clearances.map((gap) => (
-        <Label
-          key={gap.itemId}
-          at={{ x: (gap.from.x + gap.to.x) / 2, y: (gap.from.y + gap.to.y) / 2 }}
-          tone="gap"
-          text={formatLength(gap.metres, units, t)}
-        />
+      {labels.map((label) => (
+        <Label key={label.id} at={label.at} tone={label.tone} text={label.text} />
       ))}
     </View>
   );

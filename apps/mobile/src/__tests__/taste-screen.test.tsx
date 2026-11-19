@@ -28,7 +28,7 @@ beforeEach(async () => {
 });
 
 describe("taste onboarding screen", () => {
-  it("asks for a little context before the swipes", async () => {
+  it("asks for a little context, then the budget: no blank swipe cards", async () => {
     await show();
     expect(screen.getByText("A little about you")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Continue" }).props.accessibilityState.disabled).toBe(
@@ -38,8 +38,9 @@ describe("taste onboarding screen", () => {
     await press("A couple");
     await press("Rented");
     await press("Continue");
-    expect(screen.getByText("Would you live here?")).toBeTruthy();
-    expect(screen.getByText("1 of 10")).toBeTruthy();
+    // The deck has no pictures yet, so the swipe step is left out.
+    expect(screen.queryByText("Would you live here?")).toBeNull();
+    expect(screen.getAllByText("What is your budget?").length).toBeGreaterThan(0);
   });
 
   it("runs the whole flow and hands back the answers", async () => {
@@ -48,16 +49,6 @@ describe("taste onboarding screen", () => {
     await press("A couple");
     await press("Rented");
     await press("Continue");
-
-    let swipes = 0;
-    while (screen.queryByText("Would you live here?")) {
-      await press(swipes % 3 === 0 ? "Not for me" : "Love it");
-      swipes += 1;
-    }
-    expect(swipes).toBeGreaterThanOrEqual(8);
-    expect(swipes).toBeLessThanOrEqual(12);
-
-    expect(screen.getAllByText("What is your budget?").length).toBeGreaterThan(0);
     await press("₹1,50,000");
     await press("Can stretch 10%");
     await press("Sofa");
@@ -70,7 +61,7 @@ describe("taste onboarding screen", () => {
       flexibility: "stretch_10",
     });
     expect(answers.must_haves).toEqual(["sofa"]);
-    expect(answers.swipes).toHaveLength(swipes);
+    expect(answers.swipes).toEqual([]);
   });
 
   it("never shows the age band back after it is asked", async () => {
@@ -80,18 +71,8 @@ describe("taste onboarding screen", () => {
     await press("Owned");
     await press("Continue");
     expect(screen.queryByText(/55/)).toBeNull();
-    expect(screen.queryByText(/age/i)).toBeNull();
-  });
-
-  it("shows your taste so far once there is something to say", async () => {
-    await show();
-    await press("25 to 34");
-    await press("Pets");
-    await press("Owned");
-    await press("Continue");
-    expect(screen.queryByText("YOUR TASTE SO FAR")).toBeNull();
-    await press("Love it");
-    expect(screen.getByText("YOUR TASTE SO FAR")).toBeTruthy();
+    // "Storage" is a must-have on the budget step; the age band itself never shows.
+    expect(screen.queryByText(/\bage\b/i)).toBeNull();
   });
 
   it("renders in Hindi", async () => {

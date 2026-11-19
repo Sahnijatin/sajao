@@ -16,6 +16,7 @@ import {
   styleBlend,
   type Swipe,
   type SwipeCard,
+  swipesReady,
   tasteSoFar,
   type Trait,
   updateBelief,
@@ -106,6 +107,8 @@ export function canContinue(state: TasteState): boolean {
 
 export function tasteReducer(deck: readonly SwipeCard[]) {
   const seen = (state: TasteState) => new Set(state.swipes.map((swipe) => swipe.card_id));
+  // No pictures for the cards yet: the swipes are left out.
+  const withSwipes = swipesReady(deck);
 
   return (state: TasteState, event: TasteEvent): TasteState => {
     switch (event.type) {
@@ -129,7 +132,7 @@ export function tasteReducer(deck: readonly SwipeCard[]) {
       case "continue": {
         if (!canContinue(state)) return state;
         if (state.step === "budget") return { ...state, step: "done" };
-        const done = isDone(state.belief, state.swipes, deck.length);
+        const done = !withSwipes || isDone(state.belief, state.swipes, deck.length);
         return done
           ? { ...state, step: "budget", card: null }
           : { ...state, step: "swipes", card: nextCard(state.belief, deck, seen(state)) };
@@ -145,6 +148,7 @@ export function tasteReducer(deck: readonly SwipeCard[]) {
       case "back": {
         if (state.step === "swipes") return { ...state, step: "context" };
         if (state.step === "budget") {
+          if (!withSwipes) return { ...state, step: "context" };
           return { ...state, step: "swipes", card: nextCard(state.belief, deck, seen(state)) };
         }
         return state;

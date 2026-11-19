@@ -13,6 +13,8 @@ export interface RoomStillViewProps {
   label?: string;
   style?: StyleProp<ViewStyle>;
   testID?: string;
+  /** The picture could not be loaded, such as a photo the phone has since cleared. */
+  onMissing?: () => void;
   /**
    * Draw a stand-in room where there is no picture yet, in builds that allow
    * samples. Off for a person's own room: its tile stays plain until a real
@@ -144,7 +146,14 @@ function DrawnRoom({ look, view = 0 }: { look: "before" | "after"; view?: 0 | 1 
   );
 }
 
-export function RoomStillView({ still, label, style, testID, drawn = true }: RoomStillViewProps) {
+export function RoomStillView({
+  still,
+  label,
+  style,
+  testID,
+  drawn = true,
+  onMissing,
+}: RoomStillViewProps) {
   const { tokens } = useTheme();
   return (
     <View
@@ -156,7 +165,12 @@ export function RoomStillView({ still, label, style, testID, drawn = true }: Roo
     >
       {
         still.kind === "image" ? (
-          <Image source={{ uri: still.uri }} resizeMode="cover" style={{ flex: 1 }} />
+          <Image
+            source={{ uri: still.uri }}
+            resizeMode="cover"
+            style={{ flex: 1 }}
+            onError={onMissing}
+          />
         ) : drawn && samplesAllowed() ? (
           <DrawnRoom look={still.look} view={still.view} />
         ) : null /* A store build never shows a drawn room: the tile stays plain until the photo exists. */

@@ -247,3 +247,62 @@ export function designPlan(
     scale,
   };
 }
+
+/** A label written over the plan, centred on `at`. */
+export interface PlanLabel {
+  id: string;
+  at: Px;
+  text: string;
+  tone: "wall" | "gap";
+  /** Lower goes first when labels would overlap. */
+  priority: number;
+}
+
+/**
+ * Where the plan's labels go so that none overlaps another or runs off the
+ * plan. In order of priority, each label takes its own spot or the nearest
+ * free one just above, below or beside it; a label with no free spot is
+ * left out rather than drawn over another.
+ */
+export function placeLabels(
+  labels: readonly PlanLabel[],
+  plan: { width: number; height: number },
+  size: { width: number; height: number },
+): PlanLabel[] {
+  const placed: PlanLabel[] = [];
+  const boxOf = (at: Px) => ({
+    left: at.x - size.width / 2,
+    right: at.x + size.width / 2,
+    top: at.y - size.height / 2,
+    bottom: at.y + size.height / 2,
+  });
+  const fits = (at: Px) => {
+    const box = boxOf(at);
+    if (box.left < 0 || box.top < 0 || box.right > plan.width || box.bottom > plan.height) {
+      return false;
+    }
+    return placed.every((other) => {
+      const them = boxOf(other.at);
+      return (
+        box.right <= them.left ||
+        box.left >= them.right ||
+        box.bottom <= them.top ||
+        box.top >= them.bottom
+      );
+    });
+  };
+  const ordered = [...labels].sort((a, b) => a.priority - b.priority);
+  for (const label of ordered) {
+    const { x, y } = label.at;
+    const candidates: Px[] = [
+      { x, y },
+      { x, y: y - size.height },
+      { x, y: y + size.height },
+      { x: x - size.width / 2, y },
+      { x: x + size.width / 2, y },
+    ];
+    const spot = candidates.find(fits);
+    if (spot) placed.push({ ...label, at: spot });
+  }
+  return placed;
+}
