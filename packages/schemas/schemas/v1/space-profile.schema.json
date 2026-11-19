@@ -22,7 +22,6 @@
     "openings",
     "fixtures",
     "existing_items",
-    "direction",
     "scale"
   ],
   "properties": {
@@ -97,7 +96,8 @@
       "$ref": "#/$defs/SpaceLight"
     },
     "direction": {
-      "$ref": "#/$defs/SpaceDirection"
+      "$ref": "#/$defs/SpaceDirection",
+      "description": "Absent when the twin it comes from has no direction; Vastu stays off until the person confirms one."
     },
     "scale": {
       "$ref": "#/$defs/ScaleEvidence"
