@@ -3175,3 +3175,143 @@ def first_design_smoke(
             for name, data in result["files"].items():
                 (target / name).write_bytes(data)
             print(json.dumps(result["summary"], indent=1))
+
+
+@app.function(
+    image=cpu_image,
+    volumes={"/work": vol, "/vol": spike_vol},
+    cpu=4,
+    memory=8192,
+    timeout=1800,
+    secrets=VISION_SECRETS,
+)
+def room_variation_cpu(scene: str, candidates: int, label: str, photos: int) -> dict[str, Any]:
+    """One uncached run of a photo room's stages (no design, no render): what was listed and
+    what was found, for run-to-run variation on the same room."""
+    import asyncio
+    import io
+    import time
+
+    import numpy as np
+    from PIL import Image
+
+    from sajao_workers.photo_pipeline import (
+        few_photo_stages,
+        photo_models,
+        photo_room_stages,
+        room_ledger,
+    )
+    from sajao_workers.pipeline import MEASURE, run_room
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    truth = _arkit_manifest(store, scene, candidates, y_up=True)
+    first = next(f for f in truth["frames"] if f["keyframe_id"] == "kf0007")
+
+    def heading(f: dict[str, Any]) -> Any:
+        d = np.asarray(f["c2w"])[:3, :3] @ np.array([0.0, 0.0, 1.0])
+        d[1] = 0.0
+        return d / (np.linalg.norm(d) + 1e-9)
+
+    picked = [first]
+    pool = [f for f in truth["frames"] if f["width"] >= f["height"] and f is not first]
+    while len(picked) < photos and pool:
+        best = max(pool, key=lambda f: min(1 - float(heading(f) @ heading(p)) for p in picked))
+        picked.append(best)
+        pool.remove(best)
+    shots: dict[str, bytes] = {}
+    for i, f in enumerate(picked):
+        img = Image.open(io.BytesIO(store.read_blob(f["image"]))).convert("RGB")
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=95, comment=label.encode())
+        shots[f"var/photo{i}.jpg"] = buf.getvalue()
+    capture = {
+        "schema_version": "1.0",
+        "id": "00000000-0000-4000-8000-00000000f090",
+        "user_id": "00000000-0000-4000-8000-000000000001",
+        "created_at": "2026-11-19T00:00:00Z",
+        "device": {"platform": "android", "tier": "budget", "has_ar": False},
+        "media": [],
+        "package": {
+            "ar": {"tracking": "none", "lidar": False, "depth": False},
+            "keyframes": [
+                {"id": f"k{i}", "image": key, "captured_at_ms": 500 * i, "sharpness": 1}
+                for i, key in enumerate(shots)
+            ],
+            "detections": [],
+            "sensor_log": "var/log.jsonl",
+        },
+    }
+
+    class Files:
+        def read(self, key: str) -> bytes:
+            return shots[key]
+
+    class Board:
+        def __init__(self) -> None:
+            self.twin: dict[str, Any] | None = None
+            self.failed: list[str] = []
+
+        async def set_stage(self, room_id, stage, status, detail=None, request_id=None) -> None:  # type: ignore[no-untyped-def]
+            if status == "failed":
+                self.failed.append(f"{stage}:{detail}")
+
+        async def set_space_twin(self, room_id: str, twin: dict[str, Any]) -> None:
+            self.twin = twin
+
+    ledger = room_ledger()
+    models = photo_models(
+        volume_invoke,
+        ledger,
+        poses_gpu=volume_invoke("twin_poses", run_splat) if photos > 1 else None,
+    )
+    board = Board()
+    started = time.time()
+    run = asyncio.run(
+        run_room(
+            StepRunner(store, max_attempts=2),
+            board,
+            Files(),
+            f"var-{label}",
+            capture,
+            (MEASURE,),
+            photo_room_stages(models),
+            few_photo_stages(models) if photos > 1 else (),
+        )
+    )
+    vol.commit()
+    twin = board.twin or {}
+    inventory = twin.get("inventory") or {}
+    return {
+        "label": label,
+        "photos": photos,
+        "outcome": run.outcome,
+        "failed": board.failed,
+        "seconds": round(time.time() - started, 1),
+        "charged_inr": round(run.cost_micro_inr / 1e6, 2),
+        "space_type": twin.get("space_type"),
+        "objects": sorted(o["category"] for o in twin.get("objects", [])),
+        "built_ins": sorted(b["category"] for b in twin.get("shell", {}).get("built_ins", [])),
+        "unplaced": sorted(u["name"] for u in inventory.get("unplaced", [])),
+        "openings": sorted(o["kind"] for o in twin.get("shell", {}).get("openings", [])),
+    }
+
+
+@app.local_entrypoint()
+def room_variation(
+    scene: str = "arkit_living_47331265",
+    runs: int = 5,
+    photos: str = "1,3",
+    out: str = "variation.json",
+) -> None:
+    import json
+
+    results = []
+    for count in (int(p) for p in photos.split(",")):
+        for n in range(runs):
+            result = room_variation_cpu.remote(scene, 40, f"v{count}p{n}", count)
+            print(
+                json.dumps({k: result[k] for k in ("label", "outcome", "seconds", "charged_inr")})
+            )
+            results.append(result)
+    Path(out).write_text(json.dumps(results, indent=1))

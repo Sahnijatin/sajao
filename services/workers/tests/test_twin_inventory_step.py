@@ -102,3 +102,20 @@ async def test_the_list_stands_when_the_cross_check_fails(tmp_path: Path) -> Non
     inventory = json.loads(runner.store.read_blob(result.outputs["inventory"]))
     assert inventory["listed_by"] == ["gemini-3-flash-preview"]
     assert result.meta["failed"] == ["cross_check"]
+
+
+async def test_a_photo_room_is_listed_photo_by_photo_and_the_lists_joined(tmp_path: Path) -> None:
+    runner, frames = setup(tmp_path, n=2)
+    lister = FakeProvider(
+        "lister", [listing(("sofa", "furniture")), listing(("tv cabinet", "furniture"))]
+    )
+    checker = FakeProvider("checker", [listing(("sofa", "furniture"))])
+    result = await runner.run(
+        inventory_step(gateway(lister), gateway(checker)), {"frames": frames}, {}
+    )
+    inventory = json.loads(runner.store.read_blob(result.outputs["inventory"]))
+    assert sorted(i["name"] for i in inventory["items"]) == ["sofa", "tv cabinet"]
+    assert len(lister.calls) == 2 and len(checker.calls) == 2  # one call per photo each
+    assert all(len(c.blobs) == 1 for c in lister.calls)
+    assert inventory["listed_by"] == ["fake-1"]
+    assert all("#" not in m for i in inventory["items"] for m in i["listed_by"])
