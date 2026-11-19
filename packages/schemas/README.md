@@ -20,7 +20,7 @@ The contract between the app, the API and the workers. One JSON Schema source pe
 - Money is INR in paise, as an integer.
 - A `Product` needs image permission and at least one buy or rent route.
 - A `DesignItem` is placed by the solver or the user, never by a model.
-- A `Render` is always marked illustrative.
+- A `Render` is always marked illustrative. A `Design` may carry the room's `measurement_level`; at `estimated` the whole design is illustrative and no item carries a fit.
 - A room is a floor polygon, not a box. `shell.walls` are its edges in order; an edge's optional `kind` says whether a wall was seen there (`wall`, the default) or not (`open`: a doorway, the way into the next area, or a stretch not scanned). Open edges are passable and nothing is placed against them.
 - A `SpaceTwin` is never edited. A `Design` points at a twin id and version plus ordered `TwinEdit`s (move, rotate, remove, replace, add, restyle a surface), made by the user or the solver, never a model. `applyEdits` and `spaceProfileFromTwin` in `@sajao/schemas/twin` derive the edited twin and the `SpaceProfile`.
 - A `SpaceTwin` names where it may be shown from: `viewing.hero_views` (real keyframe poses, picked by code) and `viewing.safe_region`. A hero view points at a keyframe and has no pose of its own. `heroKeyframes`, `insideSafeRegion` and `clampToSafeRegion` in `@sajao/schemas/twin` are what a viewer uses.
