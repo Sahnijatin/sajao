@@ -29,6 +29,7 @@ Every stage of the journey is one schema object, so the stages cannot drift apar
 12. **Share.** Before and after reel, 9:16, with a link that opens the design in the app, or the landing page for people without it (a web viewer comes after launch).
 13. **Vastu.** No tab of its own. Vastu lives as the Vastu view on each room's Designs tab: direction, room scorecard and guidance for that room, on only with a compass reading; deeper help later.
 14. **Saved designs and history.** Reached from each room on My home.
+15. **Profile.** Taste and budget, language, units, and "Delete my account and data": after one confirmation the server erases the account and everything stored for it, then the phone forgets its session, rooms, photos and taste answers, keeping only language and units. If the server cannot be reached nothing is deleted, and the screen says so.
 
 ## The brief
 
