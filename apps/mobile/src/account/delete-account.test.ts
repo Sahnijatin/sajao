@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRoomData } from "@/state/room-data";
 import { useRooms } from "@/state/rooms";
+import { useConsent } from "@/state/consent";
 import { useTaste } from "@/state/taste";
 import type { RoomContent } from "@/rooms/room-content";
 import type { TasteAnswers } from "@/taste/taste-session";
@@ -32,6 +33,7 @@ async function phoneWithData() {
   useRooms.getState().addRoomForCapture("cap", 0, [{ id: "k1", uri: "file:///k1.jpg" }]);
   useRoomData.setState({ content: { cap: { sample: false } as RoomContent } });
   useTaste.setState({ answers: {} as TasteAnswers });
+  useConsent.getState().accept(1);
 }
 
 const deps = (over: Partial<DeleteDeps> = {}): DeleteDeps & { removed: string[] } => {
@@ -57,6 +59,7 @@ describe("deleting your account", () => {
     expect(useRooms.getState().rooms).toEqual([]);
     expect(useRoomData.getState().content).toEqual({});
     expect(useTaste.getState().answers).toBeNull();
+    expect(useConsent.getState().acceptedVersion).toBeNull();
   });
 
   it("deletes nothing anywhere when the server cannot be reached", async () => {

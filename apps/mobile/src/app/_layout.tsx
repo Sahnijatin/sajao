@@ -95,6 +95,10 @@ export default function RootLayout() {
           options={{ title: t("nav.space"), presentation: "fullScreenModal", animation: "fade" }}
         />
         <Stack.Screen
+          name="consent"
+          options={{ title: t("nav.consent"), gestureEnabled: false, animation: "fade" }}
+        />
+        <Stack.Screen
           name="budget"
           options={{ title: t("nav.budget"), presentation: "fullScreenModal", animation: "fade" }}
         />
