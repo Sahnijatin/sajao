@@ -15,7 +15,7 @@ import {
   SPACE_TYPES,
 } from "@/space/space-profile";
 import { useSettings } from "@/state/settings";
-import { formatArea, formatLength } from "@/utils/format-length";
+import { formatArea } from "@/utils/format-length";
 
 export interface SpaceProfileScreenProps {
   profile: SpaceProfile;
@@ -118,12 +118,8 @@ export function SpaceProfileScreen({ profile, onChange, onShowIdeas }: SpaceProf
               {found.badge.kind === "verified" ? (
                 <Badge tone="success" label={t("space.verified")} />
               ) : (
-                <Badge
-                  tone="warning"
-                  label={t("space.estimated", {
-                    band: formatLength(found.badge.errorBandM, units, t),
-                  })}
-                />
+                // An estimate carries no tolerance number: it is measured to be sure.
+                <Badge tone="warning" label={t("space.estimated")} />
               )}
             </View>
             <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.lg }}>
