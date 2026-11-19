@@ -57,12 +57,14 @@ describe("what we found", () => {
     const facing = (deg: number) =>
       lightTime({
         ...profile,
-        direction: { ...profile.direction, north_deg: 0 },
+        direction: { confidence: "approximate", sources: ["compass"], north_deg: 0 },
         light: { natural_light: "medium", main_direction_deg: deg },
       });
     expect([90, 180, 270, 0].map(facing)).toEqual(["morning", "midday", "evening", "soft"]);
     const { light: _light, ...noLight } = profile;
     expect(lightTime(noLight as SpaceProfile)).toBeNull();
+    const { direction: _direction, ...noCompass } = profile;
+    expect(lightTime(noCompass)).toBeNull();
   });
 });
 

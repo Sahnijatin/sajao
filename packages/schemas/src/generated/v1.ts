@@ -1358,7 +1358,7 @@ openings: Opening[]
 fixtures: Fixture[]
 existing_items: ExistingItem[]
 light?: SpaceLight
-direction: SpaceDirection
+direction?: SpaceDirection
 scale: ScaleEvidence
 }
 /**
@@ -1392,7 +1392,7 @@ objects: TwinObject[]
  */
 keyframes: [Keyframe, ...(Keyframe)[]]
 scale: ScaleEvidence
-direction: SpaceDirection
+direction?: SpaceDirection
 splat?: SplatRef
 /**
  * Compressed room splats for viewing on the phone, one per device tier. Colour only; built from the room splat.

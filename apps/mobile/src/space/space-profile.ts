@@ -30,7 +30,8 @@ export type LightTime = "morning" | "midday" | "evening" | "soft";
  */
 export function lightTime(profile: SpaceProfile): LightTime | null {
   const direction = profile.light?.main_direction_deg;
-  if (direction === undefined) return null;
+  // Without a compass reading there is no bearing to read the light from.
+  if (direction === undefined || profile.direction === undefined) return null;
   const bearing = (direction + profile.direction.north_deg) % 360;
   if (bearing >= 45 && bearing < 135) return "morning";
   if (bearing >= 135 && bearing < 225) return "midday";
