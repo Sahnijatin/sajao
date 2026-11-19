@@ -41,7 +41,7 @@ describe("making a room from photos or a video", () => {
     expect(result).toEqual({ status: "imported", roomId: "cap-1" });
     expect(useRooms.getState().rooms.map((room) => room.captureId)).toEqual(["cap-1"]);
     // The pictures are kept with the room, to show as the room itself.
-    expect(useRooms.getState().rooms[0]?.photos).toEqual(["file:///k1.jpg"]);
+    expect(useRooms.getState().rooms[0]?.photos).toEqual([{ id: "k1", uri: "file:///k1.jpg" }]);
     expect(useCaptureStore.getState().last).toBe(capture);
     expect(mockUpload).toHaveBeenCalledWith(capture, expect.objectContaining({ has_ar: false }));
   });

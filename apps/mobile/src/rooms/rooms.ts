@@ -16,6 +16,12 @@ export type RoomStill =
       view?: 0 | 1 | 2;
     };
 
+/** A photo of the room on this phone, with the id of the keyframe it was uploaded as. */
+export interface RoomPhoto {
+  id: string;
+  uri: string;
+}
+
 export interface Room {
   id: string;
   /** The name you gave it; null shows "Room 2" from its number. */
@@ -29,8 +35,8 @@ export interface Room {
   captureId: string | null;
   /** For a scan of several areas: the one chosen to redesign. Unset until chosen. */
   redesignAreaId?: string | null;
-  /** The photos the room was added with, on this phone, best first. Unset for an AR scan. */
-  photos?: string[];
+  /** The photos the room was added with, on this phone, in order, by keyframe id. Unset for an AR scan. */
+  photos?: RoomPhoto[];
   /** The ids its designs are asked for with, made once. Unset until designs are first asked for. */
   designIds?: DesignIds;
 }

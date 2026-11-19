@@ -26,7 +26,7 @@ function startRoom(capture: LocalCapture): string {
   const room = useRooms.getState().addRoomForCapture(
     capture.captureId,
     Date.now(),
-    capture.files.keyframes.map((frame) => frame.uri),
+    capture.files.keyframes.map((frame) => ({ id: frame.id, uri: frame.uri })),
   );
   void startCaptureUpload(capture, {
     platform: Platform.OS === "ios" ? "ios" : "android",
