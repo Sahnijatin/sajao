@@ -267,8 +267,8 @@
     "approx": "approx.",
     "measureHint": "Shows where this measurement came from",
     "waiting": {
-      "title": "Getting your room ready",
-      "body": "Your photos, measurements and designs appear here when they are ready."
+      "title": "This room is not ready yet",
+      "body": "Your photos are saved. Its measurements and three designs show here once they are ready."
     },
     "confidence": {
       "taped": {

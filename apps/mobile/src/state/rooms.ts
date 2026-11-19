@@ -6,7 +6,7 @@ import { useSyncExternalStore } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { DesignIds } from "@/rooms/designs-api";
-import { newRoom, type Room, type RoomStill } from "@/rooms/rooms";
+import { clearSampleDesigns, newRoom, type Room, type RoomStill } from "@/rooms/rooms";
 
 interface RoomsState {
   rooms: Room[];
@@ -21,6 +21,12 @@ interface RoomsState {
   setRedesignArea(roomId: string, areaId: string): void;
   /** The ids the room's designs are asked for with, made on first use and kept. */
   designIdsFor(roomId: string, newId: () => string, now?: Date): DesignIds | null;
+}
+
+/** Saved rooms from an older build, brought up to this one. */
+export function migrateRooms(saved: unknown, version: number): { rooms: Room[] } {
+  const rooms = (saved as { rooms?: Room[] } | undefined)?.rooms ?? [];
+  return { rooms: version < 2 ? clearSampleDesigns(rooms) : rooms };
 }
 
 export const useRooms = create<RoomsState>()(
@@ -70,7 +76,10 @@ export const useRooms = create<RoomsState>()(
     }),
     {
       name: "sajao.rooms",
-      version: 1,
+      version: 2,
+      // Version 1 builds gave a room sample designs when no server answered.
+      // Those were never the room's own, so they are cleared.
+      migrate: migrateRooms,
       storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ rooms }) => ({ rooms }),
     },

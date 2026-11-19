@@ -59,6 +59,8 @@ export function RoomCard({
     >
       <RoomStillView
         still={room.still}
+        // Your own room never shows a drawn stand-in.
+        drawn={false}
         style={{
           aspectRatio: 16 / 10,
           borderTopLeftRadius: radius.card,

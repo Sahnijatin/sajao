@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import "@/i18n";
 import type { GenerationSource } from "@/rooms/generation";
-import { type RoomContent, roomContent } from "@/rooms/room-content";
+import { type RoomContent, sampleContent } from "@/rooms/room-content";
 import { GeneratingScreen, HANDOVER_MS } from "@/screens/generating";
 import { RevealScreen } from "@/screens/reveal";
 
@@ -92,7 +92,7 @@ describe("generating", () => {
 });
 
 describe("reveal", () => {
-  const content = roomContent("r") as RoomContent;
+  const content = sampleContent() as RoomContent;
 
   it("shows the room's hero views first, and no designs yet", async () => {
     await show(<RevealScreen content={content} onOpenRoom={jest.fn()} />);
