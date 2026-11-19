@@ -257,7 +257,7 @@ def assemble_step(points_for_shell: PointsForShell = shell_points) -> Step:
                 "extent": twin["extent"],
                 "walls_m": [w["length"]["value_m"] for w in twin["shell"]["walls"]],
                 "ceiling_m": twin["shell"]["ceiling_height"]["value_m"],
-                "north_deg": twin["direction"]["north_deg"],
+                "north_deg": (twin.get("direction") or {}).get("north_deg"),
                 "openings": [o["kind"] for o in twin["shell"]["openings"]],
                 "built_ins": len(twin["shell"].get("built_ins", [])),
                 "unplaced": len(twin.get("inventory", {}).get("unplaced", [])),

@@ -7,11 +7,10 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-import pytest
 from PIL import Image
 
 from sajao_schemas.generated.v1 import SpaceTwin
-from sajao_workers.steps import LocalArtifactStore, StepFailedError, StepRunner
+from sajao_workers.steps import LocalArtifactStore, StepRunner
 from sajao_workers.twin.assemble_step import _shell_from_frames, assemble_step, shell_points
 from sajao_workers.twin.space import fit_space
 
@@ -204,14 +203,17 @@ async def test_door_and_window_masks_become_openings_on_the_walls(
     assert result.meta["openings"] == ["window"]
 
 
-async def test_a_capture_without_a_compass_fails_clearly(
+async def test_a_capture_without_a_compass_gives_a_twin_with_no_direction(
     tmp_path: Path, room: Callable[..., np.ndarray]
 ) -> None:
     store, inputs, room = setup(tmp_path, room, compass=False)
     step = assemble_step(points_for_shell=lambda _store, _manifest: room())
 
-    with pytest.raises(StepFailedError, match="compass"):
-        await StepRunner(store, max_attempts=1).run(step, inputs, PARAMS)
+    result = await StepRunner(store, max_attempts=1).run(step, inputs, PARAMS)
+
+    twin = json.loads(store.read_blob(result.outputs["twin"]))
+    SpaceTwin.model_validate(twin)
+    assert "direction" not in twin and result.meta["north_deg"] is None
 
 
 def test_shell_points_come_from_every_frames_depth(tmp_path: Path) -> None:
