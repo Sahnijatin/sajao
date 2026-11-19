@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
+from sajao_engine.solver import short_label
 from sajao_schemas.generated.v1 import Brief, Design, Product, SpaceTwin
 
 SCHEMA_FIXTURES = (
@@ -419,7 +420,7 @@ def design(
                 "product_size": dims.model_dump(mode="json"),
                 "to": {"x_m": p.x, "y_m": p.y, "z_m": 0.0},
                 "yaw_deg": p.rotation,
-                "label": p.product.title,
+                "label": short_label(p.product.title),
             }
         )
     base["id"] = str(uuid.uuid5(NS, f"design:{twin.id}:{archetype}"))

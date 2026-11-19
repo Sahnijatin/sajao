@@ -670,6 +670,19 @@ class Solver:
         return states
 
 
+# A twin edit's label is at most this long (the contract's limit); catalog titles run longer.
+LABEL_MAX = 80
+
+
+def short_label(title: str, limit: int = LABEL_MAX) -> str:
+    """A product title cut to the label limit at a word boundary."""
+    title = " ".join(title.split())
+    if len(title) <= limit:
+        return title
+    cut = title[: limit - 3].rsplit(" ", 1)[0].rstrip(" ,-(")
+    return f"{cut}..."
+
+
 def _bounded(raw: float) -> float:
     """Keep the order of scores but never let one placement score below -SLOT_FLOOR.
 
@@ -843,7 +856,7 @@ def build_design(req: PlacementRequest, state: State, room: Room, removed: Seque
                 "product_size": p.product.dimensions.model_dump(mode="json"),
                 "to": {"x_m": x, "y_m": y, "z_m": round(z, 3)},
                 "yaw_deg": rot,
-                "label": p.product.title,
+                "label": short_label(p.product.title),
             }
         )
     relaxations = list(req.relaxations)
