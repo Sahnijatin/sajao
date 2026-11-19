@@ -905,6 +905,23 @@ visible_share: UnitScore
  * detected: the detector's own mask in this keyframe. prompted: segmented from the thing's box projected into the photo.
  */
 source: ("detected" | "prompted")
+/**
+ * The mask's outer edges as closed polygons on the photo, largest first, simplified to within about 0.3% of the photo's width. The app draws the outline when the thing is tapped, without fetching the mask.
+ * 
+ * @minItems 1
+ * @maxItems 8
+ */
+outline?: [[ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]]]|[[ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]]]|[[ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]]]|[[ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]]]|[[ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]]]|[[ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]]]|[[ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]]]|[[ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]], [ImagePoint, ImagePoint, ImagePoint, ...(ImagePoint)[]]]
+}
+/**
+ * A point on a photo as a share of its width (x, from the left) and height (y, from the top).
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "ImagePoint".
+ */
+export interface ImagePoint {
+x: number
+y: number
 }
 /**
  * A view the twin is shown from: the pose of a real keyframe, chosen by code for how much of the room it shows, its sharpness and its framing. Never a pose a model made up.
@@ -1345,7 +1362,7 @@ openings: Opening[]
 fixtures: Fixture[]
 existing_items: ExistingItem[]
 light?: SpaceLight
-direction: SpaceDirection
+direction?: SpaceDirection
 scale: ScaleEvidence
 }
 /**
@@ -1379,7 +1396,7 @@ objects: TwinObject[]
  */
 keyframes: [Keyframe, ...(Keyframe)[]]
 scale: ScaleEvidence
-direction: SpaceDirection
+direction?: SpaceDirection
 splat?: SplatRef
 /**
  * Compressed room splats for viewing on the phone, one per device tier. Colour only; built from the room splat.

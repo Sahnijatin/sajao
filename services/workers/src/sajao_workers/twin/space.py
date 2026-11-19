@@ -26,6 +26,9 @@ SHELL_BANDS: dict[DepthSource, tuple[float, float]] = {
 # AR world (x, y up, z) to a z-up frame (x, -z, y): right-handed.
 AR_TO_Z_UP = np.array([[1.0, 0.0, 0.0], [0.0, 0.0, -1.0], [0.0, 1.0, 0.0]])
 WALL_COVERAGE_FOR_WHOLE_ROOM = 0.5
+# With `unseen_open`, an edge with less of its length seen than this is marked open: a
+# stretch the photo did not show, passable and never a surface to place against.
+WALL_COVERAGE_FOR_WALL = 0.3
 
 
 def shell_dimension(value_m: float, depth_source: DepthSource) -> dict[str, Any]:
@@ -89,8 +92,11 @@ def _wall_coverage(xy: np.ndarray, start: np.ndarray, end: np.ndarray) -> float:
     return len(hit) / bins
 
 
-def fit_space(points: np.ndarray, depth_source: DepthSource) -> Space:
-    """Space frame and shell from depth points in the AR world (N, 3)."""
+def fit_space(points: np.ndarray, depth_source: DepthSource, unseen_open: bool = False) -> Space:
+    """Space frame and shell from depth points in the AR world (N, 3).
+
+    `unseen_open` (a single photo): edges the depth barely reaches, such as the side
+    behind the camera, are marked open instead of claimed as walls."""
     up = points @ AR_TO_Z_UP.T
     floor, ceiling = np.percentile(up[:, 2], [2.0, 98.0])
     band = up[(up[:, 2] > floor + 0.3) & (up[:, 2] < ceiling - 0.3)]
@@ -125,13 +131,15 @@ def fit_space(points: np.ndarray, depth_source: DepthSource) -> Space:
             }
         )
         coverage.append(_wall_coverage(local, start, end))
+        if unseen_open and coverage[-1] < WALL_COVERAGE_FOR_WALL:
+            walls[-1]["kind"] = "open"
     shell = {
         "floor_polygon": [{"x_m": round(x, 3), "y_m": round(y, 3)} for x, y in corners],
         "walls": walls,
         "ceiling_height": shell_dimension(float(ceiling - floor), depth_source),
         "openings": [],
         "fixtures": [],
-        "surfaces": [{"id": w["id"], "kind": "wall"} for w in walls]
+        "surfaces": [{"id": w["id"], "kind": "wall"} for w in walls if w.get("kind") != "open"]
         + [{"id": "floor", "kind": "floor"}, {"id": "ceiling", "kind": "ceiling"}],
     }
     whole = min(coverage) >= WALL_COVERAGE_FOR_WHOLE_ROOM

@@ -18,8 +18,7 @@
     "shell",
     "objects",
     "keyframes",
-    "scale",
-    "direction"
+    "scale"
   ],
   "properties": {
     "schema_version": {
@@ -75,7 +74,8 @@
       "$ref": "space-profile.schema.json#/$defs/ScaleEvidence"
     },
     "direction": {
-      "$ref": "space-profile.schema.json#/$defs/SpaceDirection"
+      "$ref": "space-profile.schema.json#/$defs/SpaceDirection",
+      "description": "Compass bearing of the space and how sure it is. Absent when no compass reading was taken (photos imported from the gallery); Vastu stays off until the person confirms a direction."
     },
     "splat": {
       "$ref": "#/$defs/SplatRef"
@@ -1003,6 +1003,38 @@
           "type": "string",
           "enum": ["detected", "prompted"],
           "description": "detected: the detector's own mask in this keyframe. prompted: segmented from the thing's box projected into the photo."
+        },
+        "outline": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/ImagePoint"
+            },
+            "minItems": 3,
+            "maxItems": 128
+          },
+          "minItems": 1,
+          "maxItems": 8,
+          "description": "The mask's outer edges as closed polygons on the photo, largest first, simplified to within about 0.3% of the photo's width. The app draws the outline when the thing is tapped, without fetching the mask."
+        }
+      }
+    },
+    "ImagePoint": {
+      "description": "A point on a photo as a share of its width (x, from the left) and height (y, from the top).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y"],
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
         }
       }
     },

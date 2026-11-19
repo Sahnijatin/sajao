@@ -31,7 +31,7 @@ INVALID = sorted((FIXTURES / "invalid").glob("*.json"))
 
 def test_models_cover_exactly_the_objects_the_schemas_define() -> None:
     assert sorted(OBJECTS) == sorted(BUNDLE["x-top-level"])
-    assert sorted(object_name(path) for path in VALID) == sorted(OBJECTS)
+    assert sorted({object_name(path) for path in VALID}) == sorted(OBJECTS)
 
 
 @pytest.mark.parametrize("path", VALID, ids=lambda p: p.name)

@@ -31,6 +31,7 @@ from sajao_workers.twin.inventory import (
     unplaced_items,
 )
 from sajao_workers.twin.objects import (
+    MIN_FRAMES,
     FrameMasks,
     build_objects,
     decode_depth_mm,
@@ -154,6 +155,7 @@ def objects_step(detect: ModelGateway, segment: ModelGateway) -> Step:
                 stats=fusion,
                 min_size=min_size,
                 per_label=per_label,
+                min_frames=1 if manifest.get("single_view") else MIN_FRAMES,
             )
             return objects, openings
 

@@ -119,6 +119,11 @@ class LocalArtifactStore:
     def has_blob(self, digest: str) -> bool:
         return self._blob_path(digest).exists()
 
+    def delete_blob(self, digest: str) -> None:
+        """Remove a blob; missing is fine. Only for stores that hold copies (the GPU
+        bridge's), never for a step store whose manifests point at its blobs."""
+        self._blob_path(digest).unlink(missing_ok=True)
+
     def read_manifest(self, key: str) -> Mapping[str, Any] | None:
         path = self.root / "steps" / f"{key}.json"
         if not path.exists():

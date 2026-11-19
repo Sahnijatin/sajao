@@ -25,7 +25,7 @@ describe("contract v1", () => {
 
   const valid = readdirSync(join(fixtures, "valid"));
   it("has a valid fixture for every object", () => {
-    expect(valid.map(objectName).sort()).toEqual([...OBJECT_NAMES].sort());
+    expect([...new Set(valid.map(objectName))].sort()).toEqual([...OBJECT_NAMES].sort());
   });
 
   it.each(valid)("accepts valid/%s and survives a JSON round trip", (file) => {

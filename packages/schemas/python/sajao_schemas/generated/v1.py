@@ -119,6 +119,18 @@ class HttpsUrl(RootModel[str]):
     root: Annotated[str, Field(max_length=2048, pattern="^https://\\S+$")]
 
 
+class ImagePoint(BaseModel):
+    """
+    A point on a photo as a share of its width (x, from the left) and height (y, from the top).
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    x: Annotated[float, Field(ge=0.0, le=1.0)]
+    y: Annotated[float, Field(ge=0.0, le=1.0)]
+
+
 class ListedByItem(RootModel[str]):
     root: Annotated[str, Field(min_length=1)]
 
@@ -891,6 +903,10 @@ class FreeFloor(BaseModel):
     ]
 
 
+class OutlineItem(RootModel[list[ImagePoint]]):
+    root: Annotated[list[ImagePoint], Field(max_length=128, min_length=3)]
+
+
 class HeroMask(BaseModel):
     """
     Where a thing is in one hero photo, for taking it out of that photo.
@@ -924,6 +940,14 @@ class HeroMask(BaseModel):
             description="detected: the detector's own mask in this keyframe. prompted: segmented from the thing's box projected into the photo."
         ),
     ]
+    outline: Annotated[
+        list[OutlineItem] | None,
+        Field(
+            description="The mask's outer edges as closed polygons on the photo, largest first, simplified to within about 0.3% of the photo's width. The app draws the outline when the thing is tapped, without fetching the mask.",
+            max_length=8,
+            min_length=1,
+        ),
+    ] = None
 
 
 class HeroView(BaseModel):
@@ -1962,7 +1986,12 @@ class SpaceProfile(BaseModel):
     fixtures: list[Fixture]
     existing_items: list[ExistingItem]
     light: SpaceLight | None = None
-    direction: SpaceDirection
+    direction: Annotated[
+        SpaceDirection | None,
+        Field(
+            description="Absent when the twin it comes from has no direction; Vastu stays off until the person confirms one."
+        ),
+    ] = None
     scale: ScaleEvidence
 
 
@@ -2150,7 +2179,12 @@ class SpaceTwin(BaseModel):
         ),
     ]
     scale: ScaleEvidence
-    direction: SpaceDirection
+    direction: Annotated[
+        SpaceDirection | None,
+        Field(
+            description="Compass bearing of the space and how sure it is. Absent when no compass reading was taken (photos imported from the gallery); Vastu stays off until the person confirms a direction."
+        ),
+    ] = None
     splat: SplatRef | None = None
     phone_splats: Annotated[
         list[PhoneSplat] | None,

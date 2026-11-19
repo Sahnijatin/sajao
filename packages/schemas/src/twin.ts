@@ -170,7 +170,7 @@ export function spaceProfileFromTwin(
         rotation_deg: object.box.yaw_deg,
         action: ACTION[object.state],
       })),
-    direction: structuredClone(twin.direction),
+    ...(twin.direction ? { direction: structuredClone(twin.direction) } : {}),
     scale: structuredClone(twin.scale),
   };
 }
