@@ -2556,9 +2556,7 @@ def single_photo_smoke_cpu(scene: str, candidates: int) -> dict[str, Any]:
     import numpy as np
     from PIL import Image
 
-    from sajao_gateway import ModelGateway
-    from sajao_workers.models import depth_chain, detect_chain, segment_chain
-    from sajao_workers.photo_pipeline import PhotoModels, photo_room_stages
+    from sajao_workers.photo_pipeline import photo_models, photo_room_stages, room_ledger
     from sajao_workers.pipeline import MEASURE, run_room
     from sajao_workers.steps import LocalArtifactStore, StepRunner
     from sajao_workers.twin.objects import decode_depth_mm
@@ -2636,15 +2634,8 @@ def single_photo_smoke_cpu(scene: str, candidates: int) -> dict[str, Any]:
         async def set_space_twin(self, room_id: str, twin: dict[str, Any]) -> None:
             self.twin = twin
 
-    ledger = _ledger()
-    lister, checker = _inventory_gateways(ledger)
-    models = PhotoModels(
-        depth=ModelGateway(depth_chain(volume_invoke("twin_depth")), ledger=ledger),
-        lister=lister,
-        checker=checker,
-        detect=ModelGateway(detect_chain(volume_invoke("twin_detect")), ledger=ledger),
-        segment=ModelGateway(segment_chain(volume_invoke("twin_segment")), ledger=ledger),
-    )
+    # The same model chains the API's run_room builds; here the GPU shares the volume.
+    models = photo_models(volume_invoke, room_ledger())
     board = Board()
     # A fresh room id per run, so nothing is reused from an earlier run's cache.
     room_id = f"smoke-{int(time.time())}"

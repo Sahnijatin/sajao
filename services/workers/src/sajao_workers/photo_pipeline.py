@@ -8,15 +8,27 @@ the room, the scale check, the twin and what the design engine reads).
 Every model call goes through the gateways passed in; no model sets a dimension.
 """
 
+import os
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 
-from sajao_gateway import ModelGateway
+from sajao_gateway import InMemorySpendLedger, ModelGateway, SpendCaps, SpendLedger
+from sajao_workers.gpu import Invoke
+from sajao_workers.models import depth_chain, detect_chain, segment_chain
 from sajao_workers.pipeline import TWIN_PARAMS, PipelineStage
 from sajao_workers.twin.assemble_step import assemble_step
 from sajao_workers.twin.inventory_step import inventory_step
 from sajao_workers.twin.objects_step import objects_step
 from sajao_workers.twin.single_photo_step import single_photo_scale_step, single_photo_step
 from sajao_workers.twin.understanding_step import understanding_step
+from sajao_workers.vision import (
+    CLAUDE_OPUS,
+    GEMINI_3_FLASH,
+    GEMINI_35_FLASH_LITE,
+    ClaudeVision,
+    GoogleTokens,
+    VertexGeminiVision,
+)
 
 
 @dataclass(frozen=True)
@@ -28,6 +40,48 @@ class PhotoModels:
     checker: ModelGateway
     detect: ModelGateway
     segment: ModelGateway
+
+
+# The most one photo room's stages may spend, in micro-rupees. The first real run cost
+# Rs 5; the cap leaves room for retries and fallbacks, not for a runaway loop. The
+# workspace's global daily cap comes with the launch spend controls.
+ROOM_CAP_MICRO_INR = 40_000_000
+
+
+def room_ledger() -> InMemorySpendLedger:
+    """A ledger for one room run, capped at ROOM_CAP_MICRO_INR."""
+    return InMemorySpendLedger(
+        SpendCaps(
+            per_user_daily_micro_inr=ROOM_CAP_MICRO_INR, global_daily_micro_inr=ROOM_CAP_MICRO_INR
+        )
+    )
+
+
+def photo_models(
+    gpu: Callable[[str], Invoke],
+    ledger: SpendLedger,
+    env: Mapping[str, str] | None = None,
+) -> PhotoModels:
+    """The pinned model chains for the photo stages. `gpu(task)` reaches the GPU worker's
+    model function for a task; the item lists use Gemini on Vertex AI (project from
+    GCP_PROJECT_ID) with Claude as the cross-check."""
+    project = (env if env is not None else os.environ)["GCP_PROJECT_ID"]
+    tokens = GoogleTokens()
+    return PhotoModels(
+        depth=ModelGateway(depth_chain(gpu("twin_depth")), ledger=ledger),
+        lister=ModelGateway(
+            [
+                VertexGeminiVision("gemini-flash", GEMINI_3_FLASH, project=project, tokens=tokens),
+                VertexGeminiVision(
+                    "gemini-flash-lite", GEMINI_35_FLASH_LITE, project=project, tokens=tokens
+                ),
+            ],
+            ledger=ledger,
+        ),
+        checker=ModelGateway([ClaudeVision("claude", CLAUDE_OPUS)], ledger=ledger),
+        detect=ModelGateway(detect_chain(gpu("twin_detect")), ledger=ledger),
+        segment=ModelGateway(segment_chain(gpu("twin_segment")), ledger=ledger),
+    )
 
 
 def photo_room_stages(models: PhotoModels) -> tuple[PipelineStage, ...]:
