@@ -1,9 +1,9 @@
 // What a room holds once it has been through the pipeline: hero views of the
 // room as it is, and three looks, each a view of one `Design`. This is the
-// interface the room and design API fills. Until it does, a room gets sample
-// content, marked as a sample wherever it shows, in development and preview
-// builds only. A store or closed-test build gets nothing until the real
-// content exists, and the screens say the room is being prepared.
+// interface the room and design API fills. A person's room only ever shows
+// what the server sent for it: until then the screens say plainly that the
+// room is not ready yet. Sample content exists for the preview screens of
+// development and preview builds, never as someone's room.
 import type { Design, SpaceDirection, SpaceTwin, SpaceType } from "@sajao/schemas";
 import sampleTwin from "../../../../packages/schemas/fixtures/v1/valid/space-twin.json";
 import type { PlanShell } from "./design-plan";
@@ -23,6 +23,11 @@ export interface RoomLook {
   /** The design this look renders. Price, items and fit all come from it. */
   design: Design;
   still: RoomStill;
+  /**
+   * True when the still is the room as it is today, not this look: the API
+   * serves no rendered picture yet, so the look is shown beside your photo.
+   */
+  stillIsToday?: boolean;
 }
 
 /**
@@ -139,21 +144,17 @@ const SAMPLE: RoomContent = {
   })),
 };
 
-/** The stand-in content, where this build may show one; null in a store or closed-test build. */
+/** Stand-in content for the preview screens; null in a store or closed-test build. Never a person's room. */
 export function sampleContent(): RoomContent | null {
   return samplesAllowed() ? SAMPLE : null;
 }
 
-/**
- * The content for a room, or null while there is none to show: what the
- * server has sent for it, else the sample where samples are allowed.
- */
+/** What the server has sent for a room, or null while it has sent nothing. */
 export function roomContent(roomId: string): RoomContent | null {
-  return useRoomData.getState().content[roomId] ?? sampleContent();
+  return useRoomData.getState().content[roomId] ?? null;
 }
 
 /** The same, kept up to date as the room's content arrives. */
 export function useRoomContent(roomId: string): RoomContent | null {
-  const real = useRoomData((state) => state.content[roomId]);
-  return real ?? sampleContent();
+  return useRoomData((state) => state.content[roomId]) ?? null;
 }

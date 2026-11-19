@@ -5,8 +5,20 @@ import { useCaptureStore } from "@/state/capture";
 import { useRoomData } from "@/state/room-data";
 import { useRooms } from "@/state/rooms";
 import type { GenerationSource } from "./generation";
-import { apiGeneration, contentFromTwin, failureOf, isTwin, type RoomApi } from "./room-api";
+import { uuidV4 } from "@/capture/package/upload-capture";
+import { useTaste } from "@/state/taste";
+import { designsRequest, readDesigns } from "./designs-api";
+import {
+  apiGeneration,
+  contentFromTwin,
+  failureOf,
+  heroViewsFrom,
+  isTwin,
+  looksFrom,
+  type RoomApi,
+} from "./room-api";
 import { roomApi } from "./room-client";
+import type { RoomContent } from "./room-content";
 
 let api: RoomApi | null | undefined;
 /** The room API for this build, made once; null when no server is configured. */
@@ -15,8 +27,14 @@ export function configuredRoomApi(): RoomApi | null {
   return api;
 }
 
-const captureIdOf = (roomId: string) =>
-  useRooms.getState().rooms.find((room) => room.id === roomId)?.captureId ?? null;
+const roomOf = (roomId: string) => useRooms.getState().rooms.find((room) => room.id === roomId);
+const captureIdOf = (roomId: string) => roomOf(roomId)?.captureId ?? null;
+
+/** The room's content from its twin, with the person's own photos as its views. */
+function withPhotos(roomId: string, content: RoomContent): RoomContent {
+  const photos = roomOf(roomId)?.photos ?? [];
+  return photos.length > 0 ? { ...content, heroViews: heroViewsFrom(photos) } : content;
+}
 
 /** Resolves once the last scan's upload has finished: true when it is up, false when it failed. */
 function uploaded(captureId: string): Promise<boolean> {
@@ -43,7 +61,24 @@ export function roomGeneration(): GenerationSource | null {
   return apiGeneration(client, {
     captureIdOf,
     uploaded,
-    onReady: (roomId, content) => useRoomData.getState().setContent(roomId, content),
+    onReady: (roomId, content) =>
+      useRoomData.getState().setContent(roomId, withPhotos(roomId, content)),
+    designs: {
+      requestFor(roomId) {
+        const answers = useTaste.getState().answers;
+        const ids = useRooms.getState().designIdsFor(roomId, uuidV4);
+        return answers && ids ? designsRequest(answers, ids) : null;
+      },
+      onDesigns(roomId, designs) {
+        const content = useRoomData.getState().content[roomId];
+        if (!content) return;
+        const looks = looksFrom(designs, content.heroViews);
+        useRoomData.getState().setContent(roomId, { ...content, looks });
+        // The room's card on My home now shows its designs.
+        const still = looks[0]?.still;
+        if (still) useRooms.getState().setRoomDesigns(roomId, looks.length, still);
+      },
+    },
   });
 }
 
@@ -62,7 +97,16 @@ export async function loadRoomContent(roomId: string): Promise<void> {
     const job = await client.createRoom(captureId);
     if (job.status !== "ready" || failureOf(job)) return;
     const twin = await client.getTwin(job.id);
-    if (isTwin(twin)) useRoomData.getState().setContent(roomId, contentFromTwin(twin));
+    if (!isTwin(twin)) return;
+    const content = withPhotos(roomId, contentFromTwin(twin));
+    useRoomData.getState().setContent(roomId, content);
+    // Designs, if they were asked for and are ready.
+    const read = readDesigns(await client.getDesigns(job.id));
+    if (read.state === "ready") {
+      useRoomData
+        .getState()
+        .setContent(roomId, { ...content, looks: looksFrom(read.designs, content.heroViews) });
+    }
   } catch {
     // Offline, or the server is busy: the next open tries again.
   }

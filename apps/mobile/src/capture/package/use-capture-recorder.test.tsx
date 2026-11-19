@@ -65,9 +65,11 @@ describe("capture recorder hook", () => {
         ],
         depth: "file:///depth.sjdepth",
         planes: "file:///planes.json",
-        video: "file:///scan.mp4",
+        // No scan video goes up; one from an older native build is deleted.
+        video: null,
       },
     });
+    expect(view.discardKeyframes).toHaveBeenLastCalledWith(["file:///scan.mp4"]);
     expect(useCaptureStore.getState().last).toBe(local);
   });
 

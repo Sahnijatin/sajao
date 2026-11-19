@@ -1,6 +1,7 @@
 // Rooms on My home. Pure: what a room is, how the list is ordered and what
 // each card says. Rooms live on this phone until the API serves them; the
 // store in state/rooms.ts is the only place that knows that.
+import type { DesignIds } from "./designs-api";
 
 /**
  * A still of a room. `image` is a real picture (a hero view from the twin,
@@ -28,6 +29,10 @@ export interface Room {
   captureId: string | null;
   /** For a scan of several areas: the one chosen to redesign. Unset until chosen. */
   redesignAreaId?: string | null;
+  /** The photos the room was added with, on this phone, best first. Unset for an AR scan. */
+  photos?: string[];
+  /** The ids its designs are asked for with, made once. Unset until designs are first asked for. */
+  designIds?: DesignIds;
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -55,6 +60,18 @@ export function newRoom(
     still: { kind: "placeholder", look: "before" },
     captureId: input.captureId,
   };
+}
+
+/**
+ * Rooms with sample designs taken off. Designs with no real picture can only
+ * have come from the stand-in, so the room goes back to having none.
+ */
+export function clearSampleDesigns(rooms: readonly Room[]): Room[] {
+  return rooms.map((room) =>
+    room.still.kind === "placeholder" && room.designCount > 0
+      ? { ...room, designCount: 0, still: { kind: "placeholder", look: "before" } }
+      : room,
+  );
 }
 
 export interface Label {

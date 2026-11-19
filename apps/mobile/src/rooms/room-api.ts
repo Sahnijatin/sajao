@@ -2,11 +2,12 @@
 // job stage by stage, and read its twin. The mapping from the API's answers
 // to what screens show is pure and lives here; the network client that
 // implements `RoomApi` is in room-client.ts.
-import type { SpaceTwin } from "@sajao/schemas";
+import type { Design, SpaceTwin } from "@sajao/schemas";
+import { type DesignsJob, type DesignsRequest, readDesigns } from "./designs-api";
 import type { GenerationSource } from "./generation";
 import { measuresFromTwin } from "./measures";
 import { confidenceOf } from "./room-shape";
-import type { RoomContent } from "./room-content";
+import { designsOffered, type HeroView, type RoomContent, type RoomLook } from "./room-content";
 import type { RoomJob } from "./room-job";
 
 // The room's job is the capture session's type: the upload makes the room
@@ -19,6 +20,10 @@ export interface RoomApi {
   getRoom(roomId: string): Promise<RoomJob>;
   /** The room's SpaceTwin, as sent. Not yet checked. */
   getTwin(roomId: string): Promise<unknown>;
+  /** Asks for the room's designs. Safe to repeat with the same request id. */
+  requestDesigns(roomId: string, request: DesignsRequest): Promise<DesignsJob>;
+  /** The room's latest design request and, once ready, its designs. */
+  getDesigns(roomId: string): Promise<DesignsJob>;
 }
 
 /** The room's stages on the server, in the order the app counts them. */
@@ -91,6 +96,20 @@ export function contentFromTwin(twin: SpaceTwin): RoomContent {
   };
 }
 
+/** The person's own photos of the room as its hero views, in the order taken. */
+export function heroViewsFrom(photos: readonly string[]): HeroView[] {
+  return photos.map((uri, index) => ({ id: `photo-${index + 1}`, still: { kind: "image", uri } }));
+}
+
+/**
+ * The three looks from the room's designs. There is no rendered picture of a
+ * look yet, so each is shown with the room as it is today, never a stand-in.
+ */
+export function looksFrom(designs: readonly Design[], heroViews: readonly HeroView[]): RoomLook[] {
+  const today = heroViews[0]?.still ?? ({ kind: "placeholder", look: "before" } as const);
+  return designs.map((design) => ({ design, still: today, stillIsToday: true }));
+}
+
 export interface ApiGenerationOptions {
   /** The scan the room was made from. */
   captureIdOf(roomId: string): string | null;
@@ -98,6 +117,16 @@ export interface ApiGenerationOptions {
   uploaded(captureId: string): Promise<boolean>;
   /** Called with the room's content once its twin is read. */
   onReady(roomId: string, content: RoomContent): void;
+  /**
+   * Designs, once the room is measured. Left out, the room stops at its
+   * measurements and designs are asked for later.
+   */
+  designs?: {
+    /** The request for this room's designs; null when there is nothing to ask with. */
+    requestFor(roomId: string): DesignsRequest | null;
+    /** Called with the three checked designs, in slot order. */
+    onDesigns(roomId: string, designs: readonly [Design, Design, Design]): void;
+  };
   /** Milliseconds between looks at the job. */
   pollMs?: number;
 }
@@ -106,11 +135,14 @@ export interface ApiGenerationOptions {
 export const POLL_MS = 3000;
 
 /**
- * Real progress for a room: waits for the upload, creates the room, then
- * follows its stages until they are done or one fails.
+ * Real progress for a room: waits for the upload, creates the room, follows
+ * its stages until it is measured, then, when designs are wanted, asks for
+ * them and follows that request to its three designs. Stops at the first
+ * stage that fails, with the server's reason.
  */
 export function apiGeneration(api: RoomApi, options: ApiGenerationOptions): GenerationSource {
   const pollMs = options.pollMs ?? POLL_MS;
+  const roomStages = ROOM_STAGES.length;
   return {
     watch(roomId, onFinished, onFailed) {
       let stopped = false;
@@ -119,7 +151,42 @@ export function apiGeneration(api: RoomApi, options: ApiGenerationOptions): Gene
         if (!stopped) onFailed?.(reason);
         stopped = true;
       };
-      const follow = async (serverId: string) => {
+      const later = (next: () => Promise<void>) => {
+        if (!stopped) timer = setTimeout(() => void next(), pollMs);
+      };
+      const followDesigns = async (serverId: string): Promise<void> => {
+        if (stopped || !options.designs) return;
+        try {
+          const read = readDesigns(await api.getDesigns(serverId));
+          if (stopped) return;
+          if (read.state === "failed") return fail(read.reason);
+          if (read.state === "working") return later(() => followDesigns(serverId));
+          options.designs.onDesigns(roomId, read.designs);
+          onFinished(roomStages + 1);
+        } catch {
+          // A dropped connection is not a failed request: look again shortly.
+          later(() => followDesigns(serverId));
+        }
+      };
+      const askForDesigns = async (serverId: string, twin: SpaceTwin): Promise<void> => {
+        const designs = options.designs;
+        if (!designs) return onFinished(roomStages);
+        const request = designs.requestFor(roomId);
+        // A kind of space that gets no designs yet: its last stage has nothing to do.
+        if (!request || !designsOffered(twin.space_type)) return onFinished(roomStages + 1);
+        onFinished(roomStages);
+        try {
+          const job = await api.requestDesigns(serverId, request);
+          if (stopped) return;
+          const reason = readDesigns(job);
+          if (reason.state === "failed") return fail(reason.reason);
+        } catch {
+          // Asking again is the same request, so the next look asks once more.
+          return later(() => askForDesigns(serverId, twin));
+        }
+        await followDesigns(serverId);
+      };
+      const follow = async (serverId: string): Promise<void> => {
         if (stopped) return;
         try {
           const job = await api.getRoom(serverId);
@@ -127,18 +194,18 @@ export function apiGeneration(api: RoomApi, options: ApiGenerationOptions): Gene
           const reason = failureOf(job);
           if (reason) return fail(reason);
           const finished = finishedStages(job);
-          if (finished >= ROOM_STAGES.length) {
-            const twin = await api.getTwin(serverId);
-            if (stopped) return;
-            if (!isTwin(twin)) return fail("bad_twin");
-            options.onReady(roomId, contentFromTwin(twin));
+          if (finished < roomStages) {
+            onFinished(finished);
+            return later(() => follow(serverId));
           }
-          onFinished(finished);
-          if (finished < ROOM_STAGES.length)
-            timer = setTimeout(() => void follow(serverId), pollMs);
+          const twin = await api.getTwin(serverId);
+          if (stopped) return;
+          if (!isTwin(twin)) return fail("bad_twin");
+          options.onReady(roomId, contentFromTwin(twin));
+          await askForDesigns(serverId, twin);
         } catch {
           // A dropped connection is not a failed room: look again shortly.
-          if (!stopped) timer = setTimeout(() => void follow(serverId), pollMs);
+          later(() => follow(serverId));
         }
       };
       void (async () => {

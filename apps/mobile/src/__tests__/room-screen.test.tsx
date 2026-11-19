@@ -3,7 +3,7 @@ import { ThemeProvider } from "@sajao/ui";
 import { act, fireEvent, render, screen, within } from "@testing-library/react-native";
 import { Linking } from "react-native";
 import "@/i18n";
-import { type RoomContent, roomContent } from "@/rooms/room-content";
+import { type RoomContent, sampleContent } from "@/rooms/room-content";
 import { RoomScreen, RoomWaiting } from "@/screens/room";
 import { useSettings } from "@/state/settings";
 
@@ -15,7 +15,7 @@ jest.mock("@sajao/ui", () => ({
   playHaptic: (moment: string) => mockHaptic(moment),
 }));
 
-const sample = roomContent("r") as RoomContent;
+const sample = sampleContent() as RoomContent;
 /** The same content as it will arrive from the pipeline: not a sample. */
 const real: RoomContent = { ...sample, sample: false };
 
@@ -374,9 +374,11 @@ describe("a room with nothing ready yet", () => {
         <RoomWaiting />
       </ThemeProvider>,
     );
-    expect(screen.getByText("Getting your room ready")).toBeTruthy();
+    expect(screen.getByText("This room is not ready yet")).toBeTruthy();
     expect(
-      screen.getByText("Your photos, measurements and designs appear here when they are ready."),
+      screen.getByText(
+        "Your photos are saved. Its measurements and three designs show here once they are ready.",
+      ),
     ).toBeTruthy();
     expect(screen.queryAllByRole("tab")).toHaveLength(0);
     expect(screen.queryByText(/sample|₹/i)).toBeNull();
@@ -398,6 +400,41 @@ describe("the plan on the Room tab", () => {
     expect(
       screen.getByText("Walls not yet checked with a tape are drawn with a soft edge."),
     ).toBeTruthy();
+  });
+
+  it("shows a tapped piece's size and its own gap to the wall, and lets it go on a second tap", async () => {
+    await show();
+    expect(screen.getByText("Tap a piece to see its size.")).toBeTruthy();
+    await fireEvent.press(screen.getByTestId("plan-item-sofa"));
+    const picked = within(screen.getByTestId("room-plan-selected"));
+    expect(picked.getByText(/^195 cm wide, 85 cm deep, \d+ cm tall$/)).toBeTruthy();
+    expect(screen.getByTestId("plan-item-sofa").props.accessibilityState.selected).toBe(true);
+    // Only the sofa's gap is labelled now.
+    expect(within(screen.getByTestId("room-plan")).getByText("13 cm")).toBeTruthy();
+    await fireEvent.press(screen.getByTestId("plan-item-sofa"));
+    expect(screen.queryByTestId("room-plan-selected")).toBeNull();
+  });
+
+  it("labels no gaps on a room whose sizes are estimated, and says why", async () => {
+    await show({ ...real, confidence: "estimated" });
+    expect(within(screen.getByTestId("room-plan")).queryByText("13 cm")).toBeNull();
+    await fireEvent.press(screen.getByTestId("plan-item-sofa"));
+    expect(screen.getByText(/^195 cm wide/)).toBeTruthy();
+    expect(screen.getByText("Gaps to the walls show once the room is measured.")).toBeTruthy();
+    // No fit claim on Designs either: the look is illustrative.
+    await openTab("Designs");
+    expect(screen.queryByText("Everything fits your room")).toBeNull();
+    expect(screen.queryByText("Some pieces need a fit check")).toBeNull();
+    expect(screen.getByText(/^Illustrative\./)).toBeTruthy();
+  });
+
+  it("starts with no piece picked when the look changes", async () => {
+    await show();
+    await fireEvent.press(screen.getByTestId("plan-item-sofa"));
+    await openTab("Designs");
+    await fireEvent.press(screen.getByText("Bold"));
+    await openTab("Room");
+    expect(screen.queryByTestId("room-plan-selected")).toBeNull();
   });
 
   it("follows the look chosen on Designs", async () => {
