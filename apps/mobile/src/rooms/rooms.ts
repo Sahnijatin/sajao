@@ -38,6 +38,12 @@ export interface Room {
   redesignAreaId?: string | null;
   /** The photos the room was added with, on this phone, in order, by keyframe id. Unset for an AR scan. */
   photos?: RoomPhoto[];
+  /**
+   * A new scan measuring this room again, until it has been measured and its
+   * designs have arrived. Until then the room keeps its capture, content and
+   * designs; if the new scan fails, this is dropped and nothing is lost.
+   */
+  remeasure?: { captureId: string; designIds?: DesignIds };
   /** The budget for this room's designs. Unset until it is asked. */
   budget?: TasteAnswers["budget"];
   /** The ids its designs are asked for with, made once. Unset until designs are first asked for. */

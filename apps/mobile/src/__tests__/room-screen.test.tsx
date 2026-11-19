@@ -385,6 +385,24 @@ describe("a room with nothing ready yet", () => {
   });
 });
 
+describe("a room being measured again", () => {
+  it("says its designs are based on estimated sizes until the new ones arrive", async () => {
+    await show(real, { remeasuring: true });
+    expect(
+      screen.getByText(
+        "Measuring again. These designs are based on estimated sizes until the new ones arrive.",
+      ),
+    ).toBeTruthy();
+    await openTab("Designs");
+    expect(screen.getByTestId("remeasuring-note")).toBeTruthy();
+  });
+
+  it("says nothing of it otherwise", async () => {
+    await show(real);
+    expect(screen.queryByTestId("remeasuring-note")).toBeNull();
+  });
+});
+
 describe("the plan on the Room tab", () => {
   it("draws the room with the chosen look's furniture, with wall lengths and the tightest gaps", async () => {
     await show();
