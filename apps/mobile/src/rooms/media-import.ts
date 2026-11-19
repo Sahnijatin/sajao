@@ -23,7 +23,11 @@ export type ImportResult =
 function startRoom(capture: LocalCapture): string {
   useCaptureStore.getState().setLast(capture);
   // The pictures become a room on My home at once, like a scan.
-  const room = useRooms.getState().addRoomForCapture(capture.captureId);
+  const room = useRooms.getState().addRoomForCapture(
+    capture.captureId,
+    Date.now(),
+    capture.files.keyframes.map((frame) => frame.uri),
+  );
   void startCaptureUpload(capture, {
     platform: Platform.OS === "ios" ? "ios" : "android",
     tier: "standard",
