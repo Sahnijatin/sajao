@@ -49,6 +49,8 @@ describe("taste onboarding screen", () => {
     await press("A couple");
     await press("Rented");
     await press("Continue");
+    // Vastu is behind its build setting, off.
+    expect(screen.queryByText(/Vastu/)).toBeNull();
     await press("₹1,50,000");
     await press("Can stretch 10%");
     await press("Sofa");
@@ -61,6 +63,7 @@ describe("taste onboarding screen", () => {
       flexibility: "stretch_10",
     });
     expect(answers.must_haves).toEqual(["sofa"]);
+    expect(answers.consider_vastu).toBe(false);
     expect(answers.swipes).toEqual([]);
   });
 

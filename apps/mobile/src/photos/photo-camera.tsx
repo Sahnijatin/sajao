@@ -24,7 +24,7 @@ export const PhotoCamera = forwardRef<PhotoCameraHandle, PhotoCameraProps>(funct
   ref,
 ) {
   const device = useCameraDevice("back");
-  const photoOutput = usePhotoOutput({ qualityPrioritization: "balanced" });
+  const photoOutput = usePhotoOutput({ qualityPrioritization: "quality" });
 
   useImperativeHandle(
     ref,

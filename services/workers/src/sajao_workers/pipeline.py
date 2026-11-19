@@ -196,6 +196,38 @@ class CaptureFiles(Protocol):
     def read(self, storage_key: str) -> bytes: ...
 
 
+# The smallest photo the render stage takes (the API refuses smaller ones when the
+# capture is registered; this checks the file itself): the preview render is 1024 px on
+# the long edge and never enlarges the photo; 576 px is that edge at 16:9.
+MIN_PHOTO_LONG_EDGE_PX = 1024
+MIN_PHOTO_SHORT_EDGE_PX = 576
+
+
+def photo_too_small(data: bytes) -> bool:
+    """True when the photo decodes below the render's minimum; unreadable is not small."""
+    import io
+
+    from PIL import Image
+
+    try:
+        width, height = Image.open(io.BytesIO(data)).size
+    except Exception:
+        return False  # the stage reports it as unreadable
+    return max(width, height) < MIN_PHOTO_LONG_EDGE_PX or min(width, height) < (
+        MIN_PHOTO_SHORT_EDGE_PX
+    )
+
+
+def _storage_code(error: BaseException) -> str:
+    """The object store's error code (an S3 client error), or NotFound for a missing file."""
+    if isinstance(error, FileNotFoundError):
+        return "NotFound"
+    response = getattr(error, "response", None)
+    if isinstance(response, dict):
+        return str(response.get("Error", {}).get("Code", ""))
+    return ""
+
+
 async def run_room(
     runner: StepRunner,
     rooms: Rooms,
@@ -225,13 +257,19 @@ async def run_room(
     if chosen:
         stages = chosen
         try:
-            images = {
-                k["id"]: runner.store.put_blob(files.read(k["image"])) for k in package["keyframes"]
-            }
-        except Exception:
+            photos = {k["id"]: files.read(k["image"]) for k in package["keyframes"]}
+        except Exception as error:
+            # A file the capture names that is not in storage: its upload never finished.
+            missing = _storage_code(error) in ("NoSuchKey", "404", "NotFound")
             logger.exception("photo of room %s could not be read", room_id)
-            await rooms.set_stage(room_id, stages[0].row, "failed", "photo_unreadable")
+            reason = "upload_incomplete" if missing else "photo_unreadable"
+            await rooms.set_stage(room_id, stages[0].row, "failed", reason)
             return Run("failed", blobs)
+        small = [key for key, data in photos.items() if photo_too_small(data)]
+        if small:
+            await rooms.set_stage(room_id, stages[0].row, "failed", "photo_too_small")
+            return Run("failed", blobs)
+        images = {key: runner.store.put_blob(data) for key, data in photos.items()}
         blobs["images"] = runner.store.put_blob(json.dumps(images, sort_keys=True).encode())
         params = twin_params(room_id, capture)
     elif not planes_key and (package.get("ar") or {}).get("tracking") == "none" and stages:

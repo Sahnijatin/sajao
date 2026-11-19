@@ -103,22 +103,33 @@ async def room_for(
         "/v1/captures", json=capture(user, capture_id), headers=headers(user)
     )
     assert registered.status_code in (200, 201), registered.text
+    # Registering made the room; asking for it returns that room.
     created = await api.post("/v1/rooms", json={"capture_id": capture_id}, headers=headers(user))
-    assert created.status_code == 201, created.text
+    assert created.status_code == 200, created.text
     room: dict[str, Any] = created.json()
     return room
 
 
-async def test_a_room_is_created_from_a_capture_with_its_stages_queued(backend: Backend) -> None:
+async def test_registering_a_capture_makes_its_room_and_starts_it(backend: Backend) -> None:
     async with backend.client() as api:
+        registered = await api.post("/v1/captures", json=capture(), headers=headers())
+        assert registered.status_code == 201, registered.text
+        # The job started on the upload's completion, before any room call.
+        assert len(backend.launcher.rooms) == 1
+        listed = (await api.get("/v1/rooms", headers=headers())).json()["rooms"]
+        assert [r["id"] for r in listed] == backend.launcher.rooms
+
         room = await room_for(api)
+        assert room["id"] == backend.launcher.rooms[0]
         assert room["capture_id"] == CAPTURE_ID
+        assert room["stage"] == "uploaded"
+        assert "failure" not in room and "confidence_level" not in room
+        assert room["items"] == []
         assert room["status"] == "working"
         assert [(s["stage"], s["status"]) for s in room["stages"]] == [
             ("measure", "queued"),
             ("inventory", "queued"),
         ]
-        assert backend.launcher.rooms == [room["id"]]
 
         read = await api.get(f"/v1/rooms/{room['id']}", headers=headers())
         assert read.status_code == 200
@@ -133,7 +144,11 @@ async def test_creating_a_room_again_returns_the_same_room_and_starts_it_again(
         again = await api.post("/v1/rooms", json={"capture_id": CAPTURE_ID}, headers=headers())
         assert again.status_code == 200
         assert again.json()["id"] == room["id"]
-        assert backend.launcher.rooms == [room["id"], room["id"]]
+        # Registered, asked for, asked again: started each time, one room.
+        assert backend.launcher.rooms == [room["id"]] * 3
+        registered_again = await api.post("/v1/captures", json=capture(), headers=headers())
+        assert registered_again.status_code == 200
+        assert backend.launcher.rooms == [room["id"]] * 4
 
         listed = await api.get("/v1/rooms", headers=headers())
         assert [r["id"] for r in listed.json()["rooms"]] == [room["id"]]
@@ -150,7 +165,7 @@ async def test_a_room_needs_a_capture_the_caller_owns(backend: Backend) -> None:
             "/v1/rooms", json={"capture_id": CAPTURE_ID}, headers=headers(USER_B)
         )
         assert other.status_code == 404
-        assert backend.launcher.rooms and len(backend.launcher.rooms) == 1
+        assert len(set(backend.launcher.rooms)) == 1
 
 
 async def test_another_user_cannot_read_a_room(backend: Backend) -> None:
@@ -182,8 +197,11 @@ async def test_job_status_follows_the_stages_and_the_twin_appears_when_ready(
         assert early.json()["error"]["code"] == "room_not_ready"
 
         await backend.rooms.set_stage(room["id"], "measure", "running")
+        reading = (await api.get(f"/v1/rooms/{room['id']}", headers=headers())).json()
+        assert reading["stage"] == "reading"
         await backend.rooms.set_stage(room["id"], "measure", "done")
         working = (await api.get(f"/v1/rooms/{room['id']}", headers=headers())).json()
+        assert working["stage"] == "reading"
         assert working["status"] == "working"
         assert [s["status"] for s in working["stages"]] == ["done", "queued"]
 
@@ -192,6 +210,10 @@ async def test_job_status_follows_the_stages_and_the_twin_appears_when_ready(
         await backend.rooms.set_stage(room["id"], "inventory", "done")
         ready = (await api.get(f"/v1/rooms/{room['id']}", headers=headers())).json()
         assert ready["status"] == "ready"
+        # Read, with no brief yet: designing waits on the app's request.
+        assert ready["stage"] == "designing"
+        assert ready["awaiting_brief"] is True
+        assert ready["confidence_level"] == "ar_measured"
         read = await api.get(f"/v1/rooms/{room['id']}/twin", headers=headers())
         assert read.status_code == 200
         assert read.json() == twin
@@ -202,11 +224,35 @@ async def test_a_failed_stage_shows_as_failed_with_its_reason(backend: Backend) 
         room = await room_for(api)
         await backend.rooms.set_stage(room["id"], "measure", "failed", "no_walls")
         failed = (await api.get(f"/v1/rooms/{room['id']}", headers=headers())).json()
+        assert failed["stage"] == "failed"
+        assert failed["failure"] == {"reason": "no_walls", "stage": "reading", "retryable": False}
         assert failed["status"] == "failed"
         assert failed["stages"][0]["detail"] == "no_walls"
 
 
-async def test_designs_are_requested_once_the_room_is_ready_and_read_back(
+async def test_a_reason_the_contract_does_not_know_is_reported_as_internal(
+    backend: Backend,
+) -> None:
+    async with backend.client() as api:
+        room = await room_for(api)
+        await backend.rooms.set_stage(room["id"], "measure", "failed", "input_missing")
+        failed = (await api.get(f"/v1/rooms/{room['id']}", headers=headers())).json()
+        assert failed["failure"] == {"reason": "internal", "stage": "reading", "retryable": True}
+
+
+async def test_a_photo_smaller_than_the_render_needs_is_refused(backend: Backend) -> None:
+    async with backend.client() as api:
+        small = capture()
+        small["media"].append(
+            {**small["media"][0], "kind": "photo", "width_px": 960, "height_px": 720}
+        )
+        refused = await api.post("/v1/captures", json=small, headers=headers())
+        assert refused.status_code == 422
+        assert refused.json()["error"]["code"] == "photo_too_small"
+        assert backend.launcher.rooms == []
+
+
+async def test_designs_may_be_asked_for_before_the_room_is_read_and_start_once_it_is(
     backend: Backend,
 ) -> None:
     async with backend.client() as api:
@@ -214,37 +260,66 @@ async def test_designs_are_requested_once_the_room_is_ready_and_read_back(
         body = {"id": REQUEST_ID, "brief": fixture("brief")}
         path = f"/v1/rooms/{room['id']}/designs"
 
-        early = await api.post(path, json=body, headers=headers())
-        assert early.status_code == 409
         none_yet = await api.get(path, headers=headers())
         assert none_yet.status_code == 404
         assert none_yet.json()["error"]["code"] == "designs_not_requested"
 
-        await backend.rooms.set_space_twin(room["id"], fixture("space-twin"))
-        asked = await api.post(path, json=body, headers=headers())
-        assert asked.status_code == 201, asked.text
-        request = asked.json()
+        # Asked early: stored, not started; the room job starts it when reading ends.
+        early = await api.post(path, json=body, headers=headers())
+        assert early.status_code == 201, early.text
+        request = early.json()
         assert request["id"] == REQUEST_ID
         assert request["status"] == "working"
-        assert [s["stage"] for s in request["stages"]] == ["spec", "placement", "render"]
+        assert [s["stage"] for s in request["stages"]] == ["spec", "placement"]
         assert request["designs"] is None
-        assert backend.launcher.designs == [(room["id"], REQUEST_ID)]
+        assert backend.launcher.designs == []
+        status = (await api.get(f"/v1/rooms/{room['id']}", headers=headers())).json()
+        assert status["stage"] == "uploaded"
+        assert status["design_request_id"] == REQUEST_ID
 
+        for stage in ("measure", "inventory"):
+            await backend.rooms.set_stage(room["id"], stage, "done")
+        await backend.rooms.set_space_twin(room["id"], fixture("space-twin"))
         again = await api.post(path, json=body, headers=headers())
         assert again.status_code == 200
         assert again.json()["id"] == REQUEST_ID
+        assert backend.launcher.designs == [(room["id"], REQUEST_ID)]
+        designing = (await api.get(f"/v1/rooms/{room['id']}", headers=headers())).json()
+        assert designing["stage"] == "designing"
+        assert designing["awaiting_brief"] is False
 
         designs = [fixture("design")] * 3
-        for stage in ("spec", "placement", "render"):
+        for stage in ("spec", "placement"):
             await backend.rooms.set_stage(room["id"], stage, "done", request_id=REQUEST_ID)
         await backend.rooms.set_designs(REQUEST_ID, designs)
         ready = await api.get(path, headers=headers())
         assert ready.status_code == 200
         assert ready.json()["status"] == "ready"
         assert ready.json()["designs"] == designs
-        # The room's own stages did not move with the request's.
         room_now = (await api.get(f"/v1/rooms/{room['id']}", headers=headers())).json()
-        assert room_now["status"] == "working"
+        assert room_now["stage"] == "ready"
+        # The design fixture was placed on a taped room: each item's fit was checked.
+        assert len(room_now["items"]) == 3 * len(designs[0]["items"])
+        assert all(item["fit_checked"] for item in room_now["items"])
+
+
+async def test_on_an_estimated_room_no_item_carries_a_fit_check(backend: Backend) -> None:
+    async with backend.client() as api:
+        room = await room_for(api)
+        twin = {**fixture("space-twin"), "confidence": {"level": "estimated", "basis": "photos"}}
+        for stage in ("measure", "inventory"):
+            await backend.rooms.set_stage(room["id"], stage, "done")
+        await backend.rooms.set_space_twin(room["id"], twin)
+        path = f"/v1/rooms/{room['id']}/designs"
+        await api.post(path, json={"id": REQUEST_ID, "brief": fixture("brief")}, headers=headers())
+        design = {**fixture("design"), "measurement_level": "estimated"}
+        for stage in ("spec", "placement"):
+            await backend.rooms.set_stage(room["id"], stage, "done", request_id=REQUEST_ID)
+        await backend.rooms.set_designs(REQUEST_ID, [design])
+        status = (await api.get(f"/v1/rooms/{room['id']}", headers=headers())).json()
+        assert status["stage"] == "ready"
+        assert status["confidence_level"] == "estimated"
+        assert status["items"] and not any(i["fit_checked"] for i in status["items"])
 
 
 async def test_a_design_request_id_cannot_be_reused_for_another_room(backend: Backend) -> None:

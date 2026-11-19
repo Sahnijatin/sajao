@@ -6,7 +6,10 @@ is not run again.
 """
 
 import logging
+import uuid
 from typing import Protocol
+
+from sajao_api.rooms import Room, RoomStore
 
 logger = logging.getLogger(__name__)
 
@@ -57,3 +60,18 @@ class ModalLauncher:
 
     async def start_account_deletion(self, user_id: str) -> None:
         await self._spawn("delete_account", user_id)
+
+
+async def open_room(
+    rooms: RoomStore, launcher: PipelineLauncher, user_id: str, capture_id: str
+) -> tuple[Room, bool]:
+    """The room for a registered capture, made if new, and its job started. Starting is
+    asked again on a repeat: a lost start is picked up, and stages already done are not
+    run again. Safe to repeat."""
+    room, created = await rooms.create_room(str(uuid.uuid4()), user_id, capture_id)
+    try:
+        await launcher.start_room(room.room_id)
+    except Exception:
+        # The room exists and its stages are queued; the sweeper starts it.
+        logger.exception("pipeline did not start for room %s", room.room_id)
+    return room, created

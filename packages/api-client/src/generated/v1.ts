@@ -15,7 +15,8 @@ export interface paths {
         put?: never;
         /**
          * Register Capture
-         * @description Store a capture whose files are already uploaded. Safe to repeat.
+         * @description Store a capture whose files are already uploaded, make its room and start the
+         *     pipeline. Safe to repeat.
          */
         post: operations["registerCapture"];
         delete?: never;
@@ -120,13 +121,15 @@ export interface paths {
         };
         /**
          * List Rooms
-         * @description The caller's rooms, newest first, each with its job status.
+         * @description The caller's rooms, newest first, each with its status.
          */
         get: operations["listRooms"];
         put?: never;
         /**
          * Create Room
-         * @description Create the room for a registered capture and start measuring it. Safe to repeat.
+         * @description The room for a registered capture. Registering the capture already made it and
+         *     started it; this returns it, and starts it again if that start was lost. Safe to
+         *     repeat.
          */
         post: operations["createRoom"];
         delete?: never;
@@ -144,7 +147,8 @@ export interface paths {
         };
         /**
          * Get Room
-         * @description One room and its job status by stage.
+         * @description One room's status: its stage, why it failed, how it was measured, and per design
+         *     item whether a fit check ran.
          */
         get: operations["getRoom"];
         put?: never;
@@ -170,7 +174,8 @@ export interface paths {
         put?: never;
         /**
          * Request Designs
-         * @description Ask for designs for a room with a brief. Safe to repeat with the same id.
+         * @description Ask for designs for a room with a brief, at any point: before the room is read,
+         *     designing starts as soon as it is. Safe to repeat with the same id.
          */
         post: operations["requestDesigns"];
         delete?: never;
@@ -724,26 +729,134 @@ export interface components {
             /** Start Ms */
             start_ms: number;
         };
+        /** RoomFailure */
+        RoomFailure: {
+            /**
+             * Reason
+             * @description Why the job stopped. upload_incomplete: a file of the capture is not in storage. photo_too_small: a photo is below the minimum the render needs. timed_out: a stage ran past its limit and its retry. internal: an error on our side; trying again may work.
+             * @enum {string}
+             */
+            reason: "upload_incomplete" | "photo_too_small" | "photo_missing" | "photo_unreadable" | "no_ar_data" | "planes_unreadable" | "floor_not_visible" | "no_walls" | "space_not_supported" | "invalid_request" | "no_products" | "no_layout_for_room" | "nothing_fits" | "render_failed" | "timed_out" | "internal";
+            /**
+             * Retryable
+             * @description True when asking again (the same room or design request) may succeed; false when the capture itself must change.
+             */
+            retryable: boolean;
+            /**
+             * Stage
+             * @description The stage that failed.
+             * @enum {string}
+             */
+            stage: "uploaded" | "reading" | "designing" | "rendering";
+        };
         /** RoomList */
         RoomList: {
             /** Rooms */
             rooms: components["schemas"]["RoomStatus"][];
         };
-        /** RoomStatus */
+        /**
+         * RoomStatus
+         * @description Where a room's job is, as the room status endpoint returns it. The app shows only what this says: one stage, a machine-readable reason when it failed, how the room was measured, and for each design item whether a fit check ran.
+         */
         RoomStatus: {
-            /** Capture Id */
+            /**
+             * Awaiting Brief
+             * @description True when the room is read and no design request has been made yet: designing starts as soon as the app sends one.
+             */
+            awaiting_brief?: boolean | null;
+            /**
+             * Capture Id
+             * Format: uuid
+             */
             capture_id: string;
-            /** Created At */
+            /**
+             * Confidence Level
+             * @description The room twin's confidence level, once the room is read. estimated: sizes say measure to confirm and no item carries a fit claim.
+             */
+            confidence_level?: ("estimated" | "ar_measured" | "taped") | null;
+            /**
+             * Created At
+             * Format: date-time
+             * @description UTC instant, RFC 3339.
+             */
             created_at: string;
-            /** Id */
+            /**
+             * Design Request Id
+             * @description The latest design request for the room, once one is made.
+             */
+            design_request_id?: string | null;
+            failure?: components["schemas"]["RoomFailure"] | null;
+            /**
+             * Id
+             * Format: uuid
+             */
             id: string;
-            /** Stages */
-            stages: components["schemas"]["StageStatus"][];
-            /** Status */
-            status: string;
+            /**
+             * Items
+             * @description Every item of every design, once designs exist; empty before.
+             */
+            items: components["schemas"]["RoomStatusItem"][];
+            /**
+             * Schema Version
+             * @description Contract version of the object. Minor versions only add optional fields.
+             */
+            schema_version: string;
+            /**
+             * Stage
+             * @description uploaded: the capture is registered and the job is queued. reading: measuring the room and listing what is in it. designing: choosing products and placing them. rendering: drawing the designs on the photos. ready: three designs with their pictures. failed: see failure.
+             * @enum {string}
+             */
+            stage: "uploaded" | "reading" | "designing" | "rendering" | "ready" | "failed";
+            /**
+             * Stages
+             * @description The pipeline rows behind `stage`, room rows first, then the latest design request's.
+             */
+            stages: components["schemas"]["StageRow"][];
+            /**
+             * Status
+             * @description The room job alone (reading), for builds made before `stage`. Read `stage`.
+             * @enum {string}
+             */
+            status: "working" | "ready" | "failed";
+        };
+        /** RoomStatusItem */
+        RoomStatusItem: {
+            /**
+             * Design Id
+             * Format: uuid
+             */
+            design_id: string;
+            /**
+             * Fit Checked
+             * @description True when the verifier checked this item's fit against measured (ar_measured or taped) sizes. False on an estimated room, where items are placed at nominal sizes and no fit is claimed.
+             */
+            fit_checked: boolean;
+            /**
+             * Item Id
+             * @description The design item's id, as in the Design.
+             */
+            item_id: string;
         };
         /** RotationItem */
         RotationItem: number;
+        /** StageRow */
+        StageRow: {
+            /**
+             * Detail
+             * @description The failure reason code when the row failed.
+             */
+            detail?: string | null;
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "measure" | "inventory" | "spec" | "placement" | "render";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "running" | "done" | "failed";
+        };
         /** StageStatus */
         StageStatus: {
             /** Detail */

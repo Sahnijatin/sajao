@@ -29,7 +29,7 @@ On first use, before anything else, one consent screen says in plain words what 
 10. **Plan.** Dimensioned 2D plan; drag and rotate re-run the verifier live with haptic snaps.
 11. **Shopping list.** Total, breakdown by category, cheaper alternative and rent option per item, grouped by retailer, buy links through our redirect.
 12. **Share.** Before and after reel, 9:16, with a link that opens the design in the app, or the landing page for people without it (a web viewer comes after launch).
-13. **Vastu.** No tab of its own. Vastu lives as the Vastu view on each room's Designs tab: direction, room scorecard and guidance for that room, on only with a compass reading; deeper help later.
+13. **Vastu.** Behind a build setting (`EXPO_PUBLIC_VASTU`), off in every build for now: with it off, neither the budget step's Vastu choice nor the Vastu view shows. No tab of its own. Vastu lives as the Vastu view on each room's Designs tab: direction, room scorecard and guidance for that room, on only with a compass reading; deeper help later.
 14. **Saved designs and history.** Reached from each room on My home.
 15. **Profile.** Taste and budget, language, units, and "Delete my account and data": after one confirmation the server erases the account and everything stored for it, then the phone forgets its session, rooms, photos and taste answers, keeping only language and units. If the server cannot be reached nothing is deleted, and the screen says so.
 
