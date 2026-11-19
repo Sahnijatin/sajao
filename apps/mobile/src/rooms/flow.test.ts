@@ -1,19 +1,14 @@
-import { afterMeasured, afterReview, afterSpace } from "./flow";
+import { afterAdding, afterMeasured, flowRoute } from "./flow";
 
-describe("from Looks good to the stages", () => {
-  it("the first room goes through the space profile, then taste, then the stages", () => {
-    expect(afterReview({ hasSpaceProfile: true, hasTaste: false })).toBe("space");
-    expect(afterSpace({ hasTaste: false })).toBe("taste");
+describe("from adding a room to its stages", () => {
+  it("the first room is asked taste, with its budget; a later room only its budget", () => {
+    expect(afterAdding({ hasTaste: false })).toBe("taste");
+    expect(afterAdding({ hasTaste: true })).toBe("budget");
   });
 
-  it("a later room skips taste, which was asked once, and is asked its own budget", () => {
-    expect(afterReview({ hasSpaceProfile: true, hasTaste: true })).toBe("space");
-    expect(afterSpace({ hasTaste: true })).toBe("budget");
-  });
-
-  it("with no space profile yet, the flow does not stop on an empty screen", () => {
-    expect(afterReview({ hasSpaceProfile: false, hasTaste: false })).toBe("taste");
-    expect(afterReview({ hasSpaceProfile: false, hasTaste: true })).toBe("budget");
+  it("goes to the question's screen for that room", () => {
+    expect(flowRoute("taste", "r")).toEqual({ pathname: "/taste", params: { room: "r" } });
+    expect(flowRoute("budget", "r")).toEqual({ pathname: "/budget", params: { room: "r" } });
   });
 });
 

@@ -39,7 +39,9 @@ describe("Space Profile card", () => {
     await show();
     expect(screen.getByText("A living room")).toBeTruthy();
     expect(screen.getByText("About 14 m² · 1 window · 1 door · morning light")).toBeTruthy();
-    expect(screen.getByText("Estimated ±15 cm")).toBeTruthy();
+    // No tolerance number on an estimate.
+    expect(screen.getByText("Estimated from photos. Measure to confirm fit.")).toBeTruthy();
+    expect(screen.queryByText(/±/)).toBeNull();
     expect(screen.queryByText("Verified")).toBeNull();
   });
 
@@ -47,7 +49,7 @@ describe("Space Profile card", () => {
     await act(async () => useSettings.setState({ units: "ft_in" }));
     await show();
     expect(screen.getByText("About 154 sq ft · 1 window · 1 door · morning light")).toBeTruthy();
-    expect(screen.getByText("Estimated ±0 ft 6 in")).toBeTruthy();
+    expect(screen.queryByText(/±/)).toBeNull();
   });
 
   it("names a partial scan as part of the space", async () => {
