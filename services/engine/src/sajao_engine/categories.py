@@ -95,6 +95,8 @@ ALIASES = {
     "table": "side_table",
     "carpet": "rug",
     "dressing_table": "dresser",
+    "bedside_table": "nightstand",
+    "shelf": "bookshelf",
 }
 
 

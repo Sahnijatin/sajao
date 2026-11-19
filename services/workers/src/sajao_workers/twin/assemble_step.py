@@ -32,7 +32,7 @@ from sajao_workers.twin.shell import (
 from sajao_workers.twin.space import Space, fit_space
 
 # Bump when assembly, the shell fit or the crops change.
-VERSION = 6
+VERSION = 7
 CROP_MARGIN = 0.10  # of the mask's box, split between the two sides
 CROPS_PER_OBJECT = 4
 
@@ -211,10 +211,12 @@ def assemble_step(points_for_shell: PointsForShell = shell_points) -> Step:
         points = points_for_shell(context.store, manifest)
         if len(points) < 1000:
             raise NonRetryableStepError("too little depth to fit the room shell")
+        single = bool(manifest.get("single_view"))
         space = fit_space(
             points,
             depth_source=manifest["depth_source"],
-            unseen_open=bool(manifest.get("single_view")),
+            unseen_open=single,
+            stood_at=np.asarray(manifest["frames"][0]["c2w"])[:3, 3] if single else None,
         )
         openings = json.loads(context.read("openings")) if "openings" in context.inputs else []
         coverage = _shell_from_frames(context.store, manifest, objects, openings, space)
