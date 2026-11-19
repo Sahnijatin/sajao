@@ -18,6 +18,7 @@ import {
   tasteReducer,
   TENURES,
 } from "@/taste/taste-session";
+import { vastuEnabled } from "@/features";
 import { formatInr } from "@/utils/format-inr";
 
 const reducer = tasteReducer(DECK);
@@ -36,7 +37,14 @@ function Group({ title, children }: { title?: string; children: ReactNode }) {
  * Taste onboarding: a little context, 8 to 12 adaptive swipes, then budget
  * and must-haves. The age band is asked once and never shown back.
  */
-export function TasteScreen({ onDone }: { onDone: (answers: TasteAnswers) => void }) {
+export function TasteScreen({
+  onDone,
+  showVastu = vastuEnabled(),
+}: {
+  onDone: (answers: TasteAnswers) => void;
+  /** The "consider Vastu" choice, behind its build setting (off). */
+  showVastu?: boolean;
+}) {
   const { t } = useTranslation();
   const { tokens } = useTheme();
   const { spacing } = tokens;
@@ -198,11 +206,13 @@ export function TasteScreen({ onDone }: { onDone: (answers: TasteAnswers) => voi
             />
           ))}
         </Group>
-        <Chip
-          label={t("taste.vastu")}
-          selected={state.considerVastu}
-          onPress={() => dispatch({ type: "considerVastu", value: !state.considerVastu })}
-        />
+        {showVastu ? (
+          <Chip
+            label={t("taste.vastu")}
+            selected={state.considerVastu}
+            onPress={() => dispatch({ type: "considerVastu", value: !state.considerVastu })}
+          />
+        ) : null}
         <Button label={t("taste.finish")} disabled={!canContinue(state)} onPress={finish} />
       </>
     );

@@ -34,6 +34,7 @@ import {
 import { edgeKinds, fitClaimsAllowed } from "@/rooms/room-shape";
 import { RoomStillView } from "@/rooms/room-still";
 import { shoppingFor } from "@/rooms/shopping";
+import { vastuEnabled } from "@/features";
 import { useSettings } from "@/state/settings";
 import { formatInr } from "@/utils/format-inr";
 import { formatArea, formatLength, type LengthUnits } from "@/utils/format-length";
@@ -409,10 +410,12 @@ function DesignsTabBody({
   content,
   look,
   picker,
+  showVastu,
 }: {
   content: RoomContent;
   look: RoomLook;
   picker: React.ReactNode;
+  showVastu: boolean;
 }) {
   const { t } = useTranslation();
   const { tokens, tier } = useTheme();
@@ -478,36 +481,39 @@ function DesignsTabBody({
         </Text>
       </Card>
 
-      <Card style={{ gap: spacing.md }}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.xl }}>
-          <View style={{ flex: 1, gap: spacing.xxs }}>
-            <Text variant="label">{t("designs.vastu")}</Text>
-            {calibrated ? null : (
-              <Text variant="caption" tone="tertiary">
-                {t("designs.vastuNeedsCompass")}
-              </Text>
-            )}
+      {/* The Vastu view, behind its build setting (off). */}
+      {showVastu ? (
+        <Card style={{ gap: spacing.md }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.xl }}>
+            <View style={{ flex: 1, gap: spacing.xxs }}>
+              <Text variant="label">{t("designs.vastu")}</Text>
+              {calibrated ? null : (
+                <Text variant="caption" tone="tertiary">
+                  {t("designs.vastuNeedsCompass")}
+                </Text>
+              )}
+            </View>
+            <Switch
+              testID="vastu-toggle"
+              accessibilityLabel={t("designs.vastu")}
+              value={calibrated && vastu}
+              disabled={!calibrated}
+              onValueChange={setVastu}
+              trackColor={{ false: colors.sand, true: colors.accent }}
+              thumbColor={colors.surface}
+            />
           </View>
-          <Switch
-            testID="vastu-toggle"
-            accessibilityLabel={t("designs.vastu")}
-            value={calibrated && vastu}
-            disabled={!calibrated}
-            onValueChange={setVastu}
-            trackColor={{ false: colors.sand, true: colors.accent }}
-            thumbColor={colors.surface}
-          />
-        </View>
-        {calibrated && vastu ? (
-          <>
-            <Text tone="secondary">{t("designs.vastuPoints")}</Text>
-            {/* Every Vastu view carries this label. */}
-            <Text variant="caption" tone="tertiary">
-              {t("vastu.label")}
-            </Text>
-          </>
-        ) : null}
-      </Card>
+          {calibrated && vastu ? (
+            <>
+              <Text tone="secondary">{t("designs.vastuPoints")}</Text>
+              {/* Every Vastu view carries this label. */}
+              <Text variant="caption" tone="tertiary">
+                {t("vastu.label")}
+              </Text>
+            </>
+          ) : null}
+        </Card>
+      ) : null}
     </>
   );
 }
@@ -658,7 +664,10 @@ export function RoomScreen({
   remeasuring = false,
   job,
   onRetry,
+  showVastu = vastuEnabled(),
 }: {
+  /** The Vastu view on Designs, behind its build setting (off). */
+  showVastu?: boolean;
   content: RoomContent;
   /** The room's job while its designs are being made, or why it stopped. */
   job?: RoomJobState;
@@ -774,7 +783,7 @@ export function RoomScreen({
         </Card>
       ) : null}
       {tab === "designs" && look ? (
-        <DesignsTabBody content={designView} look={look} picker={picker} />
+        <DesignsTabBody content={designView} look={look} picker={picker} showVastu={showVastu} />
       ) : null}
       {tab === "shopping" && look ? (
         <ShoppingTabBody content={designView} look={look} picker={picker} units={units} />

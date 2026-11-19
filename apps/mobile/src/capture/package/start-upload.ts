@@ -8,7 +8,6 @@
 // asked to keep it going in the background.
 import { createApiClient } from "@sajao/api-client";
 import { configResult } from "@/config";
-import { followRoom } from "@/rooms/room-job";
 import { type UploadStatus, useCaptureStore } from "@/state/capture";
 import { putPart, uploadsApi } from "@/uploads/api";
 import { uploadResumable } from "@/uploads/resumable-upload";
@@ -17,7 +16,10 @@ import type { LocalCapture } from "./native-capture";
 import { clearPendingUpload, loadPendingUpload, savePendingUpload } from "./pending-upload";
 import { type CaptureDeviceInfo, uploadAndRegister, uploadSpec, uuidV4 } from "./upload-capture";
 
-const setStatus = (upload: UploadStatus) => useCaptureStore.getState().setUpload(upload);
+let current = "";
+/** A status for the capture being uploaded now, so no other capture's job reads it. */
+const setStatus = (upload: UploadStatus) =>
+  useCaptureStore.getState().setUpload({ ...upload, captureId: current });
 
 let running: { captureId: string; done: Promise<void> } | null = null;
 
@@ -26,6 +28,8 @@ export function startCaptureUpload(local: LocalCapture, device: CaptureDeviceInf
   // One upload at a time. A second call for the same scan joins the one that
   // runs; a new scan waits for the one before it.
   if (running?.captureId === local.captureId) return running.done;
+  // Marked at once, so its room's job waits for this upload and not the one before it.
+  useCaptureStore.getState().queueUpload(local.captureId);
   const before = running?.done ?? Promise.resolve();
   const mine = {
     captureId: local.captureId,
@@ -53,8 +57,8 @@ export async function resumePendingUpload(): Promise<void> {
 }
 
 async function upload(local: LocalCapture, device: CaptureDeviceInfo): Promise<void> {
+  current = local.captureId;
   useCaptureStore.getState().setDevice(device);
-  useCaptureStore.getState().setRoom(null);
   let videoSkipped = false;
   // What this scan really cost to upload, shown once it is up.
   let bytes = 0;
@@ -120,37 +124,8 @@ async function upload(local: LocalCapture, device: CaptureDeviceInfo): Promise<v
       ...(videoSkipped ? { videoSkipped } : {}),
     });
     await clearPendingUpload(local.captureId).catch(() => undefined);
-    try {
-      // The scan is up: make its room and follow the measuring. A failure
-      // here loses nothing; the next upload call makes the same room again.
-      await followRoom(
-        {
-          async create(captureId) {
-            const { data } = await client.POST("/v1/rooms", {
-              body: { capture_id: captureId },
-              headers: { "Idempotency-Key": `room-${captureId}` },
-            });
-            if (!data) throw new Error("Could not create the room");
-            return data;
-          },
-          async read(roomId) {
-            const { data } = await client.GET("/v1/rooms/{room_id}", {
-              params: { path: { room_id: roomId } },
-            });
-            if (!data) throw new Error("Could not read the room");
-            return data;
-          },
-        },
-        local.captureId,
-        {
-          onUpdate: (room) => useCaptureStore.getState().setRoom(room),
-          sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
-          now: Date.now,
-        },
-      );
-    } catch {
-      // The room line stays as it was; the upload itself is done.
-    }
+    // The room's job, followed by the room itself, creates and follows the
+    // room from here: one owner, so no two requests race to create it.
   } catch (error) {
     setStatus({
       state: "failed",

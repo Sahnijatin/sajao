@@ -1085,6 +1085,57 @@
         "title": "ReviewWindow",
         "type": "object"
       },
+      "RoomFailure": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "description": "Why the job stopped. upload_incomplete: a file of the capture is not in storage. photo_too_small: a photo is below the minimum the render needs. timed_out: a stage ran past its limit and its retry. internal: an error on our side; trying again may work.",
+            "enum": [
+              "upload_incomplete",
+              "photo_too_small",
+              "photo_missing",
+              "photo_unreadable",
+              "no_ar_data",
+              "planes_unreadable",
+              "floor_not_visible",
+              "no_walls",
+              "space_not_supported",
+              "invalid_request",
+              "no_products",
+              "no_layout_for_room",
+              "nothing_fits",
+              "render_failed",
+              "timed_out",
+              "internal"
+            ],
+            "title": "Reason",
+            "type": "string"
+          },
+          "retryable": {
+            "description": "True when asking again (the same room or design request) may succeed; false when the capture itself must change.",
+            "title": "Retryable",
+            "type": "boolean"
+          },
+          "stage": {
+            "description": "The stage that failed.",
+            "enum": [
+              "uploaded",
+              "reading",
+              "designing",
+              "rendering"
+            ],
+            "title": "Stage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason",
+          "stage",
+          "retryable"
+        ],
+        "title": "RoomFailure",
+        "type": "object"
+      },
       "RoomList": {
         "properties": {
           "rooms": {
@@ -1102,39 +1153,162 @@
         "type": "object"
       },
       "RoomStatus": {
+        "additionalProperties": false,
+        "description": "Where a room's job is, as the room status endpoint returns it. The app shows only what this says: one stage, a machine-readable reason when it failed, how the room was measured, and for each design item whether a fit check ran.",
         "properties": {
+          "awaiting_brief": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "True when the room is read and no design request has been made yet: designing starts as soon as the app sends one.",
+            "title": "Awaiting Brief"
+          },
           "capture_id": {
+            "format": "uuid",
             "title": "Capture Id",
             "type": "string"
           },
+          "confidence_level": {
+            "anyOf": [
+              {
+                "enum": [
+                  "estimated",
+                  "ar_measured",
+                  "taped"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The room twin's confidence level, once the room is read. estimated: sizes say measure to confirm and no item carries a fit claim.",
+            "title": "Confidence Level"
+          },
           "created_at": {
+            "description": "UTC instant, RFC 3339.",
+            "format": "date-time",
             "title": "Created At",
             "type": "string"
           },
+          "design_request_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The latest design request for the room, once one is made.",
+            "title": "Design Request Id"
+          },
+          "failure": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RoomFailure"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
+            "format": "uuid",
             "title": "Id",
             "type": "string"
           },
-          "stages": {
+          "items": {
+            "description": "Every item of every design, once designs exist; empty before.",
             "items": {
-              "$ref": "#/components/schemas/StageStatus"
+              "$ref": "#/components/schemas/RoomStatusItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "schema_version": {
+            "description": "Contract version of the object. Minor versions only add optional fields.",
+            "pattern": "^1\\.[0-9]+$",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "stage": {
+            "description": "uploaded: the capture is registered and the job is queued. reading: measuring the room and listing what is in it. designing: choosing products and placing them. rendering: drawing the designs on the photos. ready: three designs with their pictures. failed: see failure.",
+            "enum": [
+              "uploaded",
+              "reading",
+              "designing",
+              "rendering",
+              "ready",
+              "failed"
+            ],
+            "title": "Stage",
+            "type": "string"
+          },
+          "stages": {
+            "description": "The pipeline rows behind `stage`, room rows first, then the latest design request's.",
+            "items": {
+              "$ref": "#/components/schemas/StageRow"
             },
             "title": "Stages",
             "type": "array"
           },
           "status": {
+            "description": "The room job alone (reading), for builds made before `stage`. Read `stage`.",
+            "enum": [
+              "working",
+              "ready",
+              "failed"
+            ],
             "title": "Status",
             "type": "string"
           }
         },
         "required": [
+          "schema_version",
           "id",
           "capture_id",
           "created_at",
+          "stage",
+          "items",
           "status",
           "stages"
         ],
         "title": "RoomStatus",
+        "type": "object"
+      },
+      "RoomStatusItem": {
+        "additionalProperties": false,
+        "properties": {
+          "design_id": {
+            "format": "uuid",
+            "title": "Design Id",
+            "type": "string"
+          },
+          "fit_checked": {
+            "description": "True when the verifier checked this item's fit against measured (ar_measured or taped) sizes. False on an estimated room, where items are placed at nominal sizes and no fit is claimed.",
+            "title": "Fit Checked",
+            "type": "boolean"
+          },
+          "item_id": {
+            "description": "The design item's id, as in the Design.",
+            "pattern": "^[a-z0-9_-]{1,40}$",
+            "title": "Item Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "design_id",
+          "item_id",
+          "fit_checked"
+        ],
+        "title": "RoomStatusItem",
         "type": "object"
       },
       "RotationItem": {
@@ -1142,6 +1316,51 @@
         "minimum": -1.0,
         "title": "RotationItem",
         "type": "number"
+      },
+      "StageRow": {
+        "additionalProperties": false,
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The failure reason code when the row failed.",
+            "title": "Detail"
+          },
+          "stage": {
+            "enum": [
+              "measure",
+              "inventory",
+              "spec",
+              "placement",
+              "render"
+            ],
+            "title": "Stage",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "done",
+              "failed"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stage",
+          "status"
+        ],
+        "title": "StageRow",
+        "type": "object"
       },
       "StageStatus": {
         "properties": {
@@ -1411,7 +1630,7 @@
   "paths": {
     "/v1/captures": {
       "post": {
-        "description": "Store a capture whose files are already uploaded. Safe to repeat.",
+        "description": "Store a capture whose files are already uploaded, make its room and start the\npipeline. Safe to repeat.",
         "operationId": "registerCapture",
         "requestBody": {
           "content": {
@@ -1607,7 +1826,7 @@
     },
     "/v1/rooms": {
       "get": {
-        "description": "The caller's rooms, newest first, each with its job status.",
+        "description": "The caller's rooms, newest first, each with its status.",
         "operationId": "listRooms",
         "responses": {
           "200": {
@@ -1627,7 +1846,7 @@
         ]
       },
       "post": {
-        "description": "Create the room for a registered capture and start measuring it. Safe to repeat.",
+        "description": "The room for a registered capture. Registering the capture already made it and\nstarted it; this returns it, and starts it again if that start was lost. Safe to\nrepeat.",
         "operationId": "createRoom",
         "requestBody": {
           "content": {
@@ -1669,7 +1888,7 @@
     },
     "/v1/rooms/{room_id}": {
       "get": {
-        "description": "One room and its job status by stage.",
+        "description": "One room's status: its stage, why it failed, how it was measured, and per design\nitem whether a fit check ran.",
         "operationId": "getRoom",
         "parameters": [
           {
@@ -1755,7 +1974,7 @@
         ]
       },
       "post": {
-        "description": "Ask for designs for a room with a brief. Safe to repeat with the same id.",
+        "description": "Ask for designs for a room with a brief, at any point: before the room is read,\ndesigning starts as soon as it is. Safe to repeat with the same id.",
         "operationId": "requestDesigns",
         "parameters": [
           {

@@ -32,15 +32,6 @@
         "doneSize": "Photos uploaded ({{megabytes}} MB)"
       }
     },
-    "room": {
-      "measuring": "Measuring your room",
-      "measured": "Room measured",
-      "failed": {
-        "no_walls": "We could not find the walls in this scan. Please scan again and walk around the room",
-        "other": "We could not measure this room. Please scan again",
-        "no_ar_data": "Your pictures are uploaded. Rooms from photos and videos are not ready yet"
-      }
-    },
     "usePhotos": "Use photos or a video"
   },
   "capture": {
@@ -367,9 +358,15 @@
     "verifyBody": "Measure one wall with a tape. It snaps in and re-fits the whole space.",
     "wall": "Wall {{number}}",
     "ceiling": "Ceiling height",
-    "valueLabel": "Length in metres",
     "apply": "Snap it in",
-    "showIdeas": "Show me ideas"
+    "showIdeas": "Show me ideas",
+    "tape": {
+      "ft_in": "Feet and inches",
+      "cm": "Centimetres",
+      "feet": "Feet",
+      "inches": "Inches",
+      "centimetres": "Centimetres"
+    }
   },
   "taste": {
     "contextTitle": "A little about you",
@@ -466,10 +463,6 @@
     "guestTitle": "You are browsing as a guest",
     "guestBody": "Explore freely. We ask you to sign in only when you are ready to design a room.",
     "language": "Language",
-    "units": "Units",
-    "unitsCm": "Centimetres",
-    "unitsFtIn": "Feet and inches",
-    "unitsExample": "A 3.4 m wall shows as {{length}}",
     "gallery": "Component gallery",
     "spacePreview": "Space Profile preview",
     "tastePreview": "Taste preview",

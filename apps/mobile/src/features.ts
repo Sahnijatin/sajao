@@ -11,3 +11,12 @@ export function twinViewerEnabled(
 ): boolean {
   return value === "1";
 }
+
+/**
+ * Vastu: the budget step's "consider Vastu" choice and the Vastu view on
+ * Designs. Off in every build unless EXPO_PUBLIC_VASTU is "1"; with it off,
+ * nothing in the app mentions Vastu and the brief asks for none.
+ */
+export function vastuEnabled(value: string | undefined = process.env.EXPO_PUBLIC_VASTU): boolean {
+  return value === "1";
+}

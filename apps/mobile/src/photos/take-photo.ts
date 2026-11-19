@@ -3,10 +3,8 @@
 // library writes orientation as metadata; decoding the file applies it, so
 // the size read here is the size the person saw.
 import type { ImageRef } from "expo-image-manipulator";
-import { uploadSize } from "@/uploads/photo-size";
+import { PHOTO_JPEG_QUALITY, uploadSize } from "@/uploads/photo-size";
 import { isLandscape, type TakenPhoto } from "./photo-session";
-
-const JPEG_QUALITY = 0.8;
 
 export type SavedPhoto = { ok: true; photo: TakenPhoto } | { ok: false; problem: "notLandscape" };
 
@@ -19,7 +17,7 @@ export async function preparePhoto(fileUri: string): Promise<SavedPhoto> {
   }
   const size = uploadSize({ width: upright.width, height: upright.height });
   const resized = await ImageManipulator.manipulate(upright).resize(size).renderAsync();
-  const saved = await resized.saveAsync({ compress: JPEG_QUALITY, format: SaveFormat.JPEG });
+  const saved = await resized.saveAsync({ compress: PHOTO_JPEG_QUALITY, format: SaveFormat.JPEG });
   return { ok: true, photo: { uri: saved.uri, widthPx: saved.width, heightPx: saved.height } };
 }
 

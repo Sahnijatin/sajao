@@ -1,4 +1,4 @@
-import { uploadSize } from "./photo-size";
+import { MAX_PHOTO_EDGE_PX, uploadSize } from "./photo-size";
 import {
   PartUrlExpiredError,
   retryDelayMs,
@@ -251,9 +251,14 @@ describe("resumable upload", () => {
 });
 
 describe("photo size for upload", () => {
-  it("shrinks the long edge to 1600 px and keeps the shape", () => {
-    expect(uploadSize({ width: 4000, height: 3000 })).toEqual({ width: 1600, height: 1200 });
-    expect(uploadSize({ width: 3000, height: 4000 })).toEqual({ width: 1200, height: 1600 });
+  it("keeps 2048 px on the long edge and the shape", () => {
+    expect(MAX_PHOTO_EDGE_PX).toBe(2048);
+    expect(uploadSize({ width: 4000, height: 3000 })).toEqual({ width: 2048, height: 1536 });
+    expect(uploadSize({ width: 3000, height: 4000 })).toEqual({ width: 1536, height: 2048 });
+  });
+
+  it("goes smaller only when asked to", () => {
+    expect(uploadSize({ width: 4000, height: 3000 }, 1600)).toEqual({ width: 1600, height: 1200 });
   });
 
   it("never enlarges a small photo", () => {
@@ -262,6 +267,6 @@ describe("photo size for upload", () => {
   });
 
   it("keeps very thin panoramas at least 1 px tall", () => {
-    expect(uploadSize({ width: 20000, height: 4 })).toEqual({ width: 1600, height: 1 });
+    expect(uploadSize({ width: 20000, height: 4 })).toEqual({ width: 2048, height: 1 });
   });
 });
