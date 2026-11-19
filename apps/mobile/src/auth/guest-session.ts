@@ -29,11 +29,36 @@ export async function signOutHere(config: { url: string; publishableKey: string 
   await (await authClient(config)).auth.signOut({ scope: "local" });
 }
 
+/**
+ * The token request in flight, shared by every caller. Without this, the
+ * first upload's parallel requests each found no session and each signed in,
+ * making two guest users: files uploaded as one could then not be completed
+ * as the other (404 upload_not_found).
+ */
+const sharedToken = shareInFlight(tokenFor);
+
 /** A valid access token for the API, signing in as a guest when there is no session yet. */
-export async function guestAccessToken(config: {
-  url: string;
-  publishableKey: string;
-}): Promise<string> {
+export function guestAccessToken(config: { url: string; publishableKey: string }): Promise<string> {
+  return sharedToken(config);
+}
+
+/**
+ * Wraps an async call so that callers arriving while it runs share the same
+ * promise; once it settles (either way), the next caller starts it afresh.
+ */
+export function shareInFlight<A extends unknown[], T>(
+  run: (...args: A) => Promise<T>,
+): (...args: A) => Promise<T> {
+  let inFlight: Promise<T> | null = null;
+  return (...args) => {
+    inFlight ??= run(...args).finally(() => {
+      inFlight = null;
+    });
+    return inFlight;
+  };
+}
+
+async function tokenFor(config: { url: string; publishableKey: string }): Promise<string> {
   const auth = (await authClient(config)).auth;
   const existing = await auth.getSession();
   if (existing.data.session) return existing.data.session.access_token;
