@@ -76,11 +76,14 @@ export function GeneratingScreen({
   roomId,
   onDone,
   onLeave,
+  onRetry,
   source,
   designs = true,
 }: {
   /** A stage failed and the person chose to go back to My home. */
   onLeave?: () => void;
+  /** A stage failed and the person asked to try that room again. */
+  onRetry?: () => void;
   roomId: string;
   /** False for a kind of space that gets no designs yet: the designing stage is left out. */
   designs?: boolean;
@@ -127,7 +130,10 @@ export function GeneratingScreen({
             {t("generating.failed.title")}
           </Text>
           <Text tone="secondary">{t(`generating.failed.${reason}`)}</Text>
-          {onLeave ? <Button label={t("generating.failed.back")} onPress={onLeave} /> : null}
+          {onRetry ? <Button label={t("generating.failed.retry")} onPress={onRetry} /> : null}
+          {onLeave ? (
+            <Button label={t("generating.failed.back")} variant="ghost" onPress={onLeave} />
+          ) : null}
         </View>
       </SafeAreaView>
     );

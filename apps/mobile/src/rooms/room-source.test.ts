@@ -3,6 +3,7 @@ import designFixture from "../../../../packages/schemas/fixtures/v1/valid/design
 import twinFixture from "../../../../packages/schemas/fixtures/v1/valid/space-twin.json";
 import { useCaptureStore } from "@/state/capture";
 import { useRoomData } from "@/state/room-data";
+import { useRoomJobs } from "@/state/room-jobs";
 import { useRooms } from "@/state/rooms";
 import { useTaste } from "@/state/taste";
 import type { TasteAnswers } from "@/taste/taste-session";
@@ -24,7 +25,7 @@ jest.mock("./room-client", () => ({
 jest.mock("@/preview-screens", () => ({ previewScreensEnabled: () => true }));
 
 // Loaded after the mock so the source picks up the fake API.
-const { loadRoomContent, roomGeneration } =
+const { loadRoomContent, retryRoomJob, roomGeneration, startRoomJob } =
   jest.requireActual<typeof import("./room-source")>("./room-source");
 
 const ready: RoomJob = {
@@ -139,5 +140,68 @@ describe("measuring a room again", () => {
     expect(useRooms.getState().rooms[0]?.remeasure).toBeUndefined();
     expect(useRooms.getState().rooms[0]?.captureId).toBe("old-capture");
     expect(useRoomData.getState().content[id]).toBe(old);
+  });
+});
+
+describe("a room's job, followed whichever screen is open", () => {
+  function newRoom() {
+    useRooms.setState({ rooms: [] });
+    useRoomData.setState({ content: {} });
+    useRoomJobs.setState({ jobs: {} });
+    const room = useRooms.getState().addRoomForCapture("job-capture", 0);
+    useCaptureStore.setState({
+      last: { captureId: "job-capture" } as never,
+      upload: { state: "uploading", finished: 0, total: 2 },
+    });
+    useTaste.setState({
+      answers: {
+        budget: { limit: { currency: "INR", amount_minor: 100 }, flexibility: "strict" },
+        must_haves: [],
+        consider_vastu: false,
+      } as unknown as TasteAnswers,
+    });
+    return room.id;
+  }
+
+  it("goes uploading, reading your room, designing, done", async () => {
+    const id = newRoom();
+    mockApi.current = fakeApi(ready, { id: "req", status: "working", stages: [] });
+    startRoomJob(id);
+    await jest.advanceTimersByTimeAsync(0);
+    expect(useRoomJobs.getState().jobs[id]).toEqual({ stage: "uploading", finished: 0 });
+    useCaptureStore.setState({ upload: { state: "done", finished: 2, total: 2 } });
+    await jest.advanceTimersByTimeAsync(0);
+    expect(useRoomJobs.getState().jobs[id]).toEqual({ stage: "designing", finished: 2 });
+    (mockApi.current.getDesigns as jest.Mock).mockResolvedValue(designsReady);
+    await jest.advanceTimersByTimeAsync(POLL_MS);
+    expect(useRoomJobs.getState().jobs[id]).toEqual({ stage: "done", finished: 3 });
+    expect(useRoomData.getState().content[id]?.looks).toHaveLength(3);
+  });
+
+  it("stops with the real reason, and Retry starts it again", async () => {
+    const id = newRoom();
+    useCaptureStore.setState({ upload: { state: "done", finished: 2, total: 2 } });
+    mockApi.current = fakeApi(failedJob);
+    startRoomJob(id);
+    await jest.advanceTimersByTimeAsync(0);
+    expect(useRoomJobs.getState().jobs[id]).toMatchObject({ stage: "failed", reason: "no_walls" });
+    mockApi.current = fakeApi(ready);
+    await retryRoomJob(id);
+    await jest.advanceTimersByTimeAsync(0);
+    expect(useRoomJobs.getState().jobs[id]?.stage).toBe("done");
+  });
+
+  it("the stages screen shows the job, which goes on after the screen closes", async () => {
+    const id = newRoom();
+    useCaptureStore.setState({ upload: { state: "done", finished: 2, total: 2 } });
+    mockApi.current = fakeApi(ready, { id: "req", status: "working", stages: [] });
+    const seen: number[] = [];
+    const stop = roomGeneration()!.watch(id, (count) => seen.push(count));
+    await jest.advanceTimersByTimeAsync(0);
+    stop();
+    (mockApi.current.getDesigns as jest.Mock).mockResolvedValue(designsReady);
+    await jest.advanceTimersByTimeAsync(POLL_MS);
+    expect(seen.at(-1)).toBe(2);
+    expect(useRoomJobs.getState().jobs[id]?.stage).toBe("done");
   });
 });
