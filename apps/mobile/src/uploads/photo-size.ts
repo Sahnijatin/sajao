@@ -1,6 +1,11 @@
-// Photos are resized on the phone before upload: about 1600 px on the long
-// edge is plenty for room understanding and keeps uploads small on mobile data.
-export const MAX_PHOTO_EDGE_PX = 1600;
+// Photos are resized on the phone before upload: at least 2048 px on the
+// long edge (a 4:3 photo goes up at 2048 by 1536), so the room's walls,
+// doors and objects keep their detail for measuring and redesigning. The
+// server asks for no smaller size; a photo already smaller is never enlarged.
+export const MAX_PHOTO_EDGE_PX = 2048;
+
+/** JPEG quality for uploaded photos: high, as the photo is the room's ground truth. */
+export const PHOTO_JPEG_QUALITY = 0.9;
 
 export interface Size {
   width: number;
