@@ -91,10 +91,6 @@ export default function RootLayout() {
         />
         {/* After a scan: what we found, taste the first time, the stages, then the reveal. */}
         <Stack.Screen
-          name="space"
-          options={{ title: t("nav.space"), presentation: "fullScreenModal", animation: "fade" }}
-        />
-        <Stack.Screen
           name="consent"
           options={{ title: t("nav.consent"), gestureEnabled: false, animation: "fade" }}
         />

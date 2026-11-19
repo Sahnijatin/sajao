@@ -4,7 +4,6 @@ import { Text } from "react-native";
 import "@/i18n";
 import { useRoomData } from "@/state/room-data";
 import { designsOffered, roomContent, sampleContent, useRoomContent } from "./room-content";
-import { roomSpaceProfile } from "./room-space";
 import { RoomStillView } from "./room-still";
 
 let mockPreview = true;
@@ -26,7 +25,6 @@ describe("stand-in content by build", () => {
     (preview) => {
       mockPreview = preview;
       expect(roomContent("r")).toBeNull();
-      expect(roomSpaceProfile("r")).toBeNull();
     },
   );
 
