@@ -31,8 +31,20 @@ export interface DesignPlan {
   walls: { id: string; at: Px; metres: number }[];
   openings: { id: string; kind: "door" | "window"; from: Px; to: Px }[];
   items: { id: string; title: string; corners: [Px, Px, Px, Px]; centre: Px }[];
-  /** The tightest gaps between an item and a wall, tightest first. */
+  /**
+   * Gaps between an item and its nearest wall, tightest first: the selected
+   * item's alone when one is selected, otherwise the tightest few. None when
+   * gaps are off (a room whose sizes are estimated makes no fit claims).
+   */
   clearances: { itemId: string; from: Px; to: Px; metres: number }[];
+  /** The selected item and its product's own size; null when none is selected. */
+  selected: {
+    id: string;
+    title: string;
+    widthM: number;
+    depthM: number;
+    heightM: number;
+  } | null;
   /** Pixels per metre. */
   scale: number;
 }
@@ -113,7 +125,14 @@ export function designPlan(
   design: Design | null,
   shell: PlanShell,
   box: { width: number; height: number; padding: number },
+  options: {
+    /** The item tapped on the plan, if any. */
+    selectedId?: string | null;
+    /** Whether gaps to the walls may be shown: measured rooms only. */
+    gaps?: boolean;
+  } = {},
 ): DesignPlan {
+  const { selectedId = null, gaps = true } = options;
   const xs = shell.floor_polygon.map((point) => point.x_m);
   const ys = shell.floor_polygon.map((point) => point.y_m);
   const minX = Math.min(...xs);
@@ -189,7 +208,9 @@ export function designPlan(
     centre: place(item.position),
   }));
 
-  const clearances = placed
+  const chosen = placed.find(({ item }) => item.id === selectedId)?.item ?? null;
+  const clearances = (gaps ? placed : [])
+    .filter(({ item }) => chosen === null || item.id === chosen.id)
     .flatMap(({ item, corners }) => {
       const gap = wallClearance(corners, shell.floor_polygon, kinds);
       return gap && gap.metres >= AGAINST_WALL_M
@@ -204,5 +225,25 @@ export function designPlan(
     .filter((wall) => wall.length.source !== "measured")
     .reduce((widest, wall) => Math.max(widest, wall.length.error_band_m), 0);
 
-  return { outline, edges, haloPx: widestBand * scale, walls, openings, items, clearances, scale };
+  const selected = chosen
+    ? {
+        id: chosen.id,
+        title: chosen.product.title,
+        widthM: chosen.product.dimensions.width.value_m,
+        depthM: chosen.product.dimensions.depth.value_m,
+        heightM: chosen.product.dimensions.height.value_m,
+      }
+    : null;
+
+  return {
+    outline,
+    edges,
+    haloPx: widestBand * scale,
+    walls,
+    openings,
+    items,
+    clearances,
+    selected,
+    scale,
+  };
 }
