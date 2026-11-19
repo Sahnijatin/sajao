@@ -16,6 +16,21 @@ export const MAX_FRAMES = 20;
 export const MIN_VIDEO_MS = 5_000;
 export const MAX_VIDEO_MS = 120_000;
 
+/** The server's smallest photo: 1024 px on the long edge and 576 px on the short edge. */
+export const MIN_LONG_EDGE_PX = 1024;
+export const MIN_SHORT_EDGE_PX = 576;
+
+/**
+ * Whether a picture is too small for the server to read the room from. A
+ * size the phone did not report (0) is not refused here.
+ */
+export function tooSmall(item: { widthPx: number; heightPx: number }): boolean {
+  if (item.widthPx <= 0 || item.heightPx <= 0) return false;
+  const long = Math.max(item.widthPx, item.heightPx);
+  const short = Math.min(item.widthPx, item.heightPx);
+  return long < MIN_LONG_EDGE_PX || short < MIN_SHORT_EDGE_PX;
+}
+
 export interface PickedItem {
   uri: string;
   kind: "photo" | "video";
@@ -31,7 +46,8 @@ export type ImportProblem =
   | "photosAndVideo"
   | "severalVideos"
   | "videoTooShort"
-  | "videoTooLong";
+  | "videoTooLong"
+  | "tooSmall";
 
 export type Selection =
   | { ok: true; photos: PickedItem[] }
@@ -50,9 +66,12 @@ export function checkSelection(items: readonly PickedItem[]): Selection {
     const durationMs = video.durationMs ?? 0;
     if (durationMs < MIN_VIDEO_MS) return { ok: false, problem: "videoTooShort" };
     if (durationMs > MAX_VIDEO_MS) return { ok: false, problem: "videoTooLong" };
+    if (tooSmall(video)) return { ok: false, problem: "tooSmall" };
     return { ok: true, video: { ...video, durationMs } };
   }
   if (photos.length > MAX_FRAMES) return { ok: false, problem: "tooManyPhotos" };
+  // Refused here, before anything uploads, rather than by the server after.
+  if (photos.some(tooSmall)) return { ok: false, problem: "tooSmall" };
   return { ok: true, photos };
 }
 
