@@ -408,6 +408,9 @@ def depth(model: str, payload: dict[str, Any]) -> dict[str, Any]:
 
     MoGe-3 is given the field of view from the AR intrinsics; DA3 Metric's output
     becomes metres as focal length (pixels, at its processed size) times output / 300.
+    A frame with no intrinsics (a single imported photo without EXIF) gets MoGe-3's
+    own field of view, or a typical phone main camera's for DA3, and the result says
+    which intrinsics were used.
     """
     import math
 
@@ -421,14 +424,24 @@ def depth(model: str, payload: dict[str, Any]) -> dict[str, Any]:
     for frame in payload["frames"]:
         rgb = _rgb(frame["image"])
         h, w = rgb.shape[:2]
-        k = np.asarray(frame["intrinsics"], dtype=np.float64)
+        given = frame.get("intrinsics")
+        if given is None and not model.startswith("Ruicheng/moge"):
+            f = w / (2 * math.tan(math.radians(DEFAULT_FOV_X_DEG) / 2))
+            given = [[f, 0.0, w / 2], [0.0, f, h / 2], [0.0, 0.0, 1.0]]
+        k = np.asarray(given, dtype=np.float64) if given is not None else None
         if model.startswith("Ruicheng/moge"):
-            fov_x = math.degrees(2 * math.atan(w / (2 * k[0, 0])))
+            fov_x = math.degrees(2 * math.atan(w / (2 * k[0, 0]))) if k is not None else None
             image = torch.tensor(rgb / 255, dtype=torch.float32, device="cuda").permute(2, 0, 1)
             with torch.no_grad():
                 out = network.infer(image, fov_x=fov_x)
             metres = out["depth"].float().cpu().numpy()
             metres = np.where(out["mask"].cpu().numpy().astype(bool), metres, 0.0)
+            if k is None:
+                # MoGe's intrinsics are normalised by the image size.
+                k = out["intrinsics"].float().cpu().numpy().astype(np.float64)
+                k = np.array(
+                    [[k[0, 0] * w, 0, k[0, 2] * w], [0, k[1, 1] * h, k[1, 2] * h], [0, 0, 1]]
+                )
         else:
             with torch.no_grad():
                 raw = network.inference([rgb]).depth[0]
@@ -442,12 +455,17 @@ def depth(model: str, payload: dict[str, Any]) -> dict[str, Any]:
             {
                 "image": frame["image"],
                 "depth": store.put_blob(png),
+                "intrinsics": [[float(v) for v in row] for row in k],
                 "coverage": round(float(valid.mean()), 4),
                 "median_m": round(float(np.median(metres[valid])), 3) if valid.any() else 0.0,
             }
         )
     return {"frames": frames}
 
+
+# A typical phone main camera (26 mm equivalent), for a photo with no intrinsics when
+# the depth model cannot estimate them.
+DEFAULT_FOV_X_DEG = 69.0
 
 # The pose model's input size: landscape, or turned for a mostly portrait set.
 POSE_SIZE = (518, 392)
