@@ -1,7 +1,8 @@
 // The steps between "Looks good" on the review and the stages: the space
-// profile for this room, then taste and budget the first time only. Pure.
+// profile for this room, then taste and budget the first time, or this
+// room's budget after that. Pure.
 
-export type FlowStep = "space" | "taste" | "generating";
+export type FlowStep = "space" | "taste" | "budget" | "generating";
 
 export interface FlowFacts {
   /** A space profile exists for this room to confirm. */
@@ -16,9 +17,13 @@ export function afterReview(facts: FlowFacts): FlowStep {
   return afterSpace(facts);
 }
 
-/** Where to go once the space profile is confirmed. Taste is asked only once. */
+/**
+ * Where to go once the space profile is confirmed. Taste, with the first
+ * room's budget, is asked once; every later room is asked its own budget,
+ * prefilled from the last.
+ */
 export function afterSpace(facts: Pick<FlowFacts, "hasTaste">): FlowStep {
-  return facts.hasTaste ? "generating" : "taste";
+  return facts.hasTaste ? "budget" : "taste";
 }
 
 /**

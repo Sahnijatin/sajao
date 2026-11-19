@@ -1,5 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { TasteScreen } from "@/screens/taste";
+import { useRooms } from "@/state/rooms";
 import { useTaste } from "@/state/taste";
 
 export { RouteErrorBoundary as ErrorBoundary } from "@/components/route-error-boundary";
@@ -15,8 +16,12 @@ export default function TasteRoute() {
     <TasteScreen
       onDone={(answers) => {
         useTaste.getState().setAnswers(answers);
-        if (room) router.replace({ pathname: "/generating", params: { room } });
-        else router.back();
+        if (room) {
+          // The first room's budget is the one just given.
+          useRooms.getState().setRoomBudget(room, answers.budget);
+          useTaste.getState().setLastBudget(answers.budget);
+          router.replace({ pathname: "/generating", params: { room } });
+        } else router.back();
       }}
     />
   );

@@ -385,6 +385,24 @@ describe("a room with nothing ready yet", () => {
   });
 });
 
+describe("a room being measured again", () => {
+  it("says its designs are based on estimated sizes until the new ones arrive", async () => {
+    await show(real, { remeasuring: true });
+    expect(
+      screen.getByText(
+        "Measuring again. These designs are based on estimated sizes until the new ones arrive.",
+      ),
+    ).toBeTruthy();
+    await openTab("Designs");
+    expect(screen.getByTestId("remeasuring-note")).toBeTruthy();
+  });
+
+  it("says nothing of it otherwise", async () => {
+    await show(real);
+    expect(screen.queryByTestId("remeasuring-note")).toBeNull();
+  });
+});
+
 describe("the plan on the Room tab", () => {
   it("draws the room with the chosen look's furniture, with wall lengths and the tightest gaps", async () => {
     await show();
@@ -547,7 +565,7 @@ describe("how far to trust the numbers", () => {
     expect(
       within(screen.getByTestId("room-confidence")).getByText("Measured by your scan"),
     ).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Measure to confirm" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Measure this room for exact fit" })).toBeNull();
   });
 
   it("says a taped room was checked with a tape", async () => {
@@ -559,7 +577,7 @@ describe("how far to trust the numbers", () => {
     const onMeasure = jest.fn();
     await show({ ...real, confidence: "estimated" }, { onMeasure });
     expect(screen.getByText("Estimated")).toBeTruthy();
-    await fireEvent.press(screen.getByRole("button", { name: "Measure to confirm" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Measure this room for exact fit" }));
     expect(onMeasure).toHaveBeenCalledTimes(1);
     await openTab("Shopping list");
     expect(screen.getAllByText("Measure your room to confirm the fit").length).toBeGreaterThan(0);

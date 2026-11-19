@@ -288,8 +288,9 @@
         "title": "Estimated",
         "body": "These sizes are worked out from photos. Measure to confirm before you buy."
       },
-      "measure": "Measure to confirm"
-    }
+      "measure": "Measure this room for exact fit"
+    },
+    "remeasuring": "Measuring again. These designs are based on estimated sizes until the new ones arrive."
   },
   "designs": {
     "why": "Why this works",
@@ -347,11 +348,6 @@
     },
     "estimated": "Estimated ±{{band}}",
     "verified": "Verified",
-    "redoTitle": "What should we redo?",
-    "redoAll": "All of it",
-    "redoAllBody": "The whole space you scanned",
-    "redoPart": "Just a part",
-    "redoPartBody": "Draw around a corner or wall",
     "itemsTitle": "Things already here",
     "actions": {
       "keep": "Keep",
@@ -473,7 +469,18 @@
     "tasteNone": "Tell us what you like and what you want to spend. It takes a minute.",
     "tasteBudget": "Budget {{amount}}",
     "tasteChange": "Change",
-    "tasteStart": "Set my taste"
+    "tasteStart": "Set my taste",
+    "account": {
+      "title": "Your account",
+      "body": "Delete your account and everything Sajao keeps for it: rooms, photos, scans, designs and taste answers.",
+      "delete": "Delete my account and data",
+      "confirmTitle": "Delete your account and data?",
+      "confirmBody": "Your rooms, photos, scans, designs and taste answers are erased from Sajao and from this phone. This cannot be undone.",
+      "confirm": "Delete everything",
+      "deleting": "Deleting…",
+      "keep": "Keep my account",
+      "unreachable": "We could not reach Sajao, so nothing was deleted. Check your connection and try again."
+    }
   },
   "languages": {
     "en": "English",
@@ -505,7 +512,9 @@
     "taste": "Your taste",
     "areas": "Choose an area",
     "import": "Photos or a video",
-    "photos": "Take photos"
+    "photos": "Take photos",
+    "budget": "Budget",
+    "consent": "Before you start"
   },
   "areas": {
     "title": "Which one should we redesign?",
@@ -570,5 +579,22 @@
       "continue": "Continue",
       "another": "Add another view ({{number}} of {{most}})"
     }
+  },
+  "budget": {
+    "title": "Budget for this room",
+    "body": "Started from your last room. Change it if this room is different.",
+    "continue": "Show me designs"
+  },
+  "consent": {
+    "title": "Before you start",
+    "points": {
+      "photos": "Your photos and scans go to Sajao to measure your room and make its designs.",
+      "people": "Keep people and private things out of frame.",
+      "delete": "You can delete your account and everything kept for it from Profile at any time."
+    },
+    "agree": "By continuing you agree to the privacy policy and terms.",
+    "privacy": "Privacy policy",
+    "terms": "Terms",
+    "continue": "Agree and continue"
   }
 }

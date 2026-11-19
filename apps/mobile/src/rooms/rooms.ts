@@ -1,6 +1,7 @@
 // Rooms on My home. Pure: what a room is, how the list is ordered and what
 // each card says. Rooms live on this phone until the API serves them; the
 // store in state/rooms.ts is the only place that knows that.
+import type { TasteAnswers } from "@/taste/taste-session";
 import type { DesignIds } from "./designs-api";
 
 /**
@@ -16,6 +17,12 @@ export type RoomStill =
       view?: 0 | 1 | 2;
     };
 
+/** A photo of the room on this phone, with the id of the keyframe it was uploaded as. */
+export interface RoomPhoto {
+  id: string;
+  uri: string;
+}
+
 export interface Room {
   id: string;
   /** The name you gave it; null shows "Room 2" from its number. */
@@ -29,8 +36,16 @@ export interface Room {
   captureId: string | null;
   /** For a scan of several areas: the one chosen to redesign. Unset until chosen. */
   redesignAreaId?: string | null;
-  /** The photos the room was added with, on this phone, best first. Unset for an AR scan. */
-  photos?: string[];
+  /** The photos the room was added with, on this phone, in order, by keyframe id. Unset for an AR scan. */
+  photos?: RoomPhoto[];
+  /**
+   * A new scan measuring this room again, until it has been measured and its
+   * designs have arrived. Until then the room keeps its capture, content and
+   * designs; if the new scan fails, this is dropped and nothing is lost.
+   */
+  remeasure?: { captureId: string; designIds?: DesignIds };
+  /** The budget for this room's designs. Unset until it is asked. */
+  budget?: TasteAnswers["budget"];
   /** The ids its designs are asked for with, made once. Unset until designs are first asked for. */
   designIds?: DesignIds;
 }
