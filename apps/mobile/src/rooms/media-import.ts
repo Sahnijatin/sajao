@@ -5,10 +5,12 @@
 // video" on My home and the same offer on the scan screen. A room made this
 // way is at the estimated level and says "measure to confirm".
 import { Platform } from "react-native";
+import type { LocalCapture } from "@/capture/package/native-capture";
 import { startCaptureUpload } from "@/capture/package/start-upload";
-import type { ImportProblem } from "@/import/gallery-import";
+import { uuidV4 } from "@/capture/package/upload-capture";
+import { type ImportProblem, importedCapture } from "@/import/gallery-import";
 import type { PickResult } from "@/import/pick";
-import { previewScreensEnabled } from "@/preview-screens";
+import { keptFrames, type TakenPhoto } from "@/photos/photo-session";
 import { useCaptureStore } from "@/state/capture";
 import { useRooms } from "@/state/rooms";
 
@@ -17,13 +19,25 @@ export type ImportResult =
   | { status: "cancelled" }
   | { status: "problem"; problem: ImportProblem | "failed" };
 
-/**
- * Whether My home offers "Use photos or a video". The pictures upload today,
- * but the server does not make a room from them yet, so the offer waits in
- * development and preview builds until it does.
- */
-export function importOffered(): boolean {
-  return previewScreensEnabled();
+/** Make a room on My home from a capture with no AR data, and start its upload. */
+function startRoom(capture: LocalCapture): string {
+  useCaptureStore.getState().setLast(capture);
+  // The pictures become a room on My home at once, like a scan.
+  const room = useRooms.getState().addRoomForCapture(capture.captureId);
+  void startCaptureUpload(capture, {
+    platform: Platform.OS === "ios" ? "ios" : "android",
+    tier: "standard",
+    has_ar: false,
+  });
+  return room.id;
+}
+
+/** Photos taken in the app with Take photos: a room on My home, uploading. Returns its id. */
+export function startPhotoRoom(
+  photos: readonly TakenPhoto[],
+  captureId: string = uuidV4(),
+): string {
+  return startRoom(importedCapture(captureId, "camera", keptFrames(photos)));
 }
 
 async function pickFromPhone(): Promise<PickResult> {
@@ -41,15 +55,7 @@ export async function importFromGallery(
     const picked = await pick();
     if (picked.state === "cancelled") return { status: "cancelled" };
     if (picked.state === "problem") return { status: "problem", problem: picked.problem };
-    useCaptureStore.getState().setLast(picked.capture);
-    // The pictures become a room on My home at once, like a scan.
-    const room = useRooms.getState().addRoomForCapture(picked.capture.captureId);
-    void startCaptureUpload(picked.capture, {
-      platform: Platform.OS === "ios" ? "ios" : "android",
-      tier: "standard",
-      has_ar: false,
-    });
-    return { status: "imported", roomId: room.id };
+    return { status: "imported", roomId: startRoom(picked.capture) };
   } catch {
     return { status: "problem", problem: "failed" };
   }

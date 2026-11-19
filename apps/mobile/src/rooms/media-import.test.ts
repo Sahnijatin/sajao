@@ -1,7 +1,7 @@
 import type { PickResult } from "@/import/pick";
 import { useCaptureStore } from "@/state/capture";
 import { useRooms } from "@/state/rooms";
-import { importFromGallery } from "./media-import";
+import { importFromGallery, startPhotoRoom } from "./media-import";
 
 const mockUpload = jest.fn();
 jest.mock("@/capture/package/start-upload", () => ({
@@ -49,5 +49,27 @@ describe("making a room from photos or a video", () => {
       throw new Error("no picker in this build");
     });
     expect(result).toEqual({ status: "problem", problem: "failed" });
+  });
+});
+
+describe("making a room from Take photos", () => {
+  it("makes a room on My home from the photos and uploads them as from the camera", () => {
+    const roomId = startPhotoRoom(
+      [
+        { uri: "file:///a.jpg", widthPx: 1600, heightPx: 1200 },
+        { uri: "file:///b.jpg", widthPx: 1600, heightPx: 1200 },
+      ],
+      "cap-photos",
+    );
+    const [room] = useRooms.getState().rooms;
+    expect(room?.id).toBe(roomId);
+    expect(useCaptureStore.getState().last?.captureId).toBe("cap-photos");
+    const [uploaded, device] = mockUpload.mock.calls[0] as [
+      { origin: string; files: { keyframes: unknown[] } },
+      unknown,
+    ];
+    expect(uploaded.origin).toBe("camera");
+    expect(uploaded.files.keyframes).toHaveLength(2);
+    expect(device).toMatchObject({ has_ar: false });
   });
 });
