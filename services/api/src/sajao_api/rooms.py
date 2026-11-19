@@ -389,9 +389,7 @@ class PostgresRoomStore:
             row = await (await connection.execute(_READ_REQUEST, {"id": request_id})).fetchone()
             if row is None:
                 return None
-            twin = await (
-                await connection.execute(_ROOM_TWIN, {"room_id": row[1]})
-            ).fetchone()
+            twin = await (await connection.execute(_ROOM_TWIN, {"room_id": row[1]})).fetchone()
         return await self._request(row), (twin[0] if twin is not None else None)
 
     async def capture_for_room(self, room_id: str) -> tuple[str, dict[str, Any]] | None:
