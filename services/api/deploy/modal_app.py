@@ -45,7 +45,12 @@ image = (
     # The pipeline's stages; the ones run here are plain Python on a CPU.
     .add_local_dir(ROOT / "services/workers/src/sajao_workers", "/root/sajao_workers")
     .add_local_dir(ROOT / "services/gateway/src/sajao_gateway", "/root/sajao_gateway")
+    # The design engine and the catalog code (the gate's sizing, the visibility rule).
+    .add_local_dir(ROOT / "services/engine/src/sajao_engine", "/root/sajao_engine")
+    .add_local_dir(ROOT / "services/catalog/src/sajao_catalog", "/root/sajao_catalog")
 )
+# Products a design may use (development catalog until feeds are approved).
+CATALOG_FILE = ROOT / "services/catalog/data/development/catalog.jsonl"
 
 # Step results, content addressed, in one folder per user: a room that is run
 # again reuses them, and erasing an account removes its folder.
@@ -150,9 +155,9 @@ async def run_room(room_id: str) -> str:
         user_id, capture = found
         store = LocalArtifactStore(Path(ARTIFACTS) / user_id)
         runner = StepRunner(store)
-        photo_stages = _photo_stages(store) if pipeline.is_single_photo(capture) else ()
+        one, few = _photo_stages(store) if pipeline.photo_count(capture) else ((), ())
         run = await pipeline.run_room(
-            runner, rooms, _CaptureFiles(), room_id, capture, photo_stages=photo_stages
+            runner, rooms, _CaptureFiles(), room_id, capture, photo_stages=one, few_photo_stages=few
         )
         return run.outcome
     finally:
@@ -160,28 +165,88 @@ async def run_room(room_id: str) -> str:
         artifacts.commit()
 
 
-def _photo_stages(store: Any) -> Any:
-    """The photo-first stages, their GPU calls bridged to the worker's volume."""
+def _photo_stages(store: Any) -> tuple[Any, Any]:
+    """The photo-first stages (one photo, and two or three), their GPU calls bridged to
+    the worker's volume."""
     from sajao_workers.gpu_bridge import bridged
-    from sajao_workers.photo_pipeline import photo_models, photo_room_stages, room_ledger
+    from sajao_workers.photo_pipeline import (
+        few_photo_stages,
+        photo_models,
+        photo_room_stages,
+        room_ledger,
+    )
     from sajao_workers.steps import LocalArtifactStore
 
     run_model = modal.Function.from_name(GPU_APP, "run_model")
+    run_splat = modal.Function.from_name(GPU_APP, "run_splat")
     shared = LocalArtifactStore(Path(GPU_STORE) / "artifacts")
 
-    def gpu(task: str) -> Any:
+    def on(function: Any, task: str) -> Any:
         async def call(model: str, payload: Any) -> Any:
-            return await run_model.remote.aio(model, task, dict(payload))
+            return await function.remote.aio(model, task, dict(payload))
 
         return bridged(call, store, shared, gpu_volume.commit.aio, gpu_volume.reload.aio)
 
-    return photo_room_stages(photo_models(gpu, room_ledger()))
+    models = photo_models(
+        lambda task: on(run_model, task), room_ledger(), poses_gpu=on(run_splat, "twin_poses")
+    )
+    return photo_room_stages(models), few_photo_stages(models)
 
 
-@app.function(image=image, timeout=60)
+@app.function(
+    image=image.add_local_file(CATALOG_FILE, "/root/catalog.jsonl"),
+    secrets=[
+        modal.Secret.from_name("sajao-api"),
+        # This interim host serves development and closed-test builds, which may show
+        # development products (SJ-DEC-84). The store release never runs here.
+        modal.Secret.from_dict({"SAJAO_SHOW_FLAGGED_PRODUCTS": "1"}),
+    ],
+    max_containers=3,
+    timeout=300,
+    retries=1,
+)
 async def run_designs(room_id: str, request_id: str) -> str:
-    """Design stages are not handed over yet: the request stays queued."""
-    return "queued"
+    """Three designs for a design request: spec and placement. The render is its own stage."""
+    import datetime
+    import os
+
+    from psycopg_pool import AsyncConnectionPool
+
+    from sajao_api.rooms import PostgresRoomStore
+    from sajao_workers.design_pipeline import catalog_products, run_design_request
+
+    pool = AsyncConnectionPool(
+        os.environ["SAJAO_DATABASE_URL"],
+        open=False,
+        min_size=1,
+        max_size=2,
+        kwargs={"prepare_threshold": None, "autocommit": True},
+    )
+    await pool.open()
+    try:
+        rooms = PostgresRoomStore(pool)
+        found = await rooms.design_request_for_pipeline(request_id)
+        if found is None:
+            return "unknown request"
+        request, twin = found
+        allow = os.environ.get("SAJAO_SHOW_FLAGGED_PRODUCTS", "").strip().lower() in {
+            "1",
+            "true",
+            "yes",
+        }
+        products = catalog_products(Path("/root/catalog.jsonl"), allow_flagged=allow)
+        outcome = await run_design_request(
+            rooms,
+            request.room_id,
+            request.request_id,
+            request.brief,
+            twin,
+            products,
+            datetime.datetime.now(datetime.UTC).isoformat(timespec="seconds"),
+        )
+        return outcome.outcome
+    finally:
+        await pool.close()
 
 
 class _UserFiles:

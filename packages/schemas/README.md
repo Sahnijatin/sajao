@@ -19,6 +19,8 @@ The contract between the app, the API and the workers. One JSON Schema source pe
 - A space is whatever was scanned: `Capture` has no room type. `SpaceProfile` carries the detected `space_type` and `extent`, who set each (`detected` or `user`), and the `redo` choice (all of it, or just a part).
 - Money is INR in paise, as an integer.
 - A `Product` needs at least one buy or rent route, and image permission unless it is a development product (`catalog_stage: development`), which only development and closed-test builds show.
+- A `Brief` may carry `taste_answers`: the styles, swipes, budget and must-haves as the person answered them. The brief's own `budget` and `must_haves` are what the engine applies.
+- A `Product` needs image permission and at least one buy or rent route.
 - A `DesignItem` is placed by the solver or the user, never by a model.
 - A `Render` is always marked illustrative. A `Design` may carry the room's `measurement_level`; at `estimated` the whole design is illustrative and no item carries a fit.
 - A room is a floor polygon, not a box. `shell.walls` are its edges in order; an edge's optional `kind` says whether a wall was seen there (`wall`, the default) or not (`open`: a doorway, the way into the next area, or a stretch not scanned). Open edges are passable and nothing is placed against them.

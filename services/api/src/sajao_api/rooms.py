@@ -169,6 +169,15 @@ class InMemoryRoomStore:
         held = self._rooms[room_id]
         held.room = replace(held.room, space_twin=twin)
 
+    async def design_request_for_pipeline(
+        self, request_id: str
+    ) -> tuple[DesignRequest, dict[str, Any] | None] | None:
+        for held in self._rooms.values():
+            for request in held.requests:
+                if request.request_id == request_id:
+                    return request, held.room.space_twin
+        return None
+
     async def set_designs(self, request_id: str, designs: list[dict[str, Any]]) -> None:
         for held in self._rooms.values():
             held.requests = [
@@ -232,6 +241,9 @@ order by position
 """
 
 
+_ROOM_TWIN = """
+select space_twin from public.rooms where id = %(room_id)s
+"""
 _CAPTURE_FOR_ROOM = """
 select r.user_id::text, c.capture
 from public.rooms r
@@ -368,6 +380,17 @@ class PostgresRoomStore:
         if row is None or row[2] != user_id:
             return None
         return await self._request(row)
+
+    async def design_request_for_pipeline(
+        self, request_id: str
+    ) -> tuple[DesignRequest, dict[str, Any] | None] | None:
+        """A design request and its room's twin, for the pipeline worker (any user)."""
+        async with self._pool.connection() as connection:
+            row = await (await connection.execute(_READ_REQUEST, {"id": request_id})).fetchone()
+            if row is None:
+                return None
+            twin = await (await connection.execute(_ROOM_TWIN, {"room_id": row[1]})).fetchone()
+        return await self._request(row), (twin[0] if twin is not None else None)
 
     async def capture_for_room(self, room_id: str) -> tuple[str, dict[str, Any]] | None:
         """The room's owner and the capture it was made from, for the pipeline worker."""

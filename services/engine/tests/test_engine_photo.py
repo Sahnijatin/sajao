@@ -213,3 +213,23 @@ def _object(
     if state is not None:
         obj["redesign"] = {"state": state, "source": "rule"}
     return obj
+
+
+def test_picked_styles_come_first_within_the_intent() -> None:
+    from sajao_engine import archetypes as A
+    from sajao_engine.intents import slot_options
+
+    kit = living_kit()
+    sofas = [p for p in kit.values() if p.category == "sofa"]
+    assert sofas
+    tagged = sofas[0].model_copy(update={"style_tags": ["japandi"], "id": uuid.uuid4()})
+    plain = sofas[0].model_copy(update={"style_tags": [], "id": uuid.uuid4()})
+    arch = A.ARCHETYPES["lr_sofa_tv"]
+    picked = slot_options(arch, [plain, tagged], 30_000_000, "best_value", styles=["japandi"])
+    sofa_slot = next(o for o in picked if o.slot == "sofa")
+    assert sofa_slot.products[0].id == tagged.id
+    neutral = slot_options(arch, [plain, tagged], 30_000_000, "best_value")
+    assert {p.id for p in next(o for o in neutral if o.slot == "sofa").products} == {
+        plain.id,
+        tagged.id,
+    }
