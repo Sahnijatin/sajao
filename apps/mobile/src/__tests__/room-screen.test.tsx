@@ -457,6 +457,19 @@ describe("a room whose job is running or stopped", () => {
     expect(onRetry).toHaveBeenCalledTimes(1);
   });
 
+  it("offers no Retry when asking again cannot help, and says what to do instead", async () => {
+    await render(
+      <ThemeProvider tier="standard" reducedMotion>
+        <RoomWaiting
+          job={{ stage: "failed", finished: 2, reason: "nothing_fits", retryable: false }}
+          onRetry={jest.fn()}
+        />
+      </ThemeProvider>,
+    );
+    expect(screen.getByText(/^None of our layouts fit what we could see/)).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Retry" })).toBeNull();
+  });
+
   it("shows the designing stage on Designs and Shopping list until the designs arrive", async () => {
     await show({ ...real, looks: [] }, { job: { stage: "designing", finished: 2 } });
     await openTab("Designs");

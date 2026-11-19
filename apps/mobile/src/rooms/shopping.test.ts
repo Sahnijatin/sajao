@@ -92,3 +92,27 @@ describe("per-item fit", () => {
     });
   });
 });
+
+describe("fit, as the server checked it", () => {
+  const [sofa, ...rest] = bestMatch.items;
+  const fitted = {
+    ...bestMatch,
+    items: [{ ...sofa, fit: { status: "fits", clearance_m: 0.12 } }, ...rest],
+  } as unknown as typeof bestMatch;
+
+  it("says an item fits only when its fit was checked against measured sizes", () => {
+    expect(shoppingFor(fitted, [`${bestMatch.id}:sofa`]).lines[0]?.fit).toBe("fits");
+    // Not checked (an estimated room): nothing is promised.
+    expect(shoppingFor(fitted, []).lines[0]?.fit).toBe("check");
+    // A server that does not say keeps the item's own verdict.
+    expect(shoppingFor(fitted).lines[0]?.fit).toBe("fits");
+  });
+
+  it("still says when an item does not fit", () => {
+    const tooBig = {
+      ...bestMatch,
+      items: [{ ...sofa, fit: { status: "does_not_fit" } }, ...rest],
+    } as unknown as typeof bestMatch;
+    expect(shoppingFor(tooBig, []).lines[0]?.fit).toBe("does_not_fit");
+  });
+});

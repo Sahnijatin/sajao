@@ -14,6 +14,7 @@ import {
   apiGeneration,
   contentFromTwin,
   failureOf,
+  fitCheckedOf,
   isTwin,
   looksFrom,
   ROOM_STAGES,
@@ -108,7 +109,14 @@ function uploaded(captureId: string): Promise<boolean> {
 }
 
 /** The source of a room's job: the API generation with this phone's hooks. */
-function jobSource(client: RoomApi, hooks: { onUploaded: () => void; onSettled: () => void }) {
+function jobSource(
+  client: RoomApi,
+  hooks: {
+    onUploaded: () => void;
+    onSettled: () => void;
+    onFailed?: (reason: string, retryable: boolean) => void;
+  },
+) {
   return apiGeneration(client, {
     captureIdOf: workingCaptureOf,
     uploaded,
@@ -119,18 +127,25 @@ function jobSource(client: RoomApi, hooks: { onUploaded: () => void; onSettled: 
       finishRemeasure(roomId);
       hooks.onSettled();
     },
-    onFailed: abandonRemeasure,
+    onFailed: (roomId, reason, retryable) => {
+      abandonRemeasure(roomId);
+      hooks.onFailed?.(reason, retryable);
+    },
     designs: {
       requestFor(roomId) {
         const answers = useTaste.getState().answers;
         const ids = useRooms.getState().designIdsFor(roomId, uuidV4);
         return answers && ids ? designsRequest(answers, ids, roomOf(roomId)?.budget) : null;
       },
-      onDesigns(roomId, designs) {
+      onDesigns(roomId, designs, fitChecked) {
         const holding = Boolean(roomOf(roomId)?.remeasure);
         const content = holding ? held[roomId] : useRoomData.getState().content[roomId];
         if (!content) return;
-        const withLooks = { ...content, looks: looksFrom(designs, content.heroViews) };
+        const withLooks = {
+          ...content,
+          looks: looksFrom(designs, content.heroViews),
+          fitChecked,
+        };
         if (holding) {
           held[roomId] = withLooks;
           return;
@@ -164,11 +179,15 @@ export function startRoomJob(roomId: string): boolean {
     useRoomJobs.getState().setJob(roomId, job);
   };
   let settled = false;
+  let retryable = true;
   set({ stage: "uploading", finished: 0 });
   const source = jobSource(client, {
     onUploaded: () => set({ stage: "reading", finished: 1 }),
     onSettled: () => {
       settled = true;
+    },
+    onFailed: (_reason, canRetry) => {
+      retryable = canRetry;
     },
   });
   following[roomId] = source.watch(
@@ -184,7 +203,7 @@ export function startRoomJob(roomId: string): boolean {
     },
     (reason) => {
       const before = useRoomJobs.getState().jobs[roomId]?.finished ?? 0;
-      set({ stage: "failed", finished: before, reason });
+      set({ stage: "failed", finished: before, reason, retryable });
       delete following[roomId];
     },
   );
@@ -247,7 +266,12 @@ async function readRoom(
   try {
     const read = readDesigns(await client.getDesigns(job.id));
     if (read.state === "ready") {
-      return { ...content, looks: looksFrom(read.designs, content.heroViews) };
+      const status = await client.getRoom(job.id);
+      return {
+        ...content,
+        looks: looksFrom(read.designs, content.heroViews),
+        fitChecked: fitCheckedOf(status),
+      };
     }
   } catch {
     // No designs asked for yet: the room is measured, with no looks.

@@ -53,7 +53,7 @@ export interface Shopping {
   consistent: boolean;
 }
 
-export function shoppingFor(design: Design): Shopping {
+export function shoppingFor(design: Design, fitChecked?: readonly string[] | null): Shopping {
   const lines = design.items.map((item) => {
     const own = itemFit(item);
     return {
@@ -64,7 +64,14 @@ export function shoppingFor(design: Design): Shopping {
       priceMinor: item.product.price.amount_minor,
       url: item.product.routes.find((route) => route.kind === "buy")?.url ?? null,
       inStock: item.product.in_stock,
-      fit: own?.status ?? "check",
+      // A verdict counts only for an item whose fit the server checked, when it says.
+      fit:
+        own &&
+        (own.status === "does_not_fit" ||
+          !fitChecked ||
+          fitChecked.includes(`${design.id}:${item.id}`))
+          ? own.status
+          : "check",
       spareM: own?.spareM ?? null,
     };
   }) satisfies ShoppingLine[];

@@ -36,8 +36,17 @@ export interface RoomApi {
 /** The room's stages on the server, in the order the app counts them. */
 export const ROOM_STAGES = ["measure", "inventory"] as const;
 
+/** Stages at which the room has been read: its twin exists. */
+const READ_STAGES = ["designing", "rendering", "ready"];
+
 /** How many of the room's stages are done, in order: a later one never counts before an earlier one. */
 export function finishedStages(job: RoomJob): number {
+  if (job.stage) {
+    const read =
+      READ_STAGES.includes(job.stage) ||
+      (job.stage === "failed" && READ_STAGES.includes(job.failure?.stage ?? ""));
+    return read ? ROOM_STAGES.length : 0;
+  }
   let finished = 0;
   for (const name of ROOM_STAGES) {
     const stage = job.stages.find((each) => each.stage === name);
@@ -49,9 +58,23 @@ export function finishedStages(job: RoomJob): number {
 
 /** Why the job failed, as the server's short reason code; null while it has not. */
 export function failureOf(job: RoomJob): string | null {
+  if (job.stage) return job.stage === "failed" ? (job.failure?.reason ?? "internal") : null;
   const failed = job.stages.find((stage) => stage.status === "failed");
   if (failed) return failed.detail ?? "unknown";
   return job.status === "failed" ? "unknown" : null;
+}
+
+/** Whether asking again may help, as the server says; true when it does not say. */
+export function retryableOf(job: RoomJob): boolean {
+  return job.failure?.retryable ?? true;
+}
+
+/** The items whose fit the verifier checked against measured sizes, as "design:item". */
+export function fitCheckedOf(job: RoomJob): string[] | null {
+  if (!job.items) return null;
+  return job.items
+    .filter((item) => item.fit_checked)
+    .map((item) => `${item.design_id}:${item.item_id}`);
 }
 
 /**
@@ -196,15 +219,22 @@ export interface ApiGenerationOptions {
   designs?: {
     /** The request for this room's designs; null when there is nothing to ask with. */
     requestFor(roomId: string): DesignsRequest | null;
-    /** Called with the three checked designs, in slot order. */
-    onDesigns(roomId: string, designs: readonly [Design, Design, Design]): void;
+    /**
+     * Called with the three checked designs, in slot order, and the items
+     * whose fit was checked ("design:item"); null when the server does not say.
+     */
+    onDesigns(
+      roomId: string,
+      designs: readonly [Design, Design, Design],
+      fitChecked: string[] | null,
+    ): void;
   };
   /** Called once the photos or scan are uploaded, before the room is created. */
   onUploaded?(roomId: string): void;
   /** Called once every stage is done, after the designs (if any) were delivered. */
   onSettled?(roomId: string): void;
-  /** Called when a stage fails, with the reason. */
-  onFailed?(roomId: string, reason: string): void;
+  /** Called when a stage fails, with the reason and whether asking again may help. */
+  onFailed?(roomId: string, reason: string, retryable: boolean): void;
   /** Milliseconds between looks at the job. */
   pollMs?: number;
 }
@@ -228,9 +258,9 @@ export function apiGeneration(api: RoomApi, options: ApiGenerationOptions): Gene
     watch(roomId, onFinished, onFailed) {
       let stopped = false;
       let timer: ReturnType<typeof setTimeout> | null = null;
-      const fail = (reason: string) => {
+      const fail = (reason: string, retryable = true) => {
         if (!stopped) {
-          options.onFailed?.(roomId, reason);
+          options.onFailed?.(roomId, reason, retryable);
           onFailed?.(reason);
         }
         stopped = true;
@@ -248,8 +278,13 @@ export function apiGeneration(api: RoomApi, options: ApiGenerationOptions): Gene
           const read = readDesigns(await api.getDesigns(serverId));
           if (stopped) return;
           if (read.state === "failed") return fail(read.reason);
+          // The room's status says why designing stopped (such as nothing_fits).
+          const room = await api.getRoom(serverId);
+          if (stopped) return;
+          const reason = failureOf(room);
+          if (reason) return fail(reason, retryableOf(room));
           if (read.state === "working") return later(() => followDesigns(serverId));
-          options.designs.onDesigns(roomId, read.designs);
+          options.designs.onDesigns(roomId, read.designs, fitCheckedOf(room));
           settle(roomStages + 1);
         } catch {
           // A dropped connection is not a failed request: look again shortly.
@@ -280,7 +315,7 @@ export function apiGeneration(api: RoomApi, options: ApiGenerationOptions): Gene
           const job = await api.getRoom(serverId);
           if (stopped) return;
           const reason = failureOf(job);
-          if (reason) return fail(reason);
+          if (reason) return fail(reason, retryableOf(job));
           const finished = finishedStages(job);
           if (finished < roomStages) {
             onFinished(finished);
