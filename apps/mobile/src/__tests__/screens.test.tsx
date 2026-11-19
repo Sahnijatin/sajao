@@ -11,10 +11,12 @@ import { useSettings } from "@/state/settings";
 import { useTaste } from "@/state/taste";
 
 const mockPush = jest.fn();
+const mockReplace = jest.fn();
+const mockDelete = jest.fn<Promise<"deleted" | "unreachable">, []>(async () => "deleted");
 jest.mock("expo-router", () => {
   const { useEffect } = jest.requireActual<typeof import("react")>("react");
   return {
-    useRouter: () => ({ push: mockPush }),
+    useRouter: () => ({ push: mockPush, replace: mockReplace }),
     // A screen under test is always the focused one.
     useFocusEffect: (effect: () => void) => useEffect(effect, [effect]),
   };
@@ -166,12 +168,12 @@ describe("My home", () => {
 
 describe("Profile", () => {
   it("is usable as a guest", async () => {
-    await show(<ProfileScreen />);
+    await show(<ProfileScreen onDeleteAccount={mockDelete} />);
     expect(screen.getByText("You are browsing as a guest")).toBeTruthy();
   });
 
   it("offers taste and budget before they are set, and shows them with Change after", async () => {
-    const view = await show(<ProfileScreen />);
+    const view = await show(<ProfileScreen onDeleteAccount={mockDelete} />);
     await fireEvent.press(screen.getByRole("button", { name: "Set my taste" }));
     expect(mockPush).toHaveBeenLastCalledWith("/taste");
     await act(async () => {
@@ -195,7 +197,7 @@ describe("Profile", () => {
     });
     await view.rerender(
       <ThemeProvider tier="standard" reducedMotion>
-        <ProfileScreen />
+        <ProfileScreen onDeleteAccount={mockDelete} />
       </ThemeProvider>,
     );
     expect(screen.getByText("Warm tones · Natural wood")).toBeTruthy();
@@ -208,7 +210,7 @@ describe("Profile", () => {
   });
 
   it("switches units between centimetres and feet and inches, and remembers", async () => {
-    await show(<ProfileScreen />);
+    await show(<ProfileScreen onDeleteAccount={mockDelete} />);
     expect(screen.getByText("A 3.4 m wall shows as 340 cm")).toBeTruthy();
 
     await fireEvent.press(screen.getByRole("button", { name: "Feet and inches" }));
@@ -219,13 +221,36 @@ describe("Profile", () => {
   });
 
   it("stores the chosen language", async () => {
-    await show(<ProfileScreen />);
+    await show(<ProfileScreen onDeleteAccount={mockDelete} />);
     await fireEvent.press(screen.getByRole("button", { name: "हिन्दी" }));
     expect(useSettings.getState().language).toBe("hi");
   });
 
+  it("deletes the account and everything kept for it, after asking, then goes to My home", async () => {
+    mockDelete.mockClear();
+    mockReplace.mockClear();
+    await show(<ProfileScreen onDeleteAccount={mockDelete} />);
+    await fireEvent.press(screen.getByRole("button", { name: "Delete my account and data" }));
+    expect(screen.getByText("Delete your account and data?")).toBeTruthy();
+    expect(mockDelete).not.toHaveBeenCalled();
+    await fireEvent.press(screen.getByRole("button", { name: "Delete everything" }));
+    expect(mockDelete).toHaveBeenCalledTimes(1);
+    expect(mockReplace).toHaveBeenCalledWith("/");
+  });
+
+  it("says nothing was deleted when Sajao cannot be reached, and stays put", async () => {
+    mockDelete.mockClear();
+    mockReplace.mockClear();
+    mockDelete.mockResolvedValueOnce("unreachable");
+    await show(<ProfileScreen onDeleteAccount={mockDelete} />);
+    await fireEvent.press(screen.getByRole("button", { name: "Delete my account and data" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Delete everything" }));
+    expect(screen.getByTestId("delete-account-unreachable")).toBeTruthy();
+    expect(mockReplace).not.toHaveBeenCalled();
+  });
+
   it("links to the component gallery in development", async () => {
-    await show(<ProfileScreen />);
+    await show(<ProfileScreen onDeleteAccount={mockDelete} />);
     await fireEvent.press(screen.getByRole("button", { name: "Component gallery" }));
     expect(mockPush).toHaveBeenCalledWith("/gallery");
   });

@@ -199,6 +199,10 @@ export interface ApiGenerationOptions {
     /** Called with the three checked designs, in slot order. */
     onDesigns(roomId: string, designs: readonly [Design, Design, Design]): void;
   };
+  /** Called once every stage is done, after the designs (if any) were delivered. */
+  onSettled?(roomId: string): void;
+  /** Called when a stage fails, with the reason. */
+  onFailed?(roomId: string, reason: string): void;
   /** Milliseconds between looks at the job. */
   pollMs?: number;
 }
@@ -220,8 +224,15 @@ export function apiGeneration(api: RoomApi, options: ApiGenerationOptions): Gene
       let stopped = false;
       let timer: ReturnType<typeof setTimeout> | null = null;
       const fail = (reason: string) => {
-        if (!stopped) onFailed?.(reason);
+        if (!stopped) {
+          options.onFailed?.(roomId, reason);
+          onFailed?.(reason);
+        }
         stopped = true;
+      };
+      const settle = (finished: number) => {
+        options.onSettled?.(roomId);
+        onFinished(finished);
       };
       const later = (next: () => Promise<void>) => {
         if (!stopped) timer = setTimeout(() => void next(), pollMs);
@@ -234,7 +245,7 @@ export function apiGeneration(api: RoomApi, options: ApiGenerationOptions): Gene
           if (read.state === "failed") return fail(read.reason);
           if (read.state === "working") return later(() => followDesigns(serverId));
           options.designs.onDesigns(roomId, read.designs);
-          onFinished(roomStages + 1);
+          settle(roomStages + 1);
         } catch {
           // A dropped connection is not a failed request: look again shortly.
           later(() => followDesigns(serverId));
@@ -242,10 +253,10 @@ export function apiGeneration(api: RoomApi, options: ApiGenerationOptions): Gene
       };
       const askForDesigns = async (serverId: string, twin: SpaceTwin): Promise<void> => {
         const designs = options.designs;
-        if (!designs) return onFinished(roomStages);
+        if (!designs) return settle(roomStages);
         const request = designs.requestFor(roomId);
         // A kind of space that gets no designs yet: its last stage has nothing to do.
-        if (!request || !designsOffered(twin.space_type)) return onFinished(roomStages + 1);
+        if (!request || !designsOffered(twin.space_type)) return settle(roomStages + 1);
         onFinished(roomStages);
         try {
           const job = await api.requestDesigns(serverId, request);

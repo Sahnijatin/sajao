@@ -227,19 +227,24 @@ def fitted_objects(
     stats: dict[str, int] | None = None,
     min_size: Mapping[str, float] | None = None,
     per_label: dict[str, dict[str, int]] | None = None,
+    min_frames: int = MIN_FRAMES,
 ) -> list[tuple[str, UprightBox, int, list[int]]]:
     """Boxes for instances seen often enough, with touching pieces joined and
     implausible sizes dropped: (label, box, frames seen, observation keys).
 
     `min_size` lowers the smallest plausible size for some labels (a clock, a
-    switchboard); `per_label` counts the instances dropped for each reason."""
+    switchboard); `per_label` counts the instances dropped for each reason.
+    `min_frames` is 1 for a single photo: there every voxel is seen once, and the
+    mask's erosion and depth trim in `lift_mask` are the only guard against stray
+    points."""
     fitted = []
     for instance in instances:
         seen = len(instance.frames)
-        if seen < MIN_FRAMES:
+        if seen < min_frames:
             _count(per_label, instance.label, "few_frames")
             continue
-        core = instance.core_points(max(2, math.ceil(0.15 * seen)))
+        min_hits = 1 if min_frames == 1 else max(2, math.ceil(0.15 * seen))
+        core = instance.core_points(min_hits)
         small = (min_size or {}).get(instance.label, MIN_SIZE_M) < MIN_SIZE_M
         if len(core) < (MIN_CORE_POINTS_SMALL if small else MIN_CORE_POINTS):
             _count(per_label, instance.label, "implausible")  # seen enough, too small for a box
@@ -280,6 +285,7 @@ def build_objects(
     stats: dict[str, int] | None = None,
     min_size: Mapping[str, float] | None = None,
     per_label: dict[str, dict[str, int]] | None = None,
+    min_frames: int = MIN_FRAMES,
 ) -> list[dict[str, Any]]:
     """Fuse every frame's masks into objects with boxes, most-seen first.
 
@@ -306,7 +312,8 @@ def build_objects(
 
     objects: list[dict[str, Any]] = []
     instances = merge_instances(fuse(observations, stats=stats), stats=stats)
-    for label, box, seen, keys in fitted_objects(instances, up_axis, stats, min_size, per_label):
+    fitted = fitted_objects(instances, up_axis, stats, min_size, per_label, min_frames)
+    for label, box, seen, keys in fitted:
         objects.append(
             {
                 "category": label,

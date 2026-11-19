@@ -7,7 +7,6 @@ import { afterReview } from "@/rooms/flow";
 import { importFromGallery } from "@/rooms/media-import";
 import { roomSpaceProfile } from "@/rooms/room-space";
 import { CaptureScreen } from "@/screens/capture";
-import { useRoomData } from "@/state/room-data";
 import { useRooms } from "@/state/rooms";
 import { useTaste } from "@/state/taste";
 
@@ -55,9 +54,9 @@ export default function CaptureRoute() {
       // The upload runs in the background and resumes after an interruption.
       onCaptured={(capture, device) => {
         if (room) {
-          // Measuring a room it already has: the room follows this scan now.
+          // Measuring a room it already has: the room keeps everything it has
+          // until this scan is measured and its designs arrive.
           useRooms.getState().remeasure(room, capture.captureId);
-          useRoomData.getState().clearContent(room);
           roomId.current = room;
         } else {
           // The scan becomes a room on My home at once; its designs arrive later.

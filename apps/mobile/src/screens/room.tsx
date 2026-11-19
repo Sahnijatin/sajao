@@ -645,15 +645,21 @@ export function RoomScreen({
   redesignAreaId = null,
   onChooseArea,
   onMeasure,
+  remeasuring = false,
 }: {
   content: RoomContent;
+  /**
+   * A new scan is measuring the room again: what shows is still the old
+   * content, based on estimated sizes, until the new designs arrive.
+   */
+  remeasuring?: boolean;
   /** Show the place kept for the 3D view. Off unless its flag is on. */
   show3d?: boolean;
   /** For a scan of several areas: the one chosen to redesign. */
   redesignAreaId?: string | null;
   /** Opens the choice of which area to redesign. */
   onChooseArea?: () => void;
-  /** Opens measuring with a tape, for a room whose sizes are estimates. */
+  /** Opens "Measure this room for exact fit", for a room whose sizes are estimates. */
   onMeasure?: () => void;
 }) {
   const { t } = useTranslation();
@@ -690,6 +696,11 @@ export function RoomScreen({
         gap: spacing.sheetBottom,
       }}
     >
+      {remeasuring ? (
+        <View testID="remeasuring-note">
+          <Sample text={t("room.remeasuring")} />
+        </View>
+      ) : null}
       <Segmented
         segments={ROOM_TABS.map((key) => ({ key, label: t(`room.tabs.${key}`) }))}
         selected={tab}

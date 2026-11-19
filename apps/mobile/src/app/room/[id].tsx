@@ -31,11 +31,12 @@ export default function RoomRoute() {
         <RoomScreen
           content={content}
           redesignAreaId={room.redesignAreaId ?? null}
+          remeasuring={Boolean(room.remeasure)}
           onChooseArea={() => router.push({ pathname: "/areas", params: { room: id } })}
           // "Measure this room for exact fit": the AR scan, on a phone that can run it.
           // The two-tape-value step joins it once the API takes tape values for a room.
           onMeasure={
-            getArCapabilities().arSupported
+            getArCapabilities().arSupported && !room.remeasure
               ? () => router.push({ pathname: "/capture", params: { room: id } })
               : undefined
           }
