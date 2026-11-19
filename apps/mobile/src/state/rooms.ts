@@ -27,6 +27,11 @@ interface RoomsState {
   setRedesignArea(roomId: string, areaId: string): void;
   /** The budget this room's designs are asked for with. */
   setRoomBudget(roomId: string, budget: NonNullable<Room["budget"]>): void;
+  /**
+   * The room was measured again with a new scan: it follows that scan from
+   * now on, and its designs are asked for afresh. Its name and photos stay.
+   */
+  remeasure(roomId: string, captureId: string, atMs?: number): void;
   /** The ids the room's designs are asked for with, made on first use and kept. */
   designIdsFor(roomId: string, newId: () => string, now?: Date): DesignIds | null;
 }
@@ -56,6 +61,21 @@ export const useRooms = create<RoomsState>()(
           rooms: get().rooms.map((room) =>
             room.id === roomId ? { ...room, designCount, still, updatedAtMs: atMs } : room,
           ),
+        });
+      },
+      remeasure(roomId, captureId, atMs = Date.now()) {
+        set({
+          rooms: get().rooms.map((room) => {
+            if (room.id !== roomId) return room;
+            const { designIds: _designs, redesignAreaId: _area, ...kept } = room;
+            return {
+              ...kept,
+              captureId,
+              designCount: 0,
+              still: { kind: "placeholder", look: "before" },
+              updatedAtMs: atMs,
+            };
+          }),
         });
       },
       designIdsFor(roomId, newId, now = new Date()) {
