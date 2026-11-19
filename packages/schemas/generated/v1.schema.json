@@ -247,6 +247,56 @@
         },
         "consider_vastu": {
           "type": "boolean"
+        },
+        "taste_answers": {
+          "title": "TasteAnswers",
+          "description": "What the person answered in the app before asking for designs, as they answered it. The brief's own budget and must_haves are what the engine applies; these are the raw answers, kept for the spec and for learning taste.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "styles": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/StyleProfile"
+              },
+              "uniqueItems": true,
+              "description": "Style profiles the person picked, preferred first."
+            },
+            "swipes": {
+              "type": "array",
+              "items": {
+                "title": "TasteAnswerSwipe",
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "card_id",
+                  "liked"
+                ],
+                "properties": {
+                  "card_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "liked": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "description": "Swipe answers, in the order given."
+            },
+            "budget": {
+              "$ref": "#/$defs/Money",
+              "description": "The budget as the person set it."
+            },
+            "must_haves": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "description": "What the person said the room must have, in their words or as category keys."
+            }
+          }
         }
       }
     },

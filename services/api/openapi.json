@@ -151,6 +151,18 @@
             "title": "Space Profile Id",
             "type": "string"
           },
+          "taste_answers": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TasteAnswers"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "What the person answered in the app before asking for designs, as they answered it. The brief's own budget and must_haves are what the engine applies; these are the raw answers, kept for the spec and for learning taste.",
+            "title": "TasteAnswers"
+          },
           "taste_profile_id": {
             "format": "uuid",
             "title": "Taste Profile Id",
@@ -1206,6 +1218,98 @@
           "position"
         ],
         "title": "Tap",
+        "type": "object"
+      },
+      "TasteAnswerSwipe": {
+        "additionalProperties": false,
+        "properties": {
+          "card_id": {
+            "minLength": 1,
+            "title": "Card Id",
+            "type": "string"
+          },
+          "liked": {
+            "title": "Liked",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "card_id",
+          "liked"
+        ],
+        "title": "TasteAnswerSwipe",
+        "type": "object"
+      },
+      "TasteAnswers": {
+        "additionalProperties": false,
+        "description": "What the person answered in the app before asking for designs, as they answered it. The brief's own budget and must_haves are what the engine applies; these are the raw answers, kept for the spec and for learning taste.",
+        "properties": {
+          "budget": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The budget as the person set it."
+          },
+          "must_haves": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/MustHave"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "What the person said the room must have, in their words or as category keys.",
+            "title": "Must Haves"
+          },
+          "styles": {
+            "anyOf": [
+              {
+                "items": {
+                  "enum": [
+                    "modern_indian",
+                    "warm_luxe",
+                    "japandi",
+                    "warm_maximalist",
+                    "eclectic_retro",
+                    "minimal_wabi_sabi"
+                  ],
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Style profiles the person picked, preferred first.",
+            "title": "Styles"
+          },
+          "swipes": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/TasteAnswerSwipe"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Swipe answers, in the order given.",
+            "title": "Swipes"
+          }
+        },
+        "title": "TasteAnswers",
         "type": "object"
       },
       "UploadPlan": {

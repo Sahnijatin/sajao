@@ -349,6 +349,11 @@ export interface components {
              */
             space_profile_id: string;
             /**
+             * TasteAnswers
+             * @description What the person answered in the app before asking for designs, as they answered it. The brief's own budget and must_haves are what the engine applies; these are the raw answers, kept for the spec and for learning taste.
+             */
+            taste_answers?: components["schemas"]["TasteAnswers"] | null;
+            /**
              * Taste Profile Id
              * Format: uuid
              */
@@ -778,6 +783,36 @@ export interface components {
              * Format: uuid
              */
             product_id: string;
+        };
+        /** TasteAnswerSwipe */
+        TasteAnswerSwipe: {
+            /** Card Id */
+            card_id: string;
+            /** Liked */
+            liked: boolean;
+        };
+        /**
+         * TasteAnswers
+         * @description What the person answered in the app before asking for designs, as they answered it. The brief's own budget and must_haves are what the engine applies; these are the raw answers, kept for the spec and for learning taste.
+         */
+        TasteAnswers: {
+            /** @description The budget as the person set it. */
+            budget?: components["schemas"]["Money"] | null;
+            /**
+             * Must Haves
+             * @description What the person said the room must have, in their words or as category keys.
+             */
+            must_haves?: components["schemas"]["MustHave"][] | null;
+            /**
+             * Styles
+             * @description Style profiles the person picked, preferred first.
+             */
+            styles?: ("modern_indian" | "warm_luxe" | "japandi" | "warm_maximalist" | "eclectic_retro" | "minimal_wabi_sabi")[] | null;
+            /**
+             * Swipes
+             * @description Swipe answers, in the order given.
+             */
+            swipes?: components["schemas"]["TasteAnswerSwipe"][] | null;
         };
         /** UploadPlan */
         UploadPlan: {

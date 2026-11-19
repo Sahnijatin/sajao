@@ -18,6 +18,7 @@ The contract between the app, the API and the workers. One JSON Schema source pe
 - Every dimension is a `Dimension`: a value in metres, a source (`measured`, `estimated`, `user_confirmed`) and an error band. A test fails if a bare length is added anywhere else.
 - A space is whatever was scanned: `Capture` has no room type. `SpaceProfile` carries the detected `space_type` and `extent`, who set each (`detected` or `user`), and the `redo` choice (all of it, or just a part).
 - Money is INR in paise, as an integer.
+- A `Brief` may carry `taste_answers`: the styles, swipes, budget and must-haves as the person answered them. The brief's own `budget` and `must_haves` are what the engine applies.
 - A `Product` needs image permission and at least one buy or rent route.
 - A `DesignItem` is placed by the solver or the user, never by a model.
 - A `Render` is always marked illustrative.

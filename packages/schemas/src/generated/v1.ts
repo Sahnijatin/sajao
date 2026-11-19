@@ -57,6 +57,13 @@ export type Uuid = string
  */
 export type Timestamp = string
 /**
+ * The six launch style profiles.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "StyleProfile".
+ */
+export type StyleProfile = ("modern_indian" | "warm_luxe" | "japandi" | "warm_maximalist" | "eclectic_retro" | "minimal_wabi_sabi")
+/**
  * A score from 0 to 1.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -77,13 +84,6 @@ export type StorageKey = string
  * via the `definition` "ProductGroup".
  */
 export type ProductGroup = ("furniture" | "lighting" | "decor" | "paint" | "flooring")
-/**
- * The six launch style profiles.
- * 
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "StyleProfile".
- */
-export type StyleProfile = ("modern_indian" | "warm_luxe" | "japandi" | "warm_maximalist" | "eclectic_retro" | "minimal_wabi_sabi")
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema
  * via the `definition` "HttpsUrl".
@@ -277,6 +277,7 @@ must_haves: string[]
  */
 keep_item_ids: LocalId[]
 consider_vastu: boolean
+taste_answers?: TasteAnswers
 }
 export interface Budget {
 limit: Money
@@ -297,6 +298,28 @@ currency: "INR"
  * Amount in paise.
  */
 amount_minor: number
+}
+/**
+ * What the person answered in the app before asking for designs, as they answered it. The brief's own budget and must_haves are what the engine applies; these are the raw answers, kept for the spec and for learning taste.
+ */
+export interface TasteAnswers {
+/**
+ * Style profiles the person picked, preferred first.
+ */
+styles?: StyleProfile[]
+/**
+ * Swipe answers, in the order given.
+ */
+swipes?: TasteAnswerSwipe[]
+budget?: Money
+/**
+ * What the person said the room must have, in their words or as category keys.
+ */
+must_haves?: string[]
+}
+export interface TasteAnswerSwipe {
+card_id: string
+liked: boolean
 }
 /**
  * Something built into the room (a fitted wardrobe, a fireplace, a radiator, a kitchen counter). Part of the shell: it stays when the room is redesigned.
