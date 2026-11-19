@@ -9,20 +9,25 @@ import type { TasteAnswers } from "@/taste/taste-session";
 
 interface TasteStore {
   answers: TasteAnswers | null;
+  /** The budget given for the last room, to start the next room's from. */
+  lastBudget: TasteAnswers["budget"] | null;
   setAnswers(answers: TasteAnswers): void;
+  setLastBudget(budget: TasteAnswers["budget"]): void;
 }
 
 export const useTaste = create<TasteStore>()(
   persist(
     (set) => ({
       answers: null,
+      lastBudget: null,
       setAnswers: (answers) => set({ answers }),
+      setLastBudget: (lastBudget) => set({ lastBudget }),
     }),
     {
       name: "sajao.taste",
       version: 1,
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: ({ answers }) => ({ answers }),
+      partialize: ({ answers, lastBudget }) => ({ answers, lastBudget }),
     },
   ),
 );
