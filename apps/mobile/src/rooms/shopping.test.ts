@@ -14,7 +14,8 @@ describe("shopping list for a look", () => {
       priceMinor: 4299900,
       url: "https://www.example.com/p/sofa-oak-3s",
       inStock: true,
-      fit: "fits",
+      // The sample items carry no verdict of their own: nothing is promised.
+      fit: "check",
       spareM: null,
     });
   });
@@ -70,18 +71,18 @@ describe("per-item fit", () => {
   it("uses the item's own verdict when the design carries one", () => {
     const lines = shoppingFor(withFit({ status: "tight", clearance_m: 0.02 })).lines;
     expect(lines[0]).toMatchObject({ fit: "tight", spareM: 0.02 });
-    // The other items carry none, so they keep the design's verdict.
-    expect(lines[1]).toMatchObject({ fit: "fits", spareM: null });
+    // The other items carry none: nothing is promised for them.
+    expect(lines[1]).toMatchObject({ fit: "check", spareM: null });
   });
 
   it("an item that does not fit says so even when the design as a whole passed", () => {
     expect(shoppingFor(withFit({ status: "does_not_fit" })).lines[0]?.fit).toBe("does_not_fit");
   });
 
-  it("ignores a verdict it cannot read, and falls back to the design's", () => {
+  it("ignores a verdict it cannot read, and promises nothing without one", () => {
     for (const fit of [null, "fits", { status: "maybe" }, 3]) {
       expect(itemFit({ ...sofa, fit } as unknown as typeof sofa)).toBeNull();
-      expect(shoppingFor(withFit(fit)).lines[0]?.fit).toBe("fits");
+      expect(shoppingFor(withFit(fit)).lines[0]?.fit).toBe("check");
     }
     expect(
       itemFit({ ...sofa, fit: { status: "fits", clearance_m: "wide" } } as unknown as typeof sofa),

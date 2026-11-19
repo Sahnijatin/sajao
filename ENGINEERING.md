@@ -36,7 +36,7 @@ Every change to Sajao follows these rules. Breaking one requires a decision log 
 
 22. Every screen uses the theme package, motion presets and haptic map, and works on the budget Android in the device matrix.
 23. Reduced motion is respected. Low-tier phones get lighter effects, never broken ones.
-24. Strings are externalised (English and Hindi); dimensions in cm or feet and inches by user choice; prices in INR.
+24. Strings are externalised (English and Hindi); dimensions shown in feet and inches (a tape value can be typed in centimetres); prices in INR.
 
 ## Privacy
 

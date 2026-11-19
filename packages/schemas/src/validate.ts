@@ -18,6 +18,7 @@ export interface ObjectTypes {
   Plan: v1.Plan;
   ShoppingList: v1.ShoppingList;
   Event: v1.Event;
+  RoomStatus: v1.RoomStatus;
 }
 
 export type ValidationResult<T> = { ok: true; value: T } | { ok: false; errors: string[] };

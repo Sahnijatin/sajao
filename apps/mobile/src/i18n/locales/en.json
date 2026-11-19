@@ -188,18 +188,19 @@
   "generating": {
     "title": "Designing your room",
     "stages": {
-      "walls": "Measuring your walls",
-      "furniture": "Finding your furniture",
-      "looks": "Designing three looks"
+      "upload": "Uploading your photos",
+      "read": "Reading your room",
+      "design": "Designing three looks"
     },
     "titleRoomOnly": "Getting your room ready",
     "failed": {
-      "title": "We couldn't finish this room",
-      "no_walls": "We couldn't find the walls. Scan the room again, keeping the walls in view as you go.",
-      "upload": "Your scan didn't upload. Check your connection, then try again from My home. Nothing is lost.",
-      "unknown": "Something went wrong on our side. Your scan is saved, and you can try again from My home.",
+      "title": "This room stopped",
+      "no_walls": "We couldn't find the walls in these photos. Take them again from a corner with the floor and walls in view.",
+      "upload": "The upload didn't finish. Check your connection, then tap Retry. Nothing is lost.",
+      "unknown": "Something went wrong on our side. Nothing is lost: tap Retry.",
       "back": "Back to My home",
-      "no_ar_data": "Your pictures are uploaded. Rooms from photos and videos are not ready yet"
+      "retry": "Retry",
+      "no_ar_data": "Your photos are uploaded. Rooms from photos are not ready yet on our side."
     }
   },
   "reveal": {
@@ -359,9 +360,15 @@
     "verifyBody": "Measure one wall with a tape. It snaps in and re-fits the whole space.",
     "wall": "Wall {{number}}",
     "ceiling": "Ceiling height",
-    "valueLabel": "Length in metres",
     "apply": "Snap it in",
-    "showIdeas": "Show me ideas"
+    "showIdeas": "Show me ideas",
+    "tape": {
+      "ft_in": "Feet and inches",
+      "cm": "Centimetres",
+      "feet": "Feet",
+      "inches": "Inches",
+      "centimetres": "Centimetres"
+    }
   },
   "taste": {
     "contextTitle": "A little about you",
@@ -458,10 +465,6 @@
     "guestTitle": "You are browsing as a guest",
     "guestBody": "Explore freely. We ask you to sign in only when you are ready to design a room.",
     "language": "Language",
-    "units": "Units",
-    "unitsCm": "Centimetres",
-    "unitsFtIn": "Feet and inches",
-    "unitsExample": "A 3.4 m wall shows as {{length}}",
     "gallery": "Component gallery",
     "spacePreview": "Space Profile preview",
     "tastePreview": "Taste preview",

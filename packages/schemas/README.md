@@ -12,6 +12,7 @@ The contract between the app, the API and the workers. One JSON Schema source pe
 | `Design` | Design |
 | `Render`, `Plan`, `ShoppingList` | Views derived from one `Design` |
 | `Event` | Action log |
+| `RoomStatus` | Job status: what the room status endpoint returns |
 
 ## Rules the schemas enforce
 
@@ -29,6 +30,7 @@ The contract between the app, the API and the workers. One JSON Schema source pe
 - A hero mask may carry its `outline`: closed polygons on the photo in shares of its width and height (`ImagePoint`), so the app draws a tapped thing without fetching its mask.
 - `direction` is optional on a `SpaceTwin` and a `SpaceProfile`: a room from gallery photos has no compass reading. Without it Vastu stays off until the person confirms a direction.
 - A twin object's size is its measured box; a generated 3D model is scaled to the box and never sets the size. Replaced and added items take their catalog size.
+- A `RoomStatus` has one `stage` (`uploaded`, `reading`, `designing`, `rendering`, `ready`, `failed`). A `failure` with a machine-readable `reason` is present exactly when the stage is `failed`. It carries the twin's `confidence_level` once the room is read, and for every design item whether a fit check ran (`fit_checked`, never true on an estimated room).
 - Unknown properties are rejected everywhere except `Event.properties`.
 
 ## Changing the contract

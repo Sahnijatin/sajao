@@ -55,6 +55,8 @@ def test_valid_fixture_round_trips(path: Path) -> None:
 SCHEMA_ONLY = {
     "product.images-not-permitted.json",  # no permission and not a development product
     "product.live-without-permission.json",
+    "room-status.failed-without-reason.json",  # a failure reason exactly when failed
+    "room-status.reason-while-ready.json",
 }
 
 

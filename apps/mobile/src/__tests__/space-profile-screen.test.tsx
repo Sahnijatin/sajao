@@ -91,4 +91,21 @@ describe("Space Profile card", () => {
     expect(screen.queryByText("All of it")).toBeNull();
     expect(screen.queryAllByRole("radio")).toHaveLength(0);
   });
+
+  it("takes a tape value in feet and inches, or in centimetres with the toggle", async () => {
+    const { onChange } = await show();
+    await fireEvent.press(screen.getByRole("button", { name: "Verify" }));
+    await fireEvent.changeText(screen.getByLabelText("Feet"), "11");
+    await fireEvent.changeText(screen.getByLabelText("Inches"), "2");
+    await fireEvent.press(screen.getByRole("button", { name: "Snap it in" }));
+    const inFeet = onChange.mock.calls.at(-1)![0] as SpaceProfile;
+    expect(inFeet).not.toBe(profile);
+
+    await fireEvent.press(screen.getByRole("button", { name: "Verify" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Centimetres" }));
+    expect(screen.queryByLabelText("Feet")).toBeNull();
+    await fireEvent.changeText(screen.getByLabelText("Centimetres"), "340");
+    await fireEvent.press(screen.getByRole("button", { name: "Snap it in" }));
+    expect(onChange).toHaveBeenCalledTimes(2);
+  });
 });

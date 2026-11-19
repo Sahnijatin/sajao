@@ -2,10 +2,10 @@ import { GENERATION_STAGES, progressOf, SAMPLE_STAGE_MS, timedGeneration } from 
 
 describe("generation progress", () => {
   it("names the stage in hand and knows when all three are finished", () => {
-    expect(GENERATION_STAGES).toEqual(["walls", "furniture", "looks"]);
-    expect(progressOf(0)).toEqual({ finished: 0, current: "walls", done: false, failed: null });
-    expect(progressOf(1)).toEqual({ finished: 1, current: "furniture", done: false, failed: null });
-    expect(progressOf(2)).toEqual({ finished: 2, current: "looks", done: false, failed: null });
+    expect(GENERATION_STAGES).toEqual(["upload", "read", "design"]);
+    expect(progressOf(0)).toEqual({ finished: 0, current: "upload", done: false, failed: null });
+    expect(progressOf(1)).toEqual({ finished: 1, current: "read", done: false, failed: null });
+    expect(progressOf(2)).toEqual({ finished: 2, current: "design", done: false, failed: null });
     expect(progressOf(3)).toEqual({ finished: 3, current: null, done: true, failed: null });
   });
 
