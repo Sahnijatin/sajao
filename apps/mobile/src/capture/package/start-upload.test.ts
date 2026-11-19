@@ -24,7 +24,14 @@ describe("starting a capture upload", () => {
       { planes: null, sceneMesh: null, depth: null },
     );
     await startCaptureUpload(local, { platform: "android", tier: "low", has_ar: true });
-    expect(useCaptureStore.getState().upload).toEqual({ state: "waiting", finished: 0, total: 0 });
+    expect(useCaptureStore.getState().upload).toEqual({
+      state: "waiting",
+      finished: 0,
+      total: 0,
+      captureId: local.captureId,
+    });
+    // Its own state, for its room's job to read.
+    expect(useCaptureStore.getState().uploads[local.captureId]).toBe("waiting");
     expect(fetchSpy).not.toHaveBeenCalled();
     fetchSpy.mockRestore();
   });

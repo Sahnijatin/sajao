@@ -212,6 +212,9 @@ export interface ApiGenerationOptions {
 /** How often the app asks how the room is getting on. */
 export const POLL_MS = 3000;
 
+/** Tries at creating the room before it counts as failed. */
+export const CREATE_ATTEMPTS = 5;
+
 /**
  * Real progress for a room: waits for the upload, creates the room, follows
  * its stages until it is measured, then, when designs are wanted, asks for
@@ -299,11 +302,22 @@ export function apiGeneration(api: RoomApi, options: ApiGenerationOptions): Gene
         if (!(await options.uploaded(captureId))) return fail("upload");
         if (stopped) return;
         options.onUploaded?.(roomId);
-        try {
-          const job = await api.createRoom(captureId);
-          await follow(job.id);
-        } catch {
-          fail("unknown");
+        // Creating the room can meet a busy or dropped request (the API answers
+        // 409 while the same idempotent request is still running): ask again,
+        // a few times, before calling the room failed.
+        for (let attempt = 1; ; attempt += 1) {
+          try {
+            const job = await api.createRoom(captureId);
+            if (stopped) return;
+            return await follow(job.id);
+          } catch {
+            if (stopped) return;
+            if (attempt >= CREATE_ATTEMPTS) return fail("unknown");
+            await new Promise<void>((resolve) => {
+              timer = setTimeout(resolve, pollMs);
+            });
+            if (stopped) return;
+          }
         }
       })();
       return () => {

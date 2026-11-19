@@ -4,6 +4,7 @@
 import { useCaptureStore } from "@/state/capture";
 import { useRoomData } from "@/state/room-data";
 import { type RoomJobState, useRoomJobs } from "@/state/room-jobs";
+import { breadcrumb } from "@/telemetry/breadcrumbs";
 import { useRooms } from "@/state/rooms";
 import type { GenerationSource } from "./generation";
 import { uuidV4 } from "@/capture/package/upload-capture";
@@ -72,21 +73,37 @@ function showDesignsOnCard(roomId: string, content: RoomContent): void {
 /** The photos this phone took of a room; none for an AR scan. */
 const photosOf = (roomId: string) => roomOf(roomId)?.photos ?? [];
 
-/** Resolves once the last scan's upload has finished: true when it is up, false when it failed. */
+/**
+ * Resolves once this capture's upload has finished: true when it is up,
+ * false when it failed or this build cannot upload. It reads this capture's
+ * own state, never the last upload's. A capture this session never saw
+ * uploaded earlier, unless it is the upload still waiting to be resumed.
+ */
 function uploaded(captureId: string): Promise<boolean> {
   return new Promise((resolve) => {
-    const settle = () => {
-      const { upload, last } = useCaptureStore.getState();
-      // A different scan is the latest one: this one's upload is long over.
-      if (last && last.captureId !== captureId) return (resolve(true), true);
-      if (upload.state === "done") return (resolve(true), true);
-      if (upload.state === "failed" || upload.state === "waiting") return (resolve(false), true);
+    const settle = (): boolean => {
+      const state = useCaptureStore.getState().uploads[captureId];
+      if (state === "done") return (resolve(true), true);
+      if (state === "failed" || state === "waiting") return (resolve(false), true);
       return false;
     };
     if (settle()) return;
     const stop = useCaptureStore.subscribe(() => {
       if (settle()) stop();
     });
+    if (useCaptureStore.getState().uploads[captureId] === undefined) {
+      void import("@/capture/package/pending-upload")
+        .then(({ loadPendingUpload }) => loadPendingUpload())
+        .then((pending) => {
+          if (pending?.local.captureId === captureId) return;
+          // Not waiting to be resumed: it went up in an earlier session.
+          if (useCaptureStore.getState().uploads[captureId] === undefined) {
+            stop();
+            resolve(true);
+          }
+        })
+        .catch(() => undefined);
+    }
   });
 }
 
@@ -137,7 +154,15 @@ export function startRoomJob(roomId: string): boolean {
   const client = configuredRoomApi();
   if (!client) return false;
   if (following[roomId]) return true;
-  const set = (job: RoomJobState) => useRoomJobs.getState().setJob(roomId, job);
+  const set = (job: RoomJobState) => {
+    breadcrumb("job", job.stage, {
+      roomId,
+      captureId: workingCaptureOf(roomId),
+      finished: job.finished,
+      reason: job.reason ?? null,
+    });
+    useRoomJobs.getState().setJob(roomId, job);
+  };
   let settled = false;
   set({ stage: "uploading", finished: 0 });
   const source = jobSource(client, {

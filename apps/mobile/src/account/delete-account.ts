@@ -44,7 +44,7 @@ export async function wipeLocal(removeFile: DeleteDeps["removeFile"]): Promise<v
   useCaptureStore.setState({
     last: null,
     missing: null,
-    room: null,
+    uploads: {},
     upload: { state: "idle", finished: 0, total: 0 },
   });
 }
