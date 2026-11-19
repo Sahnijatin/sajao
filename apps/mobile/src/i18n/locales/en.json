@@ -22,8 +22,15 @@
       "retry": "Try again",
       "doneSize": "Scan uploaded ({{megabytes}} MB)",
       "doneNoVideoSize": "Scan uploaded ({{megabytes}} MB)",
-      "notificationTitle": "Uploading your scan",
-      "notificationText": "You can keep using your phone"
+      "notificationTitle": "Uploading your room",
+      "notificationText": "You can keep using your phone",
+      "photos": {
+        "waiting": "Your photos are saved on this phone",
+        "uploading": "Uploading your photos, {{finished}} of {{total}}",
+        "starting": "Uploading your photos",
+        "done": "Photos uploaded",
+        "doneSize": "Photos uploaded ({{megabytes}} MB)"
+      }
     },
     "room": {
       "measuring": "Measuring your room",
@@ -579,6 +586,13 @@
       "retake": "Retake",
       "continue": "Continue",
       "another": "Add another view ({{number}} of {{most}})"
+    },
+    "all": {
+      "title_one": "Your photo",
+      "title_other": "Your {{count}} photos",
+      "retake": "Retake photo {{number}}",
+      "use_one": "Use this photo",
+      "use_other": "Use these photos"
     }
   },
   "budget": {

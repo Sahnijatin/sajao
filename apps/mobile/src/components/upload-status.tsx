@@ -11,21 +11,29 @@ import { type UploadStatus, useCaptureStore } from "@/state/capture";
 /** The message key and its values for an upload state; null when there is nothing to show. */
 export function uploadMessage(
   upload: UploadStatus,
+  /** Photos (taken or picked) are called photos; only an AR scan is a scan. */
+  kind: "photos" | "scan" = "scan",
 ): { key: string; values?: Record<string, number | string> } | null {
+  const base = kind === "photos" ? "home.upload.photos" : "home.upload";
   switch (upload.state) {
     case "idle":
       return null;
     case "waiting":
-      return { key: "home.upload.waiting" };
+      return { key: `${base}.waiting` };
     case "uploading":
       return upload.total > 0
         ? {
-            key: "home.upload.uploading",
+            key: `${base}.uploading`,
             values: { finished: upload.finished, total: upload.total },
           }
-        : { key: "home.upload.starting" };
+        : { key: `${base}.starting` };
     case "done": {
-      const key = upload.videoSkipped ? "home.upload.doneNoVideo" : "home.upload.done";
+      const key =
+        kind === "photos"
+          ? `${base}.done`
+          : upload.videoSkipped
+            ? "home.upload.doneNoVideo"
+            : "home.upload.done";
       // The size is only known for files sent in this run, not ones skipped as already up.
       return upload.bytes
         ? { key: `${key}Size`, values: { megabytes: megabytes(upload.bytes) } }
@@ -48,7 +56,7 @@ export function UploadStatus() {
   const device = useCaptureStore((store) => store.device);
   const room = useCaptureStore((store) => store.room);
   const { tokens } = useTheme();
-  const message = uploadMessage(upload);
+  const message = uploadMessage(upload, last?.origin ? "photos" : "scan");
   if (!message) return null;
   return (
     <Card

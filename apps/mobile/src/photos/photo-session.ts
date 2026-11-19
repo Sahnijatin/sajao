@@ -16,10 +16,12 @@ export interface TakenPhoto {
 export type PhotoStep =
   /** What makes a good photo, before the camera opens. */
   | { step: "note" }
-  /** The camera, for the next photo. */
-  | { step: "camera" }
+  /** The camera, for the next photo, or to take one of the kept ones again. */
+  | { step: "camera"; replacing?: number }
   /** The photo just taken, to keep or take again. */
-  | { step: "review"; photo: TakenPhoto }
+  | { step: "review"; photo: TakenPhoto; replacing?: number }
+  /** Every photo kept, each with its own Retake, before they are used. */
+  | { step: "photos" }
   /** Done: these photos make the room. */
   | { step: "done" };
 
@@ -33,10 +35,14 @@ export type PhotoAction =
   | { type: "start" }
   | { type: "taken"; photo: TakenPhoto }
   | { type: "retake" }
-  /** Keep the photo under review and finish. */
+  /** Keep the photo under review and look at all of them. */
   | { type: "continue" }
-  /** Keep the photo under review and take one more. */
-  | { type: "addAnother" };
+  /** From all the photos: take this one again. */
+  | { type: "retakeAt"; index: number }
+  /** From all the photos: take one more. */
+  | { type: "addAnother" }
+  /** From all the photos: use them. */
+  | { type: "finish" };
 
 export const initialSession: PhotoSession = { current: { step: "note" }, kept: [] };
 
@@ -58,9 +64,9 @@ export function heldSideways(uiRotation: number | null): boolean {
   return Math.abs(Math.round(uiRotation) % 180) === 90;
 }
 
-/** Whether "Add another view" is offered while reviewing: the one under review counts. */
+/** Whether "Add another view" is offered on the photos: up to three in all. */
 export function canAddAnother(session: PhotoSession): boolean {
-  return session.current.step === "review" && session.kept.length + 1 < MAX_PHOTOS;
+  return session.current.step === "photos" && session.kept.length < MAX_PHOTOS;
 }
 
 export function photoSession(session: PhotoSession, action: PhotoAction): PhotoSession {
@@ -71,15 +77,34 @@ export function photoSession(session: PhotoSession, action: PhotoAction): PhotoS
     case "taken":
       // Only a sideways photo is ever reviewed; anything else is ignored.
       if (current.step !== "camera" || !isLandscape(action.photo)) return session;
-      return { ...session, current: { step: "review", photo: action.photo } };
+      return {
+        ...session,
+        current: { step: "review", photo: action.photo, replacing: current.replacing },
+      };
     case "retake":
-      return current.step === "review" ? { ...session, current: { step: "camera" } } : session;
-    case "continue":
+      return current.step === "review"
+        ? { ...session, current: { step: "camera", replacing: current.replacing } }
+        : session;
+    case "continue": {
       if (current.step !== "review") return session;
-      return { current: { step: "done" }, kept: [...kept, current.photo] };
+      const at = current.replacing;
+      const next =
+        at === undefined
+          ? [...kept, current.photo]
+          : kept.map((photo, index) => (index === at ? current.photo : photo));
+      return { current: { step: "photos" }, kept: next };
+    }
+    case "retakeAt":
+      if (current.step !== "photos" || action.index < 0 || action.index >= kept.length) {
+        return session;
+      }
+      return { ...session, current: { step: "camera", replacing: action.index } };
     case "addAnother":
-      if (!canAddAnother(session) || current.step !== "review") return session;
-      return { current: { step: "camera" }, kept: [...kept, current.photo] };
+      return canAddAnother(session) ? { ...session, current: { step: "camera" } } : session;
+    case "finish":
+      return current.step === "photos" && kept.length > 0
+        ? { ...session, current: { step: "done" } }
+        : session;
   }
 }
 

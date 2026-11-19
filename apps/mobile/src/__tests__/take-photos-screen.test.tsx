@@ -100,6 +100,11 @@ describe("Take photos", () => {
     expect(prepare).toHaveBeenCalledWith("file:///raw.jpg");
     expect(screen.getByText("Happy with the view and lighting?")).toBeTruthy();
     await fireEvent.press(screen.getByRole("button", { name: "Continue" }));
+    // Then every photo taken, each with its own Retake.
+    expect(screen.getByRole("header", { name: "Your photo" })).toBeTruthy();
+    expect(screen.getByTestId("photos-all-1")).toBeTruthy();
+    expect(onDone).not.toHaveBeenCalled();
+    await fireEvent.press(screen.getByRole("button", { name: "Use this photo" }));
     expect(onDone).toHaveBeenCalledWith([wide(1)]);
   });
 
@@ -115,7 +120,7 @@ describe("Take photos", () => {
     expect(onDone).not.toHaveBeenCalled();
   });
 
-  it("adds up to three views", async () => {
+  it("adds up to three views, shows them all, and retakes any one of them", async () => {
     let n = 0;
     const prepare = jest.fn(async (_uri: string): Promise<SavedPhoto> => ({
       ok: true,
@@ -127,6 +132,7 @@ describe("Take photos", () => {
       await act(async () => {
         fireEvent.press(screen.getByTestId("photos-shutter"));
       });
+      await fireEvent.press(screen.getByRole("button", { name: "Continue" }));
       await fireEvent.press(
         screen.getByRole("button", { name: `Add another view (${next} of 3)` }),
       );
@@ -134,9 +140,18 @@ describe("Take photos", () => {
     await act(async () => {
       fireEvent.press(screen.getByTestId("photos-shutter"));
     });
-    expect(screen.queryByRole("button", { name: /Add another view/ })).toBeNull();
     await fireEvent.press(screen.getByRole("button", { name: "Continue" }));
-    expect(onDone).toHaveBeenCalledWith([wide(1), wide(2), wide(3)]);
+    expect(screen.getByRole("header", { name: "Your 3 photos" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /Add another view/ })).toBeNull();
+    // Retake the second: the camera says which, and the new one takes its place.
+    await fireEvent.press(screen.getByRole("button", { name: "Retake photo 2" }));
+    expect(screen.getByText("Photo 2 of up to 3")).toBeTruthy();
+    await act(async () => {
+      fireEvent.press(screen.getByTestId("photos-shutter"));
+    });
+    await fireEvent.press(screen.getByRole("button", { name: "Continue" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Use these photos" }));
+    expect(onDone).toHaveBeenCalledWith([wide(1), wide(4), wide(3)]);
   });
 
   it("says so when a photo came out upright", async () => {

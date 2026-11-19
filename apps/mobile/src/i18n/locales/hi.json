@@ -22,8 +22,15 @@
       "retry": "फिर कोशिश करें",
       "doneSize": "स्कैन अपलोड हो गया ({{megabytes}} MB)",
       "doneNoVideoSize": "स्कैन अपलोड हो गया ({{megabytes}} MB)",
-      "notificationTitle": "आपका स्कैन अपलोड हो रहा है",
-      "notificationText": "आप अपना फ़ोन इस्तेमाल करते रह सकते हैं"
+      "notificationTitle": "आपका कमरा अपलोड हो रहा है",
+      "notificationText": "आप अपना फ़ोन इस्तेमाल करते रह सकते हैं",
+      "photos": {
+        "waiting": "आपकी फ़ोटो इस फ़ोन पर सेव हैं",
+        "uploading": "आपकी फ़ोटो अपलोड हो रही हैं, {{total}} में से {{finished}}",
+        "starting": "आपकी फ़ोटो अपलोड हो रही हैं",
+        "done": "फ़ोटो अपलोड हो गईं",
+        "doneSize": "फ़ोटो अपलोड हो गईं ({{megabytes}} MB)"
+      }
     },
     "room": {
       "measuring": "आपका कमरा नापा जा रहा है",
@@ -579,6 +586,13 @@
       "retake": "फिर से लें",
       "continue": "आगे बढ़ें",
       "another": "एक और नज़ारा जोड़ें ({{number}} / {{most}})"
+    },
+    "all": {
+      "title_one": "आपकी फ़ोटो",
+      "title_other": "आपकी {{count}} फ़ोटो",
+      "retake": "फ़ोटो {{number}} फिर से लें",
+      "use_one": "यह फ़ोटो इस्तेमाल करें",
+      "use_other": "ये फ़ोटो इस्तेमाल करें"
     }
   },
   "budget": {
