@@ -12,7 +12,7 @@ from sajao_engine.testing import (
     twin_from_polygon,
 )
 from sajao_engine.verifier import verify
-from sajao_schemas.generated.v1 import Product, SpaceTwin
+from sajao_schemas.generated.v1 import MeasurementConfidence, Product, SpaceTwin
 
 WHEN = datetime(2026, 1, 5, tzinfo=UTC)
 ROOMS = fixture_rooms()
@@ -43,7 +43,11 @@ def test_no_relaxation_when_the_first_try_passes() -> None:
 
 
 def test_a_smaller_program_is_used_last_and_shown() -> None:
-    twin = ROOMS["br_small"]
+    # Taped: the room keeps its full error band as margin, so the queen bed does not fit.
+    # (An estimated room is placed at nominal sizes, where it would.)
+    twin = ROOMS["br_small"].model_copy(
+        update={"confidence": MeasurementConfidence(level="taped", basis="tape", tape_values=2)}
+    )
     kit = bedroom_kit()
     queen = product("bed", 1.6, 2.05, 0.95, key="queen")
     single = product("bed", 0.9, 1.95, 0.45, key="single")

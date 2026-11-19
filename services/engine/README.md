@@ -8,14 +8,14 @@ A room is its floor polygon. Each stretch of the polygon's edge is a wall when o
 
 - **Open edges are passable.** They never limit a walkway, and every open edge at least 60 cm long is a way in that the walkways must join, like a door.
 - **Open edges are not walls.** Nothing is placed against them, wall items never hang on them, and they never box an item into a tight spot. Items still stay inside the area by the edge's band (the largest band of the walls that meet it).
-- **Confidence level.** `taped`, `ar_measured` or `estimated`, passed in by the pipeline; without it, a room whose walls and ceiling are all measured reads as taped and anything else as estimated. Every room is verified with its bands as margin, but only taped and AR-measured rooms get fit claims: per-item fit (`fits`, `tight`, `does_not_fit` with the spare clearance) and "fits with N cm to spare". An estimated room's design says to measure to confirm.
+- **Confidence level.** `taped`, `ar_measured` or `estimated`, passed in by the pipeline; without it, a room whose walls and ceiling are all measured reads as taped and anything else as estimated. Taped and AR-measured rooms are verified with their bands as margin and get fit claims: per-item fit (`fits`, `tight`, `does_not_fit` with the spare clearance) and "fits with N cm to spare". An estimated room is placed and verified at nominal sizes (its lengths and kept boxes without bands) with a 6 cm clearance at each wall, and its design says to measure to confirm.
 
 ## Verifier
 
 `sajao_engine.verifier.verify(design, twin, brief, redo=..., checked_at=...)` re-checks a finished `Design` from scratch and returns its `CheckReport`, a list of violations (rule, items, detail) for the designer and the relaxation order, and each item's smallest gap. It reads only the design, the twin it builds on and the brief; it never trusts the solver.
 
 - **Footprints.** Each item's footprint is the product's catalog width and depth plus their error bands, at the item's position and rotation. Kept twin objects and built-ins use their measured boxes plus bands. Twin edits on the design (remove, move, rotate, replace) are applied first.
-- **Walls.** A wall may sit anywhere within the error band of the walls that meet it, so a footprint must stay that far from it.
+- **Walls.** On a taped or AR-measured room a wall may sit anywhere within the error band of the walls that meet it, so a footprint must stay that far from it. On an estimated room each wall keeps a fixed 6 cm clearance.
 - **Zones.** Door swings (inward doors, the arc covered from outside), a 60 cm approach inside every door, open edges kept to their band, 50 cm in front of every window (nothing taller than the sill), switchboards (nothing that covers them) and AC units (nothing near their height within 1 m), each grown by the bands of the numbers behind it.
 - **Walkways.** Standing positions are sampled every 2.5 cm and each one's gap to walls and footprints is exact, so a corridor is never invented. The doors and open edges must be joined by walkways at least 60 cm wide, and every seat, bed side, wardrobe, drawer front and kept cupboard must be within 45 cm of those walkways. 75 cm walkways are scored, not required.
 

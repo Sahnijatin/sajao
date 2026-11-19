@@ -8,8 +8,8 @@ from __future__ import annotations
 
 import math
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass, field
-from typing import Literal
+from dataclasses import dataclass, field, replace
+from typing import Any, Literal
 
 from sajao_engine.geometry import (
     Point,
@@ -402,6 +402,33 @@ def _obstacles(
     return tuple(out)
 
 
+# Estimated rooms (a depth model's guess) are placed at nominal sizes: a band of 13 to
+# 17% as margin would eat a third of a small room for a number that is a guess either
+# way. Each wall keeps this fixed clearance instead (just over the verifier's 5 cm
+# tight-spot strip, so a piece against a wall is not a tight spot by construction), and
+# no fit is claimed (Decision,
+# 19 Nov, amending engineering rule 5). Measured and taped rooms keep the full band.
+ESTIMATED_CLEARANCE_M = 0.06
+
+
+def _nominal(twin: SpaceTwin) -> SpaceTwin:
+    """The twin with every measured length at its value and no error band."""
+
+    def strip(node: Any) -> Any:
+        if isinstance(node, dict):
+            if {"value_m", "error_band_m", "source"} <= node.keys():
+                return {**node, "error_band_m": 0.0}
+            return {k: strip(v) for k, v in node.items()}
+        if isinstance(node, list):
+            return [strip(v) for v in node]
+        return node
+
+    data = twin.model_dump(mode="json", exclude_unset=True)
+    for key in ("shell", "objects"):
+        data[key] = strip(data[key])
+    return SpaceTwin.model_validate(data)
+
+
 def room_from_twin(
     twin: SpaceTwin,
     *,
@@ -411,9 +438,15 @@ def room_from_twin(
     confidence: Confidence | None = None,
     in_view: Sequence[Point] | None = None,
 ) -> Room:
-    """The room with every twin object kept except those in ``removed``."""
+    """The room with every twin object kept except those in ``removed``. An estimated
+    room is taken at nominal sizes, each wall with a fixed clearance (see _nominal)."""
+    level = confidence or confidence_of(twin)
+    if level == "estimated":
+        twin = _nominal(twin)
     floor = ccw([(p.x_m, p.y_m) for p in twin.shell.floor_polygon])
     walls = _wall_lines(twin, floor)
+    if level == "estimated":
+        walls = tuple(replace(w, margin_m=ESTIMATED_CLEARANCE_M) for w in walls)
     by_id = {w.id: w for w in walls}
     openings = tuple(
         _opening(o, by_id[o.wall_id]) for o in twin.shell.openings if o.wall_id in by_id
@@ -436,5 +469,5 @@ def room_from_twin(
         in_view=ccw(list(in_view)) if in_view else None,
         wall_by_id=by_id,
         open_edges=_open_edges(floor, walls),
-        confidence=confidence or confidence_of(twin),
+        confidence=level,
     )
