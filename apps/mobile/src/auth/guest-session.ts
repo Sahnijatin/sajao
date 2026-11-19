@@ -24,6 +24,11 @@ async function authClient(config: {
   return client;
 }
 
+/** Forget the session on this phone, after the account was erased. */
+export async function signOutHere(config: { url: string; publishableKey: string }): Promise<void> {
+  await (await authClient(config)).auth.signOut({ scope: "local" });
+}
+
 /** A valid access token for the API, signing in as a guest when there is no session yet. */
 export async function guestAccessToken(config: {
   url: string;

@@ -122,7 +122,7 @@ final class CaptureRecorder {
   /// background queue.
   func offer(_ frame: ARFrame, sharpness: Double, yaw: Double?, pitch: Double?) {
     // Kept whatever tracking says: without a pose, by time; the server
-    // solves those poses from the video.
+    // solves those poses from the keyframes themselves.
     let tracking: Bool = {
       if case .normal = frame.camera.trackingState { return true }
       return false

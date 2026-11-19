@@ -13,6 +13,12 @@ export interface RoomStillViewProps {
   label?: string;
   style?: StyleProp<ViewStyle>;
   testID?: string;
+  /**
+   * Draw a stand-in room where there is no picture yet, in builds that allow
+   * samples. Off for a person's own room: its tile stays plain until a real
+   * picture exists.
+   */
+  drawn?: boolean;
 }
 
 /** A bare room (before) or the same room furnished (after), drawn from theme colours. */
@@ -138,7 +144,7 @@ function DrawnRoom({ look, view = 0 }: { look: "before" | "after"; view?: 0 | 1 
   );
 }
 
-export function RoomStillView({ still, label, style, testID }: RoomStillViewProps) {
+export function RoomStillView({ still, label, style, testID, drawn = true }: RoomStillViewProps) {
   const { tokens } = useTheme();
   return (
     <View
@@ -151,7 +157,7 @@ export function RoomStillView({ still, label, style, testID }: RoomStillViewProp
       {
         still.kind === "image" ? (
           <Image source={{ uri: still.uri }} resizeMode="cover" style={{ flex: 1 }} />
-        ) : samplesAllowed() ? (
+        ) : drawn && samplesAllowed() ? (
           <DrawnRoom look={still.look} view={still.view} />
         ) : null /* A store build never shows a drawn room: the tile stays plain until the photo exists. */
       }

@@ -19,18 +19,12 @@ const profile = fixture as unknown as SpaceProfile;
 async function show(current: SpaceProfile = profile) {
   const onChange = jest.fn();
   const onShowIdeas = jest.fn();
-  const onChoosePart = jest.fn();
   const view = await render(
     <ThemeProvider tier="standard" reducedMotion>
-      <SpaceProfileScreen
-        profile={current}
-        onChange={onChange}
-        onShowIdeas={onShowIdeas}
-        onChoosePart={onChoosePart}
-      />
+      <SpaceProfileScreen profile={current} onChange={onChange} onShowIdeas={onShowIdeas} />
     </ThemeProvider>,
   );
-  return { view, onChange, onShowIdeas, onChoosePart };
+  return { view, onChange, onShowIdeas };
 }
 
 beforeEach(async () => {
@@ -67,16 +61,6 @@ describe("Space Profile card", () => {
     expect(screen.queryByText(/Estimated/)).toBeNull();
   });
 
-  it("offers all of it or just a part, with all of it selected first", async () => {
-    const { onChoosePart, onChange } = await show();
-    const [all, part] = screen.getAllByRole("radio");
-    expect(all!.props.accessibilityState).toEqual({ checked: true });
-    expect(part!.props.accessibilityState).toEqual({ checked: false });
-    await fireEvent.press(part!);
-    expect(onChoosePart).toHaveBeenCalledTimes(1);
-    expect(onChange).not.toHaveBeenCalled();
-  });
-
   it("cycles an existing item through keep, replace and remove with a valid profile", async () => {
     const { onChange } = await show();
     await fireEvent.press(screen.getByRole("button", { name: "Three seater sofa: Replace" }));
@@ -97,16 +81,12 @@ describe("Space Profile card", () => {
     });
     await show();
     expect(screen.getByText("एक लिविंग रूम")).toBeTruthy();
-    expect(screen.getByText("हम क्या नया करें?")).toBeTruthy();
   });
 
-  it("does not offer Just a part while there is no screen to draw it on", async () => {
-    await render(
-      <ThemeProvider tier="standard" reducedMotion>
-        <SpaceProfileScreen profile={profile} onChange={jest.fn()} onShowIdeas={jest.fn()} />
-      </ThemeProvider>,
-    );
-    expect(screen.getByText("All of it")).toBeTruthy();
+  it("asks nothing about redoing part of the space: the whole of it is redone", async () => {
+    await show();
     expect(screen.queryByText("Just a part")).toBeNull();
+    expect(screen.queryByText("All of it")).toBeNull();
+    expect(screen.queryAllByRole("radio")).toHaveLength(0);
   });
 });

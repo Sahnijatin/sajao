@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
@@ -10,10 +10,17 @@ import { CaptureScreen } from "@/screens/capture";
 import { useRooms } from "@/state/rooms";
 import { useTaste } from "@/state/taste";
 
-const ROUTES = { space: "/space", taste: "/taste", generating: "/generating" } as const;
+const ROUTES = {
+  space: "/space",
+  taste: "/taste",
+  budget: "/budget",
+  generating: "/generating",
+} as const;
 
 export default function CaptureRoute() {
   const router = useRouter();
+  // Set when an existing room is being measured: the scan upgrades that room.
+  const { room } = useLocalSearchParams<{ room?: string }>();
   // The room made from this scan, once it is confirmed on the review.
   const roomId = useRef<string | null>(null);
   const { t } = useTranslation();
@@ -46,11 +53,19 @@ export default function CaptureRoute() {
       }}
       // The upload runs in the background and resumes after an interruption.
       onCaptured={(capture, device) => {
-        // The scan becomes a room on My home at once; its designs arrive later.
-        roomId.current = useRooms.getState().addRoomForCapture(capture.captureId).id;
+        if (room) {
+          // Measuring a room it already has: the room keeps everything it has
+          // until this scan is measured and its designs arrive.
+          useRooms.getState().remeasure(room, capture.captureId);
+          roomId.current = room;
+        } else {
+          // The scan becomes a room on My home at once; its designs arrive later.
+          roomId.current = useRooms.getState().addRoomForCapture(capture.captureId).id;
+        }
         void startCaptureUpload(capture, device);
       }}
-      onUsePhotos={() => void usePhotos()}
+      // Measuring a room is the scan or nothing: photos would make another room.
+      onUsePhotos={room ? () => router.back() : () => void usePhotos()}
     />
   );
 }
