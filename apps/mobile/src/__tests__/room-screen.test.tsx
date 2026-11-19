@@ -197,8 +197,18 @@ describe("Designs tab", () => {
     expect(screen.getByText("₹33,497 for everything")).toBeTruthy();
   });
 
+  it("shows nothing of Vastu while its build setting is off", async () => {
+    await show({
+      ...real,
+      direction: { north_deg: 40, confidence: "approximate", sources: ["compass"] },
+    });
+    await openTab("Designs");
+    expect(screen.queryByTestId("vastu-toggle")).toBeNull();
+    expect(screen.queryByText(/Vastu/)).toBeNull();
+  });
+
   it("keeps the Vastu view off, and says why, until the compass is calibrated", async () => {
-    await show();
+    await show(sample, { showVastu: true });
     await openTab("Designs");
     const toggle = screen.getByTestId("vastu-toggle");
     expect(toggle.props.disabled).toBe(true);
@@ -208,10 +218,13 @@ describe("Designs tab", () => {
   });
 
   it("switches the Vastu view on with a compass reading, with the required label", async () => {
-    await show({
-      ...real,
-      direction: { north_deg: 40, confidence: "approximate", sources: ["compass"] },
-    });
+    await show(
+      {
+        ...real,
+        direction: { north_deg: 40, confidence: "approximate", sources: ["compass"] },
+      },
+      { showVastu: true },
+    );
     await openTab("Designs");
     const toggle = screen.getByTestId("vastu-toggle");
     expect(toggle.props.disabled).toBe(false);
@@ -225,10 +238,17 @@ describe("Designs tab", () => {
   });
 
   it("does not count a direction from the door alone as a calibrated compass", async () => {
-    await show({
-      ...real,
-      direction: { north_deg: 40, confidence: "approximate", sources: ["main_door_confirmation"] },
-    });
+    await show(
+      {
+        ...real,
+        direction: {
+          north_deg: 40,
+          confidence: "approximate",
+          sources: ["main_door_confirmation"],
+        },
+      },
+      { showVastu: true },
+    );
     await openTab("Designs");
     expect(screen.getByTestId("vastu-toggle").props.disabled).toBe(true);
   });
