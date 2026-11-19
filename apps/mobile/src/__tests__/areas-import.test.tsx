@@ -74,7 +74,7 @@ describe("which area to redesign", () => {
 
 describe("use photos or a video", () => {
   it("says sizes from pictures are estimates, before anything is chosen", async () => {
-    await wrap(<ImportMediaScreen onImported={jest.fn()} onScan={jest.fn()} />);
+    await wrap(<ImportMediaScreen onImported={jest.fn()} onTakePhotos={jest.fn()} />);
     expect(screen.getByText(/^Sizes from photos are estimates\./)).toBeTruthy();
     expect(screen.queryByTestId("import-problem")).toBeNull();
   });
@@ -84,7 +84,7 @@ describe("use photos or a video", () => {
     await wrap(
       <ImportMediaScreen
         onImported={onImported}
-        onScan={jest.fn()}
+        onTakePhotos={jest.fn()}
         importMedia={async () => ({ status: "imported", roomId: "room-9" })}
       />,
     );
@@ -98,7 +98,7 @@ describe("use photos or a video", () => {
     await wrap(
       <ImportMediaScreen
         onImported={onImported}
-        onScan={jest.fn()}
+        onTakePhotos={jest.fn()}
         importMedia={async () => ({ status: "cancelled" })}
       />,
     );
@@ -107,18 +107,18 @@ describe("use photos or a video", () => {
     expect(screen.queryByTestId("import-problem")).toBeNull();
   });
 
-  it("says why the pictures cannot be used, and offers the scan", async () => {
-    const onScan = jest.fn();
+  it("says why the pictures cannot be used, and offers Take photos", async () => {
+    const onTakePhotos = jest.fn();
     await wrap(
       <ImportMediaScreen
         onImported={jest.fn()}
-        onScan={onScan}
+        onTakePhotos={onTakePhotos}
         importMedia={async () => ({ status: "problem", problem: "photosAndVideo" })}
       />,
     );
     await fireEvent.press(screen.getByRole("button", { name: "Choose photos or a video" }));
     expect(screen.getByText("Please choose photos or one video, not both.")).toBeTruthy();
-    await fireEvent.press(screen.getByRole("button", { name: "Scan the room instead" }));
-    expect(onScan).toHaveBeenCalledTimes(1);
+    await fireEvent.press(screen.getByRole("button", { name: "Take photos instead" }));
+    expect(onTakePhotos).toHaveBeenCalledTimes(1);
   });
 });

@@ -11,6 +11,8 @@ export interface AppConfig {
   /** Base URL of the Sajao API, or null until one is deployed for this environment. */
   apiUrl: string | null;
   supabase: { url: string; publishableKey: string } | null;
+  /** The privacy policy and terms the consent screen links to; null until they are hosted. */
+  legal: { privacyUrl: string; termsUrl: string } | null;
 }
 
 type Env = Record<string, string | undefined>;
@@ -44,10 +46,16 @@ export function parseConfig(env: Env): AppConfig {
   if (key && !key.startsWith("sb_publishable_")) {
     throw new Error("EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY must be a publishable key");
   }
+  const privacyUrl = httpsUrl("EXPO_PUBLIC_PRIVACY_URL", env.EXPO_PUBLIC_PRIVACY_URL);
+  const termsUrl = httpsUrl("EXPO_PUBLIC_TERMS_URL", env.EXPO_PUBLIC_TERMS_URL);
+  if ((privacyUrl === null) !== (termsUrl === null)) {
+    throw new Error("EXPO_PUBLIC_PRIVACY_URL and EXPO_PUBLIC_TERMS_URL go together");
+  }
   return {
     environment,
     apiUrl: httpsUrl("EXPO_PUBLIC_API_URL", env.EXPO_PUBLIC_API_URL),
     supabase: url && key ? { url, publishableKey: key } : null,
+    legal: privacyUrl && termsUrl ? { privacyUrl, termsUrl } : null,
   };
 }
 
@@ -69,4 +77,6 @@ export const configResult = loadConfig({
   EXPO_PUBLIC_API_URL: process.env.EXPO_PUBLIC_API_URL,
   EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
   EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  EXPO_PUBLIC_PRIVACY_URL: process.env.EXPO_PUBLIC_PRIVACY_URL,
+  EXPO_PUBLIC_TERMS_URL: process.env.EXPO_PUBLIC_TERMS_URL,
 });

@@ -1,4 +1,4 @@
-import { type RoomContent, roomContent } from "./room-content";
+import { type RoomContent, sampleContent } from "./room-content";
 import { SAMPLE_DESIGNS, totalOf } from "./sample-designs";
 
 describe("sample designs", () => {
@@ -42,7 +42,7 @@ describe("sample designs", () => {
 
 describe("room content", () => {
   it("is marked as a sample, with three hero views and three looks", () => {
-    const content = roomContent("any-room") as RoomContent;
+    const content = sampleContent() as RoomContent;
     expect(content.sample).toBe(true);
     expect(content.heroViews).toHaveLength(3);
     expect(content.looks.map((look) => look.design)).toEqual([...SAMPLE_DESIGNS]);

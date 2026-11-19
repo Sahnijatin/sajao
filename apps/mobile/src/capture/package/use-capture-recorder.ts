@@ -64,7 +64,10 @@ export function useCaptureRecorder(ar: CapturePackage["ar"]) {
     }
     // A review still open at Done runs to the end of the capture.
     state.current = record(state.current, { type: "review", open: false, atMs: Date.now() });
-    const local = localCapture(captureId, state.current, files, files.video ?? null);
+    // No scan video goes up for launch (SJ-SCOPE-30). A build from before
+    // the native recorder was removed still writes one: delete it.
+    if (files.video) void viewRef.current?.discardKeyframes([files.video]).catch(() => undefined);
+    const local = localCapture(captureId, state.current, files);
     setLast(local);
     return local;
   }, [captureId, setLast]);
