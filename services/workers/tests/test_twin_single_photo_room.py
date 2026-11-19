@@ -188,7 +188,7 @@ async def test_the_photo_becomes_an_estimated_twin_with_open_edges(tmp_path: Pat
     assert result.meta["confidence"] == "estimated"
 
 
-async def test_without_any_compass_heading_assembly_fails(tmp_path: Path) -> None:
+async def test_without_any_compass_heading_the_twin_has_no_direction(tmp_path: Path) -> None:
     store, runner, _, scaled, _ = await build(tmp_path, heading=None)
     inputs = {
         "capture": store.put_blob(json.dumps(capture_doc(None)).encode()),
@@ -196,8 +196,10 @@ async def test_without_any_compass_heading_assembly_fails(tmp_path: Path) -> Non
         "objects": scaled.outputs["objects"],
         "scale": scaled.outputs["scale"],
     }
-    with pytest.raises(Exception, match="compass"):
-        await runner.run(assemble_step(), inputs, PARAMS)
+    result = await runner.run(assemble_step(), inputs, PARAMS)
+    twin = json.loads(store.read_blob(result.outputs["twin"]))
+    SpaceTwin.model_validate(twin)
+    assert "direction" not in twin and result.meta["north_deg"] is None
 
 
 def test_a_box_from_one_view() -> None:

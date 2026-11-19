@@ -1,7 +1,7 @@
 """Assembling the SpaceTwin from the worker's step outputs.
 
 Everything the twin says comes from measurement and code: boxes from depth,
-the shell from depth, the scale from AR, the direction from the compass. No
+the shell from depth, the scale from AR, the direction from the compass when there is one. No
 model sets a dimension. The result is checked against the generated SpaceTwin
 model before anything stores it.
 
@@ -29,7 +29,7 @@ LIVING = {"sofa", "armchair", "television"}
 
 
 class AssemblyError(Exception):
-    """The outputs cannot make a valid twin (missing compass, schema violation)."""
+    """The outputs cannot make a valid twin (a schema violation)."""
 
 
 def storage_key(digest: str) -> str:
@@ -239,9 +239,9 @@ def assemble_twin(
     section and nothing may show it from a free camera. `scale` is the single-photo
     scale check: its evidence becomes the twin's `scale`, and no shell length is
     claimed tighter than its band."""
+    # Without a compass reading (gallery photos) the twin has no direction, and Vastu
+    # stays off until the person confirms one.
     compass = capture.get("compass") or _photo_heading(capture, manifest)
-    if not compass:
-        raise AssemblyError("the capture has no compass reading, so north cannot be set")
     twin: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "id": twin_id,
@@ -264,16 +264,17 @@ def assemble_twin(
             "anchors_agree": True,
             "needs_tape_value": False,
         },
-        "direction": {
-            "north_deg": round(space.north_deg(float(compass["mean_heading_deg"])), 2),
-            "confidence": "approximate",
-            "sources": ["compass"],
-        },
         # The shell comes from depth: LiDAR measures it, a depth model only estimates it.
         "confidence": dict(
             confidence_level("lidar" if manifest.get("depth_source") == "lidar" else "depth_model")
         ),
     }
+    if compass:
+        twin["direction"] = {
+            "north_deg": round(space.north_deg(float(compass["mean_heading_deg"])), 2),
+            "confidence": "approximate",
+            "sources": ["compass"],
+        }
     if scale is not None:
         twin["scale"] = dict(scale["evidence"])
         _widen(twin["shell"], float(scale["band_fraction"]))

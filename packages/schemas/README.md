@@ -24,8 +24,8 @@ The contract between the app, the API and the workers. One JSON Schema source pe
 - A room is a floor polygon, not a box. `shell.walls` are its edges in order; an edge's optional `kind` says whether a wall was seen there (`wall`, the default) or not (`open`: a doorway, the way into the next area, or a stretch not scanned). Open edges are passable and nothing is placed against them.
 - A `SpaceTwin` is never edited. A `Design` points at a twin id and version plus ordered `TwinEdit`s (move, rotate, remove, replace, add, restyle a surface), made by the user or the solver, never a model. `applyEdits` and `spaceProfileFromTwin` in `@sajao/schemas/twin` derive the edited twin and the `SpaceProfile`.
 - A `SpaceTwin` names where it may be shown from: `viewing.hero_views` (real keyframe poses, picked by code) and `viewing.safe_region`. A hero view points at a keyframe and has no pose of its own. `heroKeyframes`, `insideSafeRegion` and `clampToSafeRegion` in `@sajao/schemas/twin` are what a viewer uses.
-- `direction` is optional on a `SpaceTwin` and a `SpaceProfile`: a room from gallery photos has no compass reading. Without it Vastu stays off until the person confirms a direction.
 - A hero mask may carry its `outline`: closed polygons on the photo in shares of its width and height (`ImagePoint`), so the app draws a tapped thing without fetching its mask.
+- `direction` is optional on a `SpaceTwin` and a `SpaceProfile`: a room from gallery photos has no compass reading. Without it Vastu stays off until the person confirms a direction.
 - A twin object's size is its measured box; a generated 3D model is scaled to the box and never sets the size. Replaced and added items take their catalog size.
 - Unknown properties are rejected everywhere except `Event.properties`.
 
