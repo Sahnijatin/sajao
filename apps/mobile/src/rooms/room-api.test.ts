@@ -2,6 +2,7 @@ import twinFixture from "../../../../packages/schemas/fixtures/v1/valid/space-tw
 import {
   apiGeneration,
   contentFromTwin,
+  areasFromTwin,
   failureOf,
   finishedStages,
   heroViewsFrom,
@@ -11,7 +12,7 @@ import {
   type RoomApi,
   type RoomJob,
 } from "./room-api";
-import type { Design } from "@sajao/schemas";
+import type { Design, SpaceTwin } from "@sajao/schemas";
 import designFixture from "../../../../packages/schemas/fixtures/v1/valid/design.json";
 import type { DesignsJob, DesignsRequest } from "./designs-api";
 import type { RoomContent } from "./room-content";
@@ -104,7 +105,7 @@ describe("the twin from the server", () => {
     expect(content.confidence).toBe("measured");
     expect(content.shell?.floor_polygon).toHaveLength(4);
     expect(content.direction?.sources).toContain("compass");
-    // Photos and designs are not in this read.
+    // No photos from this phone and no designs yet: no views, no looks.
     expect(content.heroViews).toEqual([]);
     expect(content.looks).toEqual([]);
   });
@@ -291,15 +292,85 @@ describe("real progress for a room", () => {
 
 describe("the room's own photos and its looks", () => {
   it("are the person's photos, in order, and each look is shown beside the room today", () => {
-    const views = heroViewsFrom(["file:///a.jpg", "file:///b.jpg"]);
+    const views = heroViewsFrom([
+      { id: "k1", uri: "file:///a.jpg" },
+      { id: "k2", uri: "file:///b.jpg" },
+    ]);
     expect(views).toEqual([
-      { id: "photo-1", still: { kind: "image", uri: "file:///a.jpg" } },
-      { id: "photo-2", still: { kind: "image", uri: "file:///b.jpg" } },
+      { id: "k1", still: { kind: "image", uri: "file:///a.jpg" } },
+      { id: "k2", still: { kind: "image", uri: "file:///b.jpg" } },
     ]);
     const looks = looksFrom(threeDesigns, views);
     expect(looks.map((look) => look.still)).toEqual(Array(3).fill(views[0]?.still));
     expect(looks.every((look) => look.stillIsToday)).toBe(true);
     // No photos: a plain tile, never a drawn stand-in or another room.
     expect(looksFrom(threeDesigns, [])[0]?.still).toEqual({ kind: "placeholder", look: "before" });
+  });
+});
+
+describe("a scan that went through more than one area", () => {
+  const twin = twinFixture as unknown as SpaceTwin;
+  const square = (x0: number, x1: number) => [
+    { x_m: x0, y_m: 0 },
+    { x_m: x1, y_m: 0 },
+    { x_m: x1, y_m: 3.4 },
+    { x_m: x0, y_m: 3.4 },
+  ];
+  const split = {
+    ...twin,
+    areas: [
+      {
+        id: "a1",
+        space_type: "living_room",
+        floor_polygon: square(0, 4.2),
+        floor_area_m2: 14.28,
+        object_ids: ["sofa-1"],
+        keyframe_ids: ["k1"],
+        photo_keyframe_id: "k1",
+        confidence: { level: "ar_measured", basis: "lidar" },
+      },
+      {
+        // The dining area beyond the open side, through the doorway.
+        id: "a2",
+        space_type: "dining_room",
+        floor_polygon: square(-2, 0),
+        floor_area_m2: 6.8,
+        object_ids: ["almirah-1"],
+        keyframe_ids: ["k2"],
+        photo_keyframe_id: "k2",
+        confidence: { level: "estimated", basis: "depth_model" },
+      },
+    ],
+  } as unknown as SpaceTwin;
+  const photos = [
+    { id: "k1", uri: "file:///living.jpg" },
+    { id: "k2", uri: "file:///dining.jpg" },
+  ];
+
+  it("gives each area its photo, floor, walls, openings, items and level", () => {
+    const [living, dining] = areasFromTwin(split, photos);
+    expect(living?.photo).toEqual({ kind: "image", uri: "file:///living.jpg" });
+    expect(living?.spaceType).toBe("living_room");
+    expect(living?.shell?.walls.map((wall) => wall.id)).toEqual(["w1", "w2", "w3", "w4"]);
+    expect(living?.measures?.bigItems.map((item) => item.id)).toEqual(["sofa-1"]);
+    expect(living?.confidence).toBe("measured");
+    expect(dining?.photo).toEqual({ kind: "image", uri: "file:///dining.jpg" });
+    expect(dining?.heroViews.map((view) => view.id)).toEqual(["k2"]);
+    expect(dining?.shell?.walls.map((wall) => wall.id)).toEqual(["w4"]);
+    expect(dining?.shell?.openings.map((opening) => opening.id)).toEqual(["d1"]);
+    expect(dining?.measures?.bigItems.map((item) => item.id)).toEqual(["almirah-1"]);
+    expect(dining?.confidence).toBe("estimated");
+  });
+
+  it("has no photo for an area this phone has no picture of, and no areas for one space", () => {
+    expect(areasFromTwin(split, [])[0]?.photo).toBeNull();
+    expect(areasFromTwin(twin, photos)).toEqual([]);
+    expect(areasFromTwin({ ...twin, areas: undefined } as SpaceTwin)).toEqual([]);
+  });
+
+  it("makes the room's content carry its areas and the photos as its views", () => {
+    const content = contentFromTwin(split, photos);
+    expect(content.areas.map((area) => area.id)).toEqual(["a1", "a2"]);
+    expect(content.heroViews.map((view) => view.id)).toEqual(["k1", "k2"]);
   });
 });

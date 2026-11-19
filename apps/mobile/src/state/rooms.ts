@@ -6,7 +6,13 @@ import { useSyncExternalStore } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { DesignIds } from "@/rooms/designs-api";
-import { clearSampleDesigns, newRoom, type Room, type RoomStill } from "@/rooms/rooms";
+import {
+  clearSampleDesigns,
+  newRoom,
+  type Room,
+  type RoomPhoto,
+  type RoomStill,
+} from "@/rooms/rooms";
 
 interface RoomsState {
   rooms: Room[];
@@ -14,7 +20,7 @@ interface RoomsState {
    * Adds the room for a scan. Adding the same scan twice keeps one room.
    * Photos, when given, are the person's own pictures of it.
    */
-  addRoomForCapture(captureId: string, atMs?: number, photos?: readonly string[]): Room;
+  addRoomForCapture(captureId: string, atMs?: number, photos?: readonly RoomPhoto[]): Room;
   /** The room's designs are ready: its card shows how many, and its hero still. */
   setRoomDesigns(roomId: string, designCount: number, still: RoomStill, atMs?: number): void;
   /** For a scan of several areas: which one to redesign. */

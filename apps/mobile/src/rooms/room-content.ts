@@ -38,7 +38,7 @@ export interface RoomLook {
 export interface RoomArea {
   id: string;
   spaceType: SpaceType | null;
-  /** A photo of this area to recognise it by; null until the server sends one. */
+  /** A photo of this area to recognise it by, from this phone; null when it has none. */
   photo: RoomStill | null;
   heroViews: readonly HeroView[];
   measures: RoomMeasures | null;
