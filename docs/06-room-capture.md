@@ -63,7 +63,7 @@ Single-image models can shrink far-away geometry, which is why scale is cross-ch
 
 ## Confirm, never draw
 
-The Space Profile card shows what we found (the space type and size, with a Change action) and the plan drawn over your photo. You choose what to redo, "All of it" or "Just a part" by drawing around a corner or wall. You can drag a door, mark each existing item keep, replace or remove, and add tape values. Each value snaps in with a haptic tick and re-fits the whole room.
+The Space Profile card shows what we found (the space type and size, with a Change action) and the plan drawn over your photo. The whole of what was captured is redone. You can drag a door, mark each existing item keep, replace or remove, and add tape values. Each value snaps in with a haptic tick and re-fits the whole room.
 
 ## Upload and registration
 

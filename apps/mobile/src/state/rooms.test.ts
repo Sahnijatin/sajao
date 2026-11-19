@@ -61,3 +61,16 @@ describe("a room's design ids", () => {
     expect(useRooms.getState().designIdsFor("nope", newId)).toBeNull();
   });
 });
+
+describe("a room's budget", () => {
+  it("is kept with the room", () => {
+    useRooms.setState({ rooms: [] });
+    const room = useRooms.getState().addRoomForCapture("cap", 0);
+    const budget = {
+      limit: { currency: "INR", amount_minor: 100 },
+      flexibility: "strict",
+    } as const;
+    useRooms.getState().setRoomBudget(room.id, budget);
+    expect(useRooms.getState().rooms[0]?.budget).toEqual(budget);
+  });
+});

@@ -10,7 +10,12 @@ import { CaptureScreen } from "@/screens/capture";
 import { useRooms } from "@/state/rooms";
 import { useTaste } from "@/state/taste";
 
-const ROUTES = { space: "/space", taste: "/taste", generating: "/generating" } as const;
+const ROUTES = {
+  space: "/space",
+  taste: "/taste",
+  budget: "/budget",
+  generating: "/generating",
+} as const;
 
 export default function CaptureRoute() {
   const router = useRouter();
