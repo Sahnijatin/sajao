@@ -44,7 +44,7 @@ def test_a_product_is_drawn_where_it_stands_with_its_size() -> None:
     assert abs(ys.max() - (120 + 250 * 1.2 / 2.7)) <= 2
     assert out.image[mask].mean(axis=0)[0] > out.image[mask].mean(axis=0)[2]
     # A contact shadow darkens the floor just below the product, nothing far away.
-    assert out.image[min(H - 1, ys.max() + 3), int(xs.mean())].mean() < 0.5
+    assert out.image[int(min(H - 1, int(ys.max()) + 3)), int(xs.mean())].mean() < 0.5
     assert out.image[5, 5].mean() == pytest.approx(0.5)
 
 

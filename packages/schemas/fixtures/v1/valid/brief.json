@@ -14,5 +14,23 @@
   },
   "must_haves": ["sofa", "floor_lamp"],
   "keep_item_ids": [],
-  "consider_vastu": true
+  "consider_vastu": true,
+  "taste_answers": {
+    "styles": ["modern_indian", "japandi"],
+    "swipes": [
+      {
+        "card_id": "lr-014",
+        "liked": true
+      },
+      {
+        "card_id": "lr-022",
+        "liked": false
+      }
+    ],
+    "budget": {
+      "currency": "INR",
+      "amount_minor": 15000000
+    },
+    "must_haves": ["sofa"]
+  }
 }

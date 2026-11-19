@@ -124,8 +124,11 @@ def slot_options(
     budget_minor: int,
     intent: Intent,
     avoid: frozenset[str] = frozenset(),
+    styles: Sequence[str] = (),
 ) -> list[SlotOptions]:
-    """Each slot's products, best first for the intent. Slots with none are left out."""
+    """Each slot's products, best first for the intent. Products in a style the person
+    picked come before the rest; the intent orders within each group. Slots with none
+    are left out."""
     candidates = {
         slot.key: [p for p in products if category(p.category).key in slot.categories]
         for slot in arch.slots
@@ -141,12 +144,14 @@ def slot_options(
         def order(p: Product, target: float = target) -> tuple[float, ...]:
             price = float(p.price.amount_minor)
             shunned = 1.0 if str(p.id) in avoid else 0.0
+            tags = {str(getattr(t, "value", t)) for t in (p.style_tags or [])}
+            off_style = 0.0 if not styles or tags & set(styles) else 1.0
             if intent == "best_value":
-                return (shunned, price)
+                return (shunned, off_style, price)
             if intent == "bold":
                 # The dearest that stays within half again of the slot's share.
-                return (shunned, float(price > 1.5 * target), -price)
-            return (shunned, abs(price - target))
+                return (shunned, off_style, float(price > 1.5 * target), -price)
+            return (shunned, off_style, abs(price - target))
 
         ranked = sorted(found, key=lambda p: (*order(p), str(p.id)))
         out.append(SlotOptions(slot=slot.key, products=ranked[:OPTIONS_PER_SLOT]))
@@ -246,8 +251,10 @@ def three_designs(
         scaled = _brief(brief, intent)
         budget = scaled.budget.limit.amount_minor
         options: dict[str, list[Product]] = {}
+        answers = brief.taste_answers
+        styles = [str(getattr(s, "value", s)) for s in (answers.styles or [])] if answers else []
         for key in keys:
-            for o in slot_options(A.ARCHETYPES[key], products, budget, intent, avoid):
+            for o in slot_options(A.ARCHETYPES[key], products, budget, intent, avoid, styles):
                 options.setdefault(o.slot, o.products)
         order = seed_order(twin, scaled, keys, options, created_at, in_view)
         if intent == "bold" and anchor is not None:

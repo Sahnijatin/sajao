@@ -46,6 +46,14 @@ class MustHave(RootModel[str]):
     root: Annotated[str, Field(min_length=1)]
 
 
+class TasteAnswerSwipe(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    card_id: Annotated[str, Field(min_length=1)]
+    liked: bool
+
+
 class CameraIntrinsics(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -580,6 +588,40 @@ class Budget(BaseModel):
     ]
 
 
+class TasteAnswers(BaseModel):
+    """
+    What the person answered in the app before asking for designs, as they answered it. The brief's own budget and must_haves are what the engine applies; these are the raw answers, kept for the spec and for learning taste.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    styles: Annotated[
+        list[
+            Literal[
+                "modern_indian",
+                "warm_luxe",
+                "japandi",
+                "warm_maximalist",
+                "eclectic_retro",
+                "minimal_wabi_sabi",
+            ]
+        ]
+        | None,
+        Field(description="Style profiles the person picked, preferred first."),
+    ] = None
+    swipes: Annotated[
+        list[TasteAnswerSwipe] | None, Field(description="Swipe answers, in the order given.")
+    ] = None
+    budget: Annotated[Money | None, Field(description="The budget as the person set it.")] = None
+    must_haves: Annotated[
+        list[MustHave] | None,
+        Field(
+            description="What the person said the room must have, in their words or as category keys."
+        ),
+    ] = None
+
+
 class Brief(BaseModel):
     """
     Per-room choices on top of the taste profile. With the space profile and the catalog, the only input the design engine reads.
@@ -606,6 +648,13 @@ class Brief(BaseModel):
         list[LocalId], Field(description="Existing items in the space profile to keep.")
     ]
     consider_vastu: bool
+    taste_answers: Annotated[
+        TasteAnswers | None,
+        Field(
+            description="What the person answered in the app before asking for designs, as they answered it. The brief's own budget and must_haves are what the engine applies; these are the raw answers, kept for the spec and for learning taste.",
+            title="TasteAnswers",
+        ),
+    ] = None
 
 
 class Detection(BaseModel):
