@@ -4,6 +4,7 @@
 // cannot be reached nothing is deleted anywhere, so the person can try again.
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCaptureStore } from "@/state/capture";
+import { useConsent } from "@/state/consent";
 import { useRoomData } from "@/state/room-data";
 import { useRooms } from "@/state/rooms";
 import { useTaste } from "@/state/taste";
@@ -38,6 +39,8 @@ export async function wipeLocal(removeFile: DeleteDeps["removeFile"]): Promise<v
   useRooms.setState({ rooms: [] });
   useRoomData.setState({ content: {} });
   useTaste.setState({ answers: null, lastBudget: null });
+  // Consent belongs to the account: it is asked again at once.
+  useConsent.setState({ acceptedVersion: null, acceptedAtMs: null });
   useCaptureStore.setState({
     last: null,
     missing: null,
