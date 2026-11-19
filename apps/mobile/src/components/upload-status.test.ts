@@ -40,4 +40,19 @@ describe("upload status", () => {
       uploadMessage({ state: "done", finished: 1, total: 1, bytes: 1_048_576, videoSkipped: true }),
     ).toEqual({ key: "home.upload.doneNoVideoSize", values: { megabytes: "1.0" } });
   });
+
+  it("calls photos photos, and only an AR scan a scan", () => {
+    const uploading = { state: "uploading", finished: 1, total: 3 } as const;
+    expect(uploadMessage(uploading, "photos")).toEqual({
+      key: "home.upload.photos.uploading",
+      values: { finished: 1, total: 3 },
+    });
+    expect(
+      uploadMessage({ state: "done", finished: 1, total: 1, bytes: 2097152 }, "photos"),
+    ).toEqual({
+      key: "home.upload.photos.doneSize",
+      values: { megabytes: "2.0" },
+    });
+    expect(uploadMessage(uploading)?.key).toBe("home.upload.uploading");
+  });
 });

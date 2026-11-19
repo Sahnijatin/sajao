@@ -66,18 +66,27 @@ export function TakePhotosScreen({
     return (
       <PhotoReview
         photo={current.photo}
-        number={kept.length + 1}
-        canAddAnother={canAddAnother(session)}
+        number={(current.replacing ?? kept.length) + 1}
         onRetake={() => dispatch({ type: "retake" })}
         onContinue={() => dispatch({ type: "continue" })}
+      />
+    );
+  }
+  if (current.step === "photos") {
+    return (
+      <AllPhotos
+        photos={kept}
+        canAddAnother={canAddAnother(session)}
+        onRetakeAt={(index) => dispatch({ type: "retakeAt", index })}
         onAddAnother={() => dispatch({ type: "addAnother" })}
+        onUse={() => dispatch({ type: "finish" })}
       />
     );
   }
   if (current.step === "camera") {
     return (
       <PhotoTaking
-        number={kept.length + 1}
+        number={(current.replacing ?? kept.length) + 1}
         prepare={prepare}
         onTaken={(photo) => dispatch({ type: "taken", photo })}
         onClose={onClose}
@@ -319,17 +328,13 @@ function PhotoTaking({
 function PhotoReview({
   photo,
   number,
-  canAddAnother: offerAnother,
   onRetake,
   onContinue,
-  onAddAnother,
 }: {
   photo: TakenPhoto;
   number: number;
-  canAddAnother: boolean;
   onRetake: () => void;
   onContinue: () => void;
-  onAddAnother: () => void;
 }) {
   const { t } = useTranslation();
   const { tokens, duration } = useTheme();
@@ -374,18 +379,81 @@ function PhotoReview({
             <Button label={t("photos.review.retake")} variant="outline" onPress={onRetake} />
           </View>
           <View style={{ flex: 1 }}>
-            <Button
-              label={t("photos.review.continue")}
-              onPress={() => {
-                void playHaptic("roomAdded");
-                onContinue();
-              }}
-            />
+            <Button label={t("photos.review.continue")} onPress={onContinue} />
           </View>
         </View>
+      </View>
+    </ScrollView>
+  );
+}
+
+/** Every photo taken, each with its own Retake, before they make the room. */
+function AllPhotos({
+  photos,
+  canAddAnother: offerAnother,
+  onRetakeAt,
+  onAddAnother,
+  onUse,
+}: {
+  photos: readonly TakenPhoto[];
+  canAddAnother: boolean;
+  onRetakeAt: (index: number) => void;
+  onAddAnother: () => void;
+  onUse: () => void;
+}) {
+  const { t } = useTranslation();
+  const { tokens, duration } = useTheme();
+  const { colors, spacing, radius } = tokens;
+  const insets = useSafeAreaInsets();
+  const fade = duration(motion.ease.durationMs);
+  const entering =
+    fade > 0 ? FadeIn.duration(fade).easing(Easing.bezier(...motion.ease.bezier)) : undefined;
+  return (
+    <ScrollView
+      testID="photos-all"
+      style={{ flex: 1, backgroundColor: colors.canvas }}
+      contentContainerStyle={{
+        padding: spacing.gutter,
+        paddingTop: insets.top + spacing.gutter,
+        paddingBottom: insets.bottom + spacing.sheetBottom,
+        gap: spacing.sheetBottom,
+      }}
+    >
+      <Text variant="title" accessibilityRole="header">
+        {t("photos.all.title", { count: photos.length })}
+      </Text>
+      {photos.map((photo, index) => (
+        <Animated.View key={photo.uri} entering={entering} style={{ gap: spacing.md }}>
+          <Image
+            testID={`photos-all-${index + 1}`}
+            source={{ uri: photo.uri }}
+            accessibilityLabel={t("photos.review.picture", { number: index + 1 })}
+            style={{
+              width: "100%",
+              aspectRatio: photo.widthPx / photo.heightPx,
+              borderRadius: radius.card,
+              backgroundColor: colors.sand,
+            }}
+          />
+          <Button
+            label={t("photos.all.retake", { number: index + 1 })}
+            variant="outline"
+            size="small"
+            onPress={() => onRetakeAt(index)}
+          />
+        </Animated.View>
+      ))}
+      <View style={{ gap: spacing.lg }}>
+        <Button
+          label={t("photos.all.use", { count: photos.length })}
+          onPress={() => {
+            void playHaptic("roomAdded");
+            onUse();
+          }}
+        />
         {offerAnother ? (
           <Button
-            label={t("photos.review.another", { number: number + 1, most: MAX_PHOTOS })}
+            label={t("photos.review.another", { number: photos.length + 1, most: MAX_PHOTOS })}
             variant="ghost"
             size="small"
             onPress={onAddAnother}

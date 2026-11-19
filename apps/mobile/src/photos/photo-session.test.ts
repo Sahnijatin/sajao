@@ -42,26 +42,51 @@ describe("Take photos", () => {
     expect(session).toEqual({ current: { step: "camera" }, kept: [] });
   });
 
-  it("continue keeps the photo and finishes with one photo", () => {
+  it("continue keeps the photo and shows all of them; use finishes", () => {
     const session = run({ type: "start" }, { type: "taken", photo: wide(1) }, { type: "continue" });
-    expect(session).toEqual({ current: { step: "done" }, kept: [wide(1)] });
+    expect(session).toEqual({ current: { step: "photos" }, kept: [wide(1)] });
+    expect(photoSession(session, { type: "finish" })).toEqual({
+      current: { step: "done" },
+      kept: [wide(1)],
+    });
   });
 
   it("takes at most three photos", () => {
     const three = run(
       { type: "start" },
       { type: "taken", photo: wide(1) },
+      { type: "continue" },
       { type: "addAnother" },
       { type: "taken", photo: wide(2) },
+      { type: "continue" },
       { type: "addAnother" },
       { type: "taken", photo: wide(3) },
+      { type: "continue" },
     );
-    expect(three.kept).toHaveLength(2);
+    expect(three.kept).toEqual([wide(1), wide(2), wide(3)]);
+    expect(three.kept).toHaveLength(MAX_PHOTOS);
     expect(canAddAnother(three)).toBe(false);
     expect(photoSession(three, { type: "addAnother" })).toBe(three);
-    const done = photoSession(three, { type: "continue" });
-    expect(done.kept).toEqual([wide(1), wide(2), wide(3)]);
-    expect(done.kept).toHaveLength(MAX_PHOTOS);
+  });
+
+  it("retakes any one photo in its own place", () => {
+    const two = run(
+      { type: "start" },
+      { type: "taken", photo: wide(1) },
+      { type: "continue" },
+      { type: "addAnother" },
+      { type: "taken", photo: wide(2) },
+      { type: "continue" },
+    );
+    const replaced = [
+      { type: "retakeAt", index: 0 },
+      { type: "taken", photo: wide(9) },
+      { type: "retake" },
+      { type: "taken", photo: wide(8) },
+      { type: "continue" },
+    ].reduce((state, action) => photoSession(state, action as PhotoAction), two);
+    expect(replaced).toEqual({ current: { step: "photos" }, kept: [wide(8), wide(2)] });
+    expect(photoSession(two, { type: "retakeAt", index: 5 })).toBe(two);
   });
 
   it("ignores actions that do not fit the step", () => {
