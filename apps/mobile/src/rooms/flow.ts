@@ -1,29 +1,22 @@
-// The steps between "Looks good" on the review and the stages: the space
-// profile for this room, then taste and budget the first time, or this
-// room's budget after that. Pure.
+// The steps between adding a room and its stages: taste, with the first
+// room's budget, the first time; this room's budget after that. The upload
+// and the room's analysis run meanwhile. Pure.
 
-export type FlowStep = "space" | "taste" | "budget" | "generating";
+export type FlowStep = "taste" | "budget";
 
 export interface FlowFacts {
-  /** A space profile exists for this room to confirm. */
-  hasSpaceProfile: boolean;
   /** Taste and budget have been given before, on this phone. */
   hasTaste: boolean;
 }
 
-/** Where to go once the scan is confirmed. */
-export function afterReview(facts: FlowFacts): FlowStep {
-  if (facts.hasSpaceProfile) return "space";
-  return afterSpace(facts);
+/** Where to go once a room is added: the questions, while its photos upload. */
+export function afterAdding(facts: FlowFacts): FlowStep {
+  return facts.hasTaste ? "budget" : "taste";
 }
 
-/**
- * Where to go once the space profile is confirmed. Taste, with the first
- * room's budget, is asked once; every later room is asked its own budget,
- * prefilled from the last.
- */
-export function afterSpace(facts: Pick<FlowFacts, "hasTaste">): FlowStep {
-  return facts.hasTaste ? "budget" : "taste";
+/** The route for a flow step, for one room. */
+export function flowRoute(step: FlowStep, room: string) {
+  return { pathname: step === "taste" ? "/taste" : "/budget", params: { room } } as const;
 }
 
 /**

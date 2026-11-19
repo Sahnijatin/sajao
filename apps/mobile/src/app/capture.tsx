@@ -3,19 +3,11 @@ import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 import { startCaptureUpload } from "@/capture/package/start-upload";
-import { afterReview } from "@/rooms/flow";
+import { afterAdding, flowRoute } from "@/rooms/flow";
 import { importFromGallery } from "@/rooms/media-import";
-import { roomSpaceProfile } from "@/rooms/room-space";
 import { CaptureScreen } from "@/screens/capture";
 import { useRooms } from "@/state/rooms";
 import { useTaste } from "@/state/taste";
-
-const ROUTES = {
-  space: "/space",
-  taste: "/taste",
-  budget: "/budget",
-  generating: "/generating",
-} as const;
 
 export default function CaptureRoute() {
   const router = useRouter();
@@ -39,14 +31,11 @@ export default function CaptureRoute() {
     <CaptureScreen
       onClose={() => router.back()}
       onDone={() => {
-        // A confirmed scan goes on: what we found, then taste the first time,
-        // then its designs. Anything else returns to My home.
+        // A confirmed scan goes on to the questions while it uploads, then
+        // its designs. Anything else returns to My home.
         if (roomId.current) {
-          const step = afterReview({
-            hasSpaceProfile: roomSpaceProfile(roomId.current) !== null,
-            hasTaste: useTaste.getState().answers !== null,
-          });
-          router.replace({ pathname: ROUTES[step], params: { room: roomId.current } });
+          const step = afterAdding({ hasTaste: useTaste.getState().answers !== null });
+          router.replace(flowRoute(step, roomId.current));
         } else {
           router.back();
         }

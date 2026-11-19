@@ -1,5 +1,7 @@
 import { useRouter } from "expo-router";
+import { afterAdding, flowRoute } from "@/rooms/flow";
 import { ImportMediaScreen } from "@/screens/import-media";
+import { useTaste } from "@/state/taste";
 
 export { RouteErrorBoundary as ErrorBoundary } from "@/components/route-error-boundary";
 
@@ -9,8 +11,12 @@ export default function ImportRoute() {
   return (
     <ImportMediaScreen
       onTakePhotos={() => router.replace("/photos")}
-      // The new room is on My home; its stages show how it is getting on.
-      onImported={(room) => router.replace({ pathname: "/generating", params: { room } })}
+      // The new room is on My home and uploading: the questions, then its stages.
+      onImported={(room) =>
+        router.replace(
+          flowRoute(afterAdding({ hasTaste: useTaste.getState().answers !== null }), room),
+        )
+      }
     />
   );
 }
