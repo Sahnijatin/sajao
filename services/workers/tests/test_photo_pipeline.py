@@ -6,11 +6,13 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
+import pytest
 from PIL import Image
 
 from sajao_gateway import InMemorySpendLedger, ModelGateway, ProviderResult, SpendCaps
 from sajao_gateway.testing import FakeProvider
 from sajao_schemas.generated.v1 import SpaceTwin
+from sajao_workers import pipeline
 from sajao_workers.models import depth_chain, detect_chain, segment_chain
 from sajao_workers.photo_pipeline import PhotoModels, photo_room_stages
 from sajao_workers.pipeline import MEASURE, is_single_photo, run_room
@@ -161,6 +163,43 @@ def models(store: LocalArtifactStore) -> tuple[PhotoModels, FakeGpu]:
         ),
         gpu,
     )
+
+
+RENDER_MINIMUM = (pipeline.MIN_PHOTO_LONG_EDGE_PX, pipeline.MIN_PHOTO_SHORT_EDGE_PX)
+
+
+@pytest.fixture(autouse=True)
+def small_scene(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The synthetic scene is 320 by 240; the render's minimum is checked on its own."""
+    monkeypatch.setattr(pipeline, "MIN_PHOTO_LONG_EDGE_PX", W)
+    monkeypatch.setattr(pipeline, "MIN_PHOTO_SHORT_EDGE_PX", H)
+
+
+async def test_a_photo_below_the_renders_minimum_fails_with_its_reason(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(pipeline, "MIN_PHOTO_LONG_EDGE_PX", RENDER_MINIMUM[0])
+    monkeypatch.setattr(pipeline, "MIN_PHOTO_SHORT_EDGE_PX", RENDER_MINIMUM[1])
+    assert RENDER_MINIMUM == (1024, 576)
+    board = Board()
+    store = LocalArtifactStore(tmp_path)
+    stages = photo_room_stages(models(store)[0])
+    run = await run_room(StepRunner(store), board, Files(), ROOM, capture(), (MEASURE,), stages)
+    assert run.outcome == "failed"
+    assert board.moves == [("measure", "failed", "photo_too_small")]
+
+
+async def test_a_photo_not_in_storage_fails_as_an_incomplete_upload(tmp_path: Path) -> None:
+    class Missing:
+        def read(self, storage_key: str) -> bytes:
+            raise FileNotFoundError(storage_key)
+
+    board = Board()
+    store = LocalArtifactStore(tmp_path)
+    stages = photo_room_stages(models(store)[0])
+    run = await run_room(StepRunner(store), board, Missing(), ROOM, capture(), (MEASURE,), stages)
+    assert run.outcome == "failed"
+    assert board.moves == [("measure", "failed", "upload_incomplete")]
 
 
 def test_only_one_photo_without_ar_takes_the_photo_path() -> None:

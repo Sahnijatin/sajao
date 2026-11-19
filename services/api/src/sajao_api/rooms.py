@@ -12,13 +12,16 @@ from typing import Any, Literal, Protocol
 from psycopg.types.json import Jsonb
 from psycopg_pool import AsyncConnectionPool
 
+from sajao_api.sweep import Row
+
 StageStatus = Literal["queued", "running", "done", "failed"]
 
 # The room's own stages, in order: what the phone measured, then what is in the room.
 ROOM_STAGES: tuple[str, ...] = ("measure", "inventory")
-# A design request's stages, in order: the spec and product selection, placement
-# and verification, then the renders.
-DESIGN_STAGES: tuple[str, ...] = ("spec", "placement", "render")
+# A design request's stages, in order: the spec and product selection, then placement
+# and verification. The render row is added when the render stage runs; a request
+# made before then may still hold a queued render row, which nothing moves.
+DESIGN_STAGES: tuple[str, ...] = ("spec", "placement")
 
 
 @dataclass(frozen=True)
@@ -178,6 +181,14 @@ class InMemoryRoomStore:
                     return request, held.room.space_twin
         return None
 
+    async def pending_design_requests(self, room_id: str) -> list[str]:
+        held = self._rooms.get(room_id)
+        return [
+            r.request_id
+            for r in (held.requests if held is not None else [])
+            if any(s.stage == "spec" and s.status == "queued" for s in r.stages)
+        ]
+
     async def set_designs(self, request_id: str, designs: list[dict[str, Any]]) -> None:
         for held in self._rooms.values():
             held.requests = [
@@ -249,6 +260,39 @@ select r.user_id::text, c.capture
 from public.rooms r
 join public.captures c on c.id = r.capture_id
 where r.id = %(room_id)s
+"""
+_PENDING_REQUESTS = """
+select d.id::text
+from public.design_requests d
+join public.pipeline_stages s on s.design_request_id = d.id
+where d.room_id = %(room_id)s and s.stage = 'spec' and s.status = 'queued'
+order by d.created_at
+"""
+# Every row of the unfinished jobs of rooms made in the last day, for the sweeper.
+_SWEEP_ROWS = """
+select s.room_id::text,
+       s.design_request_id::text,
+       s.stage,
+       s.status,
+       s.updated_at,
+       case when s.design_request_id is null then r.created_at
+            else greatest(d.created_at, coalesce(read.read_at, r.created_at)) end,
+       (r.space_twin is not null and coalesce(read.all_done, false))
+from public.pipeline_stages s
+join public.rooms r on r.id = s.room_id
+left join public.design_requests d on d.id = s.design_request_id
+left join lateral (
+    select max(x.updated_at) as read_at, bool_and(x.status = 'done') as all_done
+    from public.pipeline_stages x
+    where x.room_id = s.room_id and x.design_request_id is null
+) read on true
+where r.created_at > now() - interval '1 day'
+  and exists (
+    select 1 from public.pipeline_stages u
+    where u.room_id = s.room_id
+      and u.design_request_id is not distinct from s.design_request_id
+      and u.status in ('queued', 'running')
+  )
 """
 _SET_STAGE = """
 update public.pipeline_stages
@@ -425,6 +469,20 @@ class PostgresRoomStore:
                 "update public.rooms set space_twin = %(twin)s where id = %(id)s",
                 {"id": room_id, "twin": Jsonb(twin)},
             )
+
+    async def pending_design_requests(self, room_id: str) -> list[str]:
+        """Design requests of the room that have not started: asked before the room was read."""
+        async with self._pool.connection() as connection:
+            rows = await (
+                await connection.execute(_PENDING_REQUESTS, {"room_id": room_id})
+            ).fetchall()
+        return [row[0] for row in rows]
+
+    async def sweep_rows(self) -> list[Row]:
+        """The rows of unfinished jobs, for the sweeper (any user)."""
+        async with self._pool.connection() as connection:
+            rows = await (await connection.execute(_SWEEP_ROWS)).fetchall()
+        return [Row(*row) for row in rows]
 
     async def set_designs(self, request_id: str, designs: list[dict[str, Any]]) -> None:
         async with self._pool.connection() as connection:

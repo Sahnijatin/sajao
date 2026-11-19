@@ -1,13 +1,13 @@
 """Rooms and designs for the app.
 
-A room is created from a registered capture; the durable pipeline then
-measures it and lists what is in it. The app reads the stages as job status,
-the room's SpaceTwin once it is ready, and asks for designs with a brief.
-Every write is safe to repeat.
+A room is created when its capture is registered, and the durable pipeline starts
+at once: it measures the room and lists what is in it, then designs it once the app
+sends a brief (accepted at any point; designing waits for the room to be read). The
+app reads one RoomStatus (stage, failure reason, confidence level, fit checks), the
+room's SpaceTwin once it is read, and the designs. Every write is safe to repeat.
 """
 
 import logging
-import uuid
 from typing import Annotated, Any
 from uuid import UUID
 
@@ -17,9 +17,11 @@ from pydantic import BaseModel, ConfigDict
 from sajao_api.auth import Principal, current_user
 from sajao_api.captures import CaptureStore
 from sajao_api.errors import ApiError
-from sajao_api.pipeline import PipelineLauncher
+from sajao_api.pipeline import PipelineLauncher, open_room
+from sajao_api.room_status import room_status
 from sajao_api.rooms import DesignRequest, Room, RoomStore, Stage
 from sajao_api.v1.captures import get_captures
+from sajao_schemas import RoomStatus
 from sajao_schemas.generated.v1 import Brief
 
 router = APIRouter(prefix="/rooms", tags=["rooms"])
@@ -46,15 +48,6 @@ class StageStatus(BaseModel):
     """queued, running, done or failed."""
     detail: str | None = None
     """Why it failed: a short reason code the app turns into words, such as no_walls."""
-
-
-class RoomStatus(BaseModel):
-    id: str
-    capture_id: str
-    created_at: str
-    status: str
-    """working, ready (every stage done) or failed."""
-    stages: list[StageStatus]
 
 
 class RoomList(BaseModel):
@@ -91,14 +84,8 @@ def _stages(stages: tuple[Stage, ...]) -> list[StageStatus]:
     return [StageStatus(stage=s.stage, status=s.status, detail=s.detail) for s in stages]
 
 
-def _room(room: Room) -> RoomStatus:
-    return RoomStatus(
-        id=room.room_id,
-        capture_id=room.capture_id,
-        created_at=room.created_at,
-        status=overall(room.stages),
-        stages=_stages(room.stages),
-    )
+async def _status(room: Room, user: Principal, rooms: RoomStore) -> dict[str, Any]:
+    return room_status(room, await rooms.latest_design_request(room.room_id, user.user_id))
 
 
 def _designs(request: DesignRequest) -> DesignsStatus:
@@ -125,7 +112,13 @@ async def _owned_room(room_id: UUID, user: Principal, rooms: RoomStore) -> Room:
     return room
 
 
-@router.post("", operation_id="createRoom", status_code=201)
+@router.post(
+    "",
+    operation_id="createRoom",
+    status_code=201,
+    response_model=RoomStatus,
+    response_model_exclude_unset=True,
+)
 async def create_room(
     body: CreateRoom,
     user: User,
@@ -133,34 +126,36 @@ async def create_room(
     captures: Captures,
     launcher: Launcher,
     response: Response,
-) -> RoomStatus:
-    """Create the room for a registered capture and start measuring it. Safe to repeat."""
+) -> dict[str, Any]:
+    """The room for a registered capture. Registering the capture already made it and
+    started it; this returns it, and starts it again if that start was lost. Safe to
+    repeat."""
     capture = await captures.get(str(body.capture_id), user.user_id)
     if capture is None:
         raise ApiError(404, "capture_not_found", "This capture does not exist.")
-    room, created = await rooms.create_room(str(uuid.uuid4()), user.user_id, str(body.capture_id))
+    room, created = await open_room(rooms, launcher, user.user_id, str(body.capture_id))
     if not created:
         response.status_code = 200
-    try:
-        # Asked again on a repeat too: a start that was lost is picked up, and
-        # stages already done are not run again.
-        await launcher.start_room(room.room_id)
-    except Exception:
-        # The room exists and its stages are queued; a repeat of this call starts it.
-        logger.exception("pipeline did not start for room %s", room.room_id)
-    return _room(room)
+    return await _status(room, user, rooms)
 
 
-@router.get("", operation_id="listRooms")
+@router.get("", operation_id="listRooms", response_model_exclude_unset=True)
 async def list_rooms(user: User, rooms: Rooms) -> RoomList:
-    """The caller's rooms, newest first, each with its job status."""
-    return RoomList(rooms=[_room(room) for room in await rooms.list_rooms(user.user_id)])
+    """The caller's rooms, newest first, each with its status."""
+    found = await rooms.list_rooms(user.user_id)
+    return RoomList.model_validate({"rooms": [await _status(room, user, rooms) for room in found]})
 
 
-@router.get("/{room_id}", operation_id="getRoom")
-async def get_room(room_id: UUID, user: User, rooms: Rooms) -> RoomStatus:
-    """One room and its job status by stage."""
-    return _room(await _owned_room(room_id, user, rooms))
+@router.get(
+    "/{room_id}",
+    operation_id="getRoom",
+    response_model=RoomStatus,
+    response_model_exclude_unset=True,
+)
+async def get_room(room_id: UUID, user: User, rooms: Rooms) -> dict[str, Any]:
+    """One room's status: its stage, why it failed, how it was measured, and per design
+    item whether a fit check ran."""
+    return await _status(await _owned_room(room_id, user, rooms), user, rooms)
 
 
 @router.get("/{room_id}/twin", operation_id="getRoomTwin")
@@ -181,10 +176,9 @@ async def request_designs(
     launcher: Launcher,
     response: Response,
 ) -> DesignsStatus:
-    """Ask for designs for a room with a brief. Safe to repeat with the same id."""
+    """Ask for designs for a room with a brief, at any point: before the room is read,
+    designing starts as soon as it is. Safe to repeat with the same id."""
     room = await _owned_room(room_id, user, rooms)
-    if room.space_twin is None:
-        raise ApiError(409, "room_not_ready", "This room is still being measured.")
     request, created = await rooms.create_design_request(
         str(body.id), room.room_id, user.user_id, body.brief.model_dump(mode="json")
     )
@@ -192,10 +186,12 @@ async def request_designs(
         raise ApiError(409, "design_request_id_taken", "Please ask for designs again.")
     if not created:
         response.status_code = 200
-    try:
-        await launcher.start_designs(room.room_id, request.request_id)
-    except Exception:
-        logger.exception("pipeline did not start for design request %s", request.request_id)
+    if room.space_twin is not None:
+        try:
+            await launcher.start_designs(room.room_id, request.request_id)
+        except Exception:
+            # Its rows are queued; the sweeper or a repeat of this call starts it.
+            logger.exception("pipeline did not start for design request %s", request.request_id)
     return _designs(request)
 
 

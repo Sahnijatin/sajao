@@ -138,7 +138,7 @@ async def run_room(room_id: str) -> str:
     from sajao_workers import pipeline
     from sajao_workers.steps import LocalArtifactStore, StepRunner
 
-    artifacts.reload()  # a warm container sees what other runs stored
+    await artifacts.reload.aio()  # a warm container sees what other runs stored
     pool = AsyncConnectionPool(
         os.environ["SAJAO_DATABASE_URL"],
         open=False,
@@ -159,10 +159,14 @@ async def run_room(room_id: str) -> str:
         run = await pipeline.run_room(
             runner, rooms, _CaptureFiles(), room_id, capture, photo_stages=one, few_photo_stages=few
         )
+        if run.outcome == "done":
+            # Design requests the app sent while the room was being read start now.
+            for request_id in await rooms.pending_design_requests(room_id):
+                await run_designs.spawn.aio(room_id, request_id)
         return run.outcome
     finally:
         await pool.close()
-        artifacts.commit()
+        await artifacts.commit.aio()
 
 
 def _photo_stages(store: Any) -> tuple[Any, Any]:
@@ -333,6 +337,46 @@ async def delete_account(user_id: str) -> int:
         return await erase_account(user_id, accounts, _UserFiles(), _SignIn())
     finally:
         await pool.close()
+
+
+@app.function(
+    image=image,
+    secrets=[modal.Secret.from_name("sajao-api")],
+    schedule=modal.Period(minutes=2),
+    timeout=60,
+)
+async def sweep_rooms() -> int:
+    """Start lost room and design jobs again; fail stuck ones with timed_out (sweep.py)."""
+    import datetime
+    import os
+
+    from psycopg_pool import AsyncConnectionPool
+
+    from sajao_api.rooms import PostgresRoomStore
+    from sajao_api.sweep import sweep
+
+    class _Spawn:
+        async def start_room(self, room_id: str) -> None:
+            await run_room.spawn.aio(room_id)
+
+        async def start_designs(self, room_id: str, request_id: str) -> None:
+            await run_designs.spawn.aio(room_id, request_id)
+
+    pool = AsyncConnectionPool(
+        os.environ["SAJAO_DATABASE_URL"],
+        open=False,
+        min_size=1,
+        max_size=1,
+        kwargs={"prepare_threshold": None, "autocommit": True},
+    )
+    await pool.open()
+    try:
+        done = await sweep(PostgresRoomStore(pool), _Spawn(), datetime.datetime.now(datetime.UTC))
+    finally:
+        await pool.close()
+    for decision in done:
+        print(f"sweep: {decision.action} room {decision.room_id} request {decision.request_id}")
+    return len(done)
 
 
 @app.function(
