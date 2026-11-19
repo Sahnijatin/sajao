@@ -24,8 +24,6 @@ from typing import Any, Literal
 
 import numpy as np
 
-from sajao_workers.twin.photos import floor_normal
-
 # Priors for Indian flats, provisional until the golden set: door leaves are 7 ft
 # (2.03 to 2.13 m, frames included); floor to ceiling 2.6 to 3.3 m.
 DOOR_HEIGHT_M = (2.0, 2.15)
@@ -38,9 +36,17 @@ MAX_CORRECTION = 1.35
 BAND_UNCHECKED = 0.17
 BAND_ONE_CUE = 0.13
 BAND_TWO_CUES = 0.10
-# Floor search: the photo may look down at most this far, tried in steps, because
-# `floor_normal` trusts a plane only near the up it is given.
-TILTS_DEG = (0.0, 20.0, 40.0)
+# Floor search: the photo may look down at most this far, tried in steps; a plane is
+# trusted only within FLOOR_CONE_DEG of the up it is tried with.
+TILTS_DEG = (0.0, 15.0, 30.0, 45.0)
+FLOOR_CONE_DEG = 20.0
+# The floor must cover this share of the photo's points (a real living room photo
+# taken across the room showed 9%), and almost nothing may lie below it.
+MIN_FLOOR_SHARE = 0.04
+MAX_BELOW_SHARE = 0.01
+# Inlier distance grows with distance from the camera: depth models are relative.
+FLOOR_TOL_M, FLOOR_TOL_PER_M = 0.02, 0.01
+FLOOR_TRIES = 400
 FLOOR_BIN_M = 0.02
 MIN_CAMERA_HEIGHT_M = 0.3
 MAX_CAMERA_HEIGHT_M = 2.5
@@ -90,20 +96,69 @@ class Camera:
     tilt_deg: float  # how far the camera looks down (negative: up)
 
 
+def find_floor(points: np.ndarray) -> np.ndarray | None:
+    """The floor's unit normal (pointing up, toward the camera), or None.
+
+    RANSAC over the lowest points for each tried tilt. A candidate is the floor when
+    it holds at least MIN_FLOOR_SHARE of all points, almost nothing lies below it, and
+    it is level within FLOOR_CONE_DEG of the tried up. The plane with most inliers
+    wins, refined by least squares on its inliers."""
+    pts = np.asarray(points, dtype=np.float64)
+    if len(pts) < 100:
+        return None
+    tol = FLOOR_TOL_M + FLOOR_TOL_PER_M * np.linalg.norm(pts, axis=1)
+    rng = np.random.default_rng(0)
+    best: np.ndarray | None = None
+    best_count = int(MIN_FLOOR_SHARE * len(pts)) - 1
+    cone = math.cos(math.radians(FLOOR_CONE_DEG))
+    for tilt in TILTS_DEG:
+        t = math.radians(tilt)
+        # Camera up is -y; looking down by `t` turns the floor's up toward -z.
+        guess = np.array([0.0, -math.cos(t), -math.sin(t)])
+        heights = pts @ guess
+        low = np.nonzero(heights <= np.percentile(heights, 30))[0]
+        for _ in range(FLOOR_TRIES):
+            a, b, c = pts[rng.choice(low, 3, replace=False)]
+            normal = np.cross(b - a, c - a)
+            norm = np.linalg.norm(normal)
+            if norm < 1e-9:
+                continue
+            normal /= norm
+            if normal @ guess < 0:
+                normal = -normal
+            if normal @ guess < cone:
+                continue
+            signed = (pts - a) @ normal
+            inside = np.abs(signed) <= tol
+            count = int(inside.sum())
+            if count <= best_count or (signed < -tol).mean() > MAX_BELOW_SHARE:
+                continue
+            best, best_count = inside, count
+    if best is None:
+        return None
+    inside = best
+    for shrink in (1.0, 0.5, 0.25):
+        on = pts[inside]
+        centre = on.mean(axis=0)
+        normal = np.linalg.svd(on - centre, full_matrices=False)[2][-1]
+        # Up points from the floor toward the camera, which sits at the origin.
+        if normal @ (-centre) < 0:
+            normal = -normal
+        refit = np.abs((pts - centre) @ normal) <= shrink * tol
+        if refit.sum() < 3:
+            break
+        inside = refit
+    found: np.ndarray = normal
+    return found
+
+
 def level_camera(points: np.ndarray) -> Camera | None:
     """The camera standing on the floor the photo shows, or None when no floor is clear.
 
     `points` are camera points (OpenCV: +y down, +z forward). The world's +y is the
     floor's normal, its -z the camera's forward direction laid flat on the floor."""
     pts = np.asarray(points, dtype=np.float64)
-    normal = None
-    for tilt in TILTS_DEG:
-        t = math.radians(tilt)
-        # Camera up is -y; looking down by `t` turns the floor's up toward -z.
-        guess = np.array([0.0, -math.cos(t), -math.sin(t)])
-        normal = floor_normal(pts, guess)
-        if normal is not None:
-            break
+    normal = find_floor(pts)
     if normal is None:
         return None
     levels = pts @ normal

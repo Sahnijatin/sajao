@@ -15,7 +15,7 @@ from sajao_workers.twin.single_photo import (
     lift,
     to_world,
 )
-from sajao_workers.twin.synthetic import K
+from sajao_workers.twin.synthetic import K, render_scene
 from sajao_workers.twin.synthetic import render_room as render
 
 
@@ -110,3 +110,13 @@ def test_no_ceiling_in_frame_gives_no_ceiling_cue() -> None:
     camera = level_camera(lift(depth, K))
     assert camera is not None
     assert ceiling_height(to_world(lift(depth, K), camera), camera) is None
+
+
+def test_a_thin_strip_of_floor_is_still_the_floor() -> None:
+    # A low platform covers most of the floor; the floor is 4% of the photo and the
+    # platform's top, a far larger level plane, must not be taken for it.
+    platform = {"x": (-2.0, 2.0), "y": (0.0, 0.5), "z": (-5.0, -1.9)}
+    depth, _ = render_scene(1.4, 8.0, boxes={"platform": platform})
+    camera = level_camera(lift(depth, K))
+    assert camera is not None
+    assert camera.height_m == pytest.approx(1.4, abs=0.04)
