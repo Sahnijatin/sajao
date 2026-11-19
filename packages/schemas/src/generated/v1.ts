@@ -598,6 +598,10 @@ check_report: CheckReport
  */
 explanations: string[]
 twin?: TwinReference
+/**
+ * How the room was measured when the design was placed, from the twin's confidence. estimated: the design is illustrative; the plan, the render and the list say measure to confirm, and no item carries a fit or a gap. taped and ar_measured: fit and gaps may be shown.
+ */
+measurement_level?: ("taped" | "ar_measured" | "estimated")
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema

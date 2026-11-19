@@ -165,5 +165,6 @@
       }
     ]
   },
-  "explanations": ["The sofa faces the window and keeps 0.82 m clear to the door."]
+  "explanations": ["The sofa faces the window and keeps 0.82 m clear to the door."],
+  "measurement_level": "taped"
 }

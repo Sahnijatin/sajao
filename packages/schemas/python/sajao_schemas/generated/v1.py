@@ -2060,6 +2060,12 @@ class Design(BaseModel):
             description="The twin this design builds on and its edits. The render, plan, 3D view and shopping list read the same twin plus edits."
         ),
     ] = None
+    measurement_level: Annotated[
+        Literal["taped", "ar_measured", "estimated"] | None,
+        Field(
+            description="How the room was measured when the design was placed, from the twin's confidence. estimated: the design is illustrative; the plan, the render and the list say measure to confirm, and no item carries a fit or a gap. taped and ar_measured: fit and gaps may be shown."
+        ),
+    ] = None
 
 
 class Shell(BaseModel):
