@@ -10,7 +10,6 @@ import Animated, { Easing, FadeIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BeforeAfter } from "@/components/before-after";
 import { UploadStatus } from "@/components/upload-status";
-import { importOffered } from "@/rooms/media-import";
 import { RoomCard } from "@/rooms/room-card";
 import { sortRooms } from "@/rooms/rooms";
 import { samplesAllowed } from "@/rooms/samples";
@@ -27,16 +26,17 @@ export function HomeScreen() {
   const loaded = useRoomsLoaded();
   const saved = useRooms((state) => state.rooms);
   const rooms = useMemo(() => sortRooms(saved), [saved]);
-  const addRoom = () => router.push("/capture");
-  // The second way in: photos or a video already on the phone.
-  const usePhotos = importOffered() ? (
+  // A room starts with photos; the AR scan is the upgrade to a measured room.
+  const addRoom = () => router.push("/photos");
+  // Beside it: photos or a video already on the phone.
+  const usePhotos = (
     <Button
       label={t("home.usePhotos")}
       variant="ghost"
       size="small"
       onPress={() => router.push("/import")}
     />
-  ) : null;
+  );
 
   // A soft tick as a new room's card lands, when you come back from adding it.
   const seen = useRef<number | null>(null);

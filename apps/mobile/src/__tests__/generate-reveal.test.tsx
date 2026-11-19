@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import type { ReactElement } from "react";
 import "@/i18n";
 import type { GenerationSource } from "@/rooms/generation";
-import { type RoomContent, roomContent } from "@/rooms/room-content";
+import { type RoomContent, sampleContent } from "@/rooms/room-content";
 import { GeneratingScreen, HANDOVER_MS } from "@/screens/generating";
 import { RevealScreen } from "@/screens/reveal";
 
@@ -92,7 +92,7 @@ describe("generating", () => {
 });
 
 describe("reveal", () => {
-  const content = roomContent("r") as RoomContent;
+  const content = sampleContent() as RoomContent;
 
   it("shows the room's hero views first, and no designs yet", async () => {
     await show(<RevealScreen content={content} onOpenRoom={jest.fn()} />);
@@ -133,6 +133,30 @@ describe("reveal", () => {
       </ThemeProvider>,
     );
     expect(screen.queryByText(/sample/i)).toBeNull();
+  });
+
+  it("for a real room from photos: opens on the looks beside your room today, illustrative", async () => {
+    const photo = { kind: "image", uri: "file:///photo-1.jpg" } as const;
+    const real: RoomContent = {
+      ...content,
+      sample: false,
+      confidence: "estimated",
+      heroViews: [],
+      looks: content.looks.map((look) => ({ ...look, still: photo, stillIsToday: true })),
+    };
+    await show(<RevealScreen content={real} onOpenRoom={jest.fn()} />);
+    expect(screen.getByRole("header", { name: "Three looks for your room" })).toBeTruthy();
+    expect(screen.getByLabelText("Best value. Your room today")).toBeTruthy();
+    expect(screen.getAllByText("Your room today")).toHaveLength(3);
+    expect(screen.getByTestId("reveal-illustrative")).toBeTruthy();
+    expect(screen.getByText(/^Illustrative\. Sizes are estimated/)).toBeTruthy();
+  });
+
+  it("makes no illustrative note for a measured room", async () => {
+    await show(<RevealScreen content={{ ...content, sample: false }} onOpenRoom={jest.fn()} />);
+    await fireEvent.press(screen.getByRole("button", { name: "See my three looks" }));
+    expect(screen.queryByTestId("reveal-illustrative")).toBeNull();
+    expect(screen.queryByText("Your room today")).toBeNull();
   });
 
   it("has no paywall, lock or checkout", async () => {

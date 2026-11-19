@@ -5,7 +5,17 @@ import { useCaptureStore } from "@/state/capture";
 import { useRoomData } from "@/state/room-data";
 import { useRooms } from "@/state/rooms";
 import type { GenerationSource } from "./generation";
-import { apiGeneration, contentFromTwin, failureOf, isTwin, type RoomApi } from "./room-api";
+import { uuidV4 } from "@/capture/package/upload-capture";
+import { useTaste } from "@/state/taste";
+import { designsRequest, readDesigns } from "./designs-api";
+import {
+  apiGeneration,
+  contentFromTwin,
+  failureOf,
+  isTwin,
+  looksFrom,
+  type RoomApi,
+} from "./room-api";
 import { roomApi } from "./room-client";
 
 let api: RoomApi | null | undefined;
@@ -15,8 +25,11 @@ export function configuredRoomApi(): RoomApi | null {
   return api;
 }
 
-const captureIdOf = (roomId: string) =>
-  useRooms.getState().rooms.find((room) => room.id === roomId)?.captureId ?? null;
+const roomOf = (roomId: string) => useRooms.getState().rooms.find((room) => room.id === roomId);
+const captureIdOf = (roomId: string) => roomOf(roomId)?.captureId ?? null;
+
+/** The photos this phone took of a room; none for an AR scan. */
+const photosOf = (roomId: string) => roomOf(roomId)?.photos ?? [];
 
 /** Resolves once the last scan's upload has finished: true when it is up, false when it failed. */
 function uploaded(captureId: string): Promise<boolean> {
@@ -43,7 +56,24 @@ export function roomGeneration(): GenerationSource | null {
   return apiGeneration(client, {
     captureIdOf,
     uploaded,
+    photosOf,
     onReady: (roomId, content) => useRoomData.getState().setContent(roomId, content),
+    designs: {
+      requestFor(roomId) {
+        const answers = useTaste.getState().answers;
+        const ids = useRooms.getState().designIdsFor(roomId, uuidV4);
+        return answers && ids ? designsRequest(answers, ids, roomOf(roomId)?.budget) : null;
+      },
+      onDesigns(roomId, designs) {
+        const content = useRoomData.getState().content[roomId];
+        if (!content) return;
+        const looks = looksFrom(designs, content.heroViews);
+        useRoomData.getState().setContent(roomId, { ...content, looks });
+        // The room's card on My home now shows its designs.
+        const still = looks[0]?.still;
+        if (still) useRooms.getState().setRoomDesigns(roomId, looks.length, still);
+      },
+    },
   });
 }
 
@@ -62,7 +92,16 @@ export async function loadRoomContent(roomId: string): Promise<void> {
     const job = await client.createRoom(captureId);
     if (job.status !== "ready" || failureOf(job)) return;
     const twin = await client.getTwin(job.id);
-    if (isTwin(twin)) useRoomData.getState().setContent(roomId, contentFromTwin(twin));
+    if (!isTwin(twin)) return;
+    const content = contentFromTwin(twin, photosOf(roomId));
+    useRoomData.getState().setContent(roomId, content);
+    // Designs, if they were asked for and are ready.
+    const read = readDesigns(await client.getDesigns(job.id));
+    if (read.state === "ready") {
+      useRoomData
+        .getState()
+        .setContent(roomId, { ...content, looks: looksFrom(read.designs, content.heroViews) });
+    }
   } catch {
     // Offline, or the server is busy: the next open tries again.
   }
