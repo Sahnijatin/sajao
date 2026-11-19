@@ -7,14 +7,14 @@ A language model proposes, a solver places, a verifier decides. The engine is CP
 1. **Brief to spec.** A language model turns the Space Profile, Taste Profile and Brief into a strict JSON spec: furniture program, palette, lighting layers, budget split. Schema-checked; on failure, retry once, then fall back to rules.
 2. **Retrieval.** Hard filters first (category, price, stock at your pincode, maximum size the room can take with margin), then ranking by the taste vector. About 30 candidates per slot.
 3. **AI designer.** Picks a coherent set from the shortlist only (never invents products), checks colour harmony in a perceptual colour space, chooses wall paint and flooring, and seeds a layout archetype.
-4. **Solver.** A deterministic beam search places the chosen products slot by slot from the archetype's rules, against wall, door, window, fixture, walkway and Vastu constraints, with the room's error band as extra margin. Cheap local checks and a coarse walkway check prune each step; the best complete layouts go to the verifier, and the first that passes becomes the Design. Seconds on one CPU, no randomness.
-5. **Verifier.** Independent re-check of every hard rule, budget and stock, from the Design, the twin and the brief only. Footprints are catalog sizes plus their error bands; walls keep the bands of the walls that meet them; walkways are checked on a 2.5 cm clearance grid that never overstates a gap. Failures go back to the designer with the exact violations, or through the relaxation order. Rules and thresholds: `services/engine/README.md`.
+4. **Solver.** A deterministic beam search places the chosen products slot by slot from the archetype's rules, against wall, door, window, fixture, walkway and Vastu constraints. Taped and AR-measured rooms use their error band as extra margin; estimated rooms (from photos) are placed at nominal sizes with a 6 cm clearance at each wall. Cheap local checks and a coarse walkway check prune each step; the best complete layouts go to the verifier, and the first that passes becomes the Design. Seconds on one CPU, no randomness.
+5. **Verifier.** Independent re-check of every hard rule, budget and stock, from the Design, the twin and the brief only. Footprints are catalog sizes plus their error bands; on taped and AR-measured rooms walls keep the bands of the walls that meet them, on estimated rooms a 6 cm clearance; walkways are checked on a 2.5 cm clearance grid that never overstates a gap. Failures go back to the designer with the exact violations, or through the relaxation order. Rules and thresholds: `services/engine/README.md`.
 6. **Three intents.** Best value (about 80% of budget), Best match (at budget), Bold (different archetype, up to 10% over). The three must differ in archetype or in at least half the large pieces.
 7. **Honest result.** If nothing fits, you see what does fit and why, with one-tap brief changes.
 
 ## Room shape and confidence
 
-The engine takes any floor polygon, L shapes included. An edge with a wall along it is a wall; an edge with none is open. Open edges are passable (walkways must reach them like a door) and never treated as walls: nothing is placed against them. Each room has a confidence level (taped, AR-measured or estimated). Every design is verified with the room's error bands as margin, but fit claims ("fits with 12 cm to spare", per-item fit) are made only for taped and AR-measured rooms; an estimated room's design asks you to measure to confirm.
+The engine takes any floor polygon, L shapes included. An edge with a wall along it is a wall; an edge with none is open. Open edges are passable (walkways must reach them like a door) and never treated as walls: nothing is placed against them. Each room has a confidence level (taped, AR-measured or estimated). Taped and AR-measured rooms are verified with their error bands as margin; estimated rooms at nominal sizes with a 6 cm clearance. Fit claims ("fits with 12 cm to spare", per-item fit) are made only for taped and AR-measured rooms; an estimated room's design asks you to measure to confirm.
 
 ## Relaxation order
 
@@ -32,7 +32,7 @@ When no design passes, the engine relaxes in this order and stops at the first s
 
 | Hard rules (never broken) | Soft scores (traded off) |
 | --- | --- |
-| Everything inside the room with error-band margin, nothing overlapping | Focal point and balance |
+| Everything inside the room (error-band margin on measured rooms, 6 cm on estimated ones), nothing overlapping | Focal point and balance |
 | Door swings and window access clear | Conversation distance 1.5 to 3 m |
 | Walkways at least 60 cm (75 cm preferred, scored) | TV viewing distance |
 | Switchboards, sockets and AC airflow not blocked | Rug under the front legs of seating |
