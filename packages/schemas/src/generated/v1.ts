@@ -122,6 +122,27 @@ export type DetectionSource = ("detected" | "user")
  * via the `definition` "ObjectType".
  */
 export type ObjectType = ("furniture" | "fixture" | "wall_item" | "textile" | "decor")
+/**
+ * Why the job stopped. upload_incomplete: a file of the capture is not in storage. photo_too_small: a photo is below the minimum the render needs. timed_out: a stage ran past its limit and its retry. internal: an error on our side; trying again may work.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "RoomFailureReason".
+ */
+export type RoomFailureReason = ("upload_incomplete" | "photo_too_small" | "photo_missing" | "photo_unreadable" | "no_ar_data" | "planes_unreadable" | "floor_not_visible" | "no_walls" | "space_not_supported" | "invalid_request" | "no_products" | "no_layout_for_room" | "nothing_fits" | "render_failed" | "timed_out" | "internal")
+/**
+ * uploaded: the capture is registered and the job is queued. reading: measuring the room and listing what is in it. designing: choosing products and placing them. rendering: drawing the designs on the photos. ready: three designs with their pictures. failed: see failure.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "RoomStage".
+ */
+export type RoomStage = ("uploaded" | "reading" | "designing" | "rendering" | "ready" | "failed")
+/**
+ * Where a room's job is, as the room status endpoint returns it. The app shows only what this says: one stage, a machine-readable reason when it failed, how the room was measured, and for each design item whether a fit check ran.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "RoomStatus".
+ */
+export type RoomStatus = RoomStatus1
 
 /**
  * Generated from schemas/v1. Do not edit.
@@ -1201,6 +1222,74 @@ structure: CheckResult
 grounding: CheckResult
 likeness: CheckResult
 aesthetic: CheckResult
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "RoomFailure".
+ */
+export interface RoomFailure {
+reason: RoomFailureReason
+/**
+ * The stage that failed.
+ */
+stage: ("uploaded" | "reading" | "designing" | "rendering")
+/**
+ * True when asking again (the same room or design request) may succeed; false when the capture itself must change.
+ */
+retryable: boolean
+}
+export interface RoomStatus1 {
+schema_version: SchemaVersion
+id: Uuid
+capture_id: Uuid
+created_at: Timestamp
+stage: RoomStage
+failure?: RoomFailure
+/**
+ * The room twin's confidence level, once the room is read. estimated: sizes say measure to confirm and no item carries a fit claim.
+ */
+confidence_level?: ("estimated" | "ar_measured" | "taped")
+design_request_id?: Uuid
+/**
+ * True when the room is read and no design request has been made yet: designing starts as soon as the app sends one.
+ */
+awaiting_brief?: boolean
+/**
+ * Every item of every design, once designs exist; empty before.
+ */
+items: RoomStatusItem[]
+/**
+ * The room job alone (reading), for builds made before `stage`. Read `stage`.
+ */
+status: ("working" | "ready" | "failed")
+/**
+ * The pipeline rows behind `stage`, room rows first, then the latest design request's.
+ */
+stages: StageRow[]
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "RoomStatusItem".
+ */
+export interface RoomStatusItem {
+design_id: Uuid
+item_id: Uuid
+/**
+ * True when the verifier checked this item's fit against measured (ar_measured or taped) sizes. False on an estimated room, where items are placed at nominal sizes and no fit is claimed.
+ */
+fit_checked: boolean
+}
+/**
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "StageRow".
+ */
+export interface StageRow {
+stage: ("measure" | "inventory" | "spec" | "placement" | "render")
+status: ("queued" | "running" | "done" | "failed")
+/**
+ * The failure reason code when the row failed.
+ */
+detail?: string
 }
 /**
  * Where the camera may stand: within radius_m of any anchor. Anchors are the keyframe camera positions along the capture path, in the space frame. A viewing limit, not a room measurement.

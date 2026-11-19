@@ -447,6 +447,17 @@ class SpaceLight(BaseModel):
     ] = None
 
 
+class StageRow(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    stage: Literal["measure", "inventory", "spec", "placement", "render"]
+    status: Literal["queued", "running", "done", "failed"]
+    detail: Annotated[
+        str | None, Field(description="The failure reason code when the row failed.", min_length=1)
+    ] = None
+
+
 class StorageKey(RootModel[str]):
     root: Annotated[
         str,
@@ -1530,6 +1541,59 @@ class ReplaceEdit(BaseModel):
     product_size: ProductSize
 
 
+class RoomFailure(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    reason: Annotated[
+        Literal[
+            "upload_incomplete",
+            "photo_too_small",
+            "photo_missing",
+            "photo_unreadable",
+            "no_ar_data",
+            "planes_unreadable",
+            "floor_not_visible",
+            "no_walls",
+            "space_not_supported",
+            "invalid_request",
+            "no_products",
+            "no_layout_for_room",
+            "nothing_fits",
+            "render_failed",
+            "timed_out",
+            "internal",
+        ],
+        Field(
+            description="Why the job stopped. upload_incomplete: a file of the capture is not in storage. photo_too_small: a photo is below the minimum the render needs. timed_out: a stage ran past its limit and its retry. internal: an error on our side; trying again may work."
+        ),
+    ]
+    stage: Annotated[
+        Literal["uploaded", "reading", "designing", "rendering"],
+        Field(description="The stage that failed."),
+    ]
+    retryable: Annotated[
+        bool,
+        Field(
+            description="True when asking again (the same room or design request) may succeed; false when the capture itself must change."
+        ),
+    ]
+
+
+class RoomStatusItem(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    design_id: UUID
+    item_id: UUID
+    fit_checked: Annotated[
+        bool,
+        Field(
+            description="True when the verifier checked this item's fit against measured (ar_measured or taped) sizes. False on an estimated room, where items are placed at nominal sizes and no fit is claimed."
+        ),
+    ]
+
+
 class ShoppingLine(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -1957,6 +2021,64 @@ class RestyleSurfaceEdit(BaseModel):
         ),
     ]
     material: SurfaceMaterial
+
+
+class RoomStatus(BaseModel):
+    """
+    Where a room's job is, as the room status endpoint returns it. The app shows only what this says: one stage, a machine-readable reason when it failed, how the room was measured, and for each design item whether a fit check ran.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    schema_version: Annotated[
+        str,
+        Field(
+            description="Contract version of the object. Minor versions only add optional fields.",
+            pattern="^1\\.[0-9]+$",
+        ),
+    ]
+    id: UUID
+    capture_id: UUID
+    created_at: Annotated[AwareDatetime, Field(description="UTC instant, RFC 3339.")]
+    stage: Annotated[
+        Literal["uploaded", "reading", "designing", "rendering", "ready", "failed"],
+        Field(
+            description="uploaded: the capture is registered and the job is queued. reading: measuring the room and listing what is in it. designing: choosing products and placing them. rendering: drawing the designs on the photos. ready: three designs with their pictures. failed: see failure."
+        ),
+    ]
+    failure: RoomFailure | None = None
+    confidence_level: Annotated[
+        Literal["estimated", "ar_measured", "taped"] | None,
+        Field(
+            description="The room twin's confidence level, once the room is read. estimated: sizes say measure to confirm and no item carries a fit claim."
+        ),
+    ] = None
+    design_request_id: Annotated[
+        UUID | None, Field(description="The latest design request for the room, once one is made.")
+    ] = None
+    awaiting_brief: Annotated[
+        bool | None,
+        Field(
+            description="True when the room is read and no design request has been made yet: designing starts as soon as the app sends one."
+        ),
+    ] = None
+    items: Annotated[
+        list[RoomStatusItem],
+        Field(description="Every item of every design, once designs exist; empty before."),
+    ]
+    status: Annotated[
+        Literal["working", "ready", "failed"],
+        Field(
+            description="The room job alone (reading), for builds made before `stage`. Read `stage`."
+        ),
+    ]
+    stages: Annotated[
+        list[StageRow],
+        Field(
+            description="The pipeline rows behind `stage`, room rows first, then the latest design request's."
+        ),
+    ]
 
 
 class ShellSurface(BaseModel):

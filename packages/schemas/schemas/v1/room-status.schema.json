@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sajao.app/v1/room-status.schema.json",
+  "title": "RoomStatus",
+  "description": "Where a room's job is, as the room status endpoint returns it. The app shows only what this says: one stage, a machine-readable reason when it failed, how the room was measured, and for each design item whether a fit check ran.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "capture_id",
+    "created_at",
+    "stage",
+    "status",
+    "stages",
+    "items"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/SchemaVersion"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "capture_id": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "created_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp"
+    },
+    "stage": {
+      "$ref": "#/$defs/RoomStage"
+    },
+    "failure": {
+      "$ref": "#/$defs/RoomFailure"
+    },
+    "confidence_level": {
+      "type": "string",
+      "enum": ["estimated", "ar_measured", "taped"],
+      "description": "The room twin's confidence level, once the room is read. estimated: sizes say measure to confirm and no item carries a fit claim."
+    },
+    "design_request_id": {
+      "$ref": "common.schema.json#/$defs/Uuid",
+      "description": "The latest design request for the room, once one is made."
+    },
+    "awaiting_brief": {
+      "type": "boolean",
+      "description": "True when the room is read and no design request has been made yet: designing starts as soon as the app sends one."
+    },
+    "items": {
+      "type": "array",
+      "description": "Every item of every design, once designs exist; empty before.",
+      "items": {
+        "$ref": "#/$defs/RoomStatusItem"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["working", "ready", "failed"],
+      "description": "The room job alone (reading), for builds made before `stage`. Read `stage`."
+    },
+    "stages": {
+      "type": "array",
+      "description": "The pipeline rows behind `stage`, room rows first, then the latest design request's.",
+      "items": {
+        "$ref": "#/$defs/StageRow"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "stage": {
+            "const": "failed"
+          }
+        },
+        "required": ["stage"]
+      },
+      "then": {
+        "required": ["failure"]
+      },
+      "else": {
+        "not": {
+          "required": ["failure"]
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "RoomStage": {
+      "type": "string",
+      "enum": ["uploaded", "reading", "designing", "rendering", "ready", "failed"],
+      "description": "uploaded: the capture is registered and the job is queued. reading: measuring the room and listing what is in it. designing: choosing products and placing them. rendering: drawing the designs on the photos. ready: three designs with their pictures. failed: see failure."
+    },
+    "RoomFailureReason": {
+      "type": "string",
+      "enum": [
+        "upload_incomplete",
+        "photo_too_small",
+        "photo_missing",
+        "photo_unreadable",
+        "no_ar_data",
+        "planes_unreadable",
+        "floor_not_visible",
+        "no_walls",
+        "space_not_supported",
+        "invalid_request",
+        "no_products",
+        "no_layout_for_room",
+        "nothing_fits",
+        "render_failed",
+        "timed_out",
+        "internal"
+      ],
+      "description": "Why the job stopped. upload_incomplete: a file of the capture is not in storage. photo_too_small: a photo is below the minimum the render needs. timed_out: a stage ran past its limit and its retry. internal: an error on our side; trying again may work."
+    },
+    "RoomFailure": {
+      "title": "RoomFailure",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason", "stage", "retryable"],
+      "properties": {
+        "reason": {
+          "$ref": "#/$defs/RoomFailureReason"
+        },
+        "stage": {
+          "type": "string",
+          "enum": ["uploaded", "reading", "designing", "rendering"],
+          "description": "The stage that failed."
+        },
+        "retryable": {
+          "type": "boolean",
+          "description": "True when asking again (the same room or design request) may succeed; false when the capture itself must change."
+        }
+      }
+    },
+    "RoomStatusItem": {
+      "title": "RoomStatusItem",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["design_id", "item_id", "fit_checked"],
+      "properties": {
+        "design_id": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "item_id": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "fit_checked": {
+          "type": "boolean",
+          "description": "True when the verifier checked this item's fit against measured (ar_measured or taped) sizes. False on an estimated room, where items are placed at nominal sizes and no fit is claimed."
+        }
+      }
+    },
+    "StageRow": {
+      "title": "StageRow",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stage", "status"],
+      "properties": {
+        "stage": {
+          "type": "string",
+          "enum": ["measure", "inventory", "spec", "placement", "render"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["queued", "running", "done", "failed"]
+        },
+        "detail": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The failure reason code when the row failed."
+        }
+      }
+    }
+  }
+}

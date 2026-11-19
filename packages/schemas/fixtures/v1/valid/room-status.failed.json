@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "id": "0b9819c8-9461-4802-b831-a98fcf9a9aeb",
+  "capture_id": "7d1c2f4e-5a6b-4c8d-9e0f-1a2b3c4d5e6f",
+  "created_at": "2026-11-19T18:13:25Z",
+  "stage": "failed",
+  "awaiting_brief": false,
+  "items": [],
+  "status": "failed",
+  "stages": [
+    {
+      "stage": "measure",
+      "status": "failed",
+      "detail": "floor_not_visible"
+    },
+    {
+      "stage": "inventory",
+      "status": "queued"
+    }
+  ],
+  "failure": {
+    "reason": "floor_not_visible",
+    "stage": "reading",
+    "retryable": false
+  }
+}
