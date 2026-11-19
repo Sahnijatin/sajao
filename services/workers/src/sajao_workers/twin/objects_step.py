@@ -16,7 +16,7 @@ fallbacks, caps, caching and validation apply.
 """
 
 import json
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import Any
 
 import numpy as np
@@ -40,8 +40,18 @@ from sajao_workers.twin.objects import (
 )
 from sajao_workers.validate import check_detections, check_masks
 
+# Photos (not a scan) up to this many: an object seen in one of them is kept.
+FEW_PHOTOS = 3
+
+
+def few_views(manifest: Mapping[str, Any]) -> bool:
+    return bool(manifest.get("single_view")) or (
+        bool(manifest.get("from_photos")) and len(manifest["frames"]) <= FEW_PHOTOS
+    )
+
+
 # Bump when this step's logic, prompts or pinned model chains change.
-VERSION = 11
+VERSION = 12
 # The retry for listed items not placed: other names and a lower score threshold.
 RETRY_MIN_SCORE = 0.1
 # Listed items of these types may be small (a clock, a switchboard, an idol).
@@ -155,7 +165,8 @@ def objects_step(detect: ModelGateway, segment: ModelGateway) -> Step:
                 stats=fusion,
                 min_size=min_size,
                 per_label=per_label,
-                min_frames=1 if manifest.get("single_view") else MIN_FRAMES,
+                # A few photos see most things once or twice: one view is enough there.
+                min_frames=1 if few_views(manifest) else MIN_FRAMES,
             )
             return objects, openings
 

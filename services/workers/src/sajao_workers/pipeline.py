@@ -159,6 +159,17 @@ TWIN_NAMESPACE = uuid.UUID("3f0d5a8e-1b2c-4d3e-9f4a-5b6c7d8e9f01")
 TWIN_PARAMS = ("twin_id", "version", "created_at")
 
 
+# A capture of this many photos with no AR runs the few-photo stages.
+FEW_PHOTOS = (2, 3)
+
+
+def photo_count(capture: Mapping[str, Any]) -> int:
+    """Photos in a capture with no AR and no planes; 0 for a scan."""
+    package = capture.get("package") or {}
+    no_ar = (package.get("ar") or {}).get("tracking") == "none"
+    return len(package.get("keyframes", [])) if no_ar and not package.get("planes") else 0
+
+
 def is_single_photo(capture: Mapping[str, Any]) -> bool:
     """A capture with no AR and exactly one photo: the photo-first path."""
     package = capture.get("package") or {}
@@ -193,17 +204,26 @@ async def run_room(
     capture: Mapping[str, Any],
     stages: Sequence[PipelineStage] = ROOM_STAGES,
     photo_stages: Sequence[PipelineStage] = (),
+    few_photo_stages: Sequence[PipelineStage] = (),
 ) -> Run:
     """Run a room's stages from its registered capture. Safe to call again at any point.
 
-    A scan runs `stages`. A capture of one photo with no AR runs `photo_stages` (see
-    photo_pipeline.py) when they are given; other captures without AR wait for theirs."""
+    A scan runs `stages`. A capture of one photo with no AR runs `photo_stages`, of two
+    or three photos `few_photo_stages` (see photo_pipeline.py), when they are given;
+    other captures without AR wait for theirs."""
     blobs = {"capture": runner.store.put_blob(json.dumps(capture, sort_keys=True).encode())}
     package = capture.get("package") or {}
     planes_key = package.get("planes")
     params: dict[str, Any] = {}
-    if is_single_photo(capture) and photo_stages:
-        stages = photo_stages
+    chosen = (
+        photo_stages
+        if is_single_photo(capture)
+        else few_photo_stages
+        if photo_count(capture) in FEW_PHOTOS
+        else ()
+    )
+    if chosen:
+        stages = chosen
         try:
             images = {
                 k["id"]: runner.store.put_blob(files.read(k["image"])) for k in package["keyframes"]

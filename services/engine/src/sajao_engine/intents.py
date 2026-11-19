@@ -71,6 +71,39 @@ OPTIONS_PER_SLOT = 6
 NAMESPACE = uuid.UUID("6a1f0c2e-8d3b-4e5f-9a7c-1b2d3e4f5a6b")
 
 
+# A budget when the person has not set one: the middle of the development listings'
+# living-room totals, provisional until briefs carry real ones.
+DEFAULT_BUDGET_RUPEES = 150_000
+
+
+def default_brief(
+    twin: SpaceTwin,
+    created_at: str,
+    budget_rupees: int = DEFAULT_BUDGET_RUPEES,
+    taste_profile_id: uuid.UUID | None = None,
+) -> Brief:
+    """The brief a room gets before the person says anything: a full makeover at a
+    middle budget, with some room to stretch, nothing required, nothing kept beyond the
+    twin's own keep choices, Vastu off (it needs a confirmed direction)."""
+    return Brief.model_validate(
+        {
+            "schema_version": "1.0",
+            "id": str(uuid.uuid5(NAMESPACE, f"brief:{twin.id}:{twin.version}")),
+            "space_profile_id": str(uuid.uuid5(NAMESPACE, f"profile:{twin.id}:{twin.version}")),
+            "taste_profile_id": str(taste_profile_id or uuid.uuid5(NAMESPACE, "no taste profile")),
+            "created_at": created_at,
+            "intent": "full_makeover",
+            "budget": {
+                "limit": {"currency": "INR", "amount_minor": budget_rupees * 100},
+                "flexibility": "stretch_10",
+            },
+            "must_haves": [],
+            "keep_item_ids": [],
+            "consider_vastu": False,
+        }
+    )
+
+
 def archetypes_for(twin: SpaceTwin) -> list[str]:
     """Archetypes for the room's space type whose minimum floor the room has, in order."""
     floor = polygon_area([(p.x_m, p.y_m) for p in twin.shell.floor_polygon])

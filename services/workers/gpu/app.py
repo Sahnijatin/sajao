@@ -23,6 +23,8 @@ HERE = Path(__file__).parent
 SRC = HERE.parent / "src" / "sajao_workers"
 GATEWAY = HERE.parent.parent / "gateway" / "src" / "sajao_gateway"
 SCHEMAS = HERE.parent.parent.parent / "packages" / "schemas" / "python" / "sajao_schemas"
+ENGINE = HERE.parent.parent / "engine" / "src" / "sajao_engine"
+CATALOG = HERE.parent.parent / "catalog" / "src" / "sajao_catalog"
 SPIKE = HERE.parent.parent / "spikes" / "twin-risk"
 MAX_GPUS = 3  # Must match sajao_workers.gpu.MAX_GPUS: model and splat functions share it.
 MODEL_GPUS = 2
@@ -168,8 +170,11 @@ cpu_image = (
     # Vision models for the room inventory (Gemini on Vertex AI, Claude).
     .pip_install("httpx==0.28.1", "google-auth[requests]==2.62.2", "anthropic==2.8.0")
     .pip_install("imageio==2.37.0", "imageio-ffmpeg==0.6.0")  # review videos
+    .pip_install("trimesh==4.9.0", "scipy==1.16.3")  # product assets for the render
     .env({"PYTHONUNBUFFERED": "1"})
     .add_local_dir(SRC, "/root/sajao_workers")
+    .add_local_dir(ENGINE, "/root/sajao_engine")
+    .add_local_dir(CATALOG, "/root/sajao_catalog")
     .add_local_dir(GATEWAY, "/root/sajao_gateway")
     .add_local_dir(SCHEMAS, "/root/sajao_schemas")
     # Ground truth and scoring for the smoke runs only (public datasets, internal evaluation).
@@ -536,10 +541,80 @@ def poses(model: str, payload: dict[str, Any]) -> dict[str, Any]:
     return {"frames": frames}
 
 
+# LaMa for removal on a photo, on the model GPU beside depth and segmentation, so a photo
+# room's models share one warm container. The weights are the pinned TorchScript export
+# the splat removal uses (sajao_workers.models.LAMA), checked by hash.
+LAMA_URL = (
+    "https://github.com/enesmsahin/simple-lama-inpainting/releases/download/v0.1.0/big-lama.pt"
+)
+LAMA_FILE = Path("/vol/models/big-lama.pt")
+
+
+def _lama(model: str) -> Any:
+    if model not in _loaded:
+        import hashlib
+        import subprocess
+
+        import torch
+
+        _, sha256 = _split(model)
+        if not LAMA_FILE.exists():
+            LAMA_FILE.parent.mkdir(parents=True, exist_ok=True)
+            part = LAMA_FILE.with_suffix(".part")
+            subprocess.run(["curl", "-sSfL", "-o", str(part), LAMA_URL], check=True)  # noqa: S603, S607
+            part.rename(LAMA_FILE)
+            vol.commit()
+        digest = hashlib.sha256(LAMA_FILE.read_bytes()).hexdigest()
+        if digest != sha256:
+            raise InputError(f"LaMa weights do not match the pinned hash ({digest[:12]})")
+        _loaded[model] = torch.jit.load(str(LAMA_FILE), map_location="cuda").eval()
+    return _loaded[model]
+
+
+def photo_inpaint(model: str, payload: dict[str, Any]) -> dict[str, Any]:
+    """Fill each frame's mask (white = remove) in its image; pixels outside are kept."""
+    import cv2
+    import numpy as np
+    import torch
+    import torch.nn.functional as F
+
+    network = _lama(model)
+    store = _store()
+    frames = []
+    for frame in payload["frames"]:
+        rgb = _rgb(frame["image"])
+        mask_png = np.frombuffer(store.read_blob(frame["mask"]), np.uint8)
+        mask = cv2.imdecode(mask_png, cv2.IMREAD_GRAYSCALE) > 127
+        if mask.shape != rgb.shape[:2]:
+            raise InputError("the mask is not the image's size")
+        h, w = mask.shape
+        img = torch.from_numpy(rgb).float().permute(2, 0, 1)[None].cuda() / 255.0
+        m = torch.from_numpy(mask.astype(np.float32))[None, None].cuda()
+        ph, pw = (8 - h % 8) % 8, (8 - w % 8) % 8
+        img = F.pad(img, (0, pw, 0, ph), mode="reflect")
+        m = F.pad(m, (0, pw, 0, ph), mode="reflect")
+        with torch.no_grad():
+            out = network(img, (m > 0).float())
+        filled = (out[0, :, :h, :w].clamp(0, 1).permute(1, 2, 0).cpu().numpy() * 255).astype(
+            np.uint8
+        )
+        filled[~mask] = rgb[~mask]
+        png = cv2.imencode(".png", cv2.cvtColor(filled, cv2.COLOR_RGB2BGR))[1].tobytes()
+        frames.append(
+            {
+                "image": frame["image"],
+                "filled": store.put_blob(png),
+                "masked_share": round(float(mask.mean()), 4),
+            }
+        )
+    return {"frames": frames}
+
+
 HANDLERS = {
     "twin_detect": detect,
     "twin_segment": segment,
     "twin_depth": depth,
+    "photo_inpaint": photo_inpaint,
 }
 
 
@@ -2802,3 +2877,301 @@ def single_photo_depth(
     for name, data in single_photo_depth_cpu.remote(scene, keyframe, candidates).items():
         (target / name).write_bytes(data)
     print((target / "meta.json").read_text())
+
+
+# The bake-off's render-ready assets (scaled and painted by code from each listing's
+# main photo), by catalog SKU. Development data on a private volume.
+bakeoff_assets = modal.Volume.from_name("sajao-render-bakeoff")
+CATALOG_FILE = HERE.parent.parent / "catalog" / "data" / "development" / "catalog.jsonl"
+
+
+@app.function(
+    image=cpu_image.add_local_file(CATALOG_FILE, "/root/catalog.jsonl"),
+    volumes={"/work": vol, "/vol": spike_vol, "/bk": bakeoff_assets},
+    cpu=4,
+    memory=8192,
+    timeout=1800,
+    secrets=VISION_SECRETS,
+)
+def first_design_smoke_cpu(
+    scene: str, candidates: int, label: str, keyframe_id: str = "kf0007", photos: int = 1
+) -> dict[str, Any]:
+    """Upload to the first design's render on one real photo, timed stage by stage.
+
+    The photo is re-encoded with a run label, so its digest is new and every stage runs:
+    nothing comes from an earlier run's cache. Run it after the GPU has scaled down for a
+    cold start, or straight after another run for a warm one."""
+    import asyncio
+    import io
+    import json
+    import time
+    import uuid
+
+    import numpy as np
+    import trimesh
+    from PIL import Image
+
+    from sajao_engine.intents import default_brief, three_designs
+    from sajao_engine.photo import visible_floor
+    from sajao_gateway import ModelGateway
+    from sajao_schemas.generated.v1 import Product, SpaceTwin
+    from sajao_workers.models import photo_inpaint_chain
+    from sajao_workers.photo_pipeline import (
+        few_photo_stages,
+        photo_models,
+        photo_room_stages,
+        room_ledger,
+    )
+    from sajao_workers.pipeline import MEASURE, run_room
+    from sajao_workers.render.compose import PhotoCamera, composite, place_asset
+    from sajao_workers.render.removal import photo_removal_step, removed_ids
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+
+    store = LocalArtifactStore(Path("/work/artifacts"))
+    truth = _arkit_manifest(store, scene, candidates, y_up=True)
+    frame = next(f for f in truth["frames"] if f["keyframe_id"] == keyframe_id)
+
+    def heading(f: dict[str, Any]) -> Any:
+        d = np.asarray(f["c2w"])[:3, :3] @ np.array([0.0, 0.0, 1.0])
+        d[1] = 0.0
+        return d / (np.linalg.norm(d) + 1e-9)
+
+    # More photos of the same room: the landscape frames that look most differently from
+    # those already picked (farthest view direction first).
+    picked = [frame]
+    pool = [f for f in truth["frames"] if f["width"] >= f["height"] and f is not frame]
+    while len(picked) < photos and pool:
+        best = max(pool, key=lambda f: min(1 - float(heading(f) @ heading(p)) for p in picked))
+        picked.append(best)
+        pool.remove(best)
+    shots: dict[str, bytes] = {}
+    for i, f in enumerate(picked):
+        img = Image.open(io.BytesIO(store.read_blob(f["image"]))).convert("RGB")
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=95, comment=label.encode())
+        shots[f"smoke/photo{i}.jpg"] = buf.getvalue()
+    original = Image.open(io.BytesIO(store.read_blob(frame["image"]))).convert("RGB")
+    photo = shots["smoke/photo0.jpg"]
+
+    capture = {
+        "schema_version": "1.0",
+        "id": "00000000-0000-4000-8000-00000000f070",
+        "user_id": "00000000-0000-4000-8000-000000000001",
+        "created_at": "2026-11-19T00:00:00Z",
+        "device": {"platform": "android", "tier": "budget", "has_ar": False},
+        "media": [
+            {
+                "id": f"00000000-0000-4000-8000-00000000f07{i + 1}",
+                "kind": "photo",
+                "origin": "camera",
+                "storage_key": key,
+                "width_px": frame["width"],
+                "height_px": frame["height"],
+                "has_ar_pose": False,
+                "compass_heading_deg": 0.0,
+            }
+            for i, key in enumerate(shots)
+        ],
+        "package": {
+            "ar": {"tracking": "none", "lidar": False, "depth": False},
+            "keyframes": [
+                {"id": f"k{i}", "image": key, "captured_at_ms": 500 * i, "sharpness": 1}
+                for i, key in enumerate(shots)
+            ],
+            "detections": [],
+            "sensor_log": "smoke/log.jsonl",
+        },
+    }
+
+    class Files:
+        def read(self, key: str) -> bytes:
+            return shots[key]
+
+    class Board:
+        def __init__(self) -> None:
+            self.moves: list[tuple[float, str, str]] = []
+            self.twin: dict[str, Any] | None = None
+
+        async def set_stage(self, room_id, stage, status, detail=None, request_id=None) -> None:  # type: ignore[no-untyped-def]
+            self.moves.append((time.time(), stage, status))
+
+        async def set_space_twin(self, room_id: str, twin: dict[str, Any]) -> None:
+            self.twin = twin
+
+    ledger = room_ledger()
+    models = photo_models(
+        volume_invoke,
+        ledger,
+        poses_gpu=volume_invoke("twin_poses", run_splat) if photos > 1 else None,
+    )
+    runner = StepRunner(store, max_attempts=2)
+    board = Board()
+    times: dict[str, float] = {}
+    started = time.time()
+    run = asyncio.run(
+        run_room(
+            runner,
+            board,
+            Files(),
+            f"smoke-{label}",
+            capture,
+            (MEASURE,),
+            photo_room_stages(models),
+            few_photo_stages(models) if photos > 1 else (),
+        )
+    )
+    times["room"] = round(time.time() - started, 1)
+    for at, stage, status in board.moves:
+        if status == "done":
+            times[f"room.{stage}"] = round(at - started, 1)
+    if run.outcome != "done" or board.twin is None:
+        return {"error": [m for m in board.moves if m[2] == "failed"], "times": times}
+    twin_json = board.twin
+    twin = SpaceTwin.model_validate(twin_json)
+
+    t = time.time()
+    rows = [json.loads(line) for line in Path("/root/catalog.jsonl").read_text().splitlines()]
+    products = [Product.model_validate(r["product"]) for r in rows if r["gate"]["result"] == "pass"]
+    if twin.space_type not in ("living_room", "bedroom"):
+        return {
+            "error": f"space type {twin.space_type}",
+            "photos": [f["keyframe_id"] for f in picked],
+            "categories": sorted(o.category for o in twin.objects),
+            "times": times,
+        }
+    designs = three_designs(
+        twin,
+        default_brief(twin, "2026-11-19T00:00:00Z"),
+        products,
+        uuid.uuid4(),
+        "2026-11-19T00:00:00Z",
+        in_view=visible_floor(twin),
+    )
+    times["designs"] = round(time.time() - t, 1)
+    first = designs[0].result.design
+    if first is None:
+        return {"error": "no design", "times": times}
+    design = first.model_dump(mode="json", exclude_unset=True)
+
+    t = time.time()
+    hero = twin_json["viewing"]["hero_views"][0] if twin_json.get("viewing") else None
+    hero_kf = hero["keyframe_id"] if hero else twin_json["keyframes"][0]["id"]
+    keyframe = next(k for k in twin_json["keyframes"] if k["id"] == hero_kf)
+    photo = shots[f"smoke/photo{int(hero_kf[1:])}.jpg"]
+    original = Image.open(io.BytesIO(photo)).convert("RGB")
+    removal = asyncio.run(
+        runner.run(
+            photo_removal_step(
+                ModelGateway(photo_inpaint_chain(volume_invoke("photo_inpaint")), ledger=ledger)
+            ),
+            {
+                "twin": store.put_blob(json.dumps(twin_json).encode()),
+                "photo": store.put_blob(photo),
+            },
+            {"hero_view_id": hero["id"] if hero else "h1", "remove": removed_ids(design)},
+        )
+    )
+    times["removal"] = round(time.time() - t, 1)
+    vol.reload()
+
+    t = time.time()
+    cleaned = (
+        np.asarray(
+            Image.open(io.BytesIO(store.read_blob(removal.outputs["cleaned"]))).convert("RGB"),
+            dtype=np.float64,
+        )
+        / 255.0
+    )
+    placed, missing = [], []
+    for item in design["items"]:
+        sku = item["product"]["sku"]
+        path = Path(f"/bk/assets/triposg/{sku}/asset.ply")
+        if not path.exists():
+            missing.append(sku)
+            continue
+        mesh = trimesh.load(path, force="mesh")
+        dims = item["product"]["dimensions"]
+        placed.append(
+            place_asset(
+                mesh.vertices,
+                mesh.faces,
+                np.asarray(mesh.visual.vertex_colors)[:, :3] / 255.0,
+                (dims["width"]["value_m"], dims["depth"]["value_m"], dims["height"]["value_m"]),
+                (item["position"]["x_m"], item["position"]["y_m"]),
+                item["rotation_deg"],
+                item["id"],
+            )
+        )
+    result = composite(cleaned, PhotoCamera.from_keyframe(keyframe), placed)
+    times["compose"] = round(time.time() - t, 1)
+    times["total"] = round(time.time() - started, 1)
+    files: dict[str, bytes] = {}
+    for name, image in (
+        ("photo", np.asarray(original) / 255.0),
+        ("cleaned", cleaned),
+        ("render", result.image),
+    ):
+        out = io.BytesIO()
+        Image.fromarray((np.clip(image, 0, 1) * 255).astype(np.uint8)).save(
+            out, format="JPEG", quality=90
+        )
+        files[f"{label}-{name}.jpg"] = out.getvalue()
+    summary = {
+        "label": label,
+        "times_s": times,
+        "charged_inr": round((run.cost_micro_inr + removal.cost_micro_inr) / 1e6, 2),
+        "design": {
+            "archetype": design["archetype"],
+            "items": [i["product"]["title"][:40] for i in design["items"]],
+            "total_inr": design["total_cost"]["amount_minor"] // 100,
+            "measurement_level": design.get("measurement_level"),
+        },
+        "removed": removed_ids(design),
+        "masked_share": removal.meta.get("masked_share"),
+        "missing_assets": missing,
+        "product_pixels": {k: int(v.sum()) for k, v in result.masks.items()},
+        "intents_distinct": [r.distinct for r in designs],
+        "photos": [f["keyframe_id"] for f in picked],
+        "hero": hero_kf,
+        "objects": sorted(o["category"] for o in twin_json["objects"]),
+        "built_ins": sorted(b["category"] for b in twin_json["shell"].get("built_ins", [])),
+        "openings": sorted(o["kind"] for o in twin_json["shell"]["openings"]),
+        "walls": [
+            (w["id"], w.get("kind", "wall"), w["length"]["value_m"])
+            for w in twin_json["shell"]["walls"]
+        ],
+        "floor_m2": twin_json["free_floor"]["floor_area_m2"]
+        if twin_json.get("free_floor")
+        else None,
+    }
+    vol.commit()
+    files[f"{label}-summary.json"] = json.dumps(summary, indent=1).encode()
+    return {"files": files, "summary": summary}
+
+
+@app.local_entrypoint()
+def first_design_smoke(
+    scene: str = "arkit_living_47331265",
+    candidates: int = 40,
+    label: str = "run",
+    out: str = "first-design",
+    runs: int = 2,
+    photos: str = "1",
+) -> None:
+    """`runs` back to back in one app: the first starts cold, later ones find the GPU and
+    CPU containers warm (they stay up 60 s after a call)."""
+    import json
+
+    target = Path(out)
+    target.mkdir(parents=True, exist_ok=True)
+    plan = [int(p) for p in photos.split(",")]
+    for n in range(runs):
+        for count in plan:
+            tag = f"{label}-{count}p-{'cold' if n == 0 else f'warm{n}'}"
+            result = first_design_smoke_cpu.remote(scene, candidates, tag, "kf0007", count)
+            if "files" not in result:
+                print(json.dumps(result, indent=1))
+                continue
+            for name, data in result["files"].items():
+                (target / name).write_bytes(data)
+            print(json.dumps(result["summary"], indent=1))

@@ -25,7 +25,6 @@ from sajao_workers.twin.space import Space
 SCHEMA_VERSION = "1.0"
 TIERS = {500_000: "capable", 250_000: "budget"}
 MAX_VIEWS = 4
-LIVING = {"sofa", "armchair", "television"}
 
 
 class AssemblyError(Exception):
@@ -36,14 +35,37 @@ def storage_key(digest: str) -> str:
     return f"artifacts/blobs/{digest[:2]}/{digest}"
 
 
+# Words in a category that vote for a room type. The item lists name things in many
+# ways ("TV", "flat-screen television", "accent chair", "couch"), so words, not names.
+LIVING_WORDS = (
+    "sofa",
+    "couch",
+    "loveseat",
+    "sectional",
+    "armchair",
+    "recliner",
+    "television",
+    "tv",
+    "coffee table",
+    "diwan",
+    "settee",
+)
+BEDROOM_WORDS = ("bed", "headboard", "mattress")
+
+
+def _votes(category: str, words: Sequence[str]) -> bool:
+    text = f" {category.lower().replace('_', ' ').replace('-', ' ')} "
+    return any(f" {w} " in text or text.strip().endswith(f" {w}") for w in words)
+
+
 def space_type_from(categories: Sequence[str]) -> str:
     """A first guess from what was found; the user can change it.
 
-    Beds vote for a bedroom, sofas, armchairs and televisions for a living
-    room; a bed wins ties, so one stray detection cannot outvote a room.
+    Beds vote for a bedroom; sofas, armchairs, televisions and coffee tables for a
+    living room. A bed wins ties, so one stray detection cannot outvote a room.
     """
-    beds = sum(c == "bed" for c in categories)
-    living = sum(c in LIVING for c in categories)
+    beds = sum(_votes(c, BEDROOM_WORDS) and not _votes(c, ("sofa",)) for c in categories)
+    living = sum(_votes(c, LIVING_WORDS) for c in categories)
     if beds and beds >= living:
         return "bedroom"
     if living:

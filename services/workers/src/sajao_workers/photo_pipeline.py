@@ -14,11 +14,13 @@ from dataclasses import dataclass
 
 from sajao_gateway import InMemorySpendLedger, ModelGateway, SpendCaps, SpendLedger
 from sajao_workers.gpu import Invoke
-from sajao_workers.models import depth_chain, detect_chain, segment_chain
+from sajao_workers.models import depth_chain, detect_chain, pose_chain, segment_chain
 from sajao_workers.pipeline import TWIN_PARAMS, PipelineStage
 from sajao_workers.twin.assemble_step import assemble_step
+from sajao_workers.twin.depth_step import depth_step
 from sajao_workers.twin.inventory_step import inventory_step
 from sajao_workers.twin.objects_step import objects_step
+from sajao_workers.twin.photo_frames import photo_poses_step, photo_scale_step
 from sajao_workers.twin.single_photo_step import single_photo_scale_step, single_photo_step
 from sajao_workers.twin.understanding_step import understanding_step
 from sajao_workers.vision import (
@@ -40,6 +42,8 @@ class PhotoModels:
     checker: ModelGateway
     detect: ModelGateway
     segment: ModelGateway
+    # Cameras for two or more photos (MapAnything); None when only single photos run.
+    poses: ModelGateway | None = None
 
 
 # The most one photo room's stages may spend, in micro-rupees. The first real run cost
@@ -61,6 +65,7 @@ def photo_models(
     gpu: Callable[[str], Invoke],
     ledger: SpendLedger,
     env: Mapping[str, str] | None = None,
+    poses_gpu: Invoke | None = None,
 ) -> PhotoModels:
     """The pinned model chains for the photo stages. `gpu(task)` reaches the GPU worker's
     model function for a task; the item lists use Gemini on Vertex AI (project from
@@ -81,6 +86,7 @@ def photo_models(
         checker=ModelGateway([ClaudeVision("claude", CLAUDE_OPUS)], ledger=ledger),
         detect=ModelGateway(detect_chain(gpu("twin_detect")), ledger=ledger),
         segment=ModelGateway(segment_chain(gpu("twin_segment")), ledger=ledger),
+        poses=ModelGateway(pose_chain(poses_gpu), ledger=ledger) if poses_gpu else None,
     )
 
 
@@ -116,6 +122,46 @@ def photo_room_stages(models: PhotoModels) -> tuple[PipelineStage, ...]:
             "assemble",
             assemble_step(),
             ("capture", "frames", "objects", "built_ins", "openings", "scale", "inventory"),
+            board="inventory",
+            params=TWIN_PARAMS,
+        ),
+        PipelineStage(
+            "understand",
+            understanding_step(models.segment),
+            ("twin", "objects", "frames"),
+            board="inventory",
+        ),
+    )
+
+
+def few_photo_stages(models: PhotoModels) -> tuple[PipelineStage, ...]:
+    """The stages for two or three photos of one room: cameras and depth from the pose
+    model, metres from metric depth, then the same item list, objects, assembly and room
+    understanding as one photo. The room is estimated; nothing is claimed to fit."""
+    if models.poses is None:
+        raise ValueError("few-photo rooms need the pose model")
+    return (
+        PipelineStage(
+            "poses", photo_poses_step(models.poses), ("capture", "images"), board="measure"
+        ),
+        PipelineStage("depth", depth_step(models.depth), ("frames",), board="measure"),
+        PipelineStage("scale", photo_scale_step(), ("frames",), board="measure"),
+        PipelineStage(
+            "list_items",
+            inventory_step(models.lister, models.checker),
+            ("frames",),
+            board="inventory",
+        ),
+        PipelineStage(
+            "objects",
+            objects_step(models.detect, models.segment),
+            ("frames", "inventory"),
+            board="inventory",
+        ),
+        PipelineStage(
+            "assemble",
+            assemble_step(),
+            ("capture", "frames", "objects", "built_ins", "openings", "inventory"),
             board="inventory",
             params=TWIN_PARAMS,
         ),
