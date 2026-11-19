@@ -8,10 +8,10 @@ jest.mock("@/capture/package/start-upload", () => ({
   startCaptureUpload: (...args: unknown[]) => mockUpload(...args),
 }));
 
-const capture = { captureId: "cap-1" } as unknown as Extract<
-  PickResult,
-  { state: "picked" }
->["capture"];
+const capture = {
+  captureId: "cap-1",
+  files: { keyframes: [{ id: "k1", uri: "file:///k1.jpg" }] },
+} as unknown as Extract<PickResult, { state: "picked" }>["capture"];
 
 beforeEach(() => {
   mockUpload.mockClear();
@@ -40,6 +40,8 @@ describe("making a room from photos or a video", () => {
     const result = await importFromGallery(async () => ({ state: "picked", capture }));
     expect(result).toEqual({ status: "imported", roomId: "cap-1" });
     expect(useRooms.getState().rooms.map((room) => room.captureId)).toEqual(["cap-1"]);
+    // The pictures are kept with the room, to show as the room itself.
+    expect(useRooms.getState().rooms[0]?.photos).toEqual(["file:///k1.jpg"]);
     expect(useCaptureStore.getState().last).toBe(capture);
     expect(mockUpload).toHaveBeenCalledWith(capture, expect.objectContaining({ has_ar: false }));
   });

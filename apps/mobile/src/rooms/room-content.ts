@@ -23,6 +23,11 @@ export interface RoomLook {
   /** The design this look renders. Price, items and fit all come from it. */
   design: Design;
   still: RoomStill;
+  /**
+   * True when the still is the room as it is today, not this look: the API
+   * serves no rendered picture yet, so the look is shown beside your photo.
+   */
+  stillIsToday?: boolean;
 }
 
 /**

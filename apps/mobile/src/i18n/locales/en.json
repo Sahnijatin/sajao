@@ -208,7 +208,9 @@
     "looksTitle": "Three looks for your room",
     "looksCta": "Open my room",
     "view": "Your room, view {{number}} of {{total}}",
-    "sample": "These are sample looks. Yours appear here when they are ready."
+    "sample": "These are sample looks. Yours appear here when they are ready.",
+    "today": "Your room today",
+    "illustrative": "Illustrative. Sizes are estimated from your photos: measure to confirm before you buy."
   },
   "design": {
     "slot": {
