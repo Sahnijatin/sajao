@@ -16,6 +16,7 @@ import {
 } from "@/space/space-profile";
 import { useSettings } from "@/state/settings";
 import { formatArea } from "@/utils/format-length";
+import { tapeMetres, type TapeEntry } from "@/utils/tape-entry";
 
 export interface SpaceProfileScreenProps {
   profile: SpaceProfile;
@@ -61,7 +62,12 @@ export function SpaceProfileScreen({ profile, onChange, onShowIdeas }: SpaceProf
   const [changing, setChanging] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [target, setTarget] = useState<string>("ceiling");
-  const [entered, setEntered] = useState("");
+  const [entered, setEntered] = useState<TapeEntry>({
+    mode: "ft_in",
+    feet: "",
+    inches: "",
+    centimetres: "",
+  });
 
   const found = describeSpace(profile);
   const drawing = useMemo(
@@ -78,9 +84,9 @@ export function SpaceProfileScreen({ profile, onChange, onShowIdeas }: SpaceProf
     .filter(Boolean)
     .join(" · ");
 
-  const measured = Number(entered.replace(",", "."));
+  const measured = tapeMetres(entered);
   const applyTape = () => {
-    if (!(measured > 0)) return;
+    if (measured === null) return;
     onChange(
       target === "ceiling"
         ? applyTapeToCeiling(profile, measured)
@@ -88,7 +94,7 @@ export function SpaceProfileScreen({ profile, onChange, onShowIdeas }: SpaceProf
     );
     // The value snaps in: one tick, in the same moment the numbers change.
     void playHaptic("cornerCaptured");
-    setEntered("");
+    setEntered({ ...entered, feet: "", inches: "", centimetres: "" });
     setVerifying(false);
   };
 
@@ -217,13 +223,45 @@ export function SpaceProfileScreen({ profile, onChange, onShowIdeas }: SpaceProf
               onPress={() => setTarget("ceiling")}
             />
           </View>
-          <TextField
-            label={t("space.valueLabel")}
-            keyboardType="decimal-pad"
-            value={entered}
-            onChangeText={setEntered}
-          />
-          <Button label={t("space.apply")} disabled={!(measured > 0)} onPress={applyTape} />
+          {/* Feet and inches by default; centimetres for a metric tape. */}
+          <View style={{ flexDirection: "row", gap: spacing.md }}>
+            {(["ft_in", "cm"] as const).map((mode) => (
+              <Chip
+                key={mode}
+                label={t(`space.tape.${mode}`)}
+                selected={entered.mode === mode}
+                onPress={() => setEntered({ ...entered, mode })}
+              />
+            ))}
+          </View>
+          {entered.mode === "ft_in" ? (
+            <View style={{ flexDirection: "row", gap: spacing.md }}>
+              <View style={{ flex: 1 }}>
+                <TextField
+                  label={t("space.tape.feet")}
+                  keyboardType="number-pad"
+                  value={entered.feet}
+                  onChangeText={(feet) => setEntered({ ...entered, feet })}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <TextField
+                  label={t("space.tape.inches")}
+                  keyboardType="decimal-pad"
+                  value={entered.inches}
+                  onChangeText={(inches) => setEntered({ ...entered, inches })}
+                />
+              </View>
+            </View>
+          ) : (
+            <TextField
+              label={t("space.tape.centimetres")}
+              keyboardType="decimal-pad"
+              value={entered.centimetres}
+              onChangeText={(centimetres) => setEntered({ ...entered, centimetres })}
+            />
+          )}
+          <Button label={t("space.apply")} disabled={measured === null} onPress={applyTape} />
         </View>
       </Sheet>
     </View>

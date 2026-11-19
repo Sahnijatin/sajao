@@ -18,7 +18,7 @@ Your photo dissolves into the redesigned room with lamps on, then the three desi
 
 ## Spatial view
 
-- **2D plan (Must).** Drawn with Skia: room outline, items to scale, clearances in cm or feet and inches, door swings, and the error band as a soft halo when unverified. Drag and rotate re-run the verifier live with haptic snaps.
+- **2D plan (Must).** Drawn with Skia: room outline, items to scale, clearances in feet and inches, door swings, and the error band as a soft halo when unverified. Drag and rotate re-run the verifier live with haptic snaps.
 - **Swap.** A carousel of alternatives per item, pre-filtered to fit the same footprint and budget.
 - **3D dollhouse (Next).** react-native-filament on capable phones, 2D fallback on low-tier phones.
 

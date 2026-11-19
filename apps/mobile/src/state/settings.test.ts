@@ -22,10 +22,10 @@ describe("settings saved by an earlier version", () => {
     });
   });
 
-  it("from this version on, a choice of centimetres is kept", () => {
+  it("centimetres chosen before version 3 move to feet and inches, which every length shows in", () => {
     expect(migrateSettings({ language: "en", units: "cm" }, 2)).toEqual({
       language: "en",
-      units: "cm",
+      units: "ft_in",
     });
   });
 
