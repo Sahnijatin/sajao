@@ -2005,8 +2005,16 @@
           "minItems": 1
         },
         "image_use_permitted": {
-          "const": true,
-          "description": "A product enters the contract only with permission to use its images."
+          "type": "boolean",
+          "description": "Permission to use the product's images. false only for a development product (catalog_stage development), which development and closed-test builds may show and the store release never does."
+        },
+        "catalog_stage": {
+          "type": "string",
+          "enum": [
+            "live",
+            "development"
+          ],
+          "description": "live: a permitted source and route. development: hand-curated for building and testing before a source grants permission."
         },
         "routes": {
           "type": "array",
@@ -2016,7 +2024,31 @@
           "minItems": 1,
           "description": "At least one permitted buy or rent route."
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "image_use_permitted": {
+                "const": false
+              }
+            },
+            "required": [
+              "image_use_permitted"
+            ]
+          },
+          "then": {
+            "properties": {
+              "catalog_stage": {
+                "const": "development"
+              }
+            },
+            "required": [
+              "catalog_stage"
+            ]
+          }
+        }
+      ]
     },
     "ProductGroup": {
       "type": "string",

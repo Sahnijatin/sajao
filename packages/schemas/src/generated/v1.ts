@@ -71,6 +71,13 @@ export type UnitScore = number
  */
 export type StorageKey = string
 /**
+ * A real, curated catalog item. Dimensions, price and stock come from retailer data and checks, never from a generative model.
+ * 
+ * This interface was referenced by `SajaoContract`'s JSON-Schema
+ * via the `definition` "Product".
+ */
+export type Product = Product1
+/**
  * Top-level grouping used for the cost breakdown.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
@@ -613,13 +620,7 @@ rotation_deg: AngleDeg
  */
 placed_by: ("solver" | "user")
 }
-/**
- * A real, curated catalog item. Dimensions, price and stock come from retailer data and checks, never from a generative model.
- * 
- * This interface was referenced by `SajaoContract`'s JSON-Schema
- * via the `definition` "Product".
- */
-export interface Product {
+export interface Product1 {
 schema_version: SchemaVersion
 id: Uuid
 /**
@@ -649,9 +650,13 @@ checked_at: Timestamp
  */
 images: [HttpsUrl, ...(HttpsUrl)[]]
 /**
- * A product enters the contract only with permission to use its images.
+ * Permission to use the product's images. false only for a development product (catalog_stage development), which development and closed-test builds may show and the store release never does.
  */
-image_use_permitted: true
+image_use_permitted: boolean
+/**
+ * live: a permitted source and route. development: hand-curated for building and testing before a source grants permission.
+ */
+catalog_stage?: ("live" | "development")
 /**
  * At least one permitted buy or rent route.
  * 

@@ -1324,9 +1324,17 @@ class Product(BaseModel):
     ]
     images: Annotated[list[HttpsUrl], Field(min_length=1)]
     image_use_permitted: Annotated[
-        Literal[True],
-        Field(description="A product enters the contract only with permission to use its images."),
+        bool,
+        Field(
+            description="Permission to use the product's images. false only for a development product (catalog_stage development), which development and closed-test builds may show and the store release never does."
+        ),
     ]
+    catalog_stage: Annotated[
+        Literal["live", "development"] | None,
+        Field(
+            description="live: a permitted source and route. development: hand-curated for building and testing before a source grants permission."
+        ),
+    ] = None
     routes: Annotated[
         list[ProductRoute],
         Field(description="At least one permitted buy or rent route.", min_length=1),
