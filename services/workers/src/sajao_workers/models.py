@@ -200,6 +200,19 @@ def splat_chain(invoke: Invoke) -> list[GpuModelProvider]:
     ]
 
 
+# Seconds a removal on one photo may take, model loading included.
+INPAINT_SECONDS = 300.0
+
+
+def photo_inpaint_chain(invoke: Invoke) -> list[GpuModelProvider]:
+    """Removal on a photo: LaMa on the model GPU, beside depth and segmentation. One
+    model: it fills real pixels better than diffusion inpainting did (removal comparison).
+    When it fails, the render step falls back to products drawn over the room as it is."""
+    return [
+        GpuModelProvider("lama", LAMA, "L40S", INPAINT_SECONDS, invoke, max_concurrency=MODEL_GPUS)
+    ]
+
+
 def removal_chain(invoke: Invoke) -> list[GpuModelProvider]:
     """Object removal, fill B: LaMa inpainting, then a splat fine-tune (gsplat).
 

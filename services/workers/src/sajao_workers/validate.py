@@ -240,3 +240,14 @@ def check_removal() -> Validator:
         )
 
     return validate
+
+
+def check_inpaint(payload: Mapping[str, Any]) -> Validator:
+    """A filled image per frame asked, in order."""
+    asked: Sequence[Mapping[str, Any]] = payload["frames"]
+
+    def validate(result: ProviderResult) -> None:
+        for frame in _frames(result, asked):
+            _require(DIGEST.match(str(frame.get("filled"))) is not None, "filled is a blob digest")
+
+    return validate

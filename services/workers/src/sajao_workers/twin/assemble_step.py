@@ -20,6 +20,7 @@ from sajao_workers.steps import ArtifactStore, NonRetryableStepError, Step, Step
 from sajao_workers.twin.assemble import AssemblyError, assemble_twin, storage_key
 from sajao_workers.twin.hero import FrameView, frame_view, pick_hero_views
 from sajao_workers.twin.objects import decode_depth_mm, decode_mask
+from sajao_workers.twin.objects_step import few_views
 from sajao_workers.twin.shell import MIN_FRAMES as OPENING_FRAMES
 from sajao_workers.twin.shell import (
     TextureBuilder,
@@ -32,7 +33,7 @@ from sajao_workers.twin.shell import (
 from sajao_workers.twin.space import Space, fit_space
 
 # Bump when assembly, the shell fit or the crops change.
-VERSION = 7
+VERSION = 9
 CROP_MARGIN = 0.10  # of the mask's box, split between the two sides
 CROPS_PER_OBJECT = 4
 
@@ -100,7 +101,7 @@ def _shell_from_frames(
         if found is not None:
             sightings.append(found)
     space.shell["openings"] = fuse_openings(
-        sightings, manifest["depth_source"], 1 if manifest.get("single_view") else OPENING_FRAMES
+        sightings, manifest["depth_source"], 1 if few_views(manifest) else OPENING_FRAMES
     )
 
     if not textures:
@@ -211,12 +212,18 @@ def assemble_step(points_for_shell: PointsForShell = shell_points) -> Step:
         points = points_for_shell(context.store, manifest)
         if len(points) < 1000:
             raise NonRetryableStepError("too little depth to fit the room shell")
-        single = bool(manifest.get("single_view"))
+        # Photos (one or a few, no scan): edges they did not show are open, and the floor
+        # reaches every spot a photo was taken from.
+        photos = bool(manifest.get("single_view") or manifest.get("from_photos"))
         space = fit_space(
             points,
             depth_source=manifest["depth_source"],
-            unseen_open=single,
-            stood_at=np.asarray(manifest["frames"][0]["c2w"])[:3, 3] if single else None,
+            unseen_open=photos,
+            stood_at=(
+                np.array([np.asarray(f["c2w"])[:3, 3] for f in manifest["frames"]])
+                if photos
+                else None
+            ),
         )
         openings = json.loads(context.read("openings")) if "openings" in context.inputs else []
         coverage = _shell_from_frames(context.store, manifest, objects, openings, space)

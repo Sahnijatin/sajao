@@ -119,9 +119,10 @@ def fit_space(
     x0, x1 = np.percentile(squared[:, 0], [1.0, 99.0])
     y0, y1 = np.percentile(squared[:, 1], [1.0, 99.0])
     if stood_at is not None:
-        cx, cy = (np.asarray(stood_at, dtype=np.float64) @ AR_TO_Z_UP.T @ _turn(turn_deg).T)[:2]
-        x0, x1 = min(x0, cx), max(x1, cx)
-        y0, y1 = min(y0, cy), max(y1, cy)
+        spots = np.atleast_2d(np.asarray(stood_at, dtype=np.float64))
+        flat = spots @ AR_TO_Z_UP.T @ _turn(turn_deg).T
+        x0, x1 = min(x0, float(flat[:, 0].min())), max(x1, float(flat[:, 0].max()))
+        y0, y1 = min(y0, float(flat[:, 1].min())), max(y1, float(flat[:, 1].max()))
     origin = np.array([x0, y0, floor])
     length, width = float(x1 - x0), float(y1 - y0)
 

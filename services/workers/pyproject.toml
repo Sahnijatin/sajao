@@ -9,11 +9,13 @@ dependencies = [
     "httpx>=0.28",
     "numpy>=2.1",
     "pillow>=11.0",
+    "sajao-catalog",
     "sajao-gateway",
     "sajao-schemas",
 ]
 
 [tool.uv.sources]
+sajao-catalog = { workspace = true }
 sajao-gateway = { workspace = true }
 sajao-schemas = { workspace = true }
 

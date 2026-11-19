@@ -33,7 +33,7 @@ from sajao_workers.twin.photos import (
 from sajao_workers.validate import check_poses
 
 # Bump when these steps' logic or the pinned pose model change.
-VERSION = 4
+VERSION = 5
 # A pose model world this far from metres (either way) is a failure, not a scale.
 SCALE_RANGE = (0.02, 50.0)
 # A photo whose depth covers less than this is left out of the geometry (a blank
@@ -136,7 +136,13 @@ def photo_scale_step() -> Step:
                     "c2w": [[round(float(v), 9) for v in row] for row in c],
                 }
             )
-        out = {**manifest, "up_axis": 1, "depth_source": "image", "frames": out_frames}
+        out = {
+            **manifest,
+            "up_axis": 1,
+            "depth_source": "image",
+            "from_photos": True,
+            "frames": out_frames,
+        }
         return StepOutput(
             files={"frames": json.dumps(out, sort_keys=True).encode()},
             meta={
