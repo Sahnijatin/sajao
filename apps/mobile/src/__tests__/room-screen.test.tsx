@@ -114,7 +114,7 @@ describe("Room tab", () => {
     expect(walls.getByText("Measured, to within 1 cm")).toBeTruthy();
     expect(screen.getAllByTestId("measure-provenance")).toHaveLength(1);
     await fireEvent.press(walls.getByRole("button", { name: "Wall C, approx. 420 cm" }));
-    expect(walls.getByText("Estimated, to within 15 cm")).toBeTruthy();
+    expect(walls.getByText("Estimated from photos. Measure to confirm fit.")).toBeTruthy();
     await fireEvent.press(wallA);
     expect(walls.queryByText("Measured, to within 1 cm")).toBeNull();
   });
@@ -129,7 +129,7 @@ describe("Room tab", () => {
     expect(openings.getByText("150 cm wide, 120 cm high")).toBeTruthy();
     // A door's width and height share a line: the wider band is the one shown.
     await fireEvent.press(openings.getByText("Door"));
-    expect(openings.getByText("Estimated, to within 5 cm")).toBeTruthy();
+    expect(openings.getByText("Estimated from photos. Measure to confirm fit.")).toBeTruthy();
   });
 
   it("lists the big items already in the room with their sizes", async () => {
@@ -576,7 +576,8 @@ describe("how far to trust the numbers", () => {
   it("an estimated room says so, offers to measure, and makes no fit claims", async () => {
     const onMeasure = jest.fn();
     await show({ ...real, confidence: "estimated" }, { onMeasure });
-    expect(screen.getByText("Estimated")).toBeTruthy();
+    expect(screen.getByText("Estimated from photos")).toBeTruthy();
+    expect(screen.getByText("Measure to confirm fit.")).toBeTruthy();
     await fireEvent.press(screen.getByRole("button", { name: "Measure this room for exact fit" }));
     expect(onMeasure).toHaveBeenCalledTimes(1);
     await openTab("Shopping list");

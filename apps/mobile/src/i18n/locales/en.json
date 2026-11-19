@@ -232,7 +232,7 @@
       "ceilingTitle": "Ceiling height",
       "none": "Your room's measurements appear here once it is measured.",
       "source": {
-        "estimated": "Estimated, to within {{band}}",
+        "estimated": "Estimated from photos. Measure to confirm fit.",
         "measured": "Measured, to within {{band}}",
         "user_confirmed": "Confirmed by you, to within {{band}}"
       }
@@ -285,8 +285,8 @@
         "body": "These sizes come from scanning the room."
       },
       "estimated": {
-        "title": "Estimated",
-        "body": "These sizes are worked out from photos. Measure to confirm before you buy."
+        "title": "Estimated from photos",
+        "body": "Measure to confirm fit."
       },
       "measure": "Measure this room for exact fit"
     },
@@ -346,7 +346,7 @@
       "evening": "evening light",
       "soft": "soft light"
     },
-    "estimated": "Estimated ±{{band}}",
+    "estimated": "Estimated from photos. Measure to confirm fit.",
     "verified": "Verified",
     "itemsTitle": "Things already here",
     "actions": {
