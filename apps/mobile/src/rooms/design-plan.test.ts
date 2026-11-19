@@ -5,6 +5,7 @@ import {
   designPlan,
   footprint,
   MAX_CLEARANCES,
+  placeLabels,
   wallClearance,
 } from "./design-plan";
 import { SAMPLE_DESIGNS } from "./sample-designs";
@@ -182,5 +183,48 @@ describe("a room that is not a closed box", () => {
     const plan = designPlan({ ...bestMatch, items: [item] } as Design, open, box);
     expect(plan.clearances).toHaveLength(1);
     expect(round(plan.clearances[0]!.metres)).toBe(0.6);
+  });
+});
+
+describe("the plan's labels", () => {
+  const size = { width: 80, height: 20 };
+  const area = { width: 300, height: 300 };
+  const label = (id: string, x: number, y: number, priority: number) => ({
+    id,
+    at: { x, y },
+    text: id,
+    tone: "gap" as const,
+    priority,
+  });
+  const overlaps = (a: { at: { x: number; y: number } }, b: { at: { x: number; y: number } }) =>
+    Math.abs(a.at.x - b.at.x) < size.width && Math.abs(a.at.y - b.at.y) < size.height;
+
+  it("never overlap: a clash moves to the nearest free spot", () => {
+    const placed = placeLabels([label("a", 150, 150, 1), label("b", 160, 152, 2)], area, size);
+    expect(placed).toHaveLength(2);
+    expect(placed[0]?.at).toEqual({ x: 150, y: 150 });
+    expect(overlaps(placed[0]!, placed[1]!)).toBe(false);
+  });
+
+  it("keep the most important where it is, and leave out one with no free spot", () => {
+    const crowd = [
+      label("low", 150, 150, 5),
+      label("top", 150, 150, 0),
+      label("up", 150, 130, 1),
+      label("down", 150, 170, 1),
+      label("left", 110, 150, 1),
+      label("right", 190, 150, 1),
+    ];
+    const placed = placeLabels(crowd, area, size);
+    expect(placed.find((each) => each.id === "top")?.at).toEqual({ x: 150, y: 150 });
+    for (const a of placed) {
+      for (const b of placed) if (a !== b) expect(overlaps(a, b)).toBe(false);
+    }
+    expect(placed.some((each) => each.id === "low")).toBe(false);
+  });
+
+  it("stay on the plan", () => {
+    const [edge] = placeLabels([label("edge", 20, 150, 0)], area, size);
+    expect(edge!.at.x - size.width / 2).toBeGreaterThanOrEqual(0);
   });
 });

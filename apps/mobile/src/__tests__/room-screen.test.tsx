@@ -407,6 +407,29 @@ describe("a room with nothing ready yet", () => {
   });
 });
 
+describe("the Room tab's photos", () => {
+  it("never shows a blank card: no tile without a picture, and a missing photo drops out", async () => {
+    const photo = (id: string) => ({
+      id,
+      still: { kind: "image", uri: `file:///${id}.jpg` } as const,
+    });
+    await show({
+      ...real,
+      heroViews: [
+        photo("k1"),
+        { id: "plain", still: { kind: "placeholder", look: "before" } },
+        photo("k2"),
+      ],
+    });
+    expect(screen.queryByTestId("room-hero-plain")).toBeNull();
+    expect(screen.getByTestId("room-hero-k1")).toBeTruthy();
+    await act(async () => {
+      fireEvent(screen.getByTestId("room-hero-k2").children[0] as never, "error");
+    });
+    expect(screen.queryByTestId("room-hero-k2")).toBeNull();
+  });
+});
+
 describe("a room whose job is running or stopped", () => {
   it("shows the stages while there is nothing yet, never a stand-in", async () => {
     await render(

@@ -164,6 +164,11 @@ function RoomTabBody({
   // The plan fills its card: the screen less the page and card padding.
   const planWidth = width - spacing.gutter * 4;
   const measures = content.measures;
+  // A real room shows only views with a picture: never a blank card.
+  const [missing, setMissing] = useState<string[]>([]);
+  const heroViews = content.heroViews.filter(
+    (view) => !missing.includes(view.id) && (content.sample || view.still.kind === "image"),
+  );
   // A piece tapped on the plan; a different look starts with none.
   const [picked, setPicked] = useState<{ slot: string; id: string } | null>(null);
   const selectedId = look && picked?.slot === look.design.slot ? picked.id : null;
@@ -194,12 +199,15 @@ function RoomTabBody({
         style={{ marginHorizontal: -spacing.gutter }}
         contentContainerStyle={{ paddingHorizontal: spacing.gutter, gap: spacing.xl }}
       >
-        {content.heroViews.map((view, index) => (
+        {heroViews.map((view, index) => (
           <RoomStillView
             key={view.id}
+            testID={`room-hero-${view.id}`}
             still={view.still}
-            label={t("reveal.view", { number: index + 1, total: content.heroViews.length })}
+            label={t("reveal.view", { number: index + 1, total: heroViews.length })}
             drawn={content.sample}
+            // A photo the phone no longer has drops out rather than leave a blank card.
+            onMissing={() => setMissing((gone) => [...gone, view.id])}
             style={{
               width: cardWidth,
               aspectRatio: STILL_ASPECT,

@@ -10,7 +10,9 @@ import {
   type TasteState,
 } from "./taste-session";
 
-const reduce = tasteReducer(DECK);
+// The swipe logic, with a deck whose cards have their pictures.
+const PICTURED = DECK.map((card) => ({ ...card, image: "card.jpg" }));
+const reduce = tasteReducer(PICTURED);
 const run = (state: TasteState, events: TasteEvent[]) => events.reduce(reduce, state);
 
 const context: TasteEvent[] = [
@@ -139,5 +141,22 @@ describe("taste onboarding flow", () => {
 
   it("refuses to produce answers before onboarding is finished", () => {
     expect(() => tasteAnswers(startTaste(), DECK)).toThrow();
+  });
+
+  it("leaves out the swipes while the cards have no pictures", () => {
+    expect(DECK.some((card) => card.image === undefined)).toBe(true);
+    const blank = tasteReducer(DECK);
+    let state = startTaste();
+    for (const event of [
+      { type: "ageBand", value: "25_34" },
+      { type: "household", value: "couple" },
+      { type: "tenure", value: "rented" },
+      { type: "continue" },
+    ] as const) {
+      state = blank(state, event);
+    }
+    expect(state.step).toBe("budget");
+    expect(state.card).toBeNull();
+    expect(blank(state, { type: "back" }).step).toBe("context");
   });
 });
