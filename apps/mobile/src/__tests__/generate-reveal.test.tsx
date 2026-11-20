@@ -153,6 +153,24 @@ describe("reveal", () => {
     expect(screen.queryByText(/illustrative/i)).toBeNull();
   });
 
+  it("says when a look kept the seating and refreshed around it", async () => {
+    const photo = { kind: "image", uri: "file:///photo-1.jpg" } as const;
+    const real: RoomContent = {
+      ...content,
+      sample: false,
+      confidence: "estimated",
+      heroViews: [],
+      looks: content.looks.map((look, index) => ({
+        ...look,
+        still: photo,
+        stillIsToday: true,
+        design: { ...look.design, layout_rung: index === 0 ? "refresh" : "standard" },
+      })),
+    };
+    await show(<RevealScreen content={real} onOpenRoom={jest.fn()} />);
+    expect(screen.getAllByText("We kept your seating and refreshed around it.")).toHaveLength(1);
+  });
+
   it("adds no estimated line for a measured room", async () => {
     await show(<RevealScreen content={{ ...content, sample: false }} onOpenRoom={jest.fn()} />);
     await fireEvent.press(screen.getByRole("button", { name: "See my three looks" }));

@@ -479,6 +479,10 @@ function DesignsTabBody({
         <Text variant="captionStrong" tone="tertiary">
           {t("designs.why")}
         </Text>
+        {/* A photo room whose only fit was to keep the seating says so first. */}
+        {design.layout_rung === "refresh" ? (
+          <Text testID="design-refresh">{t("designs.refresh")}</Text>
+        ) : null}
         {design.explanations.map((line) => (
           <Text key={line}>{line}</Text>
         ))}

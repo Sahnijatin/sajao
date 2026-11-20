@@ -164,6 +164,11 @@ export function RevealScreen({ content, onOpenRoom }: RevealProps) {
                         amount: formatInr(look.design.total_cost.amount_minor),
                       })}
                     </Text>
+                    {look.design.layout_rung === "refresh" ? (
+                      <Text variant="caption" tone="secondary">
+                        {t("designs.refresh")}
+                      </Text>
+                    ) : null}
                   </View>,
                   look.stillIsToday,
                 ),

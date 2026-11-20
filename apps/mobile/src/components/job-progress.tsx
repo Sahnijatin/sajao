@@ -22,13 +22,14 @@ export const KNOWN_REASONS: readonly string[] = [
   "no_products",
   "no_layout_for_room",
   "nothing_fits",
+  "needs_wider_view",
   "render_failed",
   "timed_out",
   "internal",
 ];
 
 /** Failures that another photo of the same room can fix. */
-export const ADD_PHOTO_REASONS: readonly string[] = ["nothing_fits"];
+export const ADD_PHOTO_REASONS: readonly string[] = ["nothing_fits", "needs_wider_view"];
 
 export function JobProgress({
   job,
