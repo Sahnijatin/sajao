@@ -1456,7 +1456,7 @@ class RenderImage(BaseModel):
 
 class RenderChecks(BaseModel):
     """
-    Required for guided_photo renders, enforced by the render step: a guided photo reaches a user only when all four pass.
+    Required for guided_photo and composite_lit renders, enforced by the render step: such a render reaches a user only when all four pass; otherwise the plain composite is shown.
     """
 
     model_config = ConfigDict(
@@ -1487,9 +1487,9 @@ class Render(BaseModel):
     design_id: UUID
     created_at: Annotated[AwareDatetime, Field(description="UTC instant, RFC 3339.")]
     kind: Annotated[
-        Literal["guided_photo", "fallback_3d"],
+        Literal["guided_photo", "fallback_3d", "composite", "composite_lit"],
         Field(
-            description="guided_photo is a guided edit of the user's own photo; fallback_3d is the clean 3D render shown when checks fail."
+            description="guided_photo: a guided edit of the user's own photo. fallback_3d: the clean 3D render shown when checks fail. composite: the photo with the design's removed things taken out and each product's checked 3D asset placed by code where the solver put it (C3); no model draws a product, and it is the fallback that always renders. composite_lit: the composite with a light-only model pass that may change light and shadow but never a product's shape, place or colour (C3L); it carries checks."
         ),
     ]
     quality: Literal["preview_1k", "full_2k"]
@@ -1507,7 +1507,7 @@ class Render(BaseModel):
     checks: Annotated[
         RenderChecks | None,
         Field(
-            description="Required for guided_photo renders, enforced by the render step: a guided photo reaches a user only when all four pass.",
+            description="Required for guided_photo and composite_lit renders, enforced by the render step: such a render reaches a user only when all four pass; otherwise the plain composite is shown.",
             title="RenderChecks",
         ),
     ] = None
