@@ -123,12 +123,12 @@ export type DetectionSource = ("detected" | "user")
  */
 export type ObjectType = ("furniture" | "fixture" | "wall_item" | "textile" | "decor")
 /**
- * Why the job stopped. upload_incomplete: a file of the capture is not in storage. photo_too_small: a photo is below the minimum the render needs. timed_out: a stage ran past its limit and its retry. internal: an error on our side; trying again may work.
+ * Why the job stopped. upload_incomplete: a file of the capture is not in storage. photo_too_small: a photo is below the minimum the render needs. needs_wider_view: a photo room where not even a refresh around the existing seating fits in what the photo shows; a photo from the opposite corner may help. timed_out: a stage ran past its limit and its retry. internal: an error on our side; trying again may work.
  * 
  * This interface was referenced by `SajaoContract`'s JSON-Schema
  * via the `definition` "RoomFailureReason".
  */
-export type RoomFailureReason = ("upload_incomplete" | "photo_too_small" | "photo_missing" | "photo_unreadable" | "no_ar_data" | "planes_unreadable" | "floor_not_visible" | "no_walls" | "space_not_supported" | "invalid_request" | "no_products" | "no_layout_for_room" | "nothing_fits" | "render_failed" | "timed_out" | "internal")
+export type RoomFailureReason = ("upload_incomplete" | "photo_too_small" | "photo_missing" | "photo_unreadable" | "no_ar_data" | "planes_unreadable" | "floor_not_visible" | "no_walls" | "space_not_supported" | "invalid_request" | "no_products" | "no_layout_for_room" | "nothing_fits" | "needs_wider_view" | "render_failed" | "timed_out" | "internal")
 /**
  * uploaded: the capture is registered and the job is queued. reading: measuring the room and listing what is in it. designing: choosing products and placing them. rendering: drawing the designs on the photos. ready: three designs with their pictures. failed: see failure.
  * 
@@ -632,6 +632,10 @@ slot: ("best_value" | "best_match" | "bold")
  * Layout archetype key.
  */
 archetype: string
+/**
+ * On a photo room, which rung of the fallback ladder made this design: standard (the archetype's own layout), floating_sofa (a sofa facing the kept TV, backed onto an open or unseen side), side_wall_sofa (a sofa on a side wall at a right angle to the TV), smaller_seating (a two seater or armchairs), refresh (the existing seating kept; rug, lighting, side table, art and plants added).
+ */
+layout_rung?: ("standard" | "floating_sofa" | "side_wall_sofa" | "smaller_seating" | "refresh")
 /**
  * @minItems 1
  */
@@ -1365,9 +1369,9 @@ start: Point2
 end: Point2
 length: Dimension
 /**
- * What this edge of the floor polygon is. wall (the default when absent): a wall was seen here, from near the floor to near the ceiling. open: no wall was seen between the walls on either side: a doorway, the way into the next area, or a stretch that was not scanned. Open edges are passable, never a surface to place things against.
+ * What this edge of the floor polygon is. wall (the default when absent): a wall was seen here, from near the floor to near the ceiling. open: no wall stands here, and the photos or scan saw that: a doorway or the way into the next area. Open edges are passable, never a surface to place things against. unseen: no photo or scan showed this edge, so whether a wall stands here is not known; the app never calls it open. Nothing is placed against it and nobody is routed through it; another photo may resolve it.
  */
-kind?: ("wall" | "open")
+kind?: ("wall" | "open" | "unseen")
 }
 /**
  * This interface was referenced by `SajaoContract`'s JSON-Schema

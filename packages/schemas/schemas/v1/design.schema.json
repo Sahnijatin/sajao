@@ -47,6 +47,11 @@
       "minLength": 1,
       "description": "Layout archetype key."
     },
+    "layout_rung": {
+      "type": "string",
+      "enum": ["standard", "floating_sofa", "side_wall_sofa", "smaller_seating", "refresh"],
+      "description": "On a photo room, which rung of the fallback ladder made this design: standard (the archetype's own layout), floating_sofa (a sofa facing the kept TV, backed onto an open or unseen side), side_wall_sofa (a sofa on a side wall at a right angle to the TV), smaller_seating (a two seater or armchairs), refresh (the existing seating kept; rug, lighting, side table, art and plants added)."
+    },
     "items": {
       "type": "array",
       "items": {

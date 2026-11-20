@@ -13,7 +13,8 @@ interface Shell {
   walls: readonly { start: Metres; end: Metres; kind?: EdgeKind }[];
 }
 
-export type EdgeKind = "wall" | "open";
+/** unseen: no photo showed this edge; never shown to the person as open. */
+export type EdgeKind = "wall" | "open" | "unseen";
 
 /** A wall end may sit this far off the floor edge and still be that edge's wall. */
 export const EDGE_TOLERANCE_M = 0.15;
@@ -22,11 +23,11 @@ export const WALL_SHARE = 0.5;
 
 /** True for an entry of the twin's walls that is a wall, not an open side. */
 export function isWall(wall: { kind?: EdgeKind }): boolean {
-  return wall.kind !== "open";
+  return wall.kind !== "open" && wall.kind !== "unseen";
 }
 
 /**
- * Whether each edge of the floor polygon is a wall or open, in polygon
+ * Whether each edge of the floor polygon is a wall, open or unseen, in polygon
  * order (edge i runs from point i to point i + 1). An edge is a wall where
  * one of the twin's walls runs along it and is not marked open; an edge
  * marked open, or one nothing runs along, is open.
@@ -42,13 +43,15 @@ export function edgeKinds(shell: Shell): EdgeKind[] {
     // How far along the edge (0 to 1) a point is, and how far off its line.
     const along = (p: Metres) => ((p.x_m - a.x_m) * dx + (p.y_m - a.y_m) * dy) / (length * length);
     const off = (p: Metres) => Math.abs((p.x_m - a.x_m) * dy - (p.y_m - a.y_m) * dx) / length;
-    const covered = shell.walls.filter(isWall).reduce((most, wall) => {
-      if (off(wall.start) > EDGE_TOLERANCE_M || off(wall.end) > EDGE_TOLERANCE_M) return most;
-      const from = Math.max(0, Math.min(along(wall.start), along(wall.end)));
-      const to = Math.min(1, Math.max(along(wall.start), along(wall.end)));
-      return Math.max(most, to - from);
-    }, 0);
-    return covered >= WALL_SHARE ? "wall" : "open";
+    const share = (walls: Shell["walls"]) =>
+      walls.reduce((most, wall) => {
+        if (off(wall.start) > EDGE_TOLERANCE_M || off(wall.end) > EDGE_TOLERANCE_M) return most;
+        const from = Math.max(0, Math.min(along(wall.start), along(wall.end)));
+        const to = Math.min(1, Math.max(along(wall.start), along(wall.end)));
+        return Math.max(most, to - from);
+      }, 0);
+    if (share(shell.walls.filter(isWall)) >= WALL_SHARE) return "wall";
+    return share(shell.walls.filter((w) => w.kind === "unseen")) >= WALL_SHARE ? "unseen" : "open";
   });
 }
 

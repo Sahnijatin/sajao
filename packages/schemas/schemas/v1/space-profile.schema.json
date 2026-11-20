@@ -123,8 +123,8 @@
         },
         "kind": {
           "type": "string",
-          "enum": ["wall", "open"],
-          "description": "What this edge of the floor polygon is. wall (the default when absent): a wall was seen here, from near the floor to near the ceiling. open: no wall was seen between the walls on either side: a doorway, the way into the next area, or a stretch that was not scanned. Open edges are passable, never a surface to place things against."
+          "enum": ["wall", "open", "unseen"],
+          "description": "What this edge of the floor polygon is. wall (the default when absent): a wall was seen here, from near the floor to near the ceiling. open: no wall stands here, and the photos or scan saw that: a doorway or the way into the next area. Open edges are passable, never a surface to place things against. unseen: no photo or scan showed this edge, so whether a wall stands here is not known; the app never calls it open. Nothing is placed against it and nobody is routed through it; another photo may resolve it."
         }
       }
     },
