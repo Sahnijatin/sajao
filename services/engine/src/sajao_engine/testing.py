@@ -72,13 +72,15 @@ def twin_from_polygon(
     built_ins: Sequence[dict[str, Any]] = (),
     open_edges: Iterable[int] = (),
     open_spans: Mapping[int, tuple[float, float]] | None = None,
+    unseen_edges: Iterable[int] = (),
 ) -> SpaceTwin:
     """A twin whose shell is the counterclockwise polygon ``corners``.
 
     Edge ``i`` runs from corner ``i`` to the next and carries wall ``w{i+1}``, unless
     it is in ``open_edges`` (no wall: the area runs on into the next one) or has an
     open span (s0, s1) along it, which leaves walls ``w{i+1}`` before and
-    ``w{i+1}b`` after the span (an archway with no door).
+    ``w{i+1}b`` after the span (an archway with no door). Edges in ``unseen_edges``
+    keep their wall entry, marked unseen (no photo showed them).
     """
     base = load_schema_fixture("space-twin")
     open_set = set(open_edges)
@@ -111,6 +113,8 @@ def twin_from_polygon(
             walls.append(wall(f"w{i + 1}b", q, b))
             continue
         walls.append(wall(f"w{i + 1}", a, b))
+        if i in set(unseen_edges):
+            walls[-1]["kind"] = "unseen"
     shell_openings = []
     for o in openings:
         item: dict[str, Any] = {

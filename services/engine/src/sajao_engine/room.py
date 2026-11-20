@@ -160,6 +160,41 @@ class Obstacle:
 
 
 @dataclass(frozen=True)
+class Kept:
+    """An object that stays, wherever it is (a wall-mounted TV included): what a layout
+    may face or sit beside. `wall_id`: the wall it stands against, if any; `rect` faces
+    into the room from that wall."""
+
+    id: str
+    category: str
+    rect: Rect
+    wall_id: str | None
+
+
+# Kept things a layout may be built around, by group.
+KEPT_GROUPS: dict[str, frozenset[str]] = {
+    "tv": frozenset({"tv", "television", "tv screen", "smart tv", "monitor"}),
+    "seating": frozenset(
+        {
+            "sofa",
+            "couch",
+            "sectional",
+            "sectional sofa",
+            "loveseat",
+            "armchair",
+            "chair",
+            "accent chair",
+            "diwan",
+            "bench",
+            "recliner",
+        }
+    ),
+}
+# A kept thing whose middle is this close to a wall stands against it.
+AGAINST_WALL_M = 0.60
+
+
+@dataclass(frozen=True)
 class Room:
     floor: Poly
     walls: tuple[WallLine, ...]
@@ -175,6 +210,17 @@ class Room:
     wall_by_id: dict[str, WallLine] = field(default_factory=dict, compare=False)
     open_edges: tuple[OpenEdge, ...] = ()
     confidence: Confidence = "estimated"
+    # Edges no photo showed: kept clear of like a wall, never placed against, never an
+    # entrance (a wall may stand there or not).
+    unseen_edges: tuple[OpenEdge, ...] = ()
+    # Everything that stays, on the floor or not.
+    kept: tuple[Kept, ...] = ()
+
+    def kept_in(self, group: str) -> tuple[Kept, ...]:
+        """Kept things of a group (tv, seating), largest first."""
+        names = KEPT_GROUPS.get(group, frozenset())
+        found = [k for k in self.kept if k.category.lower().replace("_", " ") in names]
+        return tuple(sorted(found, key=lambda k: (-k.rect.width * k.rect.depth, k.id)))
 
     @property
     def fit_claims(self) -> bool:
@@ -212,14 +258,17 @@ def _inward(a: Point, b: Point, floor: Poly) -> Point:
     return n if point_in_polygon(probe, floor) else (-n[0], -n[1])
 
 
-def _wall_lines(twin: SpaceTwin, floor: Poly) -> tuple[WallLine, ...]:
-    # An edge marked open (a doorway, the way on, or a stretch not seen) is no wall:
-    # it becomes an open edge, passable and never a surface to place against.
+def _wall_lines(
+    twin: SpaceTwin, floor: Poly, kinds: tuple[str, ...] = ("wall",)
+) -> tuple[WallLine, ...]:
+    """The twin's edges of the given kinds as lines. An edge marked open (a doorway, the
+    way on) is no wall: it becomes an open edge, passable and never a surface to place
+    against. An unseen edge is neither a wall nor a way through."""
     raw = [
         (w.id, (w.start.x_m, w.start.y_m), (w.end.x_m, w.end.y_m), w.length.error_band_m)
         for w in twin.shell.walls
     ]
-    solid = {w.id for w in twin.shell.walls if w.kind != "open"}
+    solid = {w.id for w in twin.shell.walls if (w.kind or "wall") in kinds}
     lines = []
     for wid, a, b, band in raw:
         if wid not in solid:
@@ -354,6 +403,27 @@ class ObjectOverride:
     size: tuple[Dimension, Dimension, Dimension] | None = None
 
 
+def _kept(twin: SpaceTwin, removed: set[str], walls: Sequence[WallLine]) -> tuple[Kept, ...]:
+    out = []
+    for o in twin.objects:
+        if o.id in removed:
+            continue
+        box = o.box
+        centre = (box.center.x_m, box.center.y_m)
+        near = min(walls, key=lambda w: point_segment_distance(centre, w.a, w.b), default=None)
+        against = near is not None and point_segment_distance(centre, near.a, near.b) <= (
+            AGAINST_WALL_M
+        )
+        width, depth = high(box.width), high(box.depth)
+        if against and near is not None:
+            # Square to the wall, front into the room; the wider side runs along it.
+            rect = Rect(centre[0], centre[1], max(width, depth), min(width, depth), near.facing_deg)
+        else:
+            rect = Rect(centre[0], centre[1], width, depth, box.yaw_deg)
+        out.append(Kept(o.id, o.category, rect, near.id if against and near else None))
+    return tuple(out)
+
+
 def _obstacles(
     twin: SpaceTwin, removed: set[str], overrides: Mapping[str, ObjectOverride]
 ) -> tuple[Obstacle, ...]:
@@ -445,8 +515,10 @@ def room_from_twin(
         twin = _nominal(twin)
     floor = ccw([(p.x_m, p.y_m) for p in twin.shell.floor_polygon])
     walls = _wall_lines(twin, floor)
+    unseen = _wall_lines(twin, floor, ("unseen",))
     if level == "estimated":
         walls = tuple(replace(w, margin_m=ESTIMATED_CLEARANCE_M) for w in walls)
+        unseen = tuple(replace(w, margin_m=ESTIMATED_CLEARANCE_M) for w in unseen)
     by_id = {w.id: w for w in walls}
     openings = tuple(
         _opening(o, by_id[o.wall_id]) for o in twin.shell.openings if o.wall_id in by_id
@@ -468,6 +540,9 @@ def room_from_twin(
         redo=ccw(list(redo)) if redo else None,
         in_view=ccw(list(in_view)) if in_view else None,
         wall_by_id=by_id,
-        open_edges=_open_edges(floor, walls),
+        # An unseen edge covers its stretch: it is not open.
+        open_edges=_open_edges(floor, (*walls, *unseen)),
         confidence=level,
+        unseen_edges=tuple(OpenEdge(w.a, w.b, w.inward, w.margin_m) for w in unseen),
+        kept=_kept(twin, set(removed), walls),
     )

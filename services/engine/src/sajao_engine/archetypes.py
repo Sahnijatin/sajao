@@ -147,6 +147,9 @@ class Archetype:
     slots: tuple[Slot, ...]
     # The smallest floor this archetype makes sense in, in square metres.
     min_area_m2: float = 0.0
+    # A photo room's fallback layout, by the rung it serves (see FALLBACK_RUNGS); None
+    # for the standard archetypes, which the standard search tries first.
+    rung: str | None = None
 
     def slot(self, key: str) -> Slot:
         return next(s for s in self.slots if s.key == key)
@@ -464,9 +467,101 @@ BEDROOM = (
     ),
 )
 
-ARCHETYPES: dict[str, Archetype] = {a.key: a for a in (*LIVING, *BEDROOM)}
+# A photo room that the standard layouts cannot furnish in view steps down this ladder,
+# per intent, until a design verifies (Decision, 20 Nov). Each rung is plain layouts:
+# rules may target a kept thing (`kept:tv`, `kept:seating`) as if it were placed.
+FALLBACK_RUNGS: tuple[str, ...] = (
+    "floating_sofa",
+    "side_wall_sofa",
+    "smaller_seating",
+    "refresh",
+)
+TV_DISTANCE_M = (1.8, 3.2)
+SMALL_SEATS = ("loveseat", "armchair", "accent_chair")
+
+
+def _around(seat: str) -> tuple[Slot, ...]:
+    """What goes around a fallback seat; all optional."""
+    return (
+        Slot("coffee_table", ("coffee_table",), InFront(seat)),
+        Slot("rug", ("rug",), Under(seat)),
+        Slot("side_table", ("side_table",), Beside(seat)),
+        Slot("floor_lamp", ("floor_lamp",), Corner(near=seat)),
+        Slot("plant", ("plant",), Corner()),
+        Slot("ceiling_light", ("pendant_light", "ceiling_light"), Ceiling()),
+    )
+
+
+FALLBACK = (
+    Archetype(
+        "lr_float_tv",
+        "living_room",
+        "Sofa facing the TV, its back to the open side",
+        (
+            Slot("sofa", SOFAS, Facing("kept:tv", TV_DISTANCE_M), required=True),
+            *_around("sofa"),
+            Slot("armchair", CHAIRS, AtSide("coffee_table")),
+        ),
+        rung="floating_sofa",
+    ),
+    Archetype(
+        "lr_side_wall_tv",
+        "living_room",
+        "Sofa on a side wall, at a right angle to the TV",
+        (
+            Slot("sofa", SOFAS, AgainstWall(WallPick("beside", "kept:tv")), required=True),
+            *_around("sofa"),
+            Slot("art", ("art", "mirror"), OnWallAbove("sofa")),
+        ),
+        rung="side_wall_sofa",
+    ),
+    Archetype(
+        "lr_small_facing_tv",
+        "living_room",
+        "A two seater or armchairs facing the TV",
+        (
+            Slot("seat", SMALL_SEATS, Facing("kept:tv", (1.6, 3.0)), required=True),
+            Slot("seat_2", CHAIRS, Beside("seat", gap_m=(0.10, 0.40))),
+            *_around("seat"),
+        ),
+        rung="smaller_seating",
+    ),
+    Archetype(
+        "lr_small_wall",
+        "living_room",
+        "A two seater or armchairs against a wall",
+        (
+            Slot("seat", SMALL_SEATS, AgainstWall(WallPick("any")), required=True),
+            Slot("seat_2", CHAIRS, Beside("seat", gap_m=(0.10, 0.40))),
+            *_around("seat"),
+            Slot("art", ("art", "mirror"), OnWallAbove("seat")),
+        ),
+        rung="smaller_seating",
+    ),
+    Archetype(
+        "lr_refresh",
+        "living_room",
+        "Refresh: your seating stays; rug, lighting, side table, art and plants",
+        (
+            Slot("rug", ("rug",), Under("kept:seating")),
+            Slot("side_table", ("side_table",), Beside("kept:seating", gap_m=(0.02, 0.15))),
+            Slot("floor_lamp", ("floor_lamp",), Corner(near="kept:seating")),
+            Slot("art", ("art", "mirror"), OnWallAbove("kept:seating")),
+            Slot("plant", ("plant",), Corner()),
+            Slot("ceiling_light", ("pendant_light", "ceiling_light"), Ceiling()),
+        ),
+        rung="refresh",
+    ),
+)
+
+ARCHETYPES: dict[str, Archetype] = {a.key: a for a in (*LIVING, *BEDROOM, *FALLBACK)}
+
+
+def for_rung(rung: str, space: str) -> list[str]:
+    """The fallback archetypes of a rung for a space type, in order."""
+    return [a.key for a in FALLBACK if a.rung == rung and a.space == space]
 
 
 def for_space(space: str) -> tuple[Archetype, ...]:
     """Archetypes for a space type; none for spaces that do not get designs at launch."""
-    return tuple(a for a in ARCHETYPES.values() if a.space == space)
+    return tuple(a for a in ARCHETYPES.values() if a.space == space and a.rung is None)

@@ -231,7 +231,7 @@ async def test_one_photo_becomes_an_estimated_twin(tmp_path: Path) -> None:
     assert outline and len(outline[0].root) >= 4  # the app draws it without the mask file
     # The sofa stands on the left of the photo.
     assert max(p.x for p in outline[0].root) < 0.5
-    assert [w.kind or "wall" for w in twin.shell.walls].count("open") >= 1
+    assert [w.kind or "wall" for w in twin.shell.walls].count("unseen") >= 1
     # The app sees two rows, each done once, in order.
     done = [(s, st) for s, st, _ in board.moves if st == "done"]
     assert done == [("measure", "done"), ("inventory", "done")]

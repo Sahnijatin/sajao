@@ -60,6 +60,8 @@ async def test_gemini_sends_the_images_and_the_schema_and_is_charged_for_its_tok
     assert base64.b64decode(parts[0]["inlineData"]["data"]) == JPEG
     assert parts[2]["text"] == "List it all."
     assert sent["generationConfig"]["responseJsonSchema"] == INVENTORY_SCHEMA
+    assert sent["generationConfig"]["thinkingConfig"] == {"thinkingLevel": "low"}
+    assert sent["generationConfig"]["temperature"] == 0
     assert "gemini-3-flash-preview:generateContent" in sent["url"]
     # 2000 x 0.50 + 500 x 3.00 USD per million tokens, at 95 rupees per USD.
     assert result.cost_micro_inr == pytest.approx(0.0025 * 95 * 1e6, rel=0.01)

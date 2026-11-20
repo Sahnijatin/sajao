@@ -186,6 +186,7 @@ function RoomTabBody({
       approx: isApprox(widest),
     };
   };
+  const kinds = content.shell ? edgeKinds(content.shell) : [];
   return (
     <>
       {content.sample ? <Sample text={t("room.sample")} /> : null}
@@ -377,9 +378,14 @@ function RoomTabBody({
               {t("room.plan.softEdge")}
             </Text>
           ) : null}
-          {edgeKinds(content.shell).includes("open") ? (
+          {kinds.includes("open") ? (
             <Text testID="room-plan-open" variant="caption" tone="tertiary">
               {t("room.plan.openEdge")}
+            </Text>
+          ) : null}
+          {kinds.includes("unseen") ? (
+            <Text testID="room-plan-unseen" variant="caption" tone="tertiary">
+              {t("room.plan.unseenEdge")}
             </Text>
           ) : null}
         </Card>

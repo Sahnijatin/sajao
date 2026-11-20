@@ -300,14 +300,16 @@ def verify(
                     )
                 )
                 break
-        # An open edge is not a wall, but the design stays in this area by the edge's band.
-        for i, e in enumerate(room.open_edges):
+        # An open or unseen edge is not a wall, but the design stays in by the edge's band.
+        edges = [("open edge", e) for e in room.open_edges]
+        edges += [("unseen edge", e) for e in room.unseen_edges]
+        for i, (name, e) in enumerate(edges):
             if wall_gap(poly, e) + TOL_M < e.margin_m:
                 v.append(
                     Violation(
                         "inside_room",
                         (p.id,),
-                        f"Closer to open edge {i + 1} than its {e.margin_m * 100:.0f} cm band.",
+                        f"Closer to {name} {i + 1} than its {e.margin_m * 100:.0f} cm band.",
                     )
                 )
                 break
