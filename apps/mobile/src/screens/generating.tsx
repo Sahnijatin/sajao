@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import Animated, { cubicBezier } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { KNOWN_REASONS } from "@/components/job-progress";
+import { ADD_PHOTO_REASONS, KNOWN_REASONS } from "@/components/job-progress";
 import {
   type GenerationSource,
   type GenerationStage,
@@ -75,9 +75,12 @@ export function GeneratingScreen({
   onDone,
   onLeave,
   onRetry,
+  onAddPhoto,
   source,
   designs = true,
 }: {
+  /** The room needs another photo: opens the camera for this same room. */
+  onAddPhoto?: () => void;
   /** A stage failed and the person chose to go back to My home. */
   onLeave?: () => void;
   /** A stage failed and the person asked to try that room again. */
@@ -128,6 +131,9 @@ export function GeneratingScreen({
             {t("generating.failed.title")}
           </Text>
           <Text tone="secondary">{t(`generating.failed.${reason}`)}</Text>
+          {onAddPhoto && ADD_PHOTO_REASONS.includes(progress.failed) ? (
+            <Button label={t("generating.failed.addPhoto")} onPress={onAddPhoto} />
+          ) : null}
           {onRetry ? <Button label={t("generating.failed.retry")} onPress={onRetry} /> : null}
           {onLeave ? (
             <Button label={t("generating.failed.back")} variant="ghost" onPress={onLeave} />

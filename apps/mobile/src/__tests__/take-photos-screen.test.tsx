@@ -178,4 +178,31 @@ describe("Take photos", () => {
     await fireEvent.press(screen.getByRole("button", { name: "Use photos or a video" }));
     expect(onUsePhotos).toHaveBeenCalledTimes(1);
   });
+
+  it("adding to a room opens the camera for one more and keeps the room's photos", async () => {
+    const onDone = jest.fn();
+    const prepare = jest.fn(async (_uri: string): Promise<SavedPhoto> => ({
+      ok: true,
+      photo: wide(2),
+    }));
+    await render(
+      <ThemeProvider tier="low" reducedMotion>
+        <TakePhotosScreen
+          onDone={onDone}
+          onClose={jest.fn()}
+          onUsePhotos={jest.fn()}
+          prepare={prepare}
+          initialPhotos={[wide(1)]}
+        />
+      </ThemeProvider>,
+    );
+    expect(screen.getByTestId("photos-camera")).toBeTruthy();
+    expect(screen.getByText("Photo 2 of up to 3")).toBeTruthy();
+    await act(async () => {
+      fireEvent.press(screen.getByTestId("photos-shutter"));
+    });
+    await fireEvent.press(screen.getByRole("button", { name: "Continue" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Use these photos" }));
+    expect(onDone).toHaveBeenCalledWith([wide(1), wide(2)]);
+  });
 });

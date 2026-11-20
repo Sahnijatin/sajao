@@ -31,7 +31,7 @@ interface RoomsState {
    * The room is being measured again with a new scan. The room keeps all it
    * has until the new scan is done (`finishRemeasure`) or fails (`abandonRemeasure`).
    */
-  remeasure(roomId: string, captureId: string): void;
+  remeasure(roomId: string, captureId: string, photos?: readonly RoomPhoto[]): void;
   /** The new scan is measured and has its designs: the room follows it from now on. */
   finishRemeasure(roomId: string, atMs?: number): void;
   /** The new scan failed or was given up: the room stays exactly as it was. */
@@ -70,10 +70,12 @@ export const useRooms = create<RoomsState>()(
           ),
         });
       },
-      remeasure(roomId, captureId) {
+      remeasure(roomId, captureId, photos) {
         set({
           rooms: get().rooms.map((room) =>
-            room.id === roomId ? { ...room, remeasure: { captureId } } : room,
+            room.id === roomId
+              ? { ...room, remeasure: { captureId, ...(photos ? { photos: [...photos] } : {}) } }
+              : room,
           ),
         });
       },
@@ -85,6 +87,7 @@ export const useRooms = create<RoomsState>()(
             return {
               ...kept,
               captureId: remeasure.captureId,
+              ...(remeasure.photos ? { photos: remeasure.photos } : {}),
               ...(remeasure.designIds ? { designIds: remeasure.designIds } : {}),
               // The new designs, if any, are set on the card right after.
               designCount: 0,

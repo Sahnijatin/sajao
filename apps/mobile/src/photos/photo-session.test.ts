@@ -11,6 +11,7 @@ import {
   type PhotoAction,
   photoSession,
   type PhotoSession,
+  sessionWith,
   type TakenPhoto,
 } from "./photo-session";
 
@@ -108,6 +109,18 @@ describe("Take photos", () => {
     expect(isLandscape(tall)).toBe(false);
     expect(isLandscape({ widthPx: 1000, heightPx: 1000 })).toBe(false);
     expect(isLandscape({ widthPx: 10, heightPx: 0 })).toBe(false);
+  });
+});
+
+describe("adding to a room that has photos", () => {
+  it("opens the camera for one more, keeping the room's photos", () => {
+    expect(sessionWith([])).toBe(initialSession);
+    expect(sessionWith([wide(1)])).toEqual({ current: { step: "camera" }, kept: [wide(1)] });
+  });
+
+  it("shows all three when the room has three, to retake one", () => {
+    const three = [wide(1), wide(2), wide(3)];
+    expect(sessionWith(three)).toEqual({ current: { step: "photos" }, kept: three });
   });
 });
 

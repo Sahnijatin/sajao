@@ -1,7 +1,7 @@
 import type { PickResult } from "@/import/pick";
 import { useCaptureStore } from "@/state/capture";
 import { useRooms } from "@/state/rooms";
-import { importFromGallery, startPhotoRoom } from "./media-import";
+import { addPhotosToRoom, importFromGallery, startPhotoRoom, takenPhotosOf } from "./media-import";
 
 const mockUpload = jest.fn();
 jest.mock("@/capture/package/start-upload", () => ({
@@ -73,5 +73,34 @@ describe("making a room from Take photos", () => {
     expect(uploaded.origin).toBe("camera");
     expect(uploaded.files.keyframes).toHaveLength(2);
     expect(device).toMatchObject({ has_ar: false });
+  });
+
+  it("adds photos to the same room: a new capture measures it again, losing nothing", () => {
+    const first = { uri: "file:///a.jpg", widthPx: 2048, heightPx: 1536 };
+    const room = startPhotoRoom([first], "cap-a");
+    expect(takenPhotosOf(room)).toEqual([first]);
+    const more = { uri: "file:///b.jpg", widthPx: 2048, heightPx: 1536 };
+    mockUpload.mockClear();
+    addPhotosToRoom(room, [first, more], "cap-b");
+    const after = useRooms.getState().rooms.find((each) => each.id === room)!;
+    // Still the same room, following its first capture until the new one is done.
+    expect(useRooms.getState().rooms).toHaveLength(1);
+    expect(after.captureId).toBe("cap-a");
+    expect(after.remeasure?.captureId).toBe("cap-b");
+    expect(after.remeasure?.photos?.map((photo) => photo.uri)).toEqual([
+      "file:///a.jpg",
+      "file:///b.jpg",
+    ]);
+    expect(mockUpload).toHaveBeenCalledWith(
+      expect.objectContaining({ captureId: "cap-b" }),
+      expect.objectContaining({ has_ar: false }),
+    );
+    useRooms.getState().finishRemeasure(room);
+    expect(useRooms.getState().rooms[0]?.photos).toHaveLength(2);
+  });
+
+  it("has no photos to add to when the room's sizes are unknown", () => {
+    useRooms.getState().addRoomForCapture("cap-x", 0, [{ id: "k1", uri: "file:///x.jpg" }]);
+    expect(takenPhotosOf("cap-x")).toEqual([]);
   });
 });

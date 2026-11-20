@@ -21,6 +21,9 @@ export type RoomStill =
 export interface RoomPhoto {
   id: string;
   uri: string;
+  /** The photo's size, when it was taken in the app; used to add to the same room. */
+  widthPx?: number;
+  heightPx?: number;
 }
 
 export interface Room {
@@ -43,7 +46,12 @@ export interface Room {
    * designs have arrived. Until then the room keeps its capture, content and
    * designs; if the new scan fails, this is dropped and nothing is lost.
    */
-  remeasure?: { captureId: string; designIds?: DesignIds };
+  remeasure?: {
+    captureId: string;
+    designIds?: DesignIds;
+    /** The photos of the new capture, which become the room's once it is done. */
+    photos?: RoomPhoto[];
+  };
   /** The budget for this room's designs. Unset until it is asked. */
   budget?: TasteAnswers["budget"];
   /** The ids its designs are asked for with, made once. Unset until designs are first asked for. */

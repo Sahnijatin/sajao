@@ -212,7 +212,8 @@
       "nothing_fits": "None of our layouts fit what we could see of this room. Add a photo that shows more of the room, such as the wall facing the TV.",
       "render_failed": "We couldn't draw the designs this time. Tap Retry.",
       "timed_out": "This took too long on our side. Nothing is lost: tap Retry.",
-      "internal": "Something went wrong on our side. Nothing is lost: tap Retry."
+      "internal": "Something went wrong on our side. Nothing is lost: tap Retry.",
+      "addPhoto": "Add a photo"
     }
   },
   "reveal": {

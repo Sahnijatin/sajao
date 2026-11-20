@@ -31,6 +31,7 @@ export default function RoomRoute() {
     });
   }, [id]);
   const retry = () => void retryRoomJob(id);
+  const addPhoto = () => router.push({ pathname: "/photos", params: { room: id } });
   if (!loaded) return null;
   // A link to a room that is not on this phone goes to My home.
   if (!room) return <Redirect href="/" />;
@@ -44,6 +45,7 @@ export default function RoomRoute() {
           remeasuring={Boolean(room.remeasure)}
           job={job}
           onRetry={retry}
+          onAddPhoto={addPhoto}
           onChooseArea={() => router.push({ pathname: "/areas", params: { room: id } })}
           // "Measure this room for exact fit": the AR scan, on a phone that can run it.
           // The two-tape-value step joins it once the API takes tape values for a room.
@@ -54,7 +56,7 @@ export default function RoomRoute() {
           }
         />
       ) : (
-        <RoomWaiting job={job} onRetry={retry} />
+        <RoomWaiting job={job} onRetry={retry} onAddPhoto={addPhoto} />
       )}
     </>
   );

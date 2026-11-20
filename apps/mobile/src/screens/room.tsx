@@ -640,10 +640,12 @@ function ShoppingTabBody({
 export function RoomWaiting({
   job,
   onRetry,
+  onAddPhoto,
 }: {
   /** The room's job, when this phone is following it. */
   job?: RoomJobState;
   onRetry?: () => void;
+  onAddPhoto?: () => void;
 } = {}) {
   const { t } = useTranslation();
   const { tokens } = useTheme();
@@ -658,7 +660,7 @@ export function RoomWaiting({
         {t("room.waiting.title")}
       </Text>
       <Text tone="secondary">{t("room.waiting.body")}</Text>
-      {job ? <JobProgress job={job} onRetry={onRetry} /> : null}
+      {job ? <JobProgress job={job} onRetry={onRetry} onAddPhoto={onAddPhoto} /> : null}
     </ScrollView>
   );
 }
@@ -672,8 +674,11 @@ export function RoomScreen({
   remeasuring = false,
   job,
   onRetry,
+  onAddPhoto,
   showVastu = vastuEnabled(),
 }: {
+  /** The room needs another photo: opens the camera for this same room. */
+  onAddPhoto?: () => void;
   /** The Vastu view on Designs, behind its build setting (off). */
   showVastu?: boolean;
   content: RoomContent;
@@ -799,7 +804,7 @@ export function RoomScreen({
       {tab !== "room" && !awaitingChoice && offered && !look ? (
         // No designs yet: how the job is getting on, or why it stopped. Never a stand-in.
         job && job.stage !== "done" ? (
-          <JobProgress job={job} onRetry={onRetry} />
+          <JobProgress job={job} onRetry={onRetry} onAddPhoto={onAddPhoto} />
         ) : (
           <Text tone="secondary">{t("rooms.designs.none")}</Text>
         )
