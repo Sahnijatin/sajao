@@ -485,7 +485,7 @@ function DesignsTabBody({
         <Text variant="meta" tone="secondary">
           {fitClaimsAllowed(content.confidence)
             ? t(design.check_report.passed ? "designs.fits" : "designs.check")
-            : t("reveal.illustrative")}
+            : t("reveal.estimated")}
         </Text>
       </Card>
 

@@ -223,7 +223,7 @@
     "view": "Your room, view {{number}} of {{total}}",
     "sample": "These are sample looks. Yours appear here when they are ready.",
     "today": "Your room today",
-    "illustrative": "Illustrative. Sizes are estimated from your photos: measure to confirm before you buy."
+    "estimated": "Based on your photos. Measure to confirm fit."
   },
   "design": {
     "slot": {
