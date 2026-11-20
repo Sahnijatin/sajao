@@ -210,6 +210,7 @@
       "no_products": "We couldn't find products for this room within your budget. Try a higher budget.",
       "no_layout_for_room": "We couldn't find a layout that works in this room yet.",
       "nothing_fits": "None of our layouts fit what we could see of this room. Add a photo that shows more of the room, such as the wall facing the TV.",
+      "needs_wider_view": "We could not fit a design to what we could see of this room. Add a photo that shows more of the room, such as one from the opposite corner.",
       "render_failed": "We couldn't draw the designs this time. Tap Retry.",
       "timed_out": "This took too long on our side. Nothing is lost: tap Retry.",
       "internal": "Something went wrong on our side. Nothing is lost: tap Retry.",
@@ -309,6 +310,7 @@
   },
   "designs": {
     "why": "Why this works",
+    "refresh": "We kept your seating and refreshed around it.",
     "fits": "Everything fits your room",
     "check": "Some pieces need a fit check",
     "vastu": "Vastu view",

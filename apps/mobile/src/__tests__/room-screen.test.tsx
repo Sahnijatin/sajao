@@ -197,6 +197,23 @@ describe("Designs tab", () => {
     expect(screen.getByText("₹33,497 for everything")).toBeTruthy();
   });
 
+  it("says first when a look kept the seating and refreshed around it, and only then", async () => {
+    const looks = real.looks.map((look) => ({
+      ...look,
+      design: { ...look.design, layout_rung: "refresh" as const },
+    }));
+    const view = await show({ ...real, looks });
+    await openTab("Designs");
+    expect(screen.getByText("We kept your seating and refreshed around it.")).toBeTruthy();
+    await view.rerender(
+      <ThemeProvider tier="standard" reducedMotion>
+        <RoomScreen content={real} />
+      </ThemeProvider>,
+    );
+    await openTab("Designs");
+    expect(screen.queryByTestId("design-refresh")).toBeNull();
+  });
+
   it("shows nothing of Vastu while its build setting is off", async () => {
     await show({
       ...real,
@@ -467,6 +484,23 @@ describe("a room whose job is running or stopped", () => {
         />
       </ThemeProvider>,
     );
+    await fireEvent.press(screen.getByRole("button", { name: "Add a photo" }));
+    expect(onAddPhoto).toHaveBeenCalledTimes(1);
+  });
+
+  it("offers to add a photo, and no Retry, when a photo room needs a wider view", async () => {
+    const onAddPhoto = jest.fn();
+    await render(
+      <ThemeProvider tier="standard" reducedMotion>
+        <RoomWaiting
+          job={{ stage: "failed", finished: 2, reason: "needs_wider_view", retryable: false }}
+          onRetry={jest.fn()}
+          onAddPhoto={onAddPhoto}
+        />
+      </ThemeProvider>,
+    );
+    expect(screen.getByText(/Add a photo that shows more of the room/)).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Retry" })).toBeNull();
     await fireEvent.press(screen.getByRole("button", { name: "Add a photo" }));
     expect(onAddPhoto).toHaveBeenCalledTimes(1);
   });
