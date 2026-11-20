@@ -59,6 +59,9 @@ FINALS = 6
 SEARCH_CELL_M = 0.05
 # Pieces this large are checked for walkways as soon as they are placed.
 LARGE_M2 = 0.0
+# How far a seat facing a kept TV may sit to either side of it, and what that costs.
+KEPT_SLIDES_M = (0.0, -0.3, 0.3, -0.6, 0.6, -0.9, 0.9, -1.2, 1.2)
+SLIDE_COST = 0.2
 # Positions sit this far inside every margin so millimetre rounding never touches a band.
 SNUG_M = 0.002
 # Wall items hang with their center at this height; ceiling items hang from the ceiling.
@@ -154,6 +157,15 @@ class Piece:
 
 
 @dataclass(frozen=True)
+class Anchor:
+    """Something kept that a rule may target as if it were placed (`kept:tv`)."""
+
+    slot: str
+    rect: Rect
+    wall_id: str | None
+
+
+@dataclass(frozen=True)
 class State:
     pieces: tuple[Piece, ...]
     score: float
@@ -173,8 +185,37 @@ class Solver:
         self.kept_rugs = [o.footprint.corners() for o in room.obstacles if o.mount == "rug"]
         self.swings = [d.swing for d in room.doors if d.swing is not None]
         self.approaches = [d.approach.corners() for d in room.doors]
+        # Kept things rules may name as `kept:<group>`: the largest of each group.
+        self.anchors = {
+            group: Anchor(f"kept:{group}", found[0].rect, found[0].wall_id)
+            for group in ("tv", "seating")
+            for found in [room.kept_in(group)]
+            if found
+        }
         # The required slot the search could not place, if it stopped early.
         self.stuck_at: str | None = None
+
+    def _target(self, state: State, key: str | None) -> Piece | Anchor | None:
+        """A placed slot, or a kept thing named `kept:<group>`."""
+        if key is None:
+            return None
+        if key.startswith("kept:"):
+            return self.anchors.get(key.removeprefix("kept:"))
+        return state.get(key)
+
+    def _blocks_way_behind(self, piece: Piece) -> bool:
+        """A seat floating toward a kept thing (a sofa facing the kept TV, no wall behind
+        it) with its back to an open edge keeps a walkway at the nominal width behind it:
+        people come in that way (Decision, 20 Nov)."""
+        floating = piece.wall_id is None and (piece.target or "").startswith("kept:")
+        if not floating or not piece.cat.seating or piece.mount != "floor":
+            return False
+        fx, fy = piece.rect.front
+        for e in self.room.open_edges:
+            behind = fx * e.inward[0] + fy * e.inward[1] > 0.5
+            if behind and wall_gap(piece.poly, e) < e.margin_m + self.walkway:
+                return True
+        return False
 
     # Candidate poses.
 
@@ -190,7 +231,7 @@ class Solver:
         )
 
     def _walls_for(self, pick: A.WallPick, state: State) -> list[WallLine]:
-        target = state.get(pick.target) if pick.target else None
+        target = self._target(state, pick.target)
         tw = self.room.wall_by_id.get(target.wall_id) if target and target.wall_id else None
         out = []
         for w in self.room.walls:
@@ -241,9 +282,12 @@ class Solver:
         width, depth = high(dims.width), high(dims.depth)
         rule = slot.rule
         if isinstance(rule, A.AgainstWall):
+            tv = self.anchors.get("tv")
             for w in self._walls_for(rule.walls, state):
+                if category(product.category).seating and tv is not None and w.id == tv.wall_id:
+                    continue  # nobody sits with their back under the TV they keep
                 pref = self._wall_pref(rule.walls, w)
-                target = state.get(rule.walls.target) if rule.walls.target else None
+                target = self._target(state, rule.walls.target)
                 for s in self._steps(width / 2.0, w.length - width / 2.0):
                     rect = self._against(w, width, depth, s)
                     if rule.centered:
@@ -268,7 +312,7 @@ class Solver:
                         ss = s + nudge if s < w.length / 2 else s - nudge
                         yield self._against(w, width, depth, ss), w.id, pref - nudge
         elif isinstance(rule, A.InFront):
-            target = state.get(rule.target)
+            target = self._target(state, rule.target)
             if target is None:
                 return
             for gap in self._gaps(rule.gap_m):
@@ -286,26 +330,31 @@ class Solver:
                     -abs(gap - sum(rule.gap_m) / 2.0),
                 )
         elif isinstance(rule, A.Facing):
-            target = state.get(rule.target)
+            target = self._target(state, rule.target)
             if target is None:
                 return
+            # Facing a kept TV, a seat may also sit off to one side of it, still square
+            # on: the photo may show only part of the floor in front of the TV.
+            slides = KEPT_SLIDES_M if isinstance(target, Anchor) else (0.0,)
+            ux, uy = target.rect.axis_x
             for dist in self._gaps(rule.distance_m, step=0.2):
                 off = target.rect.depth / 2.0 + dist - depth / 2.0
                 fx, fy = target.rect.front
                 rot = normalise_deg(target.rect.rotation_deg + 180.0)
-                yield (
-                    Rect(
-                        round(target.rect.cx + fx * off, 3),
-                        round(target.rect.cy + fy * off, 3),
-                        width,
-                        depth,
-                        rot,
-                    ),
-                    None,
-                    -abs(dist - sum(rule.distance_m) / 2.0),
-                )
+                for slide in slides:
+                    yield (
+                        Rect(
+                            round(target.rect.cx + fx * off + ux * slide, 3),
+                            round(target.rect.cy + fy * off + uy * slide, 3),
+                            width,
+                            depth,
+                            rot,
+                        ),
+                        None,
+                        -abs(dist - sum(rule.distance_m) / 2.0) - SLIDE_COST * abs(slide),
+                    )
         elif isinstance(rule, A.AtSide):
-            target = state.get(rule.target)
+            target = self._target(state, rule.target)
             if target is None:
                 return
             sides = ("left", "right") if rule.side == "either" else (rule.side,)
@@ -330,7 +379,7 @@ class Solver:
                             -abs(gap - sum(rule.gap_m) / 2.0) - abs(slide),
                         )
         elif isinstance(rule, A.Beside):
-            target = state.get(rule.target)
+            target = self._target(state, rule.target)
             if target is None:
                 return
             sides = ("left", "right") if rule.side == "either" else (rule.side,)
@@ -353,12 +402,12 @@ class Solver:
                         -gap,
                     )
         elif isinstance(rule, A.Corner):
-            near = state.get(rule.near) if rule.near else None
+            near = self._target(state, rule.near)
             for rect, wid in self._corner_poses(width, depth):
                 score = -math.dist(rect.center, near.rect.center) if near else 0.0
                 yield rect, wid, score
         elif isinstance(rule, A.Under):
-            target = state.get(rule.target)
+            target = self._target(state, rule.target)
             if target is None:
                 return
             fx, fy = target.rect.front
@@ -380,7 +429,7 @@ class Solver:
                         -abs(tuck - rule.tuck_m) - (0.05 if turn else 0.0),
                     )
         elif isinstance(rule, A.OnWallAbove):
-            target = state.get(rule.target)
+            target = self._target(state, rule.target)
             if target is None or target.wall_id is None:
                 return
             w = self.room.wall_by_id[target.wall_id]
@@ -400,7 +449,7 @@ class Solver:
                 0.0,
             )
         elif isinstance(rule, A.Ceiling):
-            target = state.get(rule.target) if rule.target else None
+            target = self._target(state, rule.target)
             if target is not None:
                 yield (
                     Rect(target.rect.cx, target.rect.cy, width, depth, target.rect.rotation_deg),
@@ -421,7 +470,7 @@ class Solver:
                 -0.1,
             )
         elif isinstance(rule, A.OnTop):
-            target = state.get(rule.target)
+            target = self._target(state, rule.target)
             if target is not None:
                 yield (
                     Rect(target.rect.cx, target.rect.cy, width, depth, target.rect.rotation_deg),
@@ -478,7 +527,9 @@ class Solver:
             return False
         if any(wall_gap(poly, w) < w.margin_m for w in room.walls):
             return False
-        if any(wall_gap(poly, e) < e.margin_m for e in room.open_edges):
+        if any(wall_gap(poly, e) < e.margin_m for e in (*room.open_edges, *room.unseen_edges)):
+            return False
+        if self._blocks_way_behind(piece):
             return False
         if any(overlaps(poly, s) for s in self.swings):
             return False
@@ -912,6 +963,8 @@ def place(req: PlacementRequest) -> PlacementResult:
     finals = solver.solve(choices)
 
     required = [s.key for s in arch.slots if s.required]
+    # A layout that places nothing is no design (a refresh with nothing that fits).
+    finals = [f for f in finals if f.pieces]
     if not finals:
         return PlacementResult(
             design=None,

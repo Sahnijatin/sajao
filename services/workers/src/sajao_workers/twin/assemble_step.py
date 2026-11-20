@@ -33,7 +33,7 @@ from sajao_workers.twin.shell import (
 from sajao_workers.twin.space import Space, fit_space
 
 # Bump when assembly, the shell fit or the crops change.
-VERSION = 9
+VERSION = 10
 CROP_MARGIN = 0.10  # of the mask's box, split between the two sides
 CROPS_PER_OBJECT = 4
 
@@ -218,7 +218,7 @@ def assemble_step(points_for_shell: PointsForShell = shell_points) -> Step:
         space = fit_space(
             points,
             depth_source=manifest["depth_source"],
-            unseen_open=photos,
+            mark_unseen=photos,
             stood_at=(
                 np.array([np.asarray(f["c2w"])[:3, 3] for f in manifest["frames"]])
                 if photos

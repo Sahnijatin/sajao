@@ -110,7 +110,7 @@ def archetypes_for(twin: SpaceTwin) -> list[str]:
     return [
         key
         for key, arch in A.ARCHETYPES.items()
-        if arch.space == twin.space_type and arch.min_area_m2 <= floor
+        if arch.space == twin.space_type and arch.min_area_m2 <= floor and arch.rung is None
     ]
 
 
@@ -227,6 +227,75 @@ class IntentResult:
     distinct: bool = True
 
 
+@dataclass(frozen=True)
+class _Ask:
+    """One intent's fixed inputs to an attempt."""
+
+    twin: SpaceTwin
+    products: Sequence[Product]
+    intent: Intent
+    budget: int
+    avoid: frozenset[str]
+    styles: list[str]
+    anchor: Design | None
+    in_view: list[tuple[float, float]] | None
+
+
+def _attempt(
+    ask: _Ask,
+    arch_keys: list[str],
+    brief: Brief,
+    seed: bool,
+    space_profile_id: uuid.UUID,
+    created_at: str,
+) -> EngineResult:
+    """Design one intent over some archetypes, with the relaxation order."""
+    options: dict[str, list[Product]] = {}
+    for key in arch_keys:
+        found = slot_options(
+            A.ARCHETYPES[key], ask.products, ask.budget, ask.intent, ask.avoid, ask.styles
+        )
+        for o in found:
+            options.setdefault(o.slot, o.products)
+    order = (
+        seed_order(ask.twin, brief, arch_keys, options, created_at, ask.in_view)
+        if seed
+        else list(arch_keys)
+    )
+    if ask.intent == "bold" and ask.anchor is not None and ask.anchor.archetype in order:
+        # Bold tries another archetype first; best match's own comes last.
+        order = [k for k in order if k != ask.anchor.archetype] + [ask.anchor.archetype]
+    request = DesignRequest(
+        twin=ask.twin,
+        brief=brief,
+        in_view=ask.in_view,
+        intent=ask.intent,
+        archetypes=order,
+        options=[SlotOptions(slot=k, products=v) for k, v in options.items()],
+        design_id=uuid.uuid5(NAMESPACE, f"{ask.twin.id}:{ask.twin.version}:{ask.intent}"),
+        space_profile_id=space_profile_id,
+        created_at=created_at,  # type: ignore[arg-type]
+    )
+    return design_with_relaxation(request)
+
+
+def _keep_seating(twin: SpaceTwin, brief: Brief) -> Brief:
+    """The brief with the room's own seating kept: a refresh builds around it."""
+    from sajao_engine.room import KEPT_GROUPS
+
+    seats = KEPT_GROUPS["seating"]
+    ids = [o.id for o in twin.objects if o.category.lower().replace("_", " ") in seats]
+    keep = [k.root for k in brief.keep_item_ids]
+    merged = keep + [i for i in ids if i not in keep]
+    return brief.model_validate({**brief.model_dump(mode="json"), "keep_item_ids": merged})
+
+
+def _with_rung(design: Design, rung: str) -> Design:
+    data = design.model_dump(mode="json", exclude_unset=True)
+    data["layout_rung"] = rung
+    return Design.model_validate(data)
+
+
 def three_designs(
     twin: SpaceTwin,
     brief: Brief,
@@ -238,10 +307,13 @@ def three_designs(
 ) -> list[IntentResult]:
     """Best match first, then the others, each verified or an honest result. `in_view`
     (a photo room: sajao_engine.photo.visible_floor) keeps new items where the photo
-    shows them."""
+    shows them, and a photo room that the standard layouts cannot furnish steps down
+    the fallback ladder (A.FALLBACK_RUNGS) per intent; the rung used is on the design."""
     keys = archetypes_for(twin)
     if not keys:
         raise ValueError(f"no archetype for a {twin.space_type} of this size")
+    answers = brief.taste_answers
+    styles = [str(getattr(s, "value", s)) for s in (answers.styles or [])] if answers else []
     out: list[IntentResult] = []
     anchor: Design | None = None
     for intent in intents:
@@ -250,27 +322,22 @@ def three_designs(
             avoid = frozenset(large_pieces(anchor))
         scaled = _brief(brief, intent)
         budget = scaled.budget.limit.amount_minor
-        options: dict[str, list[Product]] = {}
-        answers = brief.taste_answers
-        styles = [str(getattr(s, "value", s)) for s in (answers.styles or [])] if answers else []
-        for key in keys:
-            for o in slot_options(A.ARCHETYPES[key], products, budget, intent, avoid, styles):
-                options.setdefault(o.slot, o.products)
-        order = seed_order(twin, scaled, keys, options, created_at, in_view)
-        if intent == "bold" and anchor is not None:
-            order = [k for k in order if k != anchor.archetype] + [anchor.archetype]
-        request = DesignRequest(
-            twin=twin,
-            brief=scaled,
-            in_view=in_view,
-            intent=intent,
-            archetypes=order,
-            options=[SlotOptions(slot=k, products=v) for k, v in options.items()],
-            design_id=uuid.uuid5(NAMESPACE, f"{twin.id}:{twin.version}:{intent}"),
-            space_profile_id=space_profile_id,
-            created_at=created_at,  # type: ignore[arg-type]
-        )
-        result = design_with_relaxation(request)
+
+        ask = _Ask(twin, products, intent, budget, avoid, styles, anchor, in_view)
+        result = _attempt(ask, keys, scaled, True, space_profile_id, created_at)
+        rung = "standard"
+        if result.design is None and in_view is not None:
+            for step in A.FALLBACK_RUNGS:
+                rung_keys = A.for_rung(step, twin.space_type)
+                if not rung_keys:
+                    continue
+                rung_brief = _keep_seating(twin, scaled) if step == "refresh" else scaled
+                tried = _attempt(ask, rung_keys, rung_brief, False, space_profile_id, created_at)
+                if tried.design is not None:
+                    result, rung = tried, step
+                    break
+        if result.design is not None:
+            result = result.model_copy(update={"design": _with_rung(result.design, rung)})
         ok = True
         if result.design is not None and anchor is not None:
             ok = distinct(result.design, anchor)

@@ -65,8 +65,8 @@ class OpeningSighting:
 def _walls(shell: Mapping[str, Any]) -> list[tuple[str, np.ndarray, np.ndarray, float]]:
     out = []
     for w in shell["walls"]:
-        if w.get("kind") == "open":
-            continue  # nothing hangs on an edge with no wall
+        if w.get("kind", "wall") != "wall":
+            continue  # nothing hangs on an open or unseen edge
         s = np.array([w["start"]["x_m"], w["start"]["y_m"]])
         e = np.array([w["end"]["x_m"], w["end"]["y_m"]])
         length = float(np.linalg.norm(e - s))
