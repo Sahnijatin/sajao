@@ -278,6 +278,7 @@
       "picture_other": "Plan of your room with {{count}} items",
       "softEdge": "Walls not yet checked with a tape are drawn with a soft edge.",
       "openEdge": "A dashed line is an open side: the room carries on there, with no wall.",
+      "unseenEdge": "A dotted line is a side your photos did not show. Nothing is placed against it.",
       "size": "{{width}} wide, {{depth}} deep, {{height}} tall",
       "tapPiece": "Tap a piece to see its size.",
       "gapsMeasured": "Gaps to the walls show once the room is measured."
