@@ -1560,12 +1560,13 @@ class RoomFailure(BaseModel):
             "no_products",
             "no_layout_for_room",
             "nothing_fits",
+            "needs_wider_view",
             "render_failed",
             "timed_out",
             "internal",
         ],
         Field(
-            description="Why the job stopped. upload_incomplete: a file of the capture is not in storage. photo_too_small: a photo is below the minimum the render needs. timed_out: a stage ran past its limit and its retry. internal: an error on our side; trying again may work."
+            description="Why the job stopped. upload_incomplete: a file of the capture is not in storage. photo_too_small: a photo is below the minimum the render needs. needs_wider_view: a photo room where not even a refresh around the existing seating fits in what the photo shows; a photo from the opposite corner may help. timed_out: a stage ran past its limit and its retry. internal: an error on our side; trying again may work."
         ),
     ]
     stage: Annotated[
@@ -1849,9 +1850,9 @@ class Wall(BaseModel):
     end: Point2
     length: Dimension
     kind: Annotated[
-        Literal["wall", "open"] | None,
+        Literal["wall", "open", "unseen"] | None,
         Field(
-            description="What this edge of the floor polygon is. wall (the default when absent): a wall was seen here, from near the floor to near the ceiling. open: no wall was seen between the walls on either side: a doorway, the way into the next area, or a stretch that was not scanned. Open edges are passable, never a surface to place things against."
+            description="What this edge of the floor polygon is. wall (the default when absent): a wall was seen here, from near the floor to near the ceiling. open: no wall stands here, and the photos or scan saw that: a doorway or the way into the next area. Open edges are passable, never a surface to place things against. unseen: no photo or scan showed this edge, so whether a wall stands here is not known; the app never calls it open. Nothing is placed against it and nobody is routed through it; another photo may resolve it."
         ),
     ] = None
 
@@ -2239,6 +2240,12 @@ class Design(BaseModel):
         Field(description="Which of the three intents this design fills."),
     ]
     archetype: Annotated[str, Field(description="Layout archetype key.", min_length=1)]
+    layout_rung: Annotated[
+        Literal["standard", "floating_sofa", "side_wall_sofa", "smaller_seating", "refresh"] | None,
+        Field(
+            description="On a photo room, which rung of the fallback ladder made this design: standard (the archetype's own layout), floating_sofa (a sofa facing the kept TV, backed onto an open or unseen side), side_wall_sofa (a sofa on a side wall at a right angle to the TV), smaller_seating (a two seater or armchairs), refresh (the existing seating kept; rug, lighting, side table, art and plants added)."
+        ),
+    ] = None
     items: Annotated[list[DesignItem], Field(min_length=1)]
     materials: Annotated[DesignMaterials, Field(title="DesignMaterials")]
     lighting: Annotated[LightingScheme, Field(title="LightingScheme")]

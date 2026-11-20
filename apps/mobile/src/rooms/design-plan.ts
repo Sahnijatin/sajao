@@ -106,7 +106,7 @@ export function wallClearance(
     if (!best || metres < best.metres) best = { from, to, metres };
   };
   for (let w = 0; w < polygon.length; w += 1) {
-    if (kinds && kinds[w] === "open") continue;
+    if (kinds && kinds[w] !== "wall") continue;
     const wallA = polygon[w] as Metres;
     const wallB = polygon[(w + 1) % polygon.length] as Metres;
     // A rectangle and a wall are closest at a corner of one or the other.
