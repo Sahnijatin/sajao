@@ -528,6 +528,22 @@ describe("the plan on the Room tab", () => {
     ).toBeTruthy();
   });
 
+  it("draws a side no photo showed as unseen, never as open", async () => {
+    const shell = sample.shell!;
+    // The sample's fourth side is open; here no photo showed it instead.
+    const walls = shell.walls.map((wall) =>
+      wall.kind === "open" ? { ...wall, kind: "unseen" as const } : wall,
+    );
+    expect(walls.some((wall) => wall.kind === "unseen")).toBe(true);
+    await show({ ...real, shell: { ...shell, walls } as typeof shell });
+    expect(screen.getByTestId("room-plan-unseen")).toBeTruthy();
+    expect(screen.queryByTestId("room-plan-open")).toBeNull();
+    // It carries no length: only the three seen walls are labelled.
+    const plan = within(screen.getByTestId("room-plan"));
+    expect(plan.getAllByText("420 cm")).toHaveLength(2);
+    expect(plan.getAllByText("340 cm")).toHaveLength(1);
+  });
+
   it("shows a tapped piece's size and its own gap to the wall, and lets it go on a second tap", async () => {
     await show();
     expect(screen.getByText("Tap a piece to see its size.")).toBeTruthy();

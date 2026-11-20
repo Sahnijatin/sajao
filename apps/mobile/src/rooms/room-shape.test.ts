@@ -71,6 +71,18 @@ describe("an edge the twin marks open", () => {
   });
 });
 
+describe("an edge no photo showed", () => {
+  it("is unseen, never open, and is not a wall", () => {
+    const box = [point(0, 0), point(4, 0), point(4, 3), point(0, 3)];
+    const walls = box.map((from, i) => ({
+      ...wall(`w${i}`, from, box[(i + 1) % 4]!),
+      kind: i === 3 ? ("unseen" as const) : ("wall" as const),
+    }));
+    expect(edgeKinds({ floor_polygon: box, walls })).toEqual(["wall", "wall", "wall", "unseen"]);
+    expect(walls.filter(isWall)).toHaveLength(3);
+  });
+});
+
 describe("the room's confidence level", () => {
   it("is what the twin says, and nothing when it says nothing", () => {
     expect(confidenceOf({ confidence: { level: "taped" } })).toBe("taped");
