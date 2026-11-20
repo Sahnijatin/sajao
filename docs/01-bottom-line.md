@@ -20,7 +20,7 @@ A `Design` holds the room it belongs to, the chosen products (real SKUs with dim
 | Spatial credibility | Solver placement on the room with error-band margin; verifier on collisions, walkways, doors, windows and margins; grounding check on the render |
 | Commercial utility | Live SKUs with price, stock and link; totals from the same list the render shows; budget and stock re-checked at reveal |
 
-Honesty labels: "Illustrative render" on images, "Estimated ±X cm" on unverified dimensions, "Fits with Y cm to spare" only when the margin covers the error band.
+Honesty labels: "Illustrative render" on images, "Estimated from photos. Measure to confirm fit." on unverified dimensions (no tolerance number), "Based on your photos. Measure to confirm fit." on designs for an estimated room, "Fits with Y cm to spare" only when the margin covers the error band.
 
 ## Tiers
 
