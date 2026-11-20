@@ -732,10 +732,10 @@ export interface components {
         RoomFailure: {
             /**
              * Reason
-             * @description Why the job stopped. upload_incomplete: a file of the capture is not in storage. photo_too_small: a photo is below the minimum the render needs. timed_out: a stage ran past its limit and its retry. internal: an error on our side; trying again may work.
+             * @description Why the job stopped. upload_incomplete: a file of the capture is not in storage. photo_too_small: a photo is below the minimum the render needs. needs_wider_view: a photo room where not even a refresh around the existing seating fits in what the photo shows; a photo from the opposite corner may help. timed_out: a stage ran past its limit and its retry. internal: an error on our side; trying again may work.
              * @enum {string}
              */
-            reason: "upload_incomplete" | "photo_too_small" | "photo_missing" | "photo_unreadable" | "no_ar_data" | "planes_unreadable" | "floor_not_visible" | "no_walls" | "space_not_supported" | "invalid_request" | "no_products" | "no_layout_for_room" | "nothing_fits" | "render_failed" | "timed_out" | "internal";
+            reason: "upload_incomplete" | "photo_too_small" | "photo_missing" | "photo_unreadable" | "no_ar_data" | "planes_unreadable" | "floor_not_visible" | "no_walls" | "space_not_supported" | "invalid_request" | "no_products" | "no_layout_for_room" | "nothing_fits" | "needs_wider_view" | "render_failed" | "timed_out" | "internal";
             /**
              * Retryable
              * @description True when asking again (the same room or design request) may succeed; false when the capture itself must change.
