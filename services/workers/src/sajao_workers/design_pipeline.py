@@ -116,6 +116,7 @@ async def run_design_request(
     await move("spec", "done")
 
     await move("placement", "running")
+    in_view = in_view_for(room)
     try:
         results = three_designs(
             room,
@@ -125,7 +126,7 @@ async def run_design_request(
             if hasattr(parsed.space_profile_id, "root")
             else uuid.UUID(str(parsed.space_profile_id)),
             created_at,
-            in_view=in_view_for(room),
+            in_view=in_view,
         )
     except ValidationError:
         # A design that breaks the contract is our bug, not the room's: say so.
@@ -144,8 +145,11 @@ async def run_design_request(
         design["slot"] = result.intent
         designs.append(design)
     if not designs:
-        await move("placement", "failed", "nothing_fits")
-        return DesignOutcome("failed", [], "nothing_fits")
+        # A photo room stepped down every rung, a refresh included: a photo from the
+        # opposite corner is what would help. Otherwise nothing in the catalog fits.
+        reason = "needs_wider_view" if in_view is not None else "nothing_fits"
+        await move("placement", "failed", reason)
+        return DesignOutcome("failed", [], reason)
     await board.set_designs(request_id, designs)
     await move("placement", "done")
     return DesignOutcome("done", designs)

@@ -95,13 +95,15 @@ def _wall_coverage(xy: np.ndarray, start: np.ndarray, end: np.ndarray) -> float:
 def fit_space(
     points: np.ndarray,
     depth_source: DepthSource,
-    unseen_open: bool = False,
+    mark_unseen: bool = False,
     stood_at: np.ndarray | None = None,
 ) -> Space:
     """Space frame and shell from depth points in the AR world (N, 3).
 
-    `unseen_open` (a single photo): edges the depth barely reaches, such as the side
-    behind the camera, are marked open instead of claimed as walls. `stood_at`: where
+    `mark_unseen` (photos): edges the depth barely reaches, such as the side behind the
+    camera, are marked unseen instead of claimed as walls (never called open: whether a
+    wall stands there is not known). With more photos the depth of each is pooled, so a
+    wall another photo covers is a wall again. `stood_at`: where
     the photo was taken from (AR world); the floor reaches at least there, because the
     person stood on it, even where the photo does not show it."""
     up = points @ AR_TO_Z_UP.T
@@ -143,15 +145,17 @@ def fit_space(
             }
         )
         coverage.append(_wall_coverage(local, start, end))
-        if unseen_open and coverage[-1] < WALL_COVERAGE_FOR_WALL:
-            walls[-1]["kind"] = "open"
+        if mark_unseen and coverage[-1] < WALL_COVERAGE_FOR_WALL:
+            walls[-1]["kind"] = "unseen"
     shell = {
         "floor_polygon": [{"x_m": round(x, 3), "y_m": round(y, 3)} for x, y in corners],
         "walls": walls,
         "ceiling_height": shell_dimension(float(ceiling - floor), depth_source),
         "openings": [],
         "fixtures": [],
-        "surfaces": [{"id": w["id"], "kind": "wall"} for w in walls if w.get("kind") != "open"]
+        "surfaces": [
+            {"id": w["id"], "kind": "wall"} for w in walls if w.get("kind", "wall") == "wall"
+        ]
         + [{"id": "floor", "kind": "floor"}, {"id": "ceiling", "kind": "ceiling"}],
     }
     whole = min(coverage) >= WALL_COVERAGE_FOR_WHOLE_ROOM

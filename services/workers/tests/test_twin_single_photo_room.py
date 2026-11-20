@@ -180,7 +180,8 @@ async def test_the_photo_becomes_an_estimated_twin_with_open_edges(tmp_path: Pat
     assert twin["confidence"]["level"] == "estimated"
     assert twin["scale"]["needs_tape_value"] is True
     kinds = [w.get("kind", "wall") for w in twin["shell"]["walls"]]
-    assert "open" in kinds and "wall" in kinds  # the side behind the camera was not seen
+    # The side behind the camera was not seen: unseen, never claimed open.
+    assert "unseen" in kinds and "wall" in kinds and "open" not in kinds
     band = json.loads(store.read_blob(scaled.outputs["scale"]))["band_fraction"]
     for wall in twin["shell"]["walls"]:
         assert wall["length"]["error_band_m"] >= band * wall["length"]["value_m"] - 1e-3
@@ -213,16 +214,17 @@ def test_a_box_from_one_view() -> None:
     assert fitted[0] == "sofa" and fitted[2] == 1
 
 
-def test_unseen_edges_are_open_only_when_asked() -> None:
+def test_unseen_edges_are_marked_only_when_asked() -> None:
     depth, _ = render_room(1.4, 8.0)
 
     camera = level_camera(lift(depth, K))
     assert camera is not None
     points = to_world(lift(depth, K, stride=2), camera)
     closed = fit_space(points, "image")
-    opened = fit_space(points, "image", unseen_open=True)
+    opened = fit_space(points, "image", mark_unseen=True)
     assert all("kind" not in w for w in closed.shell["walls"])
-    assert [w.get("kind", "wall") for w in opened.shell["walls"]].count("open") >= 1
+    kinds = [w.get("kind", "wall") for w in opened.shell["walls"]]
+    assert kinds.count("unseen") >= 1 and "open" not in kinds
     assert len(opened.shell["surfaces"]) < len(closed.shell["surfaces"])
 
 
