@@ -13,26 +13,38 @@ import type { PickResult } from "@/import/pick";
 import { keptFrames, type TakenPhoto } from "@/photos/photo-session";
 import { useCaptureStore } from "@/state/capture";
 import { useRooms } from "@/state/rooms";
+import type { RoomPhoto } from "./rooms";
 
 export type ImportResult =
   | { status: "imported"; roomId: string }
   | { status: "cancelled" }
   | { status: "problem"; problem: ImportProblem | "failed" };
 
-/** Make a room on My home from a capture with no AR data, and start its upload. */
-function startRoom(capture: LocalCapture): string {
-  useCaptureStore.getState().setLast(capture);
-  // The pictures become a room on My home at once, like a scan.
-  const room = useRooms.getState().addRoomForCapture(
-    capture.captureId,
-    Date.now(),
-    capture.files.keyframes.map((frame) => ({ id: frame.id, uri: frame.uri })),
-  );
-  void startCaptureUpload(capture, {
+const device = () =>
+  ({
     platform: Platform.OS === "ios" ? "ios" : "android",
     tier: "standard",
     has_ar: false,
+  }) as const;
+
+/** The capture's pictures as the room's photos, with their sizes when known. */
+function photosOf(capture: LocalCapture, taken?: readonly TakenPhoto[]): RoomPhoto[] {
+  return capture.files.keyframes.map((frame, index) => {
+    const photo = taken?.[index];
+    return photo
+      ? { id: frame.id, uri: frame.uri, widthPx: photo.widthPx, heightPx: photo.heightPx }
+      : { id: frame.id, uri: frame.uri };
   });
+}
+
+/** Make a room on My home from a capture with no AR data, and start its upload. */
+function startRoom(capture: LocalCapture, taken?: readonly TakenPhoto[]): string {
+  useCaptureStore.getState().setLast(capture);
+  // The pictures become a room on My home at once, like a scan.
+  const room = useRooms
+    .getState()
+    .addRoomForCapture(capture.captureId, Date.now(), photosOf(capture, taken));
+  void startCaptureUpload(capture, device());
   return room.id;
 }
 
@@ -41,7 +53,38 @@ export function startPhotoRoom(
   photos: readonly TakenPhoto[],
   captureId: string = uuidV4(),
 ): string {
-  return startRoom(importedCapture(captureId, "camera", keptFrames(photos)));
+  return startRoom(importedCapture(captureId, "camera", keptFrames(photos)), photos);
+}
+
+/**
+ * The room's photos as they were taken in the app, to add one to; empty
+ * when the room's photos have no recorded size (a gallery pick or a scan).
+ */
+export function takenPhotosOf(roomId: string): TakenPhoto[] {
+  const photos = useRooms.getState().rooms.find((room) => room.id === roomId)?.photos ?? [];
+  if (!photos.every((photo) => photo.widthPx && photo.heightPx)) return [];
+  return photos.map((photo) => ({
+    uri: photo.uri,
+    widthPx: photo.widthPx as number,
+    heightPx: photo.heightPx as number,
+  }));
+}
+
+/**
+ * More photos for a room that exists: they go up as a new capture that
+ * measures the same room again. The room keeps everything it has until the
+ * new capture is done; if it fails, nothing is lost. Returns the capture id.
+ */
+export function addPhotosToRoom(
+  roomId: string,
+  photos: readonly TakenPhoto[],
+  captureId: string = uuidV4(),
+): string {
+  const capture = importedCapture(captureId, "camera", keptFrames(photos));
+  useCaptureStore.getState().setLast(capture);
+  useRooms.getState().remeasure(roomId, captureId, photosOf(capture, photos));
+  void startCaptureUpload(capture, device());
+  return captureId;
 }
 
 async function pickFromPhone(): Promise<PickResult> {

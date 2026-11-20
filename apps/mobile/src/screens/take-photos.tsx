@@ -12,9 +12,9 @@ import { PhotoCamera, type PhotoCameraHandle } from "@/photos/photo-camera";
 import {
   canAddAnother,
   heldSideways,
-  initialSession,
   MAX_PHOTOS,
   photoSession,
+  sessionWith,
   type TakenPhoto,
 } from "@/photos/photo-session";
 import { preparePhoto, type SavedPhoto } from "@/photos/take-photo";
@@ -26,6 +26,8 @@ export interface TakePhotosProps {
   /** "Use photos or a video": pictures already on the phone. */
   onUsePhotos: () => void;
   prepare?: (fileUri: string) => Promise<SavedPhoto>;
+  /** Photos the room already has, when adding to it; empty for a new room. */
+  initialPhotos?: readonly TakenPhoto[];
 }
 
 const SHUTTER = 76;
@@ -35,8 +37,9 @@ export function TakePhotosScreen({
   onClose,
   onUsePhotos,
   prepare = preparePhoto,
+  initialPhotos = [],
 }: TakePhotosProps) {
-  const [session, dispatch] = useReducer(photoSession, initialSession);
+  const [session, dispatch] = useReducer(photoSession, initialPhotos, sessionWith);
   const { current, kept } = session;
 
   useEffect(() => {

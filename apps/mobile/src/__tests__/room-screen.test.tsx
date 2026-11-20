@@ -457,6 +457,20 @@ describe("a room whose job is running or stopped", () => {
     expect(onRetry).toHaveBeenCalledTimes(1);
   });
 
+  it("offers to add a photo to this same room when nothing fits", async () => {
+    const onAddPhoto = jest.fn();
+    await render(
+      <ThemeProvider tier="standard" reducedMotion>
+        <RoomWaiting
+          job={{ stage: "failed", finished: 2, reason: "nothing_fits", retryable: false }}
+          onAddPhoto={onAddPhoto}
+        />
+      </ThemeProvider>,
+    );
+    await fireEvent.press(screen.getByRole("button", { name: "Add a photo" }));
+    expect(onAddPhoto).toHaveBeenCalledTimes(1);
+  });
+
   it("offers no Retry when asking again cannot help, and says what to do instead", async () => {
     await render(
       <ThemeProvider tier="standard" reducedMotion>

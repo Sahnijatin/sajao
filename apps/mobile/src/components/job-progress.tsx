@@ -27,7 +27,19 @@ export const KNOWN_REASONS: readonly string[] = [
   "internal",
 ];
 
-export function JobProgress({ job, onRetry }: { job: RoomJobState; onRetry?: () => void }) {
+/** Failures that another photo of the same room can fix. */
+export const ADD_PHOTO_REASONS: readonly string[] = ["nothing_fits"];
+
+export function JobProgress({
+  job,
+  onRetry,
+  onAddPhoto,
+}: {
+  job: RoomJobState;
+  onRetry?: () => void;
+  /** Opens the camera to add a photo to this same room. */
+  onAddPhoto?: () => void;
+}) {
   const { t } = useTranslation();
   const { tokens } = useTheme();
   const { spacing, colors } = tokens;
@@ -37,6 +49,9 @@ export function JobProgress({ job, onRetry }: { job: RoomJobState; onRetry?: () 
       <Card testID="job-failed" style={{ gap: spacing.xl }}>
         <Text variant="bodyStrong">{t("generating.failed.title")}</Text>
         <Text tone="secondary">{t(`generating.failed.${reason}`)}</Text>
+        {onAddPhoto && ADD_PHOTO_REASONS.includes(job.reason ?? "") ? (
+          <Button label={t("generating.failed.addPhoto")} onPress={onAddPhoto} />
+        ) : null}
         {/* Retry only when the server says asking again may help. */}
         {onRetry && job.retryable !== false ? (
           <Button label={t("generating.failed.retry")} onPress={onRetry} />

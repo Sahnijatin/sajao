@@ -50,6 +50,7 @@ export default function GeneratingRoute() {
         onLeave={() => router.dismissTo("/")}
         // Retry only when the server says asking again may help.
         onRetry={retryable ? () => void retryRoomJob(room) : undefined}
+        onAddPhoto={() => router.replace({ pathname: "/photos", params: { room } })}
       />
     );
   }

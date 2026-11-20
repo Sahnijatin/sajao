@@ -46,6 +46,16 @@ export type PhotoAction =
 
 export const initialSession: PhotoSession = { current: { step: "note" }, kept: [] };
 
+/**
+ * Adding to a room that already has photos: straight to the camera for one
+ * more, or to all of them when there are already three (to retake one).
+ */
+export function sessionWith(kept: readonly TakenPhoto[]): PhotoSession {
+  if (kept.length === 0) return initialSession;
+  const all = kept.slice(0, MAX_PHOTOS);
+  return { current: all.length < MAX_PHOTOS ? { step: "camera" } : { step: "photos" }, kept: all };
+}
+
 /** Width over height of at least this counts as sideways. */
 const LANDSCAPE_RATIO = 1.05;
 
