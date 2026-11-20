@@ -164,6 +164,10 @@ class VertexGeminiVision:
                 "responseJsonSchema": p["response_schema"],
                 "temperature": 0,
                 "maxOutputTokens": int(p["max_output_tokens"]),
+                # Listing what is in a photo needs little reasoning. At the default
+                # (high) level the model spent the whole output budget thinking and
+                # returned nothing (MAX_TOKENS after 75 s on a real room).
+                "thinkingConfig": {"thinkingLevel": "low"},
             },
         }
         try:
