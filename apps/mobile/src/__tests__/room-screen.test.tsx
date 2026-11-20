@@ -547,11 +547,11 @@ describe("the plan on the Room tab", () => {
     await fireEvent.press(screen.getByTestId("plan-item-sofa"));
     expect(screen.getByText(/^195 cm wide/)).toBeTruthy();
     expect(screen.getByText("Gaps to the walls show once the room is measured.")).toBeTruthy();
-    // No fit claim on Designs either: the look is illustrative.
+    // No fit claim on Designs either: one quiet line instead.
     await openTab("Designs");
     expect(screen.queryByText("Everything fits your room")).toBeNull();
     expect(screen.queryByText("Some pieces need a fit check")).toBeNull();
-    expect(screen.getByText(/^Illustrative\./)).toBeTruthy();
+    expect(screen.getByText("Based on your photos. Measure to confirm fit.")).toBeTruthy();
   });
 
   it("starts with no piece picked when the look changes", async () => {

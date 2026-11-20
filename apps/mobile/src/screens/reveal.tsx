@@ -34,8 +34,8 @@ export function RevealScreen({ content, onOpenRoom }: RevealProps) {
   const [phase, setPhase] = useState<"room" | "looks">(
     content.heroViews.length > 0 ? "room" : "looks",
   );
-  // Sizes estimated from photos: the looks are illustrative and make no fit claims.
-  const illustrative = !fitClaimsAllowed(content.confidence);
+  // Sizes estimated from photos: one quiet line, and no fit claims.
+  const estimated = !fitClaimsAllowed(content.confidence);
   const offered = designsOffered(content.spaceType);
   // The next card peeks in from the right, so it is clear there is more.
   const cardWidth = Math.round((width - spacing.gutter * 2) * 0.86);
@@ -172,9 +172,9 @@ export function RevealScreen({ content, onOpenRoom }: RevealProps) {
 
         <View style={{ flex: 1 }} />
         <View style={{ paddingHorizontal: spacing.gutter, gap: spacing.xl }}>
-          {illustrative && phase === "looks" ? (
-            <Text testID="reveal-illustrative" variant="caption" tone="secondary">
-              {t("reveal.illustrative")}
+          {estimated && phase === "looks" ? (
+            <Text testID="reveal-estimated" variant="caption" tone="secondary">
+              {t("reveal.estimated")}
             </Text>
           ) : null}
           {content.sample && phase === "looks" ? (
