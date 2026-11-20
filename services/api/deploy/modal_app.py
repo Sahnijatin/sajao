@@ -408,3 +408,125 @@ async def sweep_account_deletions() -> int:
     for user_id in waiting:
         await delete_account.spawn.aio(user_id)
     return len(waiting)
+
+
+@app.function(
+    image=image.add_local_file(CATALOG_FILE, "/root/catalog.jsonl"),
+    secrets=[
+        modal.Secret.from_name("sajao-api"),
+        modal.Secret.from_name("sajao-pipeline"),
+        modal.Secret.from_name("gcp"),
+        modal.Secret.from_name("anthropic-secret"),
+        modal.Secret.from_dict({"SAJAO_SHOW_FLAGGED_PRODUCTS": "1"}),
+    ],
+    volumes={ARTIFACTS: artifacts, GPU_STORE: gpu_volume},
+    timeout=1800,
+)
+async def room_smoke(room_id: str) -> dict[str, Any]:
+    """Read a real room again with the current code and design it, timed, without
+    touching the room: its stages run on a scratch folder (deleted after) and a board
+    that only records. Returns timings, the edges' kinds and the three designs; never
+    the photos."""
+    import datetime
+    import os
+    import shutil
+    import time
+    import uuid
+
+    from psycopg_pool import AsyncConnectionPool
+
+    from sajao_api.rooms import PostgresRoomStore
+    from sajao_engine.intents import default_brief, three_designs
+    from sajao_schemas.generated.v1 import SpaceTwin
+    from sajao_workers import pipeline
+    from sajao_workers.design_pipeline import catalog_products, in_view_for
+    from sajao_workers.steps import LocalArtifactStore, StepRunner
+
+    class Board:
+        def __init__(self) -> None:
+            self.t0 = time.monotonic()
+            self.moves: list[tuple[float, str, str, str | None]] = []
+            self.twin: dict[str, Any] | None = None
+
+        async def set_stage(
+            self,
+            room_id: str,
+            stage: str,
+            status: str,
+            detail: str | None = None,
+            request_id: str | None = None,
+        ) -> None:
+            self.moves.append((round(time.monotonic() - self.t0, 1), stage, status, detail))
+
+        async def set_space_twin(self, room_id: str, twin: dict[str, Any]) -> None:
+            self.twin = twin
+
+    pool = AsyncConnectionPool(
+        os.environ["SAJAO_DATABASE_URL"],
+        open=False,
+        min_size=1,
+        max_size=1,
+        kwargs={"prepare_threshold": None, "autocommit": True},
+    )
+    await pool.open()
+    try:
+        found = await PostgresRoomStore(pool).capture_for_room(room_id)
+    finally:
+        await pool.close()
+    if found is None:
+        return {"error": "unknown room"}
+    _, capture = found
+    scratch = Path(ARTIFACTS) / "smoke" / uuid.uuid4().hex
+    store = LocalArtifactStore(scratch)
+    board = Board()
+    try:
+        one, few = _photo_stages(store)
+        run = await pipeline.run_room(
+            StepRunner(store), board, _CaptureFiles(), room_id, capture, (), one, few
+        )
+        out: dict[str, Any] = {"outcome": run.outcome, "moves": board.moves}
+        if board.twin is None:
+            return out
+        twin = SpaceTwin.model_validate(board.twin)
+        out["edges"] = [w.kind or "wall" for w in twin.shell.walls]
+        out["objects"] = [
+            (o.category, o.redesign.state if o.redesign else None) for o in twin.objects
+        ]
+        t = time.monotonic()
+        now = datetime.datetime.now(datetime.UTC).isoformat(timespec="seconds")
+        products = catalog_products(Path("/root/catalog.jsonl"), allow_flagged=True)
+        results = three_designs(
+            twin, default_brief(twin, now), products, uuid.uuid4(), now, in_view=in_view_for(twin)
+        )
+        out["design_s"] = round(time.monotonic() - t, 1)
+        out["designs"] = [
+            {
+                "intent": r.intent,
+                "rung": r.result.design.layout_rung if r.result.design else None,
+                "archetype": r.result.design.archetype if r.result.design else None,
+                "total_rupees": r.result.design.total_cost.amount_minor / 100
+                if r.result.design
+                else None,
+                "items": [
+                    (i.product.category, i.product.title, i.product.price.amount_minor / 100)
+                    for i in (r.result.design.items if r.result.design else [])
+                ],
+                "honest": str(r.result.honest)[:300] if r.result.design is None else None,
+            }
+            for r in results
+        ]
+        return out
+    finally:
+        shutil.rmtree(scratch, ignore_errors=True)
+        await artifacts.commit.aio()
+
+
+@app.local_entrypoint()
+def smoke(room_id: str, out: str = "") -> None:
+    import json
+
+    result = room_smoke.remote(room_id)
+    text = json.dumps(result, indent=1, ensure_ascii=False)
+    if out:
+        Path(out).write_text(text)
+    print(text[:6000])
